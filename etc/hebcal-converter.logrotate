@@ -1,11 +1,11 @@
-/var/log/hebcal-converter/access.log {
+/var/log/hebcal/converter.log {
 	daily
 	rotate 14
 	compress
 	delaycompress
 	missingok
 	notifempty
-	create 0644 hebcal-converter hebcal-converter
+	create 0644 www-data www-data
 	postrotate
 		/usr/bin/systemctl kill -s SIGUSR1 hebcal-converter.service 2>/dev/null || true
 	endscript

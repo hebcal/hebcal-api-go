@@ -24,7 +24,8 @@ func main() {
 		}
 	}
 	port := flag.Int("port", defaultPort, "port to listen on")
-	logFile := flag.String("logfile", "", "access log file path (empty or \"-\" for stdout)")
+	logFile := flag.String("logfile", "/var/log/hebcal/converter.log",
+		"access log file path (\"-\" for stdout)")
 	pingFile := flag.String("pingfile", defaultPingFile,
 		"file served by /ping; a missing file makes /ping return 404")
 	flag.Parse()

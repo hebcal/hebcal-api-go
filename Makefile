@@ -1,6 +1,6 @@
 BIN := hebcal-converter
 PREFIX := /usr/local
-SVCUSER := hebcal-converter
+SVCUSER := www-data
 
 .PHONY: all build test vet fmt clean install uninstall
 
@@ -24,11 +24,8 @@ clean:
 # Installs the binary, systemd service, and logrotate config on a
 # Debian 13 server. Run as root: make install
 install: build
-	getent passwd $(SVCUSER) >/dev/null || \
-		useradd --system --no-create-home --home-dir /nonexistent \
-			--shell /usr/sbin/nologin $(SVCUSER)
 	install -m 0755 $(BIN) $(PREFIX)/bin/$(BIN)
-	install -d -o $(SVCUSER) -g $(SVCUSER) /var/log/hebcal-converter
+	install -d -o $(SVCUSER) -g $(SVCUSER) /var/log/hebcal
 	install -m 0644 etc/hebcal-converter.service /etc/systemd/system/hebcal-converter.service
 	install -m 0644 etc/hebcal-converter.logrotate /etc/logrotate.d/hebcal-converter
 	systemctl daemon-reload

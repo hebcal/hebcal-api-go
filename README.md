@@ -61,11 +61,13 @@ make test      # runs the unit tests
 ## Run
 
 ```bash
-./hebcal-converter                # listens on :8082, logs to stdout
-./hebcal-converter -port 8082 -logfile /var/log/hebcal-converter/access.log
+./hebcal-converter -logfile -     # listens on :8082, logs to stdout
+./hebcal-converter                # logs to /var/log/hebcal/converter.log
 ```
 
-The port defaults to `8082` (or the `PORT` environment variable).
+The port defaults to `8082` (or the `PORT` environment variable); the
+access log defaults to `/var/log/hebcal/converter.log` (use `-logfile -`
+for stdout during development).
 
 Access logs are pino-compatible JSON lines, e.g.:
 
@@ -83,9 +85,9 @@ sudo make install       # installs binary, systemd unit, logrotate config
 sudo systemctl start hebcal-converter
 ```
 
-`make install` creates a `hebcal-converter` system user, installs the
-binary to `/usr/local/bin`, the systemd unit to
-`/etc/systemd/system/hebcal-converter.service`, and the logrotate
-drop-in to `/etc/logrotate.d/hebcal-converter`. Logs are written to
-`/var/log/hebcal-converter/access.log` and rotated daily; logrotate
-signals the service with `SIGUSR1` to reopen the file after rotation.
+`make install` installs the binary to `/usr/local/bin`, the systemd unit
+to `/etc/systemd/system/hebcal-converter.service`, and the logrotate
+drop-in to `/etc/logrotate.d/hebcal-converter`. The service runs as
+`www-data` and writes its access log to `/var/log/hebcal/converter.log`
+(same directory hebcal-web uses), rotated daily; logrotate signals the
+service with `SIGUSR1` to reopen the file after rotation.

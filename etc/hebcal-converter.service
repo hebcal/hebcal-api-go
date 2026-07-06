@@ -5,16 +5,16 @@ After=network.target
 
 [Service]
 Type=simple
-User=hebcal-converter
-Group=hebcal-converter
-ExecStart=/usr/local/bin/hebcal-converter -port 8082 -logfile /var/log/hebcal-converter/access.log
+User=www-data
+Group=www-data
+ExecStart=/usr/local/bin/hebcal-converter -port 8082 -logfile /var/log/hebcal/converter.log
 # SIGUSR1 (or SIGHUP) reopens the access log after rotation
 ExecReload=/bin/kill -USR1 $MAINPID
 Restart=on-failure
 RestartSec=2
 
-# systemd creates /var/log/hebcal-converter owned by the service user
-LogsDirectory=hebcal-converter
+# systemd creates /var/log/hebcal owned by the service user
+LogsDirectory=hebcal
 LogsDirectoryMode=0755
 
 # hardening
