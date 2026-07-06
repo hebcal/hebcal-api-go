@@ -56,9 +56,9 @@ type singleJSON struct {
 func renderSingleJSON(p convProps, q url.Values, lg string) []byte {
 	hd := p.hd
 	result := singleJSON{
-		Gy:          p.gy.Year,
-		Gm:          int(p.gy.Month),
-		Gd:          p.gy.Day,
+		Gy:          p.dt.Year,
+		Gm:          int(p.dt.Month),
+		Gd:          p.dt.Day,
 		AfterSunset: p.gs,
 		Hy:          hd.Year(),
 		Hm:          hdMonthNameEn(hd),
@@ -147,7 +147,7 @@ func renderXML(p convProps, q url.Values, lg string) []byte {
 		sunset = `sunset="1" `
 	}
 	fmt.Fprintf(&buf, "<gregorian year=\"%d\" month=\"%d\" day=\"%d\" %s/>\n",
-		p.gy.Year, int(p.gy.Month), p.gy.Day, sunset)
+		p.dt.Year, int(p.dt.Month), p.dt.Day, sunset)
 	fmt.Fprintf(&buf, "<hebrew year=\"%d\" month=\"%s\" day=\"%d\" str=\"%s\" />\n",
 		hd.Year(), xmlEscape(hdMonthNameEn(hd)), hd.Day(), xmlEscape(gematriyaDate(hd)))
 	fmt.Fprintf(&buf, "<hebdate year=\"%s\" month=\"%s\" day=\"%s\" />\n",

@@ -76,7 +76,7 @@ func etagExtra(p convProps) string {
 		b.WriteString(url.QueryEscape(gregFromRD(p.endRD).String()))
 	} else {
 		b.WriteString("single:")
-		b.WriteString(p.gy.String())
+		b.WriteString(p.dt.String())
 		b.WriteString(",")
 		b.WriteString(p.hd.String())
 		if p.gs {

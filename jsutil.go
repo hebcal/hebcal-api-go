@@ -102,17 +102,3 @@ var xmlEscaper = strings.NewReplacer(
 func xmlEscape(s string) string {
 	return xmlEscaper.Replace(s)
 }
-
-// xmlEscapeApos matches hebcal-web's xmlEsc() (src/sanitize.js), which is
-// used for the <error/> element and escapes with named entities.
-var xmlAposEscaper = strings.NewReplacer(
-	"&", "&amp;",
-	"<", "&lt;",
-	">", "&gt;",
-	`"`, "&quot;",
-	"'", "&apos;",
-)
-
-func xmlEscapeApos(s string) string {
-	return xmlAposEscaper.Replace(s)
-}

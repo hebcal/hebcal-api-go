@@ -18,7 +18,7 @@ type convProps struct {
 	// range conversion
 	startRD, endRD int64
 	// single conversion
-	gy      gregDate    // Gregorian civil date (before any sunset adjustment)
+	dt      gregDate    // Gregorian civil date (before any sunset adjustment)
 	hd      hdate.HDate // Hebrew date (after sunset adjustment when gs is true)
 	gs      bool        // after sunset
 	noCache bool        // date came from the current clock
@@ -45,7 +45,7 @@ func g2h(dt gregDate, gs bool, noCache bool) convProps {
 	if gs {
 		hd = hd.Next()
 	}
-	return convProps{gy: dt, hd: hd, gs: gs, noCache: noCache}
+	return convProps{dt: dt, hd: hd, gs: gs, noCache: noCache}
 }
 
 // parseConverterQuery parses the /converter query string.
@@ -87,7 +87,7 @@ func parseConverterQuery(q url.Values, now gregDate) (convProps, error) {
 			}
 			return convProps{isRange: true, startRD: rd, endRD: rd + int64(numDays)}, nil
 		}
-		return convProps{gy: dt, hd: hd}, nil
+		return convProps{dt: dt, hd: hd}, nil
 	}
 	if q.Has("g2h") && q.Get("strict") == "1" {
 		if q.Has("date") {

@@ -155,7 +155,7 @@ func (app *appServer) writeConverterError(w http.ResponseWriter, cfg string, err
 	if cfg == "xml" {
 		w.Header().Set("Content-Type", contentTypeXML)
 		w.WriteHeader(status)
-		fmt.Fprintf(w, "<error message=\"%s\" />\n", xmlEscapeApos(err.Error()))
+		fmt.Fprintf(w, "<error message=\"%s\" />\n", xmlEscape(err.Error()))
 		return
 	}
 	w.Header().Set("Content-Type", contentTypeJSON)
