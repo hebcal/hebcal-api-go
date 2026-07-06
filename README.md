@@ -31,8 +31,11 @@ holidays/parshiyot come from
 
 Responses include weak `ETag` validators (FNV-1a; the Node.js service uses
 murmurhash3 — weak ETags do not need to match across implementations),
-proper `Cache-Control`, CORS headers, and dynamic gzip compression for
-bodies larger than 1 KB.
+proper `Cache-Control`, CORS headers, and dynamic brotli or gzip
+compression (brotli preferred) for bodies larger than 512 bytes — a
+threshold chosen empirically: multi-day batches and event-heavy XML just
+above it shrink 40–60%, while typical single-date JSON below it saves
+almost nothing (see `TestThresholdExperiment`).
 
 ### Known differences from the Node.js implementation
 

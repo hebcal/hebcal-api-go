@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/andybalholm/brotli"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
@@ -39,10 +40,27 @@ func (w *bufWriter) WriteHeader(status int) { w.status = status }
 
 func (w *bufWriter) Write(p []byte) (int, error) { return w.buf.Write(p) }
 
-const gzipThreshold = 1024
+// compressThreshold was chosen empirically: response bodies just above it
+// (multi-day batches, XML with several events) shrink 40-60% under
+// gzip/brotli, while typical single-date JSON below it saves almost nothing
+// over the header overhead. See TestThresholdExperiment.
+const compressThreshold = 512
 
-func acceptsGzip(r *http.Request) bool {
-	return strings.Contains(r.Header.Get("Accept-Encoding"), "gzip")
+// brotliQuality 6 matches the setting used by www.hebcal.com (app-www.js).
+const brotliQuality = 6
+
+// negotiateEncoding picks the response encoding from Accept-Encoding,
+// preferring brotli, with the same simple substring matching that
+// hebcal-web's ETag classing uses.
+func negotiateEncoding(r *http.Request) string {
+	ae := r.Header.Get("Accept-Encoding")
+	if strings.Contains(ae, "br") {
+		return "br"
+	}
+	if strings.Contains(ae, "gzip") {
+		return "gzip"
+	}
+	return ""
 }
 
 func compressibleType(contentType string) bool {
@@ -64,13 +82,19 @@ func (app *appServer) serve(h http.HandlerFunc) http.HandlerFunc {
 		contentType := bw.header.Get("Content-Type")
 		if compressibleType(contentType) && bw.header.Get("Content-Encoding") == "" {
 			compressed := false
-			if uncompressedLen > gzipThreshold && acceptsGzip(r) {
+			enc := negotiateEncoding(r)
+			if uncompressedLen > compressThreshold && enc != "" {
 				var zbuf bytes.Buffer
-				zw := gzip.NewWriter(&zbuf)
+				var zw io.WriteCloser
+				if enc == "br" {
+					zw = brotli.NewWriterLevel(&zbuf, brotliQuality)
+				} else {
+					zw = gzip.NewWriter(&zbuf)
+				}
 				zw.Write(body)
 				zw.Close()
 				body = zbuf.Bytes()
-				bw.header.Set("Content-Encoding", "gzip")
+				bw.header.Set("Content-Encoding", enc)
 				compressed = true
 			}
 			// mimic hebcal-web: Vary appears on any compressible response,

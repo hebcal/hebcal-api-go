@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/andybalholm/brotli"
 )
 
 func testServer(t *testing.T) (*appServer, *httptest.Server) {
@@ -612,6 +614,52 @@ func TestCompression(t *testing.T) {
 	}
 	if !strings.Contains(resp3.Header.Get("Vary"), "Accept-Encoding") {
 		t.Error("csv missing Vary")
+	}
+}
+
+func TestBrotli(t *testing.T) {
+	_, srv := testServer(t)
+	// brotli preferred when the client offers both
+	resp, body := get(t, srv, "/converter?cfg=json&start=2025-01-01&end=2025-01-31",
+		"Accept-Encoding", "gzip, deflate, br")
+	if resp.Header.Get("Content-Encoding") != "br" {
+		t.Fatalf("Content-Encoding = %q, want br", resp.Header.Get("Content-Encoding"))
+	}
+	if !strings.Contains(resp.Header.Get("Vary"), "Accept-Encoding") {
+		t.Error("missing Vary")
+	}
+	plain, err := io.ReadAll(brotli.NewReader(strings.NewReader(body)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(plain), `"2025-01-31"`) {
+		t.Error("bad brotli payload")
+	}
+	// gzip-only clients still get gzip
+	resp2, _ := get(t, srv, "/converter?cfg=json&start=2025-01-01&end=2025-01-31",
+		"Accept-Encoding", "gzip")
+	if resp2.Header.Get("Content-Encoding") != "gzip" {
+		t.Errorf("Content-Encoding = %q, want gzip", resp2.Header.Get("Content-Encoding"))
+	}
+	// brotli requests carry a different ETag class than gzip requests
+	if resp.Header.Get("ETag") == resp2.Header.Get("ETag") {
+		t.Error("ETag should differ between br and gzip clients")
+	}
+}
+
+func TestCompressThreshold(t *testing.T) {
+	_, srv := testServer(t)
+	// a 3-day batch (~640 bytes) sits above the 512-byte threshold
+	resp, _ := get(t, srv, "/converter?cfg=json&start=2025-01-01&end=2025-01-03",
+		"Accept-Encoding", "br")
+	if resp.Header.Get("Content-Encoding") != "br" {
+		t.Errorf("3-day range Content-Encoding = %q, want br", resp.Header.Get("Content-Encoding"))
+	}
+	// a single-date response (~220 bytes) stays uncompressed
+	resp2, _ := get(t, srv, "/converter?cfg=json&gy=2026&gm=7&gd=5&g2h=1",
+		"Accept-Encoding", "br")
+	if resp2.Header.Get("Content-Encoding") != "" {
+		t.Errorf("single Content-Encoding = %q, want none", resp2.Header.Get("Content-Encoding"))
 	}
 }
 

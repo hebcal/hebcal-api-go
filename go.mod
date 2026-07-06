@@ -3,6 +3,7 @@ module github.com/hebcal/converter-web
 go 1.24.7
 
 require (
+	github.com/andybalholm/brotli v1.2.2
 	github.com/hebcal/gematriya v1.0.1
 	github.com/hebcal/greg v1.0.2
 	github.com/hebcal/hdate v1.3.0
