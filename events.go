@@ -8,7 +8,6 @@ import (
 
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
-	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/hebcal-go/omer"
 	"github.com/hebcal/hebcal-go/sedra"
 	"github.com/hebcal/locales"
@@ -232,17 +231,9 @@ func getEvents(hd hdate.HDate, il bool) []calEv {
 	if hd.Abs() < -479441 {
 		return nil
 	}
-	opts := hebcal.CalOptions{
-		Start:            hd,
-		End:              hd,
-		IL:               il,
-		ShabbatMevarchim: true,
-		Molad:            true,
-	}
-	evs, err := hebcal.HebrewCalendar(&opts)
-	if err != nil {
-		evs = nil
-	}
+	// Look up this day's holiday/Shabbat Mevarchim/Molad events from the
+	// memoized whole-year computation instead of recomputing the year per day.
+	evs := holidayEventsForYear(hd.Year(), il)[hd.Abs()]
 	events := make([]calEv, 0, 4)
 	for _, ev := range evs {
 		if hev, ok := ev.(event.HolidayEvent); ok {
@@ -259,16 +250,10 @@ func getEvents(hd hdate.HDate, il bool) []calEv {
 	return events
 }
 
-// holidaysOnDate returns the holiday events for a single Hebrew date.
+// holidaysOnDate returns the holiday events for a single Hebrew date, using the
+// memoized per-year holiday index.
 func holidaysOnDate(hd hdate.HDate, il bool) []event.HolidayEvent {
-	all := hebcal.GetHolidaysForYear(hd.Year(), il)
-	var out []event.HolidayEvent
-	for _, hev := range all {
-		if hev.Date == hd {
-			out = append(out, hev)
-		}
-	}
-	return out
+	return holidaysForYearByDate(hd.Year(), il)[hd.Abs()]
 }
 
 // hasHolidayReading reports whether the date has a special (non-parsha) full

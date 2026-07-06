@@ -1,15 +1,17 @@
 module github.com/hebcal/converter-web
 
-go 1.24.7
+go 1.25.0
 
 require (
 	github.com/andybalholm/brotli v1.2.2
+	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/hebcal/gematriya v1.0.1
 	github.com/hebcal/greg v1.0.2
 	github.com/hebcal/hdate v1.3.0
 	github.com/hebcal/hebcal-go v0.15.1
 	github.com/hebcal/locales v1.0.1
 	github.com/prometheus/client_golang v1.23.2
+	golang.org/x/sync v0.21.0
 )
 
 require (
