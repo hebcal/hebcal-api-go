@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"testing"
 	"time"
 
@@ -21,8 +22,13 @@ func TestJsParseInt(t *testing.T) {
 		{"2026abc", 2026, true}, // trailing garbage ignored, like JS parseInt
 		{"", 0, false},
 		{"abc", 0, false},
+		{"abc123", 0, false},
 		{"-", 0, false},
+		{"- 5", 0, false},
 		{"undefined", 0, false},
+		// overflow saturates so year-range checks answer like the JS API
+		{"99999999999999999999", math.MaxInt, true},
+		{"-99999999999999999999", math.MinInt, true},
 	}
 	for _, c := range cases {
 		got, ok := jsParseInt(c.in)

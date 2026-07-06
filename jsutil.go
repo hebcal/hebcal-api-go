@@ -1,49 +1,32 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
 
 // jsParseInt mimics JavaScript parseInt(str, 10): leading whitespace and an
 // optional sign are allowed, then as many decimal digits as possible are
-// consumed. Returns ok=false when no digits were found (NaN in JS).
+// consumed ("2026abc" => 2026), and ok=false when no digits were found
+// (NaN in JS). Sscanf's %d verb has exactly these semantics, except that it
+// reports an error on int64 overflow where parseInt would yield a huge
+// float; saturating instead keeps range checks (e.g. "Gregorian year cannot
+// be greater than 9999") answering like the JS API.
 func jsParseInt(s string) (int, bool) {
-	i := 0
-	for i < len(s) && (s[i] == ' ' || s[i] == '\t' || s[i] == '\n' || s[i] == '\r' ||
-		s[i] == '\v' || s[i] == '\f') {
-		i++
-	}
-	neg := false
-	if i < len(s) && (s[i] == '+' || s[i] == '-') {
-		neg = s[i] == '-'
-		i++
-	}
-	start := i
-	n := 0
-	overflow := false
-	for i < len(s) && s[i] >= '0' && s[i] <= '9' {
-		if !overflow {
-			d := int(s[i] - '0')
-			if n > (math.MaxInt-d)/10 {
-				overflow = true
-			} else {
-				n = n*10 + d
+	var n int
+	if _, err := fmt.Sscanf(s, "%d", &n); err != nil {
+		if errors.Is(err, strconv.ErrRange) {
+			if strings.HasPrefix(strings.TrimSpace(s), "-") {
+				return math.MinInt, true
 			}
+			return math.MaxInt, true
 		}
-		i++
-	}
-	if i == start {
 		return 0, false
-	}
-	if overflow {
-		n = math.MaxInt
-	}
-	if neg {
-		n = -n
 	}
 	return n, true
 }
