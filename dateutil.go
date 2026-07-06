@@ -54,9 +54,9 @@ func isoDateStringToDate(s string) (gregDate, error) {
 	if !reIsoDate.MatchString(s) {
 		return gregDate{}, badRequest("Date does not match format YYYY-MM-DD: %s", s)
 	}
-	yy, _ := jsParseInt(s)
-	mm, _ := jsParseInt(s[5:7])
-	dd, _ := jsParseInt(s[8:10])
+	yy, _ := parseInt(s)
+	mm, _ := parseInt(s[5:7])
+	dd, _ := parseInt(s[8:10])
 	// normalize out-of-range month/day the same way new Date(y, m, d) does
 	t := time.Date(yy, time.Month(mm), dd, 12, 0, 0, 0, time.UTC)
 	y2, m2, d2 := t.Date()
@@ -66,9 +66,9 @@ func isoDateStringToDate(s string) (gregDate, error) {
 // makeGregDate validates a Gregorian yy/mm/dd from query-string values and
 // returns the date. Ported from hebcal-web src/dateUtil.js makeGregDate().
 func makeGregDate(gy, gm, gd string) (gregDate, error) {
-	yy, okY := jsParseInt(gy)
-	mm, okM := jsParseInt(gm)
-	dd, okD := jsParseInt(gd)
+	yy, okY := parseInt(gy)
+	mm, okM := parseInt(gm)
+	dd, okD := parseInt(gd)
 	if !okD {
 		return gregDate{}, badRequest("Gregorian day must be numeric: %s", gd)
 	} else if !okM {
@@ -96,8 +96,8 @@ func makeGregDate(gy, gm, gd string) (gregDate, error) {
 // makeHebDate validates a Hebrew yy/mm/dd from query-string values.
 // Ported from hebcal-web src/dateUtil.js makeHebDate().
 func makeHebDate(hyStr, hmStr, hdStr string) (hdate.HDate, error) {
-	hy, okY := jsParseInt(hyStr)
-	hd, okD := jsParseInt(hdStr)
+	hy, okY := parseInt(hyStr)
+	hd, okD := parseInt(hdStr)
 	if !okD {
 		return hdate.HDate{}, badRequest("Hebrew day must be numeric: %s", hdStr)
 	} else if !okY {

@@ -10,14 +10,14 @@ import (
 	"time"
 )
 
-// jsParseInt mimics JavaScript parseInt(str, 10): leading whitespace and an
+// parseInt mimics JavaScript parseInt(str, 10): leading whitespace and an
 // optional sign are allowed, then as many decimal digits as possible are
 // consumed ("2026abc" => 2026), and ok=false when no digits were found
 // (NaN in JS). Sscanf's %d verb has exactly these semantics, except that it
 // reports an error on int64 overflow where parseInt would yield a huge
 // float; saturating instead keeps range checks (e.g. "Gregorian year cannot
 // be greater than 9999") answering like the JS API.
-func jsParseInt(s string) (int, bool) {
+func parseInt(s string) (int, bool) {
 	var n int
 	if _, err := fmt.Sscanf(s, "%d", &n); err != nil {
 		if errors.Is(err, strconv.ErrRange) {

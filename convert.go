@@ -77,7 +77,7 @@ func parseConverterQuery(q url.Values, now gregDate) (convProps, error) {
 			return convProps{}, badRequest("Gregorian year cannot be greater than 9999: %d", dt.Year)
 		}
 		if !empty(q, "ndays") {
-			ndays, ok := jsParseInt(q.Get("ndays"))
+			ndays, ok := parseInt(q.Get("ndays"))
 			if !ok || ndays < 1 {
 				return convProps{}, badRequest("Invalid value for ndays: %s", q.Get("ndays"))
 			}

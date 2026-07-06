@@ -31,9 +31,9 @@ func TestJsParseInt(t *testing.T) {
 		{"-99999999999999999999", math.MinInt, true},
 	}
 	for _, c := range cases {
-		got, ok := jsParseInt(c.in)
+		got, ok := parseInt(c.in)
 		if got != c.want || ok != c.ok {
-			t.Errorf("jsParseInt(%q) = %d,%v want %d,%v", c.in, got, ok, c.want, c.ok)
+			t.Errorf("parseInt(%q) = %d,%v want %d,%v", c.in, got, ok, c.want, c.ok)
 		}
 	}
 }
