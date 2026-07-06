@@ -61,8 +61,8 @@ make test      # runs the unit tests
 ## Run
 
 ```bash
-./hebcal-converter -logfile -     # listens on :8082, logs to stdout
-./hebcal-converter                # logs to /var/log/hebcal/converter.log
+./hebcal-converter                # listens on :8082, logs to stdout
+./hebcal-converter -port 8082 -logfile /var/log/hebcal/converter.log
 ```
 
 The port defaults to `8082` (or the `PORT` environment variable); the
