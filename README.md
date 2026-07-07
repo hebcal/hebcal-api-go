@@ -1,16 +1,26 @@
-# hebcal-converter
+# hebcal-api
 
-A small Go microservice implementing the Hebcal.com [Hebrew Date Converter
-REST API](https://www.hebcal.com/home/219/hebrew-date-converter-rest-api)
-(JSON and XML), ported from the Node.js implementation in
-[hebcal-web](https://github.com/hebcal/hebcal-web) `src/converter.js`.
+A small Go microservice implementing a subset of the Hebcal.com REST APIs,
+ported from the Node.js implementation in
+[hebcal-web](https://github.com/hebcal/hebcal-web). It reimplements the
+JSON/XML APIs in Go for higher throughput and lower latency.
+
+Currently implemented:
+
+- **Hebrew Date Converter** (JSON and XML) — ported from `src/converter.js`
+- **Zmanim** (halachic times, JSON) — ported from `src/zmanim.js`
+- **Assur Melacha** ("is work prohibited right now", JSON) — the `im=1` mode
+  of the zmanim API
 
 Date conversions use [hebcal/hdate](https://github.com/hebcal/hdate)
-(`FromProlepticGregorian`, matching the JavaScript `Date` behavior) and
-holidays/parshiyot come from
-[hebcal/hebcal-go](https://github.com/hebcal/hebcal-go).
+(`FromProlepticGregorian`, matching JavaScript `Date` behavior); holidays,
+parshiyot and zmanim come from
+[hebcal/hebcal-go](https://github.com/hebcal/hebcal-go) (v0.16.2+), whose
+solar calculations are backed by [hebcal/noaa-go](https://github.com/hebcal/noaa-go).
 
 ## Endpoints
+
+### Hebrew Date Converter
 
 - `GET|POST|HEAD /converter?cfg=json|xml&…` — Gregorian ⇄ Hebrew date
   conversion. The `cfg` parameter is required and must be `json` or `xml`
@@ -26,21 +36,86 @@ holidays/parshiyot come from
     (and the response is marked non-cacheable).
 - `GET|HEAD /converter/csv?…` — CSV download listing the Gregorian dates
   of the given Hebrew calendar date from 5 years before to 75 years after.
+
+### Zmanim
+
+- `GET|HEAD /zmanim?cfg=json&…` — halachic times for a location and date.
+  `cfg=json` is required. Requires the geonames/zips databases (see
+  [Location databases](#location-databases)); without them this route
+  returns 503 while the other APIs keep working.
+  - **Date:** `date=YYYY-MM-DD` for a single day, or
+    `start=YYYY-MM-DD&end=YYYY-MM-DD` for a range (capped at 180 days). If
+    omitted, "today" in the location's timezone is used.
+  - **Location** — one of (see [Location resolution](#location-resolution)):
+    `geonameid`, `zip`, `city`, decimal `latitude`+`longitude`+`tzid`, or
+    the legacy `ladeg`/`lamin`/`ladir` + `lodeg`/`lomin`/`lodir` form.
+  - `ue=1` includes the location's elevation in sunrise/sunset (and the
+    times derived from them); the `seaLevelSunrise`/`seaLevelSunset` times
+    are only present when elevation is enabled.
+  - `sec=1` returns seconds instead of rounding each time to the minute.
+  - Times that do not occur on a given day (e.g. no astronomical dawn in
+    the polar summer) are returned as `null`.
+- `GET|HEAD /zmanim?cfg=json&im=1&…` — **Assur Melacha** check: whether
+  melacha (work) is prohibited at a given instant (Shabbat or Yom Tov).
+  Same location parameters as above.
+  - `dt=<ISO 8601>` selects the instant (a bare `YYYY-MM-DD` is UTC
+    midnight; a datetime without a zone is interpreted in the location's
+    timezone; a trailing `Z` or `±HH:MM` offset is honored). If `dt` is
+    omitted the current time is used and the response is cached for 60s.
+
+### Operational
+
 - `GET /ping` — health check. Serves the contents of `/var/www/html/ping`
   (override with `-pingfile`) as `text/plain`, the same file hebcal-web
   serves; returns 404 when the file is absent, so removing it takes the
   host out of load-balancer rotation.
 - `GET /metrics` — Prometheus metrics, including `http_requests_total`.
 
+## Location resolution
+
+The `/zmanim` API accepts the same location parameters as hebcal-web, in
+this order of precedence:
+
+1. `geonameid=<id>` — a [GeoNames](https://www.geonames.org/) numeric id.
+2. `zip=<5-digit>` — a US ZIP code.
+3. `city=<id>` — a legacy Hebcal city identifier (e.g. `GB-London`).
+4. `latitude=<deg>&longitude=<deg>&tzid=<IANA tz>` — decimal degrees, with
+   south/west expressed as negative numbers. `elev=<meters>` is optional
+   (used only with `ue=1`), and `i=on` selects the Israel schedule.
+5. `ladeg`/`lamin`/`ladir` + `lodeg`/`lomin`/`lodir` — the legacy
+   degree/minute/direction form, where south/west are positive magnitudes
+   with a direction letter (`s`/`w`). A legacy `tz`/`dst` pair is mapped to
+   an IANA timezone when `tzid` is absent.
+
+Unlike hebcal-web, this service does **not** guess a timezone from
+latitude/longitude shape data, so `tzid` (or a resolvable `tz`/`dst`) is
+required for the positional forms. GeoIP-based location is also out of
+scope.
+
+### Location databases
+
+Location resolution reads two prebuilt SQLite databases,
+`geonames.sqlite3` and `zips.sqlite3`, produced by
+[@hebcal/geo-sqlite](https://github.com/hebcal/geo-sqlite). Their paths
+default to the working directory and can be set with the `-zips-db` /
+`-geonames-db` flags or the `ZIPS_DB` / `GEONAMES_DB` environment
+variables. Small sample databases used by the tests live in `testdata/`.
+
+## Caching and compression
+
 Responses include weak `ETag` validators (FNV-1a; the Node.js service uses
 murmurhash3 — weak ETags do not need to match across implementations),
-proper `Cache-Control`, CORS headers, and dynamic brotli or gzip
-compression (brotli preferred) for bodies larger than 512 bytes — a
-threshold chosen empirically: multi-day batches and event-heavy XML just
-above it shrink 40–60%, while typical single-date JSON below it saves
-almost nothing (see `TestThresholdExperiment`).
+appropriate `Cache-Control` or `Expires` headers, CORS headers, and
+dynamic brotli or gzip compression (brotli preferred) for bodies larger
+than 512 bytes — a threshold chosen empirically: multi-day batches and
+event-heavy XML just above it shrink 40–60%, while typical single-date
+JSON below it saves almost nothing (see `TestThresholdExperiment`).
 
-### Known differences from the Node.js implementation
+Zmanim caching mirrors hebcal-web: a single live date expires at the next
+local midnight; an explicit date or range is cached for 30 days with an
+`ETag`; the live Assur Melacha check is cached for 60 seconds.
+
+## Known differences from the Node.js implementation
 
 - Same-day events may appear in a slightly different order within the
   `events` array.
@@ -48,26 +123,34 @@ almost nothing (see `TestThresholdExperiment`).
   @hebcal/core's.
 - `strict=1` validation errors return a clean `{"error": "..."}` object
   without the stack trace that koa-error appends in development mode.
+- Zmanim times agree with @hebcal/core to within ~2 seconds (the inherent
+  difference between the noaa-go and @hebcal/core NOAA implementations);
+  minute-rounded output matches except where a value falls within 2s of a
+  rounding boundary.
 
 ## Build and test
 
-Requires Go >= 1.24.
+Requires Go >= 1.24 and **cgo** (a C compiler), because the location
+lookups use the cgo-based `github.com/mattn/go-sqlite3` driver.
 
 ```bash
-make build     # builds ./hebcal-converter
+make build     # builds ./hebcal-api (CGO_ENABLED=1)
 make test      # runs the unit tests
 ```
 
 ## Run
 
 ```bash
-./hebcal-converter                # listens on :8082, logs to stdout
-./hebcal-converter -port 8082 -logfile /var/log/hebcal/converter.log
+./hebcal-api                      # listens on :8082, logs to stdout
+./hebcal-api -port 8082 -logfile /var/log/hebcal/api.log \
+    -zips-db /var/lib/hebcal/zips.sqlite3 \
+    -geonames-db /var/lib/hebcal/geonames.sqlite3
 ```
 
 The port defaults to `8082` (or the `PORT` environment variable); the
-access log defaults to `/var/log/hebcal/converter.log` (use `-logfile -`
-for stdout during development).
+access log defaults to stdout (pass `-logfile <path>`). The geonames/zips
+database paths default to the working directory (see
+[Location databases](#location-databases)).
 
 Access logs are pino-compatible JSON lines, e.g.:
 
@@ -82,12 +165,12 @@ access log file, for use with logrotate.
 
 ```bash
 sudo make install       # installs binary, systemd unit, logrotate config
-sudo systemctl start hebcal-converter
+sudo systemctl start hebcal-api
 ```
 
 `make install` installs the binary to `/usr/local/bin`, the systemd unit
-to `/etc/systemd/system/hebcal-converter.service`, and the logrotate
-drop-in to `/etc/logrotate.d/hebcal-converter`. The service runs as
-`www-data` and writes its access log to `/var/log/hebcal/converter.log`
-(same directory hebcal-web uses), rotated daily; logrotate signals the
-service with `SIGUSR1` to reopen the file after rotation.
+to `/etc/systemd/system/hebcal-api.service`, and the logrotate drop-in to
+`/etc/logrotate.d/hebcal-api`. The service runs as `www-data` and writes
+its access log to `/var/log/hebcal/api.log` (same directory hebcal-web
+uses), rotated daily; logrotate signals the service with `SIGUSR1` to
+reopen the file after rotation.

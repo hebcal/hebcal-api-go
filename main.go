@@ -1,6 +1,7 @@
-// hebcal-converter is a small HTTP microservice implementing the Hebcal
-// Hebrew Date Converter REST APIs (JSON, XML, and CSV), ported from the
-// Node.js implementation in hebcal-web src/converter.js.
+// hebcal-api is a small HTTP microservice implementing a subset of the
+// Hebcal.com REST APIs in Go: the Hebrew Date Converter (JSON, XML, and CSV,
+// ported from hebcal-web src/converter.js) and Zmanim / Assur Melacha (JSON,
+// ported from src/zmanim.js).
 package main
 
 import (
@@ -54,14 +55,14 @@ func main() {
 		fmt.Fprintln(os.Stderr, "cannot open log file:", err)
 		os.Exit(1)
 	}
-	logger.Info("hebcal-converter: starting up")
+	logger.Info("hebcal-api: starting up")
 
 	app := newAppServer(logger)
 	app.pingFile = *pingFile
 
 	// Open the geonames/zips databases for the /zmanim API. A failure here is
 	// not fatal: the /zmanim route reports 503 while the other APIs keep
-	// working, so an operator can run the converter without the location data.
+	// working, so an operator can run the server without the location data.
 	db, err := NewGeoDB(*zipsDB, *geonamesDB)
 	if err != nil {
 		logger.Info("cannot open location databases; /zmanim disabled: " + err.Error())
@@ -101,12 +102,12 @@ func main() {
 		srv.Shutdown(ctx)
 	}()
 
-	msg := fmt.Sprintf("hebcal-converter listening on port %d", *port)
+	msg := fmt.Sprintf("hebcal-api listening on port %d", *port)
 	logger.Info(msg)
 	fmt.Println(msg)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	logger.Info("hebcal-converter: exiting")
+	logger.Info("hebcal-api: exiting")
 }

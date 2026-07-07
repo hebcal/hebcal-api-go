@@ -1,4 +1,4 @@
-BIN := hebcal-converter
+BIN := hebcal-api
 PREFIX := /usr/local
 SVCUSER := www-data
 
@@ -7,7 +7,7 @@ SVCUSER := www-data
 all: build
 
 build:
-	go build -trimpath -ldflags="-s -w" -o $(BIN) .
+	CGO_ENABLED=1 go build -trimpath -ldflags="-s -w" -o $(BIN) .
 
 test:
 	go test ./...
@@ -26,17 +26,17 @@ clean:
 install: build
 	install -m 0755 $(BIN) $(PREFIX)/bin/$(BIN)
 	install -d -o $(SVCUSER) -g $(SVCUSER) /var/log/hebcal
-	install -m 0644 etc/hebcal-converter.service /etc/systemd/system/hebcal-converter.service
-	install -m 0644 etc/hebcal-converter.logrotate /etc/logrotate.d/hebcal-converter
+	install -m 0644 etc/$(BIN).service /etc/systemd/system/$(BIN).service
+	install -m 0644 etc/$(BIN).logrotate /etc/logrotate.d/$(BIN)
 	systemctl daemon-reload
-	systemctl enable hebcal-converter.service
+	systemctl enable $(BIN).service
 	@echo ""
 	@echo "Installed. Start the service with:"
-	@echo "  systemctl start hebcal-converter"
+	@echo "  systemctl start $(BIN)"
 
 uninstall:
-	-systemctl disable --now hebcal-converter.service
-	rm -f /etc/systemd/system/hebcal-converter.service
-	rm -f /etc/logrotate.d/hebcal-converter
+	-systemctl disable --now $(BIN).service
+	rm -f /etc/systemd/system/$(BIN).service
+	rm -f /etc/logrotate.d/$(BIN)
 	rm -f $(PREFIX)/bin/$(BIN)
 	systemctl daemon-reload
