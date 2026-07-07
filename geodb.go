@@ -110,6 +110,7 @@ type GeoDB struct {
 	geonameCache *lru.Cache[int, *geoLocation]
 	zipCache     *lru.Cache[string, *geoLocation]
 	legacyCities map[string]int
+	countryNames map[string]string // ISO country code -> full country name
 }
 
 // NewGeoDB opens the zips and geonames databases read-only and prepares the
@@ -145,7 +146,36 @@ func NewGeoDB(zipsPath, geonamesPath string) (*GeoDB, error) {
 	for name, id := range raw {
 		db.legacyCities[munge(name)] = id
 	}
+
+	if err := db.loadCountryNames(); err != nil {
+		db.Close()
+		return nil, err
+	}
 	return db, nil
+}
+
+// loadCountryNames reads the ISO country code -> full name mapping from the
+// geonames "country" table. This is the same table joined by geonameSQL, so the
+// names returned in the API's "location" object stay consistent with the city
+// display names.
+func (db *GeoDB) loadCountryNames() error {
+	rows, err := db.geonamesDB.Query("SELECT ISO, Country FROM country")
+	if err != nil {
+		return fmt.Errorf("querying country names: %w", err)
+	}
+	defer rows.Close()
+	db.countryNames = make(map[string]string, 256)
+	for rows.Next() {
+		var iso, country string
+		if err := rows.Scan(&iso, &country); err != nil {
+			return fmt.Errorf("scanning country names: %w", err)
+		}
+		db.countryNames[iso] = country
+	}
+	if err := rows.Err(); err != nil {
+		return fmt.Errorf("reading country names: %w", err)
+	}
+	return nil
 }
 
 // Close releases the prepared statements and database handles.
@@ -273,7 +303,7 @@ func (db *GeoDB) lookupLegacyCity(cityName string) *geoLocation {
 			Name:       classic.Name,
 			Asciiname:  classic.Name,
 			CC:         classic.CountryCode,
-			Country:    countryNames[classic.CountryCode],
+			Country:    db.countryNames[classic.CountryCode],
 			Latitude:   classic.Latitude,
 			Longitude:  classic.Longitude,
 			Elevation:  classic.Elevation,

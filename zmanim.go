@@ -259,8 +259,8 @@ func locationToPlainObj(loc *geoLocation, useElevation bool) orderedObj {
 	}
 	if loc.CC != "" {
 		o = append(o, jsonKV{"cc", loc.CC})
-		if name := countryNames[loc.CC]; name != "" {
-			o = append(o, jsonKV{"country", name})
+		if loc.Country != "" {
+			o = append(o, jsonKV{"country", loc.Country})
 		}
 	}
 	// LOC_FIELDS order: elevation, admin1, asciiname, geo, zip, state,
