@@ -24,6 +24,7 @@ type appServer struct {
 	logger   *accessLogger
 	now      func() gregDate // injectable for tests
 	pingFile string
+	db       *GeoDB // geonames/zips database for the /zmanim API; may be nil
 }
 
 func newAppServer(logger *accessLogger) *appServer {
@@ -38,6 +39,8 @@ func (app *appServer) mux() *http.ServeMux {
 	mux.HandleFunc("/converter/csv", app.serve(app.csvHandler))
 	mux.HandleFunc("/converter", app.serve(app.converterHandler))
 	mux.HandleFunc("/converter/", app.serve(app.converterHandler))
+	mux.HandleFunc("/zmanim", app.serve(app.zmanimHandler))
+	mux.HandleFunc("/zmanim/", app.serve(app.zmanimHandler))
 	mux.HandleFunc("/", app.serve(app.notFoundHandler))
 	return mux
 }

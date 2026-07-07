@@ -16,6 +16,15 @@ import (
 	_ "time/tzdata"
 )
 
+// envOr returns the environment variable named by key, or def if it is unset
+// or empty.
+func envOr(key, def string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return def
+}
+
 func main() {
 	defaultPort := 8082
 	if s := os.Getenv("PORT"); s != "" {
@@ -27,6 +36,10 @@ func main() {
 	logFile := flag.String("logfile", "", "access log file path (empty or \"-\" for stdout)")
 	pingFile := flag.String("pingfile", defaultPingFile,
 		"file served by /ping; a missing file makes /ping return 404")
+	zipsDB := flag.String("zips-db", envOr("ZIPS_DB", "zips.sqlite3"),
+		"path to the zips SQLite database (for the /zmanim API)")
+	geonamesDB := flag.String("geonames-db", envOr("GEONAMES_DB", "geonames.sqlite3"),
+		"path to the geonames SQLite database (for the /zmanim API)")
 	flag.Parse()
 
 	var err error
@@ -45,6 +58,18 @@ func main() {
 
 	app := newAppServer(logger)
 	app.pingFile = *pingFile
+
+	// Open the geonames/zips databases for the /zmanim API. A failure here is
+	// not fatal: the /zmanim route reports 503 while the other APIs keep
+	// working, so an operator can run the converter without the location data.
+	db, err := NewGeoDB(*zipsDB, *geonamesDB)
+	if err != nil {
+		logger.Info("cannot open location databases; /zmanim disabled: " + err.Error())
+		fmt.Fprintln(os.Stderr, "warning: /zmanim disabled:", err)
+	} else {
+		app.db = db
+		defer db.Close()
+	}
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", *port),
 		Handler:           app.mux(),
