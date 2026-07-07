@@ -44,6 +44,7 @@ type geoLocation struct {
 	State      string // US state abbreviation
 	StateName  string
 	Population int
+	IL         bool // Israel holiday schedule, for geo=pos locations without a CC
 }
 
 // shortName returns the city portion of the location name (the text before the
@@ -67,7 +68,7 @@ func (g *geoLocation) shortName() string {
 
 // isIsrael reports whether the location uses the Israel holiday schedule.
 func (g *geoLocation) isIsrael() bool {
-	return g.CC == "IL"
+	return g.CC == "IL" || g.IL
 }
 
 // zmanimLocation adapts the geoLocation to the hebcal-go zmanim.Location used by
