@@ -300,8 +300,15 @@ func locationToPlainObj(loc *geoLocation, useElevation bool) orderedObj {
 func (app *appServer) zmanimHandler(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	setCORS(w)
-	if r.Method != http.MethodGet && r.Method != http.MethodHead {
-		w.Header().Set("Allow", "GET, HEAD")
+	switch r.Method {
+	case http.MethodOptions:
+		w.Header().Set("Access-Control-Allow-Methods", "GET")
+		w.WriteHeader(http.StatusNoContent)
+		return
+	case http.MethodGet, http.MethodHead:
+		// handled below
+	default:
+		w.Header().Set("Allow", "GET, HEAD, OPTIONS")
 		http.Error(w, fmt.Sprintf("Method %s not allowed", r.Method), http.StatusMethodNotAllowed)
 		return
 	}

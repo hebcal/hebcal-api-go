@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -334,6 +335,39 @@ func TestZmanimNoDB(t *testing.T) {
 	resp, _ := get(t, srv, "/zmanim?cfg=json&geonameid=281184")
 	if resp.StatusCode != 503 {
 		t.Errorf("status = %d, want 503", resp.StatusCode)
+	}
+}
+
+func TestZmanimCORS(t *testing.T) {
+	srv := testServerWithDB(t)
+	// OPTIONS preflight returns 204 with CORS headers and no MethodNotAllowed
+	req, _ := http.NewRequest(http.MethodOptions, srv.URL+"/zmanim", nil)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != 204 {
+		t.Errorf("OPTIONS status = %d, want 204", resp.StatusCode)
+	}
+	if got := resp.Header.Get("Access-Control-Allow-Methods"); got != "GET" {
+		t.Errorf("Access-Control-Allow-Methods = %q, want GET", got)
+	}
+	if got := resp.Header.Get("Access-Control-Allow-Origin"); got != "*" {
+		t.Errorf("Access-Control-Allow-Origin = %q, want *", got)
+	}
+	if got := resp.Header.Get("Cross-Origin-Resource-Policy"); got != "cross-origin" {
+		t.Errorf("Cross-Origin-Resource-Policy = %q, want cross-origin", got)
+	}
+	// unsupported methods are still rejected
+	req, _ = http.NewRequest(http.MethodDelete, srv.URL+"/zmanim", nil)
+	resp2, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp2.Body.Close()
+	if resp2.StatusCode != 405 {
+		t.Errorf("DELETE status = %d, want 405", resp2.StatusCode)
 	}
 }
 
