@@ -159,7 +159,7 @@ func NewGeoDB(zipsPath, geonamesPath string) (*GeoDB, error) {
 // names returned in the API's "location" object stay consistent with the city
 // display names.
 func (db *GeoDB) loadCountryNames() error {
-	rows, err := db.geonamesDB.Query("SELECT ISO, Country FROM country")
+	rows, err := db.geonamesDB.Query("SELECT ISO, Country FROM country WHERE Country <> ''")
 	if err != nil {
 		return fmt.Errorf("querying country names: %w", err)
 	}
