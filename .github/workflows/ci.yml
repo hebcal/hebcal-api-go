@@ -28,4 +28,4 @@ jobs:
       - name: go test
         run: go test -race ./...
       - name: go build
-        run: CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o hebcal-converter .
+        run: CGO_ENABLED=1 go build -trimpath -ldflags="-s -w" -o hebcal-api .

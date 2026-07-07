@@ -1,13 +1,13 @@
 [Unit]
-Description=Hebcal Hebrew Date Converter REST API
-Documentation=https://github.com/hebcal/converter-web
+Description=Hebcal API server (Hebrew Date Converter + Zmanim REST APIs)
+Documentation=https://github.com/hebcal/hebcal-api-go
 After=network.target
 
 [Service]
 Type=simple
 User=www-data
 Group=www-data
-ExecStart=/usr/local/bin/hebcal-converter -port 8082 -logfile /var/log/hebcal/converter.log
+ExecStart=/usr/local/bin/hebcal-api -port 8082 -logfile /var/log/hebcal/api.log
 # SIGUSR1 (or SIGHUP) reopens the access log after rotation
 ExecReload=/bin/kill -USR1 $MAINPID
 Restart=on-failure

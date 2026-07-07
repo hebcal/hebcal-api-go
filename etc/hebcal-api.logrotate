@@ -1,4 +1,4 @@
-/var/log/hebcal/converter.log {
+/var/log/hebcal/api.log {
 	daily
 	rotate 14
 	compress
@@ -7,6 +7,6 @@
 	notifempty
 	create 0644 www-data www-data
 	postrotate
-		/usr/bin/systemctl kill -s SIGUSR1 hebcal-converter.service 2>/dev/null || true
+		/usr/bin/systemctl kill -s SIGUSR1 hebcal-api.service 2>/dev/null || true
 	endscript
 }
