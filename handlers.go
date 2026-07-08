@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -99,6 +100,17 @@ func (app *appServer) converterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Method %s not allowed", r.Method), http.StatusMethodNotAllowed)
 		return
 	}
+	now := app.now()
+	p, err := parseConverterQuery(q, now)
+	// Ported from hebcal-web src/converter.js: a GET request that omits
+	// every date parameter (bare /converter, or h2g=1/g2h=1 with no
+	// hy/hm/hd or gy/gm/gd) resolves against "today" and so must not be
+	// cached under a stable URL. Redirect to an equivalent request that
+	// pins the date explicitly, with a short private Cache-Control.
+	if err == nil && r.Method == http.MethodGet && p.noCache {
+		app.redirectConverterNoCache(w, q, cfg, now)
+		return
+	}
 	if cfg != "json" && cfg != "xml" {
 		w.Header().Set("Content-Type", contentTypeJSON)
 		w.WriteHeader(http.StatusNotImplemented)
@@ -111,7 +123,6 @@ func (app *appServer) converterHandler(w http.ResponseWriter, r *http.Request) {
 	if lg == "" {
 		lg = "s"
 	}
-	p, err := parseConverterQuery(q, app.now())
 	if err != nil {
 		app.writeConverterError(w, cfg, err)
 		return
@@ -167,6 +178,31 @@ func (app *appServer) writeConverterError(w http.ResponseWriter, cfg string, err
 	w.Header().Set("Content-Type", contentTypeJSON)
 	w.WriteHeader(status)
 	w.Write(jsonMarshal(map[string]string{"error": err.Error()}))
+}
+
+// redirectConverterNoCache 302s a date-less /converter GET to an equivalent
+// URL with gd/gm/gy pinned to today. Ported from the noCache/message check
+// in hebcal-web src/converter.js. Unlike hebcal-web, this microservice does
+// not resolve a per-request location (there is no IP geolocation for
+// /converter, only the fixed New-York "today" also used by app.now()), so
+// the redirect never appends &gs=on or &i=on: those require knowing the
+// caller's location to determine after-sunset/Israel status.
+func (app *appServer) redirectConverterNoCache(w http.ResponseWriter, q url.Values, cfg string, gd gregDate) {
+	json := ""
+	if cfg == "json" {
+		json = "&cfg=json"
+	}
+	lg := ""
+	if v := q.Get("lg"); v != "" {
+		lg = "&lg=" + url.QueryEscape(v)
+	}
+	location := fmt.Sprintf("/converter?gd=%d&gm=%d&gy=%d&g2h=1%s%s",
+		gd.Day, int(gd.Month), gd.Year, json, lg)
+	w.Header().Set("Cache-Control", "private, max-age=1200")
+	w.Header().Set("Location", location)
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(http.StatusFound)
+	fmt.Fprintf(w, "Redirecting to %s.\n", location)
 }
 
 // csvHandler implements the /converter/csv download.

@@ -248,23 +248,29 @@ func TestMonthNameLeniency(t *testing.T) {
 func TestDefaultsToToday(t *testing.T) {
 	_, srv := testServer(t)
 	resp, body := get(t, srv, "/converter?cfg=json")
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusFound {
 		t.Fatalf("status = %d", resp.StatusCode)
 	}
-	if !strings.Contains(body, `"gy":2026,"gm":7,"gd":5`) {
-		t.Errorf("expected injected today: %s", body)
+	wantLocation := "/converter?gd=5&gm=7&gy=2026&g2h=1&cfg=json"
+	if got := resp.Header.Get("Location"); got != wantLocation {
+		t.Errorf("Location = %q, want %q", got, wantLocation)
 	}
-	// current-date responses are not cacheable
-	if resp.Header.Get("Cache-Control") != "" {
-		t.Errorf("unexpected Cache-Control: %q", resp.Header.Get("Cache-Control"))
+	if got := resp.Header.Get("Cache-Control"); got != "private, max-age=1200" {
+		t.Errorf("unexpected Cache-Control: %q", got)
 	}
 	if resp.Header.Get("ETag") != "" {
 		t.Errorf("unexpected ETag: %q", resp.Header.Get("ETag"))
 	}
-	// h2g with no params also falls back to today
-	_, body2 := get(t, srv, "/converter?cfg=json&h2g=1")
-	if !strings.Contains(body2, `"gy":2026,"gm":7,"gd":5`) {
-		t.Errorf("h2g fallback: %s", body2)
+	if !strings.Contains(body, wantLocation) {
+		t.Errorf("expected redirect body to mention target: %s", body)
+	}
+	// h2g with no params also redirects to the same pinned-date g2h URL
+	resp2, _ := get(t, srv, "/converter?cfg=json&h2g=1")
+	if resp2.StatusCode != http.StatusFound {
+		t.Fatalf("h2g fallback: status = %d", resp2.StatusCode)
+	}
+	if got := resp2.Header.Get("Location"); got != wantLocation {
+		t.Errorf("h2g fallback Location = %q, want %q", got, wantLocation)
 	}
 }
 
@@ -276,8 +282,34 @@ func TestMissingCfg(t *testing.T) {
 		"/converter",
 	} {
 		resp, _ := get(t, srv, path)
-		if resp.StatusCode != 501 {
+		if resp.StatusCode != http.StatusNotImplemented {
 			t.Errorf("%s: status = %d, want 501", path, resp.StatusCode)
+		}
+	}
+}
+
+// TestBareConverterRedirects covers the edge case where /converter is
+// requested with a valid cfg but no date parameters at all: since the
+// response would depend on "now", it must 302 to a URL with the date pinned
+// rather than caching it. Requests that omit cfg entirely, or pass an
+// unsupported cfg, still 501 regardless of the date params (TestMissingCfg).
+func TestBareConverterRedirects(t *testing.T) {
+	_, srv := testServer(t)
+	cases := []struct{ path, wantLocation string }{
+		{"/converter?cfg=xml", "/converter?gd=5&gm=7&gy=2026&g2h=1"},
+		{"/converter?cfg=json&lg=h", "/converter?gd=5&gm=7&gy=2026&g2h=1&cfg=json&lg=h"},
+	}
+	for _, c := range cases {
+		resp, _ := get(t, srv, c.path)
+		if resp.StatusCode != http.StatusFound {
+			t.Errorf("%s: status = %d, want 302", c.path, resp.StatusCode)
+			continue
+		}
+		if got := resp.Header.Get("Location"); got != c.wantLocation {
+			t.Errorf("%s: Location = %q, want %q", c.path, got, c.wantLocation)
+		}
+		if got := resp.Header.Get("Cache-Control"); got != "private, max-age=1200" {
+			t.Errorf("%s: Cache-Control = %q", c.path, got)
 		}
 	}
 }
