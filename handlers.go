@@ -100,6 +100,14 @@ func (app *appServer) converterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Method %s not allowed", r.Method), http.StatusMethodNotAllowed)
 		return
 	}
+	if cfg != "json" && cfg != "xml" {
+		w.Header().Set("Content-Type", contentTypeJSON)
+		w.WriteHeader(http.StatusNotImplemented)
+		w.Write(jsonMarshal(map[string]string{
+			"error": "Only cfg={json,xml} is supported by this endpoint",
+		}))
+		return
+	}
 	now := app.now()
 	p, err := parseConverterQuery(q, now)
 	// Ported from hebcal-web src/converter.js: a GET request that omits
@@ -109,14 +117,6 @@ func (app *appServer) converterHandler(w http.ResponseWriter, r *http.Request) {
 	// pins the date explicitly, with a short private Cache-Control.
 	if err == nil && r.Method == http.MethodGet && p.noCache {
 		app.redirectConverterNoCache(w, q, cfg, now)
-		return
-	}
-	if cfg != "json" && cfg != "xml" {
-		w.Header().Set("Content-Type", contentTypeJSON)
-		w.WriteHeader(http.StatusNotImplemented)
-		w.Write(jsonMarshal(map[string]string{
-			"error": "Only cfg={json,xml} is supported by this endpoint",
-		}))
 		return
 	}
 	lg := q.Get("lg")
