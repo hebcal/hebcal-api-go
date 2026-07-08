@@ -348,31 +348,15 @@ func shabbatItem(ev event.CalEvent, loc *geoLocation, il bool, locale, lg string
 	if memo == "" {
 		memo = holidayMemo(desc, normMonth(ev.Basename()), memoLocaleName(locale))
 	}
+	// As of hebcal-go v0.17.0, erev-Shabbat candle-lighting carries the
+	// upcoming parsha as its LinkedEvent, matching @hebcal/core.
 	if memo == "" && isTimed && timed.LinkedEvent != nil {
 		memo = smartApostrophe(timed.LinkedEvent.Render(locale))
-	}
-	// hebcal-go links candle-lighting only to a same-day holiday, not the
-	// upcoming parsha, so supply the parsha memo for plain erev-Shabbat candles.
-	// (Only candle-lighting, not havdalah, which shares the tzeis flag.)
-	if memo == "" && desc == "Candle lighting" {
-		memo = candleParshaMemo(hd, il, lg)
 	}
 	if memo != "" {
 		item = append(item, jsonKV{"memo", memo})
 	}
 	return item
-}
-
-// candleParshaMemo returns the render of the parsha read on the Shabbat that
-// the candle-lighting ushers in, or "" if that Shabbat has a special reading.
-func candleParshaMemo(hd hdate.HDate, il bool, lg string) string {
-	sat := hd.OnOrAfter(time.Saturday)
-	s := sedra.New(sat.Year(), il)
-	p := s.Lookup(sat)
-	if p.Chag || len(p.Name) == 0 {
-		return ""
-	}
-	return parshaEv{sat: sat, parsha: p, il: il}.render(lg)
 }
 
 // memoLocaleName collapses a locale to the two catalogs that carry MEMO/molad
@@ -422,7 +406,7 @@ func mevarchimMoladMemo(hd hdate.HDate, locale, cc string, il bool) string {
 	// Hebrew uses a distinct sentence structure; hebcal-go's moladEvent renders
 	// it identically to @hebcal/core, so reuse it.
 	if locale == "he" || locale == "he-x-nonikud" {
-		return event.NewMoladEvent(m.Date, m, monthEn).Render(locale)
+		return event.NewMoladEvent(m.Date, m, monthEn, cc).Render(locale)
 	}
 	// Other locales: "Molad <month>: <weekday>, <time> and <n> chalakim", with
 	// the month localized and the time formatted per the location's country.
