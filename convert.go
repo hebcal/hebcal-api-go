@@ -9,7 +9,7 @@ import (
 
 const rangeRequiresCfgJSON = "Date range conversion using 'start' and 'end' requires cfg=json"
 
-const maxRangeDays = 180
+const maxRangeDays = 399
 
 // convProps is the result of parsing the converter query string:
 // either a single-date conversion or a date range.

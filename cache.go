@@ -13,11 +13,11 @@ import (
 
 // Year-level memoization.
 //
-// A single /converter range request converts up to ~180 days, and for each day
+// A single /converter range request converts up to ~399 days, and for each day
 // getEvents() needs that day's holidays. Those come from a whole-Hebrew-year
 // computation: hebcal.HebrewCalendar / GetHolidaysForYear build and sort ~120
 // events for the year. Recomputing that per day made a range request redo the
-// same year ~180 times, which is what made the ported service slower than the
+// same year ~399 times, which is what made the ported service slower than the
 // Node original for range requests.
 //
 // @hebcal/core (the Node implementation this service was ported from) avoids

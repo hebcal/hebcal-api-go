@@ -28,9 +28,9 @@ solar calculations are backed by [hebcal/noaa-go](https://github.com/hebcal/noaa
   ignored; conversion parameters always come from the URL query string.
   - `g2h=1` with `date=YYYY-MM-DD` or `gy`/`gm`/`gd` (+ optional `gs=on`
     for after sunset)
-  - `h2g=1` with `hy`/`hm`/`hd` (+ optional `ndays=2..180` for a batch)
+  - `h2g=1` with `hy`/`hm`/`hd` (+ optional `ndays=2..399` for a batch)
   - `start=YYYY-MM-DD&end=YYYY-MM-DD` for a batch of Gregorian dates
-    (cfg=json only, truncated to 180 days)
+    (cfg=json only, truncated to 399 days)
   - `strict=1`, `i=on`, `lg=<lang>`, `callback=<fn>` as documented
   - If no date is given, the current date in `America/New_York` is used
     (and the response is marked non-cacheable).
@@ -44,7 +44,7 @@ solar calculations are backed by [hebcal/noaa-go](https://github.com/hebcal/noaa
   [Location databases](#location-databases)); without them this route
   returns 503 while the other APIs keep working.
   - **Date:** `date=YYYY-MM-DD` for a single day, or
-    `start=YYYY-MM-DD&end=YYYY-MM-DD` for a range (capped at 180 days). If
+    `start=YYYY-MM-DD&end=YYYY-MM-DD` for a range (capped at 399 days). If
     omitted, "today" in the location's timezone is used.
   - **Location** — one of (see [Location resolution](#location-resolution)):
     `geonameid`, `zip`, `city`, decimal `latitude`+`longitude`+`tzid`, or

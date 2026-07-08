@@ -197,7 +197,7 @@ func (app *appServer) redirectConverterNoCache(w http.ResponseWriter, q url.Valu
 	if v := q.Get("lg"); v != "" {
 		lg = "&lg=" + url.QueryEscape(v)
 	}
-	location := fmt.Sprintf("/converter?gd=%d&gm=%d&gy=%d&g2h=1&cfg=%s%s",
+	location := fmt.Sprintf("https://www.hebcal.com/converter?gd=%d&gm=%d&gy=%d&g2h=1&cfg=%s%s",
 		gd.Day, int(gd.Month), gd.Year, cfg, lg)
 	w.Header().Set("Cache-Control", "private, max-age=1200")
 	w.Header().Set("Location", location)
