@@ -100,9 +100,11 @@ func (app *appServer) converterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if cfg != "json" && cfg != "xml" {
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Please specify cfg=json or cfg=xml\n"))
+		w.Header().Set("Content-Type", contentTypeJSON)
+		w.WriteHeader(http.StatusNotImplemented)
+		w.Write(jsonMarshal(map[string]string{
+			"error": "Only cfg={json,xml} is supported by this endpoint",
+		}))
 		return
 	}
 	lg := q.Get("lg")
