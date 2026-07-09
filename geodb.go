@@ -103,14 +103,17 @@ FROM ZIPCodes_Primary WHERE ZipCode = ?`
 // GeoDB wraps the geonames and zips SQLite databases with prepared statements
 // and small LRU caches (mirroring the @hebcal/geo-sqlite QuickLRU sizes).
 type GeoDB struct {
-	geonamesDB   *sql.DB
-	zipsDB       *sql.DB
-	geonameStmt  *sql.Stmt
-	zipStmt      *sql.Stmt
-	geonameCache *lru.Cache[int, *geoLocation]
-	zipCache     *lru.Cache[string, *geoLocation]
-	legacyCities map[string]int
-	countryNames map[string]string // ISO country code -> full country name
+	geonamesDB      *sql.DB
+	zipsDB          *sql.DB
+	geonameStmt     *sql.Stmt
+	zipStmt         *sql.Stmt
+	geonameCompStmt *sql.Stmt // geoname full-text autocomplete (FTS5)
+	zipCompStmt     *sql.Stmt // ZIP prefix autocomplete
+	zipFulltextStmt *sql.Stmt // ZIP city full-text autocomplete (FTS5)
+	geonameCache    *lru.Cache[int, *geoLocation]
+	zipCache        *lru.Cache[string, *geoLocation]
+	legacyCities    map[string]int
+	countryNames    map[string]string // ISO country code -> full country name
 }
 
 // NewGeoDB opens the zips and geonames databases read-only and prepares the
@@ -133,6 +136,18 @@ func NewGeoDB(zipsPath, geonamesPath string) (*GeoDB, error) {
 	if db.zipStmt, err = zipsDB.Prepare(zipSQL); err != nil {
 		db.Close()
 		return nil, fmt.Errorf("preparing zip query: %w", err)
+	}
+	if db.geonameCompStmt, err = geonamesDB.Prepare(geonameCompleteSQL); err != nil {
+		db.Close()
+		return nil, fmt.Errorf("preparing geoname autocomplete query: %w", err)
+	}
+	if db.zipCompStmt, err = zipsDB.Prepare(zipCompleteSQL); err != nil {
+		db.Close()
+		return nil, fmt.Errorf("preparing zip prefix autocomplete query: %w", err)
+	}
+	if db.zipFulltextStmt, err = zipsDB.Prepare(zipFulltextCompleteSQL); err != nil {
+		db.Close()
+		return nil, fmt.Errorf("preparing zip full-text autocomplete query: %w", err)
 	}
 	db.geonameCache, _ = lru.New[int, *geoLocation](750)
 	db.zipCache, _ = lru.New[string, *geoLocation](150)
@@ -185,6 +200,15 @@ func (db *GeoDB) Close() error {
 	}
 	if db.zipStmt != nil {
 		db.zipStmt.Close()
+	}
+	if db.geonameCompStmt != nil {
+		db.geonameCompStmt.Close()
+	}
+	if db.zipCompStmt != nil {
+		db.zipCompStmt.Close()
+	}
+	if db.zipFulltextStmt != nil {
+		db.zipFulltextStmt.Close()
 	}
 	var err error
 	if db.geonamesDB != nil {

@@ -44,6 +44,11 @@ func (app *appServer) mux() *http.ServeMux {
 	mux.HandleFunc("/zmanim/", app.serve(app.zmanimHandler))
 	mux.HandleFunc("/shabbat", app.serve(app.shabbatHandler))
 	mux.HandleFunc("/shabbat/", app.serve(app.shabbatHandler))
+	mux.HandleFunc("/geo", app.serve(app.geoHandler))
+	mux.HandleFunc("/geo/", app.serve(app.geoHandler))
+	mux.HandleFunc("/complete", app.serve(app.completeHandler))
+	mux.HandleFunc("/complete/", app.serve(app.completeHandler))
+	mux.HandleFunc("/complete.php", app.serve(app.completeHandler))
 	mux.HandleFunc("/", app.serve(app.notFoundHandler))
 	return mux
 }
@@ -78,6 +83,14 @@ func setCORS(w http.ResponseWriter) {
 	w.Header().Set("Cross-Origin-Resource-Policy", "cross-origin")
 }
 
+// corsPreflight answers an OPTIONS request with a CORS preflight response
+// advertising the given allowed methods.
+func corsPreflight(w http.ResponseWriter, methods string) {
+	setCORS(w)
+	w.Header().Set("Access-Control-Allow-Methods", methods)
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // converterHandler implements the /converter JSON and XML APIs.
 func (app *appServer) converterHandler(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
@@ -87,10 +100,7 @@ func (app *appServer) converterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	switch r.Method {
 	case http.MethodOptions:
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Cross-Origin-Resource-Policy", "cross-origin")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
-		w.WriteHeader(http.StatusNoContent)
+		corsPreflight(w, "GET, POST")
 		return
 	case http.MethodGet, http.MethodPost, http.MethodHead:
 		// POST is accepted but any request body is ignored;

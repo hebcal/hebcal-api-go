@@ -11,6 +11,10 @@ Currently implemented:
 - **Zmanim** (halachic times, JSON) — ported from `src/zmanim.js`
 - **Assur Melacha** ("is work prohibited right now", JSON) — the `im=1` mode
   of the zmanim API
+- **Shabbat** (candle-lighting / Torah portion, JSON) — ported from
+  `src/shabbat.js`
+- **Geolocation** (`/geo`) — resolve query parameters to a location, JSON
+- **Geo autocomplete** (`/complete`) — city/ZIP typeahead, JSON
 
 Date conversions use [hebcal/hdate](https://github.com/hebcal/hdate)
 (`FromProlepticGregorian`, matching JavaScript `Date` behavior); holidays,
@@ -62,6 +66,47 @@ solar calculations are backed by [hebcal/noaa-go](https://github.com/hebcal/noaa
     midnight; a datetime without a zone is interpreted in the location's
     timezone; a trailing `Z` or `±HH:MM` offset is honored). If `dt` is
     omitted the current time is used and the response is cached for 60s.
+
+### Geolocation
+
+- `GET|HEAD /geo?…` — resolve a location from query parameters and
+  return the location as JSON (ported from the `/geo` route in
+  hebcal-web's `src/router.js`). `OPTIONS` returns a CORS preflight; other
+  methods return `405`. Accepts the same location parameters as
+  `/zmanim` (see [Location resolution](#location-resolution)), and returns
+  the raw `@hebcal/core` Location shape:
+
+  ```json
+  {"latitude":31.76904,"longitude":35.21633,"locationName":"Jerusalem, Israel","timeZoneId":"Asia/Jerusalem","elevation":786,"il":true,"cc":"IL","geoid":281184,"admin1":"Jerusalem District","geo":"geoname","population":801000,"asciiname":"Jerusalem","geonameid":281184}
+  ```
+
+  This differs from the trimmed `location` object embedded in the `/zmanim`
+  and `/shabbat` responses (different key names, and it always includes
+  `elevation`, `il`, `geoid` and `population`). A request with no location
+  parameters returns `204 No Content`; an unknown `geonameid`/`zip`/`city`
+  returns `404`, and malformed input returns `400`. Requires the
+  geonames/zips databases (503 otherwise).
+
+### Geo autocomplete
+
+- `GET /complete?q=<prefix>` (also `/complete.php`) — city and US-ZIP
+  typeahead, ported from hebcal-web's `src/complete.js`. Returns a JSON
+  array of up to 12 matches, each with a country-flag emoji. A leading
+  digit is treated as a ZIP code (exact 5-digit or numeric prefix);
+  otherwise both the geonames and US-ZIP full-text indexes are searched,
+  merged (GeoNames winning ties), and sorted by population.
+  - `g=on` (or `g=1`) additionally returns
+    `latitude`/`longitude`/`timezone`/`population`.
+  - An empty `q` or no matches returns `404 {"error":"Not Found"}`.
+  - Responses are cached for 3 days with a weak `ETag`.
+
+  ```json
+  [{"id":281184,"value":"Jerusalem, Israel","admin1":"Jerusalem District","country":"Israel","cc":"IL","geo":"geoname","asciiname":"Jerusalem","flag":"🇮🇱"}]
+  ```
+
+  The full-text queries use SQLite FTS5, so the `mattn/go-sqlite3` driver
+  must be built with the `sqlite_fts5` tag (the `Makefile` and CI already
+  pass `-tags sqlite_fts5`).
 
 ### Operational
 
@@ -131,12 +176,17 @@ local midnight; an explicit date or range is cached for 30 days with an
 ## Build and test
 
 Requires Go >= 1.24 and **cgo** (a C compiler), because the location
-lookups use the cgo-based `github.com/mattn/go-sqlite3` driver.
+lookups use the cgo-based `github.com/mattn/go-sqlite3` driver. The driver
+must be built with the `sqlite_fts5` tag so the `/complete` full-text
+queries work; the `Makefile` targets pass it for you.
 
 ```bash
-make build     # builds ./hebcal-api (CGO_ENABLED=1)
-make test      # runs the unit tests
+make build     # builds ./hebcal-api (CGO_ENABLED=1 -tags sqlite_fts5)
+make test      # runs the unit tests (-tags sqlite_fts5)
 ```
+
+If you invoke `go` directly rather than through the `Makefile`, add the
+tag yourself, e.g. `go test -tags sqlite_fts5 ./...`.
 
 ## Run
 

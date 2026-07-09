@@ -6,14 +6,18 @@ SVCUSER := www-data
 
 all: build
 
+# sqlite_fts5 enables the FTS5 extension in mattn/go-sqlite3, required by the
+# /complete autocomplete queries against the geoname/ZIP full-text tables.
+GOTAGS := sqlite_fts5
+
 build:
-	CGO_ENABLED=1 go build -trimpath -ldflags="-s -w" -o $(BIN) .
+	CGO_ENABLED=1 go build -tags $(GOTAGS) -trimpath -ldflags="-s -w" -o $(BIN) .
 
 test:
-	go test ./...
+	go test -tags $(GOTAGS) ./...
 
 vet:
-	go vet ./...
+	go vet -tags $(GOTAGS) ./...
 
 fmt:
 	gofmt -w *.go

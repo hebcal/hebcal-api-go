@@ -93,8 +93,7 @@ func (app *appServer) shabbatHandler(w http.ResponseWriter, r *http.Request) {
 	setCORS(w)
 	switch r.Method {
 	case http.MethodOptions:
-		w.Header().Set("Access-Control-Allow-Methods", "GET")
-		w.WriteHeader(http.StatusNoContent)
+		corsPreflight(w, "GET")
 		return
 	case http.MethodGet, http.MethodHead:
 		// handled below
