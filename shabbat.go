@@ -20,6 +20,7 @@ import (
 	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/hebcal-go/molad"
 	"github.com/hebcal/hebcal-go/sedra"
+	"github.com/hebcal/hebcal-go/zmanim"
 	"github.com/hebcal/locales"
 )
 
@@ -46,7 +47,7 @@ func shabbatQueryDate(q url.Values) (gregDate, bool, error) {
 // Shabbat listing, ported from shabbatWeekRange + getStartAndEnd in
 // hebcal-web src/dateUtil.js. If isToday, "now" in the location tz is used.
 func shabbatWeekRange(dt gregDate, isToday bool, tzid string) (gregDate, gregDate, error) {
-	loc, err := time.LoadLocation(tzid)
+	loc, err := zmanim.LoadLocation(tzid)
 	if err != nil {
 		return gregDate{}, gregDate{}, badRequest("Invalid time zone specified: %s", tzid)
 	}
@@ -76,7 +77,7 @@ func shabbatWeekRange(dt gregDate, isToday bool, tzid string) (gregDate, gregDat
 // setExpiresSaturdayNight sets Expires to the next Sunday 00:00 in the
 // location's timezone, matching expiresSaturdayNight in hebcal-web.
 func setExpiresSaturdayNight(w http.ResponseWriter, tzid string) {
-	loc, err := time.LoadLocation(tzid)
+	loc, err := zmanim.LoadLocation(tzid)
 	if err != nil {
 		loc = time.UTC
 	}

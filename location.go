@@ -13,7 +13,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
+
+	"github.com/hebcal/hebcal-go/zmanim"
 )
 
 // notFound is like badRequest but carries a 404 status.
@@ -146,7 +147,7 @@ func locationFromLatLongLegacy(q url.Values, cityTypeahead string) (*geoLocation
 		// not available to this service, so a timezone is required.
 		return nil, badRequest("Timezone required")
 	}
-	if _, err := time.LoadLocation(tzid); err != nil {
+	if _, err := zmanim.LoadLocation(tzid); err != nil {
 		return nil, badRequest("Invalid time zone specified: %s", tzid)
 	}
 	il := q.Get("i") == "on"
@@ -234,7 +235,7 @@ func locationFromLatLong(q url.Values, cityTypeahead string) (*geoLocation, erro
 			tzid = fmt.Sprintf("Etc/GMT%s%d", dir, n)
 		}
 	}
-	if _, err := time.LoadLocation(tzid); err != nil {
+	if _, err := zmanim.LoadLocation(tzid); err != nil {
 		return nil, badRequest("Invalid time zone specified: %s", q.Get("tzid"))
 	}
 	cityName := cityTypeahead
