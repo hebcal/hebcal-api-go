@@ -418,7 +418,7 @@ func (app *appServer) checkMelacha(w http.ResponseWriter, r *http.Request, q url
 	loc *geoLocation, locObj orderedObj, useElevation bool) {
 	now := time.Now()
 	w.Header().Set("Last-Modified", now.UTC().Format(http.TimeFormat))
-	tz, err := time.LoadLocation(loc.TimeZoneID)
+	tz, err := zmanim.LoadLocation(loc.TimeZoneID)
 	if err != nil {
 		app.writeZmanimError(w, badRequest("Invalid time zone specified: %s", loc.TimeZoneID))
 		return
@@ -458,7 +458,7 @@ func (app *appServer) checkMelacha(w http.ResponseWriter, r *http.Request, q url
 
 // nowInTimezone returns today's calendar date in the given timezone.
 func nowInTimezone(tzid string) gregDate {
-	loc, err := time.LoadLocation(tzid)
+	loc, err := zmanim.LoadLocation(tzid)
 	if err != nil {
 		loc = time.UTC
 	}
@@ -509,7 +509,7 @@ func getStartAndEnd(q url.Values, tzid string) (isRange bool, startD, endD gregD
 // setZmanimExpires sets Expires to tomorrow at midnight in the location's
 // timezone (and Last-Modified to now), matching expires() in zmanim.js.
 func setZmanimExpires(w http.ResponseWriter, tzid string) {
-	loc, err := time.LoadLocation(tzid)
+	loc, err := zmanim.LoadLocation(tzid)
 	if err != nil {
 		loc = time.UTC
 	}
