@@ -1,6 +1,7 @@
 BIN := hebcal-api
 PREFIX := /usr/local
 SVCUSER := www-data
+SVCGROUP := hebcal
 
 .PHONY: all build test vet fmt clean install uninstall
 
@@ -29,7 +30,7 @@ clean:
 # Debian 13 server. Run as root: make install
 install: build
 	install -m 0755 $(BIN) $(PREFIX)/bin/$(BIN)
-	install -d -o $(SVCUSER) -g $(SVCUSER) /var/log/hebcal
+	install -d -m 0775 -o $(SVCUSER) -g $(SVCGROUP) /var/log/hebcal
 	install -m 0644 etc/$(BIN).service /etc/systemd/system/$(BIN).service
 	install -m 0644 etc/$(BIN).logrotate /etc/logrotate.d/$(BIN)
 	systemctl daemon-reload
