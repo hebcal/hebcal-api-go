@@ -33,15 +33,20 @@ func (app *appServer) completeHandler(w http.ResponseWriter, r *http.Request) {
 			message: "Location database is not available"})
 		return
 	}
-	w.Header().Set("Cache-Control", cacheControl3Days)
-	etag := makeETag(r, "")
+	w.Header().Set("Cache-Control", "private, max-age=259200")
+	callerIP := clientIP(r)
+	etag := makeETag(r, callerIP)
 	w.Header().Set("ETag", etag)
 	if checkFresh(r, etag) {
 		w.WriteHeader(http.StatusNotModified)
 		return
 	}
 	latlong := q.Get("g") == "on" || q.Get("g") == "1"
-	items := app.db.autoComplete(qraw, latlong)
+	var near *geoIPPoint
+	if p, err := app.geoIPClient.lookupPoint(r.Context(), callerIP); err == nil {
+		near = p
+	}
+	items := app.db.autoCompleteNear(qraw, latlong, near)
 	if len(items) == 0 {
 		// No matches: drop the ETag (matching hebcal-web) and return 404. The
 		// Cache-Control set above is retained, as in hebcal-web.

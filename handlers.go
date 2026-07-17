@@ -22,14 +22,15 @@ const defaultPingFile = "/var/www/html/ping"
 
 // appServer holds the shared state for HTTP handlers.
 type appServer struct {
-	logger   *accessLogger
-	now      func() gregDate // injectable for tests
-	pingFile string
-	db       *GeoDB // geonames/zips database for the /zmanim API; may be nil
+	logger      *accessLogger
+	now         func() gregDate // injectable for tests
+	pingFile    string
+	db          *GeoDB // geonames/zips database for the /zmanim API; may be nil
+	geoIPClient *geoIPClient
 }
 
 func newAppServer(logger *accessLogger) *appServer {
-	return &appServer{logger: logger, now: todayNewYork, pingFile: defaultPingFile}
+	return &appServer{logger: logger, now: todayNewYork, pingFile: defaultPingFile, geoIPClient: newGeoIPClient(defaultGeoIPSocket)}
 }
 
 // mux builds the HTTP routing table.

@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"net"
 	"net/http"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -19,8 +22,8 @@ func TestCompleteGeoname(t *testing.T) {
 	if ct := resp.Header.Get("Content-Type"); ct != contentTypeJSON {
 		t.Errorf("Content-Type = %q, want %q", ct, contentTypeJSON)
 	}
-	if cc := resp.Header.Get("Cache-Control"); cc != cacheControl3Days {
-		t.Errorf("Cache-Control = %q, want %q", cc, cacheControl3Days)
+	if cc := resp.Header.Get("Cache-Control"); cc != "private, max-age=259200" {
+		t.Errorf("Cache-Control = %q, want %q", cc, "private, max-age=259200")
 	}
 	// Without g=on: no latitude/longitude/timezone/population.
 	want := `[{"id":281184,"value":"Jerusalem, Israel","admin1":"Jerusalem District","country":"Israel","cc":"IL","geo":"geoname","asciiname":"Jerusalem","flag":"🇮🇱"}]`
@@ -103,8 +106,8 @@ func TestCompleteNoResults(t *testing.T) {
 	if etag := resp.Header.Get("ETag"); etag != "" {
 		t.Errorf("expected no ETag on no-results 404, got %q", etag)
 	}
-	if cc := resp.Header.Get("Cache-Control"); cc != cacheControl3Days {
-		t.Errorf("Cache-Control = %q, want %q", cc, cacheControl3Days)
+	if cc := resp.Header.Get("Cache-Control"); cc != "private, max-age=259200" {
+		t.Errorf("Cache-Control = %q, want %q", cc, "private, max-age=259200")
 	}
 }
 
@@ -166,5 +169,91 @@ func TestCompleteDBUnavailable(t *testing.T) {
 	resp, body := get(t, srv, "/complete?q=Jerusa")
 	if resp.StatusCode != http.StatusServiceUnavailable {
 		t.Fatalf("status = %d, want 503; body=%s", resp.StatusCode, body)
+	}
+}
+
+func TestAutocompleteSortNearMountainView(t *testing.T) {
+	items := []acItem{
+		{value: "Santiago, Chile", population: 4837295, latitude: -33.45694, longitude: -70.64827},
+		{value: "San Jose, CA", population: 945942, latitude: 37.33939, longitude: -121.89496},
+		{value: "San Francisco, CA", population: 873965, latitude: 37.77493, longitude: -122.41942},
+		{value: "Santa Clara, CA", population: 127647, latitude: 37.35411, longitude: -121.95524},
+	}
+	sortAutocomplete(items, &geoIPPoint{Latitude: 37.3861, Longitude: -122.0839})
+	nearby := map[string]bool{"San Jose, CA": true, "San Francisco, CA": true, "Santa Clara, CA": true}
+	for i := 0; i < 3; i++ {
+		if !nearby[items[i].value] {
+			t.Fatalf("rank %d = %q, want a Bay Area city; all=%v", i, items[i].value, []string{items[0].value, items[1].value, items[2].value, items[3].value})
+		}
+	}
+	if items[3].value != "Santiago, Chile" {
+		t.Fatalf("last = %q, want distant Santiago below Bay Area matches", items[3].value)
+	}
+}
+
+func TestAutocompleteSortFallsBackToPopulation(t *testing.T) {
+	items := []acItem{
+		{value: "San Jose, CA", population: 945942, latitude: 37.33939, longitude: -121.89496},
+		{value: "Santiago, Chile", population: 4837295, latitude: -33.45694, longitude: -70.64827},
+	}
+	sortAutocomplete(items, nil)
+	if items[0].value != "Santiago, Chile" {
+		t.Fatalf("first = %q, want Santiago population fallback", items[0].value)
+	}
+}
+
+func TestGeoIPClientReusesUnixSocketConnection(t *testing.T) {
+	socketPath := filepath.Join(t.TempDir(), "geoip2.sock")
+	ln, err := net.Listen("unix", socketPath)
+	if err != nil {
+		t.Fatalf("listen unix: %v", err)
+	}
+	var newConns int
+	srv := &http.Server{ConnState: func(_ net.Conn, state http.ConnState) {
+		if state == http.StateNew {
+			newConns++
+		}
+	}}
+	srv.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"location":{"latitude":37.3861,"longitude":-122.0839}}`)
+	})
+	go func() { _ = srv.Serve(ln) }()
+	t.Cleanup(func() { _ = srv.Close() })
+
+	client := newGeoIPClient(socketPath)
+	for i := 0; i < 2; i++ {
+		if _, err := client.lookupPoint(t.Context(), "8.8.8.8"); err != nil {
+			t.Fatalf("lookup %d: %v", i, err)
+		}
+	}
+	if newConns != 1 {
+		t.Fatalf("new unix socket connections = %d, want 1", newConns)
+	}
+}
+
+func TestLookupGeoIPPointUnixSocket(t *testing.T) {
+	socketPath := filepath.Join(t.TempDir(), "geoip2.sock")
+	ln, err := net.Listen("unix", socketPath)
+	if err != nil {
+		t.Fatalf("listen unix: %v", err)
+	}
+	defer ln.Close()
+	go func() {
+		conn, err := ln.Accept()
+		if err != nil {
+			return
+		}
+		defer conn.Close()
+		buf := make([]byte, 1024)
+		_, _ = conn.Read(buf)
+		_, _ = conn.Write([]byte("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: 56\r\n\r\n{\"location\":{\"latitude\":37.3861,\"longitude\":-122.0839}}"))
+	}()
+	pt, err := newGeoIPClient(socketPath).lookupPoint(t.Context(), "8.8.8.8")
+	if err != nil {
+		t.Fatalf("lookupGeoIPPoint: %v", err)
+	}
+	if pt.Latitude != 37.3861 || pt.Longitude != -122.0839 {
+		t.Fatalf("point = %#v, want Mountain View coordinates", pt)
 	}
 }

@@ -12,6 +12,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"math"
 	"sort"
 	"strings"
 )
@@ -62,6 +63,10 @@ type acItem struct {
 // caller strips latitude/longitude/timezone/population from text-search results
 // (see acItemToObj); numeric ZIP results always retain their coordinates.
 func (db *GeoDB) autoComplete(qraw string, latlong bool) []acItem {
+	return db.autoCompleteNear(qraw, latlong, nil)
+}
+
+func (db *GeoDB) autoCompleteNear(qraw string, latlong bool, near *geoIPPoint) []acItem {
 	qraw = strings.TrimSpace(qraw)
 	if qraw == "" {
 		return nil
@@ -92,13 +97,41 @@ func (db *GeoDB) autoComplete(qraw string, latlong bool) []acItem {
 	geoMatches := db.geonameFulltextComplete(match)
 	zipMatches := db.zipFulltextComplete(match)
 	values := mergeZipGeo(zipMatches, geoMatches)
-	sort.SliceStable(values, func(i, j int) bool {
-		return values[i].population > values[j].population
-	})
+	sortAutocomplete(values, near)
 	if len(values) > 12 {
 		values = values[:12]
 	}
 	return values
+}
+
+func sortAutocomplete(values []acItem, near *geoIPPoint) {
+	sort.SliceStable(values, func(i, j int) bool {
+		if near != nil {
+			si := autocompleteScore(values[i], near)
+			sj := autocompleteScore(values[j], near)
+			if si != sj {
+				return si > sj
+			}
+		}
+		return values[i].population > values[j].population
+	})
+}
+
+func autocompleteScore(it acItem, near *geoIPPoint) float64 {
+	popScore := math.Log(float64(it.population) + 1)
+	distanceKm := haversineKm(near.Latitude, near.Longitude, it.latitude, it.longitude)
+	return popScore - 2*math.Log(distanceKm+1)
+}
+
+func haversineKm(lat1, lon1, lat2, lon2 float64) float64 {
+	const earthRadiusKm = 6371.0088
+	toRad := func(deg float64) float64 { return deg * math.Pi / 180 }
+	dLat := toRad(lat2 - lat1)
+	dLon := toRad(lon2 - lon1)
+	rLat1 := toRad(lat1)
+	rLat2 := toRad(lat2)
+	a := math.Sin(dLat/2)*math.Sin(dLat/2) + math.Cos(rLat1)*math.Cos(rLat2)*math.Sin(dLon/2)*math.Sin(dLon/2)
+	return earthRadiusKm * 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
 }
 
 // geonameFulltextComplete runs the geonames FTS query, de-duplicates by
