@@ -251,9 +251,12 @@ func (app *appServer) logAccess(r *http.Request, bw *bufWriter, length int, star
 	app.logger.write(level, fields)
 }
 
-// clientIP returns the client IP address, preferring X-Forwarded-For when
-// the service runs behind a reverse proxy.
+// clientIP returns the client IP address, preferring X-Client-IP over
+// X-Forwarded-For when the service runs behind a reverse proxy.
 func clientIP(r *http.Request) string {
+	if xcip := r.Header.Get("X-Client-IP"); xcip != "" {
+		return strings.TrimSpace(xcip)
+	}
 	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
 		if idx := strings.IndexByte(xff, ','); idx != -1 {
 			return strings.TrimSpace(xff[:idx])
