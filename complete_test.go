@@ -4,10 +4,25 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 )
+
+// shortSocketPath returns a path for a unix socket that stays within the
+// ~104-byte sun_path limit. t.TempDir() on macOS returns a long /var/folders
+// path that overflows it (net.Listen fails with "bind: invalid argument"), so
+// anchor the socket under a short base dir instead.
+func shortSocketPath(t *testing.T) string {
+	t.Helper()
+	dir, err := os.MkdirTemp("/tmp", "geoip")
+	if err != nil {
+		t.Fatalf("MkdirTemp: %v", err)
+	}
+	t.Cleanup(func() { _ = os.RemoveAll(dir) })
+	return filepath.Join(dir, "geoip2.sock")
+}
 
 // Expected bodies were captured from @hebcal/geo-sqlite GeoDb.autoComplete run
 // against the testdata databases, with the country flag appended by the
@@ -203,7 +218,7 @@ func TestAutocompleteSortFallsBackToPopulation(t *testing.T) {
 }
 
 func TestGeoIPClientReusesUnixSocketConnection(t *testing.T) {
-	socketPath := filepath.Join(t.TempDir(), "geoip2.sock")
+	socketPath := shortSocketPath(t)
 	ln, err := net.Listen("unix", socketPath)
 	if err != nil {
 		t.Fatalf("listen unix: %v", err)
@@ -233,7 +248,7 @@ func TestGeoIPClientReusesUnixSocketConnection(t *testing.T) {
 }
 
 func TestLookupGeoIPPointUnixSocket(t *testing.T) {
-	socketPath := filepath.Join(t.TempDir(), "geoip2.sock")
+	socketPath := shortSocketPath(t)
 	ln, err := net.Listen("unix", socketPath)
 	if err != nil {
 		t.Fatalf("listen unix: %v", err)

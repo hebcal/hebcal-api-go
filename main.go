@@ -41,6 +41,8 @@ func main() {
 		"path to the zips SQLite database (for the /zmanim API)")
 	geonamesDB := flag.String("geonames-db", envOr("GEONAMES_DB", "geonames.sqlite3"),
 		"path to the geonames SQLite database (for the /zmanim API)")
+	socket := flag.String("socket", defaultGeoIPSocket,
+		"path to the GeoIP unix domain socket")
 	flag.Parse()
 
 	var err error
@@ -59,6 +61,7 @@ func main() {
 
 	app := newAppServer(logger)
 	app.pingFile = *pingFile
+	app.geoIPClient = newGeoIPClient(*socket)
 
 	// Open the geonames/zips databases for the /zmanim API. A failure here is
 	// not fatal: the /zmanim route reports 503 while the other APIs keep

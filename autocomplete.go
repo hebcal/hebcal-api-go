@@ -23,7 +23,7 @@ const (
 FROM geoname_fulltext
 WHERE geoname_fulltext MATCH ?
 ORDER BY population DESC
-LIMIT 20`
+LIMIT 40`
 	// zipCompleteSQL matches ZIP_COMPLETE_SQL (numeric prefix search).
 	zipCompleteSQL = `SELECT ZipCode,CityMixedCase,State,Latitude,Longitude,TimeZone,DayLightSaving,Population
 FROM ZIPCodes_Primary
@@ -35,7 +35,7 @@ LIMIT 10`
 FROM ZIPCodes_CityFullText5
 WHERE ZIPCodes_CityFullText5 MATCH ?
 ORDER BY Population DESC
-LIMIT 20`
+LIMIT 40`
 )
 
 // acItem is one autocomplete result before JSON serialization. The population

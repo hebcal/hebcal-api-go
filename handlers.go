@@ -30,7 +30,7 @@ type appServer struct {
 }
 
 func newAppServer(logger *accessLogger) *appServer {
-	return &appServer{logger: logger, now: todayNewYork, pingFile: defaultPingFile, geoIPClient: newGeoIPClient(defaultGeoIPSocket)}
+	return &appServer{logger: logger, now: todayNewYork, pingFile: defaultPingFile}
 }
 
 // mux builds the HTTP routing table.
