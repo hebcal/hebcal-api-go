@@ -8,7 +8,7 @@ require (
 	github.com/hebcal/gematriya v1.1.0
 	github.com/hebcal/greg v1.1.0
 	github.com/hebcal/hdate v1.4.0
-	github.com/hebcal/hebcal-go v0.18.0
+	github.com/hebcal/hebcal-go v0.18.1
 	github.com/hebcal/locales v1.1.1
 	github.com/mattn/go-sqlite3 v1.14.47
 	github.com/prometheus/client_golang v1.23.2
