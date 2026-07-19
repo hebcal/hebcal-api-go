@@ -141,13 +141,18 @@ func (db *GeoDB) autoCompleteNear(qraw string, near *geoIPPoint) []acItem {
 		}
 		return db.zipPrefixComplete(zipA, zipB)
 	}
-	// Full-text search of both geonames and US ZIP cities. Geonames match the
-	// weighted city/admin1/country columns (plus longname for multi-word
-	// queries); ZIPs match longname alone.
+	// Full-text search of both geonames and US ZIP cities (when query 3+ chars).
+	// Geonames match the weighted city/admin1/country columns (plus longname
+	// for multi-word queries); ZIPs match longname alone.
 	q := strings.ReplaceAll(qraw, `"`, `""`)
 	geoMatches := db.geonameFulltextComplete(fmt.Sprintf(geonameMatchExpr, q, q))
-	zipMatches := db.zipFulltextComplete(fmt.Sprintf(zipMatchExpr, q))
-	values := mergeZipGeo(zipMatches, geoMatches)
+	var values []acItem
+	if len(qraw) > 2 {
+		zipMatches := db.zipFulltextComplete(fmt.Sprintf(zipMatchExpr, q))
+		values = mergeZipGeo(zipMatches, geoMatches)
+	} else {
+		values = geoMatches
+	}
 	sortAutocomplete(values, near)
 	if len(values) > 12 {
 		values = values[:12]
