@@ -289,6 +289,25 @@ func TestMissingCfg(t *testing.T) {
 	}
 }
 
+// TestConverterJunkPaths verifies that bogus paths caught by the
+// "/converter/" subtree pattern (SQL-injection and vulnerability probes that
+// miss the exact /converter/csv route) are rejected with 400 rather than
+// falling through to the cfg check and answering 501.
+func TestConverterJunkPaths(t *testing.T) {
+	_, srv := testServer(t)
+	for _, path := range []string{
+		`/converter/csv0"XOR(if(now()=sysdate(),sleep(15),0))XOR"Z`,
+		`/converter/csvdRuWbwx2';waitfor delay '0:0:15' -- `,
+		`/converter/csv'"`,
+		"/converter/bogus",
+	} {
+		resp, _ := get(t, srv, path)
+		if resp.StatusCode != http.StatusBadRequest {
+			t.Errorf("%s: status = %d, want 400", path, resp.StatusCode)
+		}
+	}
+}
+
 // TestBareConverterRedirects covers the edge case where /converter is
 // requested with a valid cfg but no date parameters at all: since the
 // response would depend on "now", it must 302 to a URL with the date pinned

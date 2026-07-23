@@ -94,6 +94,16 @@ func corsPreflight(w http.ResponseWriter, methods string) {
 
 // converterHandler implements the /converter JSON and XML APIs.
 func (app *appServer) converterHandler(w http.ResponseWriter, r *http.Request) {
+	// The "/converter/" subtree pattern also catches bogus paths such as
+	// /converter/csv0"XOR(...) — typically SQL-injection or vulnerability
+	// probes that miss the exact /converter/csv route. Only the bare
+	// endpoint and its trailing-slash form are valid here; reject anything
+	// else with 400 rather than falling through to the cfg check below,
+	// which would otherwise answer 501.
+	if r.URL.Path != "/converter" && r.URL.Path != "/converter/" {
+		writePlainError(w, badRequest("Not a valid converter request: %s", r.URL.Path))
+		return
+	}
 	q := r.URL.Query()
 	cfg := q.Get("cfg")
 	if cfg != "" {
