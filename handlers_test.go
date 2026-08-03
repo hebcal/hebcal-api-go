@@ -82,6 +82,49 @@ func TestSingleG2H(t *testing.T) {
 	}
 }
 
+// TestConverterLang checks the `lg` short codes against hebcal-web's
+// lgToLocale map. "ah" and "sh" ask for the Hebrew name to be appended to
+// email subject lines on top of Ashkenazi or Sephardic transliteration; no
+// API route renders that part, so they read as plain "a" and "s".
+func TestConverterLang(t *testing.T) {
+	_, srv := testServer(t)
+	tests := map[string]string{
+		"":      "Parashat Chayei Sara",
+		"s":     "Parashat Chayei Sara",
+		"sh":    "Parashat Chayei Sara",
+		"a":     "Parshas Chayei Sara",
+		"ah":    "Parshas Chayei Sara",
+		"h":     "פָּרָשַׁת חַיֵּי שָֹרָה",
+		"fr":    "Parachah H̲ayé Sarah",
+		"bogus": "Parashat Chayei Sara", // unknown locales fall back to English
+	}
+	for lg, want := range tests {
+		path := "/converter?gd=7&gm=11&gy=2026&g2h=1&cfg=json"
+		if lg != "" {
+			path += "&lg=" + lg
+		}
+		resp, body := get(t, srv, path)
+		if resp.StatusCode != 200 {
+			t.Fatalf("lg=%q: status = %d: %s", lg, resp.StatusCode, body)
+		}
+		var out struct {
+			Events []string `json:"events"`
+		}
+		if err := json.Unmarshal([]byte(body), &out); err != nil {
+			t.Fatalf("lg=%q: %v", lg, err)
+		}
+		var found bool
+		for _, ev := range out.Events {
+			if ev == want {
+				found = true
+			}
+		}
+		if !found {
+			t.Errorf("lg=%q: events = %v, want one of them %q", lg, out.Events, want)
+		}
+	}
+}
+
 // Documented example: https://www.hebcal.com/converter?cfg=json&date=2011-06-02&g2h=1&strict=1
 func TestSingleG2HDateParam(t *testing.T) {
 	_, srv := testServer(t)
