@@ -69,6 +69,19 @@ func compressibleType(contentType string) bool {
 		strings.HasPrefix(contentType, "application/xml")
 }
 
+// withBackend advertises the hostname that served the request in the
+// X-Backend response header. It wraps the whole mux, so the header appears on
+// every response - success, error, and the routes that bypass serve() - as
+// long as the hostname is known.
+func (app *appServer) withBackend(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if app.hostname != "" {
+			w.Header().Set("X-Backend", app.hostname)
+		}
+		h.ServeHTTP(w, r)
+	})
+}
+
 // serve runs the handler with buffering, then applies gzip compression,
 // response-time and length headers, Prometheus metrics, and access logging.
 func (app *appServer) serve(h http.HandlerFunc) http.HandlerFunc {

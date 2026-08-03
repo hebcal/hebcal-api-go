@@ -25,16 +25,19 @@ type appServer struct {
 	logger      *accessLogger
 	now         func() gregDate // injectable for tests
 	pingFile    string
+	hostname    string // advertised in the X-Backend response header
 	db          *GeoDB // geonames/zips database for the /zmanim API; may be nil
 	geoIPClient *geoIPClient
 }
 
 func newAppServer(logger *accessLogger) *appServer {
-	return &appServer{logger: logger, now: todayNewYork, pingFile: defaultPingFile}
+	hostname, _ := os.Hostname()
+	return &appServer{logger: logger, now: todayNewYork,
+		pingFile: defaultPingFile, hostname: hostname}
 }
 
 // mux builds the HTTP routing table.
-func (app *appServer) mux() *http.ServeMux {
+func (app *appServer) mux() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/ping", app.serve(app.pingHandler))
 	mux.Handle("/metrics", promhttp.Handler())
@@ -51,7 +54,7 @@ func (app *appServer) mux() *http.ServeMux {
 	mux.HandleFunc("/complete/", app.serve(app.completeHandler))
 	mux.HandleFunc("/complete.php", app.serve(app.completeHandler))
 	mux.HandleFunc("/", app.serve(app.notFoundHandler))
-	return mux
+	return app.withBackend(mux)
 }
 
 // pingHandler serves the contents of the ping file (like hebcal-web, which
