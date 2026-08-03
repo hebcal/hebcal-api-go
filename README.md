@@ -101,8 +101,8 @@ solar calculations are backed by [hebcal/noaa-go](https://github.com/hebcal/noaa
     candle-lighting custom still follows the location itself).
   - `molad=on` adds the molad announcement on Shabbat Mevarchim, with the
     exact moment of the conjunction as a UTC `instant`.
-  - `yto=on` keeps only the Yom Tov days; a week without one has no events
-    left and returns `400`.
+  - `yto=on` keeps only the Yom Tov days; a week without one returns an
+    empty `items` array.
   - `h12=0` forces a 24-hour clock and `h12=1` a 12-hour one, overriding
     the location's country.
   - `lg=<lang>` translates the event titles (`a=on` is the much older
@@ -246,6 +246,9 @@ local midnight; an explicit date or range is cached for 30 days with an
 - `/shabbat` honors `date=` and `start=` as ways of pinning the week;
   hebcal-web reads only `dt=` and `gy`/`gm`/`gd` there and quietly falls
   back to today for the others.
+- `/shabbat` with `yto=on` and no Yom Tov in the week returns `200` and an
+  empty `items` array; hebcal-web applies the filter before its own
+  "no events" check and answers `400`.
 - `/shabbat` with `b=0` recomputes the candle-lighting times after the
   calendar is built: hebcal-go's `CheckCandleOptions` rewrites a zero
   `CandleLightingMins` to the 18/20-minute default, so there is no way to

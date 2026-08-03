@@ -178,9 +178,9 @@ func TestMoladInstant(t *testing.T) {
 	}
 }
 
-// TestShabbatYomTovOnly covers yto=on, which hebcal-web applies after the
-// calendar is built; a week with no Yom Tov in it therefore has no events at
-// all and answers 400.
+// TestShabbatYomTovOnly covers yto=on. A week with no Yom Tov in it answers
+// 200 with no items, rather than the 400 hebcal-web gives: the filter having
+// nothing to keep is an empty answer, not a bad request.
 func TestShabbatYomTovOnly(t *testing.T) {
 	srv := testServerWithDB(t)
 	items := getItems(t, srv, "/shabbat?cfg=json&geonameid=5128581&dt=2026-04-01&leyning=off&yto=on")
@@ -194,9 +194,16 @@ func TestShabbatYomTovOnly(t *testing.T) {
 	if strings.Join(titles, "|") != "Pesach I|Pesach II" {
 		t.Errorf("yto=on titles = %v, want Pesach I, Pesach II", titles)
 	}
-	resp, _ := get(t, srv, "/shabbat?cfg=json&geonameid=5128581&dt=2026-11-07&leyning=off&yto=on")
-	if resp.StatusCode != http.StatusBadRequest {
-		t.Errorf("a week with no Yom Tov: status = %d, want 400", resp.StatusCode)
+	resp, body := get(t, srv, "/shabbat?cfg=json&geonameid=5128581&dt=2026-11-07&leyning=off&yto=on")
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("a week with no Yom Tov: status = %d, want 200 (%s)", resp.StatusCode, body)
+	}
+	if !strings.Contains(body, `"items":[]`) {
+		t.Errorf("a week with no Yom Tov: want an empty items array, got %s", body)
+	}
+	// the range describes the events, so it goes away with them
+	if strings.Contains(body, `"range"`) {
+		t.Errorf("a week with no Yom Tov: unexpected range in %s", body)
 	}
 }
 

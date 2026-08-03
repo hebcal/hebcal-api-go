@@ -205,12 +205,16 @@ func (app *appServer) shabbatHandler(w http.ResponseWriter, r *http.Request) {
 	if candleOpts.atSunset {
 		moveCandleLightingToSunset(events, &opts)
 	}
-	if isOn(q.Get("yto")) {
-		events = filterYomTovOnly(events)
-	}
 	if len(events) == 0 {
 		app.writeZmanimError(w, badRequest("Bad request: no events"))
 		return
+	}
+	// Deliberately after the empty check: asking for Yom Tov only in a week
+	// that has none is a fair question with an empty answer, so it returns
+	// 200 and no items. hebcal-web filters before its own check and answers
+	// 400 there.
+	if isOn(q.Get("yto")) {
+		events = filterYomTovOnly(events)
 	}
 
 	// Caching: an explicit date is cacheable for 7 days; the rolling "today"
@@ -431,8 +435,7 @@ func filterOutHavdalah(events []event.CalEvent) []event.CalEvent {
 
 // filterYomTovOnly keeps only the Yom Tov days, for yto=on. Ported from
 // makeHebrewCalendar() in hebcal-web src/calendar.js, which applies the
-// filter after the calendar is built; a week with no Yom Tov in it therefore
-// comes back empty, and the caller answers 400.
+// filter after the calendar is built.
 func filterYomTovOnly(events []event.CalEvent) []event.CalEvent {
 	out := events[:0]
 	for _, ev := range events {
