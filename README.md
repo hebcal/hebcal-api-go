@@ -12,7 +12,8 @@ Currently implemented:
 - **Assur Melacha** ("is work prohibited right now", JSON) — the `im=1` mode
   of the zmanim API
 - **Shabbat** (candle-lighting / Torah portion, JSON) — ported from
-  `src/shabbat.js`
+  `src/shabbat.js`; Torah readings come from hebcal-web's `/leyning`
+  service (see [Torah readings](#torah-readings))
 - **Geolocation** (`/geo`) — resolve query parameters to a location, JSON
 - **Geo autocomplete** (`/complete`) — city/ZIP typeahead, JSON
 
@@ -66,6 +67,56 @@ solar calculations are backed by [hebcal/noaa-go](https://github.com/hebcal/noaa
     midnight; a datetime without a zone is interpreted in the location's
     timezone; a trailing `Z` or `±HH:MM` offset is honored). If `dt` is
     omitted the current time is used and the response is cached for 60s.
+
+### Shabbat
+
+- `GET|HEAD /shabbat?cfg=json&…` — candle-lighting, the weekly Torah
+  portion, havdalah and the other events of one Shabbat week for a
+  location, ported from `src/shabbat.js`. `cfg=json` is required (501
+  otherwise). `OPTIONS` returns a CORS preflight; other methods return
+  `405`. Requires the geonames/zips databases (503 otherwise).
+  - **Date** — the week containing the given day, in this order of
+    precedence: `dt=YYYY-MM-DD`, `date=YYYY-MM-DD`, `start=YYYY-MM-DD`
+    (`end` is accepted but ignored), or `gy`/`gm`/`gd`. With none of
+    them, "now" in the location's timezone is used and the response
+    expires at the end of Saturday rather than being cached for 7 days.
+    The window runs from that day (backing up to Friday when it is a
+    Saturday, so last night's candle-lighting is included) through the
+    later of the upcoming Saturday or five days ahead.
+  - **Location** — the same parameters as `/zmanim` (see
+    [Location resolution](#location-resolution)). Defaults to New York
+    when none is given.
+  - `b=<min>` sets candle-lighting minutes before sunset (default 18, or
+    40 in Jerusalem and 30 in Haifa and Zikhron Ya'akov). `M=on` or
+    `td=<deg>` ends Shabbat at a solar depression angle (default 8.5°),
+    `m=<min>` at a fixed number of minutes after sunset, and `m=0`
+    suppresses havdalah entirely.
+  - `lg=<lang>` translates the event titles; `hdp=1` adds `heDateParts`.
+  - `leyning=off` (or `leyning=0`) omits the Torah readings; see below.
+
+#### Torah readings
+
+Each non-timed item carries a `leyning` object — the aliyot, `torah`
+summary, `haftarah` (plus the `haftarah_sephardic` and `haftarah_chabad`
+variants where they differ), `maftir`, and, for a parsha, the `triennial`
+cycle:
+
+```json
+{"1":"Deuteronomy 11:26-12:10","…":"…","torah":"Deuteronomy 11:26-16:17",
+ "haftarah":"Isaiah 54:11-55:5","maftir":"Deuteronomy 16:13-16:17",
+ "triennial":{"1":"Deuteronomy 11:26-11:31","…":"…"}}
+```
+
+hebcal-go has no leyning data, so the readings come from hebcal-web's
+`/leyning?cfg=json&events=on` endpoint over HTTP. Set its URL with
+`-leyning-url` or `LEYNING_URL` (default `http://localhost:8080/leyning`).
+Readings depend only on the date and on Israel vs. Diaspora — every city
+in Israel reads the same portion on a given day, as does every city in the
+Diaspora — so they are cached in a 400-entry LRU keyed by `(date, il)`,
+which a week's worth of requests for any location shares. When the
+`/leyning` service cannot be reached, `/shabbat` returns `503` rather than
+a response that silently omits the readings; `leyning=off` skips the call
+altogether.
 
 ### Geolocation
 
@@ -172,6 +223,9 @@ local midnight; an explicit date or range is cached for 30 days with an
   difference between the noaa-go and @hebcal/core NOAA implementations);
   minute-rounded output matches except where a value falls within 2s of a
   rounding boundary.
+- `/shabbat` honors `date=` and `start=` as ways of pinning the week;
+  hebcal-web reads only `dt=` and `gy`/`gm`/`gd` there and quietly falls
+  back to today for the others.
 
 ## Build and test
 
@@ -194,13 +248,15 @@ tag yourself, e.g. `go test -tags sqlite_fts5 ./...`.
 ./hebcal-api                      # listens on :8082, logs to stdout
 ./hebcal-api -port 8082 -logfile /var/log/hebcal/api.log \
     -zips-db /var/lib/hebcal/zips.sqlite3 \
-    -geonames-db /var/lib/hebcal/geonames.sqlite3
+    -geonames-db /var/lib/hebcal/geonames.sqlite3 \
+    -leyning-url http://localhost:8080/leyning
 ```
 
 The port defaults to `8082` (or the `PORT` environment variable); the
 access log defaults to stdout (pass `-logfile <path>`). The geonames/zips
 database paths default to the working directory (see
-[Location databases](#location-databases)).
+[Location databases](#location-databases)). `/shabbat` needs hebcal-web
+reachable at `-leyning-url` (or `LEYNING_URL`) for Torah readings.
 
 Access logs are pino-compatible JSON lines, e.g.:
 

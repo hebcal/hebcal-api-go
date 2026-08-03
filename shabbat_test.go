@@ -7,15 +7,13 @@ import (
 	"testing"
 )
 
-// TestShabbatGating verifies the 501 scope gate: only cfg=json with leyning
-// disabled is implemented.
+// TestShabbatGating verifies the 501 scope gate: only cfg=json is implemented.
 func TestShabbatGating(t *testing.T) {
 	srv := testServerWithDB(t)
 	for _, path := range []string{
-		"/shabbat?geonameid=5128581",          // cfg missing
-		"/shabbat?cfg=json&geonameid=5128581", // leyning defaults on
-		"/shabbat?cfg=json&geonameid=5128581&leyning=on",
+		"/shabbat?geonameid=5128581",                   // cfg missing
 		"/shabbat?cfg=r&geonameid=5128581&leyning=off", // unsupported cfg
+		"/shabbat?cfg=i&geonameid=5128581",
 	} {
 		resp, body := get(t, srv, path)
 		if resp.StatusCode != http.StatusNotImplemented {

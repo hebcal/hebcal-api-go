@@ -4,8 +4,9 @@ package main
 // hebcal-web src/shabbat.js. It returns this week's (or a given week's)
 // candle-lighting, Torah portion, havdalah, and related events for a location.
 //
-// Scope: only cfg=json with leyning={off,0} is supported. Any other cfg, or
-// leyning left on (the default), returns 501 Not Implemented.
+// Scope: only cfg=json is supported; any other cfg returns 501 Not
+// Implemented. Torah readings (the default, suppressed with leyning={off,0})
+// come from the hebcal-web /leyning endpoint; see leyning.go.
 
 import (
 	"fmt"
@@ -29,12 +30,25 @@ func parseFloat(s string) (float64, error) {
 	return strconv.ParseFloat(strings.TrimSpace(s), 64)
 }
 
-// shabbatQueryDate resolves the requested date: dt=YYYY-MM-DD, or gy/gm/gd, or
-// (when none given) "today" in the location timezone (isToday=true).
+// shabbatQueryDate resolves the requested date and reports whether it came
+// from the query (isToday=false) or defaults to "now" in the location
+// timezone. Callers in the wild pin the week four different ways, so all are
+// accepted, in this order of precedence:
+//
+//	dt=YYYY-MM-DD
+//	date=YYYY-MM-DD
+//	start=YYYY-MM-DD (end is accepted but ignored: /shabbat always renders
+//	                  the one Shabbat week containing the start date)
+//	gy=YYYY&gm=MM&gd=DD
+//
+// hebcal-web's getTodayDate() reads only dt and gy/gm/gd; date and start
+// silently fall back to today there. This endpoint honors them instead.
 func shabbatQueryDate(q url.Values) (gregDate, bool, error) {
-	if dt := strings.TrimSpace(q.Get("dt")); dt != "" {
-		d, err := isoDateStringToDate(dt)
-		return d, false, err
+	for _, param := range []string{"dt", "date", "start"} {
+		if s := strings.TrimSpace(q.Get(param)); s != "" {
+			d, err := isoDateStringToDate(s)
+			return d, false, err
+		}
 	}
 	if q.Get("gy") != "" || q.Get("gm") != "" || q.Get("gd") != "" {
 		d, err := makeGregDate(q.Get("gy"), q.Get("gm"), q.Get("gd"))
@@ -88,7 +102,7 @@ func setExpiresSaturdayNight(w http.ResponseWriter, tzid string) {
 	w.Header().Set("Expires", sun.UTC().Format(http.TimeFormat))
 }
 
-// shabbatHandler implements GET /shabbat (cfg=json, leyning=off only).
+// shabbatHandler implements GET /shabbat (cfg=json only).
 func (app *appServer) shabbatHandler(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	setCORS(w)
@@ -105,17 +119,16 @@ func (app *appServer) shabbatHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", contentTypeJSON)
 
-	// Scope gate: only cfg=json with leyning disabled is implemented.
-	cfg := q.Get("cfg")
-	leyning := q.Get("leyning")
-	leyningOff := leyning == "off" || leyning == "0"
-	if cfg != "json" || !leyningOff {
+	// Scope gate: only cfg=json is implemented.
+	if q.Get("cfg") != "json" {
 		w.WriteHeader(http.StatusNotImplemented)
 		w.Write(jsonMarshal(map[string]string{
-			"error": "Only cfg=json with leyning=off is supported by this endpoint",
+			"error": "Only cfg=json is supported by this endpoint",
 		}))
 		return
 	}
+	leyning := q.Get("leyning")
+	leyningOff := leyning == "off" || leyning == "0"
 	if app.db == nil {
 		app.writeZmanimError(w, &httpError{status: http.StatusServiceUnavailable,
 			message: "Location database is not available"})
@@ -182,8 +195,28 @@ func (app *appServer) shabbatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Torah readings come from the hebcal-web /leyning service, fetched only
+	// once a body is actually going out. They are part of that body, so a
+	// failure there is a failure of this request rather than something to
+	// paper over with a partial answer.
+	var readings map[string][]*leyningReading
+	if !leyningOff {
+		readings, err = app.leyning.readings(r.Context(), start, end, il)
+		if err != nil {
+			app.logger.Warn("leyning lookup failed: " + err.Error())
+			// the validators and freshness above describe the body we are
+			// no longer sending
+			for _, h := range []string{"Cache-Control", "Expires", "Last-Modified", "ETag"} {
+				w.Header().Del(h)
+			}
+			app.writeZmanimError(w, &httpError{status: http.StatusServiceUnavailable,
+				message: "Torah reading service is not available"})
+			return
+		}
+	}
+
 	hdp := q.Get("hdp") == "1"
-	body := shabbatResponse(events, loc, il, locale, lg, hdp)
+	body := shabbatResponse(events, loc, il, locale, lg, hdp, readings)
 	w.Write(jsonMarshal(body))
 }
 
@@ -239,8 +272,10 @@ func filterOutHavdalah(events []event.CalEvent) []event.CalEvent {
 	return out
 }
 
-// shabbatResponse builds the ordered top-level JSON object.
-func shabbatResponse(events []event.CalEvent, loc *geoLocation, il bool, locale, lg string, hdp bool) orderedObj {
+// shabbatResponse builds the ordered top-level JSON object. readings is nil
+// when leyning is suppressed.
+func shabbatResponse(events []event.CalEvent, loc *geoLocation, il bool, locale, lg string, hdp bool,
+	readings map[string][]*leyningReading) orderedObj {
 	body := orderedObj{
 		{"title", shabbatTitle(events, loc)},
 		{"date", time.Now().UTC().Format("2006-01-02T15:04:05.000Z")},
@@ -257,7 +292,7 @@ func shabbatResponse(events []event.CalEvent, loc *geoLocation, il bool, locale,
 	}
 	items := make([]interface{}, 0, len(events))
 	for _, ev := range events {
-		items = append(items, shabbatItem(ev, loc, il, locale, lg, hdp))
+		items = append(items, shabbatItem(ev, loc, il, locale, lg, hdp, readings))
 	}
 	body = append(body, jsonKV{"items", items})
 	return body
@@ -287,7 +322,8 @@ func isoGreg(hd hdate.HDate) string {
 
 // shabbatItem serializes one event to the classic-API item object. Ordered to
 // match @hebcal/rest-api eventToClassicApiObject.
-func shabbatItem(ev event.CalEvent, loc *geoLocation, il bool, locale, lg string, hdp bool) orderedObj {
+func shabbatItem(ev event.CalEvent, loc *geoLocation, il bool, locale, lg string, hdp bool,
+	readings map[string][]*leyningReading) orderedObj {
 	flags := ev.GetFlags()
 	hd := ev.GetDate()
 	desc := descOf(ev)
@@ -327,8 +363,11 @@ func shabbatItem(ev event.CalEvent, loc *geoLocation, il bool, locale, lg string
 		item = append(item, jsonKV{"hebrew", hebrew})
 	}
 
-	// link (not for candles/havdalah)
+	// leyning, then link (neither for candles/havdalah)
 	if !isTimed {
+		if ley := shabbatLeyning(hd, flags, desc, readings); ley != nil {
+			item = append(item, jsonKV{"leyning", ley})
+		}
 		if link := shabbatLink(ev, hd, il); link != "" {
 			item = append(item, jsonKV{"link", link})
 		}
@@ -476,6 +515,40 @@ func stripMevarchimPrefix(s string) string {
 // ": time" suffix (only candle-lighting and havdalah do).
 func isCandleOrHavdalah(desc string) bool {
 	return desc == "Candle lighting" || desc == "Havdalah" || strings.HasPrefix(desc, "Havdalah (")
+}
+
+// shabbatLeyning returns the Torah reading for an event, or nil when it has
+// none (or when readings were not requested). It reproduces the lookup in
+// eventToClassicApiObject: a parsha ha-shavua event gets
+// getLeyningForParshaHaShavua(), every other event gets
+// getLeyningForHoliday(). Timed events are never passed here, matching the
+// JS side, where getLeyningForHoliday() rejects anything with an eventTime.
+//
+// The triennial cycle is added for parsha events only, and only from Hebrew
+// year 5745 on, per hebcal-web src/myEventsToClassicApi.js.
+func shabbatLeyning(hd hdate.HDate, flags event.HolidayFlags, desc string,
+	readings map[string][]*leyningReading) orderedObj {
+	if readings == nil {
+		return nil
+	}
+	onDate := readings[isoGreg(hd)]
+	if len(onDate) == 0 {
+		return nil
+	}
+	// @hebcal/rest-api tests the mask for equality, so an event merely
+	// carrying PARSHA_HASHAVUA alongside other flags is not a parsha.
+	if flags == event.PARSHA_HASHAVUA {
+		r := findParshaReading(onDate)
+		if r == nil {
+			return nil
+		}
+		return formatLeyning(r, hd.Year() >= 5745)
+	}
+	r := findHolidayReading(onDate, desc)
+	if r == nil {
+		return nil
+	}
+	return formatLeyning(r, false)
 }
 
 // shabbatLink builds the shortened, tracked hebcal.com URL for an event.

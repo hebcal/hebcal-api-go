@@ -1,0 +1,175 @@
+{
+ "title": "Hebcal New York October 2025",
+ "date": "2026-08-03T17:13:10.842Z",
+ "version": "6.9.1-4.0.3",
+ "location": {
+  "title": "New York, USA",
+  "city": "New York",
+  "tzid": "America/New_York",
+  "latitude": 40.71427,
+  "longitude": -74.00597,
+  "cc": "US",
+  "country": "United States",
+  "elevation": 57,
+  "admin1": "New York",
+  "asciiname": "New York",
+  "geo": "geoname",
+  "geonameid": 5128581
+ },
+ "range": {
+  "start": "2025-10-07",
+  "end": "2025-10-12"
+ },
+ "items": [
+  {
+   "title": "Sukkot I",
+   "date": "2025-10-07",
+   "hdate": "15 Tishrei 5786",
+   "category": "holiday",
+   "subcat": "major",
+   "yomtov": true,
+   "hebrew": "סוכות א׳",
+   "leyning": {
+    "1": "Leviticus 22:26-23:3",
+    "2": "Leviticus 23:4-23:14",
+    "3": "Leviticus 23:15-23:22",
+    "4": "Leviticus 23:23-23:32",
+    "5": "Leviticus 23:33-23:44",
+    "torah": "Leviticus 22:26-23:44; Numbers 29:12-16",
+    "haftarah": "Zechariah 14:1-21",
+    "maftir": "Numbers 29:12-29:16"
+   },
+   "link": "https://hebcal.com/h/sukkot-2025?us=js&um=api",
+   "memo": "Feast of Booths. Also called the Feast of Tabernacles, the seven-day holiday is one of the Three Pilgrimage Festivals (Hebrew: שלוש רגלים, shalosh regalim)"
+  },
+  {
+   "title": "Candle lighting: 7:08pm",
+   "date": "2025-10-07T19:08:00-04:00",
+   "category": "candles",
+   "title_orig": "Candle lighting",
+   "hebrew": "הדלקת נרות",
+   "memo": "Sukkot I"
+  },
+  {
+   "title": "Sukkot II",
+   "date": "2025-10-08",
+   "hdate": "16 Tishrei 5786",
+   "category": "holiday",
+   "subcat": "major",
+   "yomtov": true,
+   "hebrew": "סוכות ב׳",
+   "leyning": {
+    "1": "Leviticus 22:26-23:3",
+    "2": "Leviticus 23:4-23:14",
+    "3": "Leviticus 23:15-23:22",
+    "4": "Leviticus 23:23-23:32",
+    "5": "Leviticus 23:33-23:44",
+    "torah": "Leviticus 22:26-23:44; Numbers 29:12-16",
+    "haftarah": "I Kings 8:2-21",
+    "maftir": "Numbers 29:12-29:16"
+   },
+   "link": "https://hebcal.com/h/sukkot-2025?us=js&um=api",
+   "memo": "Feast of Booths. Also called the Feast of Tabernacles, the seven-day holiday is one of the Three Pilgrimage Festivals (Hebrew: שלוש רגלים, shalosh regalim)"
+  },
+  {
+   "title": "Havdalah: 7:07pm",
+   "date": "2025-10-08T19:07:00-04:00",
+   "category": "havdalah",
+   "title_orig": "Havdalah",
+   "hebrew": "הבדלה",
+   "memo": "Sukkot II"
+  },
+  {
+   "title": "Sukkot III (CH’’M)",
+   "date": "2025-10-09",
+   "hdate": "17 Tishrei 5786",
+   "category": "holiday",
+   "subcat": "major",
+   "title_orig": "Sukkot III (CH''M)",
+   "hebrew": "סוכות ג׳ (חוה״מ)",
+   "leyning": {
+    "1": "Numbers 29:17-29:19",
+    "2": "Numbers 29:20-29:22",
+    "3": "Numbers 29:23-29:25",
+    "4": "Numbers 29:17-29:22",
+    "torah": "Numbers 29:17-25, 29:17-22"
+   },
+   "link": "https://hebcal.com/h/sukkot-2025?us=js&um=api",
+   "memo": "Feast of Booths. Also called the Feast of Tabernacles, the seven-day holiday is one of the Three Pilgrimage Festivals (Hebrew: שלוש רגלים, shalosh regalim)"
+  },
+  {
+   "title": "Sukkot IV (CH’’M)",
+   "date": "2025-10-10",
+   "hdate": "18 Tishrei 5786",
+   "category": "holiday",
+   "subcat": "major",
+   "title_orig": "Sukkot IV (CH''M)",
+   "hebrew": "סוכות ד׳ (חוה״מ)",
+   "leyning": {
+    "1": "Numbers 29:20-29:22",
+    "2": "Numbers 29:23-29:25",
+    "3": "Numbers 29:26-29:28",
+    "4": "Numbers 29:20-29:25",
+    "torah": "Numbers 29:20-28, 29:20-25"
+   },
+   "link": "https://hebcal.com/h/sukkot-2025?us=js&um=api",
+   "memo": "Feast of Booths. Also called the Feast of Tabernacles, the seven-day holiday is one of the Three Pilgrimage Festivals (Hebrew: שלוש רגלים, shalosh regalim)"
+  },
+  {
+   "title": "Candle lighting: 6:04pm",
+   "date": "2025-10-10T18:04:00-04:00",
+   "category": "candles",
+   "title_orig": "Candle lighting",
+   "hebrew": "הדלקת נרות",
+   "memo": "Sukkot Shabbat Chol ha-Moed"
+  },
+  {
+   "title": "Sukkot V (CH’’M)",
+   "date": "2025-10-11",
+   "hdate": "19 Tishrei 5786",
+   "category": "holiday",
+   "subcat": "major",
+   "title_orig": "Sukkot V (CH''M)",
+   "hebrew": "סוכות ה׳ (חוה״מ)",
+   "leyning": {
+    "1": "Exodus 33:12-33:16",
+    "2": "Exodus 33:17-33:19",
+    "3": "Exodus 33:20-33:23",
+    "4": "Exodus 34:1-34:3",
+    "5": "Exodus 34:4-34:10",
+    "6": "Exodus 34:11-34:17",
+    "7": "Exodus 34:18-34:26",
+    "torah": "Exodus 33:12-34:26; Numbers 29:23-28; Ecclesiastes 1:1-12:14",
+    "haftarah": "Ezekiel 38:18-39:16",
+    "maftir": "Numbers 29:23-29:28"
+   },
+   "link": "https://hebcal.com/h/sukkot-2025?us=js&um=api",
+   "memo": "Feast of Booths. Also called the Feast of Tabernacles, the seven-day holiday is one of the Three Pilgrimage Festivals (Hebrew: שלוש רגלים, shalosh regalim)"
+  },
+  {
+   "title": "Havdalah: 7:02pm",
+   "date": "2025-10-11T19:02:00-04:00",
+   "category": "havdalah",
+   "title_orig": "Havdalah",
+   "hebrew": "הבדלה"
+  },
+  {
+   "title": "Sukkot VI (CH’’M)",
+   "date": "2025-10-12",
+   "hdate": "20 Tishrei 5786",
+   "category": "holiday",
+   "subcat": "major",
+   "title_orig": "Sukkot VI (CH''M)",
+   "hebrew": "סוכות ו׳ (חוה״מ)",
+   "leyning": {
+    "1": "Numbers 29:26-29:28",
+    "2": "Numbers 29:29-29:31",
+    "3": "Numbers 29:32-29:34",
+    "4": "Numbers 29:26-29:31",
+    "torah": "Numbers 29:26-34, 29:26-31"
+   },
+   "link": "https://hebcal.com/h/sukkot-2025?us=js&um=api",
+   "memo": "Feast of Booths. Also called the Feast of Tabernacles, the seven-day holiday is one of the Three Pilgrimage Festivals (Hebrew: שלוש רגלים, shalosh regalim)"
+  }
+ ]
+}

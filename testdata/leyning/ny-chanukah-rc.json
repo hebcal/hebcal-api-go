@@ -1,0 +1,153 @@
+{
+ "title": "Hebcal New York December 2025",
+ "date": "2026-08-03T17:13:10.792Z",
+ "version": "6.9.1-4.0.3",
+ "location": {
+  "title": "New York, USA",
+  "city": "New York",
+  "tzid": "America/New_York",
+  "latitude": 40.71427,
+  "longitude": -74.00597,
+  "cc": "US",
+  "country": "United States",
+  "elevation": 57,
+  "admin1": "New York",
+  "asciiname": "New York",
+  "geo": "geoname",
+  "geonameid": 5128581
+ },
+ "range": {
+  "start": "2025-12-19",
+  "end": "2025-12-22"
+ },
+ "items": [
+  {
+   "title": "Chanukah: 6 Candles",
+   "date": "2025-12-19T16:12:00-05:00",
+   "category": "holiday",
+   "subcat": "major",
+   "hebrew": "חנוכה: ו׳ נרות",
+   "link": "https://hebcal.com/h/chanukah-2025?us=js&um=api",
+   "memo": "Hanukkah, the Jewish festival of rededication. Also known as the Festival of Lights, the eight-day festival is observed by lighting the candles of a hanukkiah (menorah)"
+  },
+  {
+   "title": "Candle lighting: 4:12pm",
+   "date": "2025-12-19T16:12:00-05:00",
+   "category": "candles",
+   "title_orig": "Candle lighting",
+   "hebrew": "הדלקת נרות",
+   "memo": "Parashat Miketz"
+  },
+  {
+   "title": "Chag HaBanot",
+   "date": "2025-12-20",
+   "hdate": "30 Kislev 5786",
+   "category": "holiday",
+   "subcat": "minor",
+   "hebrew": "חג הבנות",
+   "link": "https://hebcal.com/h/chag-habanot-2025?us=js&um=api",
+   "memo": "North African Chanukah festival of daughters. Called Eid al-Banat in Arabic, the holiday was most preserved in Tunisia"
+  },
+  {
+   "title": "Chanukah: 7 Candles",
+   "date": "2025-12-20T17:17:00-05:00",
+   "category": "holiday",
+   "subcat": "major",
+   "hebrew": "חנוכה: ז׳ נרות",
+   "link": "https://hebcal.com/h/chanukah-2025?us=js&um=api",
+   "memo": "Hanukkah, the Jewish festival of rededication. Also known as the Festival of Lights, the eight-day festival is observed by lighting the candles of a hanukkiah (menorah)"
+  },
+  {
+   "title": "Rosh Chodesh Tevet",
+   "date": "2025-12-20",
+   "hdate": "30 Kislev 5786",
+   "category": "roshchodesh",
+   "hebrew": "ראש חודש טבת",
+   "leyning": {
+    "7": "Numbers 28:9-28:15",
+    "haftarah": "Zechariah 2:14-4:7",
+    "maftir": "Numbers 7:42-7:47"
+   },
+   "link": "https://hebcal.com/h/rosh-chodesh-tevet-2025?us=js&um=api",
+   "memo": "Start of month of Tevet on the Hebrew calendar. Tevet (טֵבֵת) is the 4th month of the civil Hebrew year and the 10th month of the biblical Hebrew year. It has 29 days and corresponds to December or January on the Gregorian calendar. רֹאשׁ חוֹדֶשׁ, transliterated Rosh Chodesh or Rosh Hodesh, is a minor holiday that occurs at the beginning of every month in the Hebrew calendar. It is marked by the birth of a new moon"
+  },
+  {
+   "title": "Parashat Miketz",
+   "date": "2025-12-20",
+   "hdate": "30 Kislev 5786",
+   "category": "parashat",
+   "hebrew": "פרשת מקץ",
+   "leyning": {
+    "1": "Genesis 41:1-41:14",
+    "2": "Genesis 41:15-41:38",
+    "3": "Genesis 41:39-41:52",
+    "4": "Genesis 41:53-42:18",
+    "5": "Genesis 42:19-43:15",
+    "6": "Genesis 43:16-44:17",
+    "7": "Numbers 28:9-28:15 | Shabbat Rosh Chodesh Chanukah",
+    "torah": "Genesis 41:1-44:17; Numbers 28:9-15, 7:42-47",
+    "haftarah": "Zechariah 2:14-4:7 | Shabbat Rosh Chodesh Chanukah",
+    "maftir": "Numbers 7:42-7:47 | Shabbat Rosh Chodesh Chanukah",
+    "triennial": {
+     "1": "Genesis 41:1-41:4",
+     "2": "Genesis 41:5-41:7",
+     "3": "Genesis 41:8-41:14",
+     "4": "Genesis 41:15-41:24",
+     "5": "Genesis 41:25-41:38",
+     "6": "Genesis 41:39-41:52",
+     "7": "Numbers 28:9-28:15",
+     "maftir": "Numbers 7:42-7:47"
+    }
+   },
+   "link": "https://hebcal.com/s/5786/10?us=js&um=api"
+  },
+  {
+   "title": "Havdalah: 5:17pm",
+   "date": "2025-12-20T17:17:00-05:00",
+   "category": "havdalah",
+   "title_orig": "Havdalah",
+   "hebrew": "הבדלה"
+  },
+  {
+   "title": "Chanukah: 8 Candles",
+   "date": "2025-12-21T16:56:00-05:00",
+   "category": "holiday",
+   "subcat": "major",
+   "hebrew": "חנוכה: ח׳ נרות",
+   "link": "https://hebcal.com/h/chanukah-2025?us=js&um=api",
+   "memo": "Hanukkah, the Jewish festival of rededication. Also known as the Festival of Lights, the eight-day festival is observed by lighting the candles of a hanukkiah (menorah)"
+  },
+  {
+   "title": "Rosh Chodesh Tevet",
+   "date": "2025-12-21",
+   "hdate": "1 Tevet 5786",
+   "category": "roshchodesh",
+   "hebrew": "ראש חודש טבת",
+   "leyning": {
+    "1": "Numbers 28:1-28:5",
+    "2": "Numbers 28:6-28:10",
+    "3": "Numbers 28:11-28:15",
+    "4": "Numbers 7:48-7:53",
+    "torah": "Numbers 28:1-15, 7:48-53"
+   },
+   "link": "https://hebcal.com/h/rosh-chodesh-tevet-2025?us=js&um=api",
+   "memo": "Start of month of Tevet on the Hebrew calendar. Tevet (טֵבֵת) is the 4th month of the civil Hebrew year and the 10th month of the biblical Hebrew year. It has 29 days and corresponds to December or January on the Gregorian calendar. רֹאשׁ חוֹדֶשׁ, transliterated Rosh Chodesh or Rosh Hodesh, is a minor holiday that occurs at the beginning of every month in the Hebrew calendar. It is marked by the birth of a new moon"
+  },
+  {
+   "title": "Chanukah: 8th Day",
+   "date": "2025-12-22",
+   "hdate": "2 Tevet 5786",
+   "category": "holiday",
+   "subcat": "major",
+   "hebrew": "חנוכה: יום ח׳",
+   "leyning": {
+    "1": "Numbers 7:54-7:56",
+    "2": "Numbers 7:57-7:59",
+    "3": "Numbers 7:60-8:4",
+    "torah": "Numbers 7:54-8:4"
+   },
+   "link": "https://hebcal.com/h/chanukah-2025?us=js&um=api",
+   "memo": "Hanukkah, the Jewish festival of rededication. Also known as the Festival of Lights, the eight-day festival is observed by lighting the candles of a hanukkiah (menorah)"
+  }
+ ]
+}

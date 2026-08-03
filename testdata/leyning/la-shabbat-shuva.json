@@ -1,0 +1,103 @@
+{
+ "title": "Hebcal Los Angeles September 2026",
+ "date": "2026-08-03T17:13:10.816Z",
+ "version": "6.9.1-4.0.3",
+ "location": {
+  "title": "Los Angeles, California, USA",
+  "city": "Los Angeles",
+  "tzid": "America/Los_Angeles",
+  "latitude": 34.05223,
+  "longitude": -118.24368,
+  "cc": "US",
+  "country": "United States",
+  "elevation": 96,
+  "admin1": "California",
+  "asciiname": "Los Angeles",
+  "geo": "geoname",
+  "geonameid": 5368361
+ },
+ "range": {
+  "start": "2026-09-18",
+  "end": "2026-09-20"
+ },
+ "items": [
+  {
+   "title": "Candle lighting: 6:37pm",
+   "date": "2026-09-18T18:37:00-07:00",
+   "category": "candles",
+   "title_orig": "Candle lighting",
+   "hebrew": "הדלקת נרות",
+   "memo": "Parashat Ha’azinu"
+  },
+  {
+   "title": "Shabbat Shuva",
+   "date": "2026-09-19",
+   "hdate": "8 Tishrei 5787",
+   "category": "holiday",
+   "subcat": "shabbat",
+   "hebrew": "שבת שובה",
+   "leyning": {
+    "haftarah": "Hosea 14:2-10; Micah 7:18-20; Joel 2:15-27"
+   },
+   "link": "https://hebcal.com/h/shabbat-shuva-2026?us=js&um=api",
+   "memo": "Shabbat of Returning. Shabbat that occurs during the Ten Days of Repentance between Rosh Hashanah and Yom Kippur"
+  },
+  {
+   "title": "Parashat Ha’azinu",
+   "date": "2026-09-19",
+   "hdate": "8 Tishrei 5787",
+   "category": "parashat",
+   "title_orig": "Parashat Ha'azinu",
+   "hebrew": "פרשת האזינו",
+   "leyning": {
+    "1": "Deuteronomy 32:1-32:6",
+    "2": "Deuteronomy 32:7-32:12",
+    "3": "Deuteronomy 32:13-32:18",
+    "4": "Deuteronomy 32:19-32:28",
+    "5": "Deuteronomy 32:29-32:39",
+    "6": "Deuteronomy 32:40-32:43",
+    "7": "Deuteronomy 32:44-32:52",
+    "torah": "Deuteronomy 32:1-52",
+    "haftarah": "Hosea 14:2-10; Joel 2:15-27 | Shabbat Shuva (with Ha'azinu)",
+    "haftarah_sephardic": "Hosea 14:2-10; Micah 7:18-20 | Shabbat Shuva (with Ha'azinu)",
+    "maftir": "Deuteronomy 32:48-32:52",
+    "triennial": {
+     "1": "Deuteronomy 32:1-32:6",
+     "2": "Deuteronomy 32:7-32:12",
+     "3": "Deuteronomy 32:13-32:18",
+     "4": "Deuteronomy 32:19-32:28",
+     "5": "Deuteronomy 32:29-32:39",
+     "6": "Deuteronomy 32:40-32:43",
+     "7": "Deuteronomy 32:44-32:52",
+     "maftir": "Deuteronomy 32:48-32:52"
+    }
+   },
+   "link": "https://hebcal.com/s/5787/53?us=js&um=api"
+  },
+  {
+   "title": "Havdalah: 7:31pm",
+   "date": "2026-09-19T19:31:00-07:00",
+   "category": "havdalah",
+   "title_orig": "Havdalah",
+   "hebrew": "הבדלה"
+  },
+  {
+   "title": "Erev Yom Kippur",
+   "date": "2026-09-20",
+   "hdate": "9 Tishrei 5787",
+   "category": "holiday",
+   "subcat": "major",
+   "hebrew": "ערב יום כיפור",
+   "link": "https://hebcal.com/h/yom-kippur-2026?us=js&um=api",
+   "memo": "Evening of Yom Kippur (Day of Atonement), which includes the Kol Nidre service. The Yom Kippur fast begins at sundown and continues for 25 hours"
+  },
+  {
+   "title": "Candle lighting: 6:34pm",
+   "date": "2026-09-20T18:34:00-07:00",
+   "category": "candles",
+   "title_orig": "Candle lighting",
+   "hebrew": "הדלקת נרות",
+   "memo": "Erev Yom Kippur"
+  }
+ ]
+}

@@ -1,0 +1,137 @@
+{
+ "title": "Hebcal Los Angeles October 2025",
+ "date": "2026-08-03T17:13:10.829Z",
+ "version": "6.9.1-4.0.3",
+ "location": {
+  "title": "Los Angeles, California, USA",
+  "city": "Los Angeles",
+  "tzid": "America/Los_Angeles",
+  "latitude": 34.05223,
+  "longitude": -118.24368,
+  "cc": "US",
+  "country": "United States",
+  "elevation": 96,
+  "admin1": "California",
+  "asciiname": "Los Angeles",
+  "geo": "geoname",
+  "geonameid": 5368361
+ },
+ "range": {
+  "start": "2025-10-01",
+  "end": "2025-10-06"
+ },
+ "items": [
+  {
+   "title": "Erev Yom Kippur",
+   "date": "2025-10-01",
+   "hdate": "9 Tishrei 5786",
+   "category": "holiday",
+   "subcat": "major",
+   "hebrew": "ערב יום כיפור",
+   "link": "https://hebcal.com/h/yom-kippur-2025?us=js&um=api",
+   "memo": "Evening of Yom Kippur (Day of Atonement), which includes the Kol Nidre service. The Yom Kippur fast begins at sundown and continues for 25 hours"
+  },
+  {
+   "title": "Candle lighting: 6:18pm",
+   "date": "2025-10-01T18:18:00-07:00",
+   "category": "candles",
+   "title_orig": "Candle lighting",
+   "hebrew": "הדלקת נרות",
+   "memo": "Erev Yom Kippur"
+  },
+  {
+   "title": "Yom Kippur",
+   "date": "2025-10-02",
+   "hdate": "10 Tishrei 5786",
+   "category": "holiday",
+   "subcat": "major",
+   "yomtov": true,
+   "hebrew": "יום כיפור",
+   "leyning": {
+    "1": "Leviticus 16:1-16:6",
+    "2": "Leviticus 16:7-16:11",
+    "3": "Leviticus 16:12-16:17",
+    "4": "Leviticus 16:18-16:24",
+    "5": "Leviticus 16:25-16:30",
+    "6": "Leviticus 16:31-16:34",
+    "torah": "Leviticus 16:1-34; Numbers 29:7-11",
+    "haftarah": "Isaiah 57:14-58:14",
+    "maftir": "Numbers 29:7-29:11"
+   },
+   "link": "https://hebcal.com/h/yom-kippur-2025?us=js&um=api",
+   "memo": "Day of Atonement. The holiest day of the year in Judaism, traditionally observed with a 25-hour period of fasting and intensive prayer"
+  },
+  {
+   "title": "Havdalah: 7:12pm",
+   "date": "2025-10-02T19:12:00-07:00",
+   "category": "havdalah",
+   "title_orig": "Havdalah",
+   "hebrew": "הבדלה",
+   "memo": "Yom Kippur"
+  },
+  {
+   "title": "Candle lighting: 6:15pm",
+   "date": "2025-10-03T18:15:00-07:00",
+   "category": "candles",
+   "title_orig": "Candle lighting",
+   "hebrew": "הדלקת נרות",
+   "memo": "Parashat Ha’azinu"
+  },
+  {
+   "title": "Parashat Ha’azinu",
+   "date": "2025-10-04",
+   "hdate": "12 Tishrei 5786",
+   "category": "parashat",
+   "title_orig": "Parashat Ha'azinu",
+   "hebrew": "פרשת האזינו",
+   "leyning": {
+    "1": "Deuteronomy 32:1-32:6",
+    "2": "Deuteronomy 32:7-32:12",
+    "3": "Deuteronomy 32:13-32:18",
+    "4": "Deuteronomy 32:19-32:28",
+    "5": "Deuteronomy 32:29-32:39",
+    "6": "Deuteronomy 32:40-32:43",
+    "7": "Deuteronomy 32:44-32:52",
+    "torah": "Deuteronomy 32:1-52",
+    "haftarah": "II Samuel 22:1-51",
+    "maftir": "Deuteronomy 32:48-32:52",
+    "triennial": {
+     "1": "Deuteronomy 32:1-32:6",
+     "2": "Deuteronomy 32:7-32:12",
+     "3": "Deuteronomy 32:13-32:18",
+     "4": "Deuteronomy 32:19-32:28",
+     "5": "Deuteronomy 32:29-32:39",
+     "6": "Deuteronomy 32:40-32:43",
+     "7": "Deuteronomy 32:44-32:52",
+     "maftir": "Deuteronomy 32:48-32:52"
+    }
+   },
+   "link": "https://hebcal.com/s/5786/53?us=js&um=api"
+  },
+  {
+   "title": "Havdalah: 7:10pm",
+   "date": "2025-10-04T19:10:00-07:00",
+   "category": "havdalah",
+   "title_orig": "Havdalah",
+   "hebrew": "הבדלה"
+  },
+  {
+   "title": "Erev Sukkot",
+   "date": "2025-10-06",
+   "hdate": "14 Tishrei 5786",
+   "category": "holiday",
+   "subcat": "major",
+   "hebrew": "ערב סוכות",
+   "link": "https://hebcal.com/h/sukkot-2025?us=js&um=api",
+   "memo": "Feast of Booths. Also called the Feast of Tabernacles, the seven-day holiday is one of the Three Pilgrimage Festivals (Hebrew: שלוש רגלים, shalosh regalim)"
+  },
+  {
+   "title": "Candle lighting: 6:11pm",
+   "date": "2025-10-06T18:11:00-07:00",
+   "category": "candles",
+   "title_orig": "Candle lighting",
+   "hebrew": "הדלקת נרות",
+   "memo": "Erev Sukkot"
+  }
+ ]
+}
