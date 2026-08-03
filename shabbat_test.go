@@ -199,6 +199,60 @@ func TestShabbatLocaleValidation(t *testing.T) {
 	}
 }
 
+// TestShabbatHavdalahMinutes verifies that a havdalah pinned to a fixed
+// number of minutes after sunset (m=<min>) says so in its title, the way
+// @hebcal/core's HavdalahEvent does. td=<deg> and the M=on default do not.
+func TestShabbatHavdalahMinutes(t *testing.T) {
+	srv := testServerWithDB(t)
+	const base = "/shabbat?cfg=json&geonameid=5128581&dt=2026-11-07&leyning=off"
+	tests := []struct {
+		query, title, hebrew string
+	}{
+		{"&m=50", "Havdalah (50 min): ", "הבדלה (50 דקות)"},
+		{"&m=72", "Havdalah (72 min): ", "הבדלה (72 דקות)"},
+		{"&M=on", "Havdalah: ", "הבדלה"},
+		{"&td=7.083", "Havdalah: ", "הבדלה"},
+		{"", "Havdalah: ", "הבדלה"},
+	}
+	for _, tc := range tests {
+		resp, body := get(t, srv, base+tc.query)
+		if resp.StatusCode != 200 {
+			t.Fatalf("%q: status = %d: %s", tc.query, resp.StatusCode, body)
+		}
+		var out struct {
+			Items []struct {
+				Title     string `json:"title"`
+				TitleOrig string `json:"title_orig"`
+				Hebrew    string `json:"hebrew"`
+				Category  string `json:"category"`
+			} `json:"items"`
+		}
+		if err := json.Unmarshal([]byte(body), &out); err != nil {
+			t.Fatalf("%q: %v", tc.query, err)
+		}
+		var found bool
+		for _, item := range out.Items {
+			if item.Category != "havdalah" {
+				continue
+			}
+			found = true
+			if !strings.HasPrefix(item.Title, tc.title) {
+				t.Errorf("%q: title = %q, want prefix %q", tc.query, item.Title, tc.title)
+			}
+			if item.Hebrew != tc.hebrew {
+				t.Errorf("%q: hebrew = %q, want %q", tc.query, item.Hebrew, tc.hebrew)
+			}
+			// title_orig stays the untranslated event description
+			if item.TitleOrig != "Havdalah" {
+				t.Errorf("%q: title_orig = %q, want Havdalah", tc.query, item.TitleOrig)
+			}
+		}
+		if !found {
+			t.Errorf("%q: no havdalah item", tc.query)
+		}
+	}
+}
+
 func TestShabbatNoDB(t *testing.T) {
 	_, srv := testServer(t)
 	resp, _ := get(t, srv, "/shabbat?cfg=json&geonameid=5128581&leyning=off")
