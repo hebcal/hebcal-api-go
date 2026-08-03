@@ -160,6 +160,10 @@ var leyningGoldens = []struct {
 	{"il-sukkot", "/shabbat?cfg=json&geonameid=281184&dt=2025-10-07"},
 	// Purim in Israel: the megillah is folded into the torah summary
 	{"il-purim", "/shabbat?cfg=json&geonameid=281184&dt=2026-03-03"},
+	// the readings stay English whatever lg asks for, and are still matched
+	// to their events by the untranslated event description
+	{"ny-shekalim-he", "/shabbat?cfg=json&geonameid=5128581&dt=2026-02-14&lg=he"},
+	{"la-reeh-ashkenazi", "/shabbat?cfg=json&geonameid=5368361&dt=2026-08-08&lg=a"},
 }
 
 func TestShabbatLeyningMatchesHebcalWeb(t *testing.T) {
