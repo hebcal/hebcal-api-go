@@ -91,7 +91,10 @@ solar calculations are backed by [hebcal/noaa-go](https://github.com/hebcal/noaa
     `td=<deg>` ends Shabbat at a solar depression angle (default 8.5°),
     `m=<min>` at a fixed number of minutes after sunset, and `m=0`
     suppresses havdalah entirely.
-  - `lg=<lang>` translates the event titles; `hdp=1` adds `heDateParts`.
+  - `lg=<lang>` translates the event titles (`a=on` is the much older
+    spelling of `lg=a`); an unsupported locale returns
+    `400 {"error":"Locale 'xx' not found"}`, as hebcal-web does here.
+    `hdp=1` adds `heDateParts`.
   - `leyning=off` (or `leyning=0`) omits the Torah readings; see below.
 
 #### Torah readings

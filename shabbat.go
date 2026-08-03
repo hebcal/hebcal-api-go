@@ -57,6 +57,22 @@ func shabbatQueryDate(q url.Values) (gregDate, bool, error) {
 	return gregDate{}, true, nil
 }
 
+// shabbatQueryLang returns the requested `lg`, falling back to the much older
+// a=on spelling of Ashkenazi transliteration. Ported from makeHebcalOptions()
+// in hebcal-web src/calendar.js, which rewrites a=on to lg=a whenever lg is
+// absent; the /converter route has no such fallback in hebcal-web, so this
+// stays local to /shabbat. (Resolving the short codes themselves is
+// aliasLocale's job, and both routes share it.)
+func shabbatQueryLang(q url.Values) string {
+	if lg := q.Get("lg"); lg != "" {
+		return lg
+	}
+	if q.Get("a") == "on" {
+		return "a"
+	}
+	return ""
+}
+
 // shabbatWeekRange returns the [start, endOfWeek] Gregorian window for the
 // Shabbat listing, ported from shabbatWeekRange + getStartAndEnd in
 // hebcal-web src/dateUtil.js. If isToday, "now" in the location tz is used.
@@ -164,7 +180,14 @@ func (app *appServer) shabbatHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	il := loc.isIsrael()
-	lg := q.Get("lg")
+	lg := shabbatQueryLang(q)
+	// hebcal-web validates the locale here (makeHebcalOptions calls
+	// Locale.useLocale, which throws for an unknown name); its other JSON
+	// routes accept any lg and quietly fall back to English.
+	if !localeSupported(lg) {
+		app.writeZmanimError(w, badRequest("Locale '%s' not found", lg))
+		return
+	}
 	locale := strings.ToLower(aliasLocale(lg))
 	opts := shabbatCalOptions(loc, il, start, end, q)
 	events, err := hebcal.HebrewCalendar(&opts)

@@ -39,17 +39,39 @@ func hdateString(hd hdate.HDate) string {
 }
 
 // aliasLocale maps the short `lg` query-string values onto locale names
-// understood by the locales package, mirroring the alias map in @hebcal/hdate.
+// understood by the locales package, mirroring the lgToLocale map in
+// hebcal-web src/lang.js. The "h" suffix on "ah" and "sh" only asks for the
+// Hebrew name to be appended to email subject lines, which no route here
+// renders, so they resolve to the same locale as "a" and "s".
 func aliasLocale(lg string) string {
 	switch lg {
 	case "h":
 		return "he"
-	case "a":
+	case "a", "ah":
 		return "ashkenazi"
-	case "s", "":
+	case "s", "sh", "":
 		return "en"
 	}
 	return lg
+}
+
+// localeSupported reports whether `lg` names a locale this service can
+// render, matching the set @hebcal/core's Locale.useLocale() accepts once
+// hebcal-web has applied lgToLocale. Comparison is case-insensitive, as it is
+// in both locale registries. Note that "sephardic" is deliberately absent:
+// the short form "s" is the only spelling hebcal-web takes.
+func localeSupported(lg string) bool {
+	switch lg {
+	case "", "s", "sh", "a", "ah", "h":
+		return true
+	}
+	want := strings.ToLower(lg)
+	for _, name := range locales.AllLocales {
+		if strings.ToLower(name) == want {
+			return true
+		}
+	}
+	return false
 }
 
 func isEnLocale(locale string) bool {
