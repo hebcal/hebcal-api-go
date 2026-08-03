@@ -813,6 +813,66 @@ func TestPingAndMetrics(t *testing.T) {
 	}
 }
 
+// TestBackendHeader checks that X-Backend names the host that served the
+// request on every response, not just the 200s.
+func TestBackendHeader(t *testing.T) {
+	app, srv := testServer(t)
+	app.hostname = "web7.hebcal.com"
+
+	const okURL = "/converter?cfg=json&gy=2026&gm=7&gd=5&g2h=1"
+	resp, _ := get(t, srv, okURL)
+	etag := resp.Header.Get("ETag")
+	if etag == "" {
+		t.Fatal("no ETag")
+	}
+	tests := []struct {
+		desc   string
+		path   string
+		header []string
+		status int
+	}{
+		{"200 JSON", okURL, nil, 200},
+		{"304 not modified", okURL, []string{"If-None-Match", etag}, 304},
+		{"400 bad request", "/converter?cfg=json&gy=2026&gm=7&gd=99&g2h=1", nil, 400},
+		{"404 unknown path", "/nosuchpage", nil, 404},
+		{"503 no location database", "/zmanim", nil, 503},
+		{"metrics", "/metrics", nil, 200},
+	}
+	for _, tc := range tests {
+		resp, _ := get(t, srv, tc.path, tc.header...)
+		if resp.StatusCode != tc.status {
+			t.Errorf("%s: status = %d, want %d", tc.desc, resp.StatusCode, tc.status)
+		}
+		if got := resp.Header.Get("X-Backend"); got != "web7.hebcal.com" {
+			t.Errorf("%s: X-Backend = %q, want %q", tc.desc, got, "web7.hebcal.com")
+		}
+	}
+
+	// 204 from a CORS preflight, which never writes a body
+	req, err := http.NewRequest(http.MethodOptions, srv.URL+"/converter?cfg=json", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	respOpt, err := http.DefaultTransport.RoundTrip(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	respOpt.Body.Close()
+	if respOpt.StatusCode != 204 {
+		t.Errorf("OPTIONS status = %d, want 204", respOpt.StatusCode)
+	}
+	if got := respOpt.Header.Get("X-Backend"); got != "web7.hebcal.com" {
+		t.Errorf("OPTIONS: X-Backend = %q, want %q", got, "web7.hebcal.com")
+	}
+
+	// an unknown hostname yields no header rather than an empty one
+	app.hostname = ""
+	resp2, _ := get(t, srv, okURL)
+	if _, ok := resp2.Header["X-Backend"]; ok {
+		t.Errorf("X-Backend = %q, want absent", resp2.Header.Get("X-Backend"))
+	}
+}
+
 func TestNotFound(t *testing.T) {
 	_, srv := testServer(t)
 	resp, _ := get(t, srv, "/nosuchpage")
