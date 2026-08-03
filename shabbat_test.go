@@ -347,6 +347,46 @@ func TestShabbatChanukahCandles(t *testing.T) {
 	}
 }
 
+// TestShabbatMoladMemo pins the Molad announcement carried by Shabbat
+// Mevarchim. Molad.render() curls the apostrophe in the month name, but only
+// in the non-Hebrew sentence.
+func TestShabbatMoladMemo(t *testing.T) {
+	srv := testServerWithDB(t)
+	tests := map[string]string{
+		"":       "Molad Sh’vat: Thursday, 8:45am and 4 chalakim",
+		"&lg=a":  "Molad Sh’vat: Thursday, 8:45am and 4 chalakim",
+		"&lg=he": "מוֹלָד הָלְּבָנָה שְׁבָט יִהְיֶה בַּיּוֹם חֲמִישִׁי בשָׁבוּעַ, בְּשָׁעָה 8 בַּבֹּקֶר, ו-45 דַּקּוֹת ו-4 חֲלָקִים",
+	}
+	for query, want := range tests {
+		resp, body := get(t, srv, "/shabbat?cfg=json&geonameid=5128581&dt=2024-01-01&leyning=off"+query)
+		if resp.StatusCode != 200 {
+			t.Fatalf("%q: status = %d: %s", query, resp.StatusCode, body)
+		}
+		var out struct {
+			Items []struct {
+				Category string `json:"category"`
+				Memo     string `json:"memo"`
+			} `json:"items"`
+		}
+		if err := json.Unmarshal([]byte(body), &out); err != nil {
+			t.Fatalf("%q: %v", query, err)
+		}
+		var found bool
+		for _, item := range out.Items {
+			if item.Category != "mevarchim" {
+				continue
+			}
+			found = true
+			if item.Memo != want {
+				t.Errorf("%q: molad memo = %q, want %q", query, item.Memo, want)
+			}
+		}
+		if !found {
+			t.Errorf("%q: no mevarchim item", query)
+		}
+	}
+}
+
 func TestShabbatNoDB(t *testing.T) {
 	_, srv := testServer(t)
 	resp, _ := get(t, srv, "/shabbat?cfg=json&geonameid=5128581&leyning=off")

@@ -488,7 +488,9 @@ func mevarchimMoladMemo(hd hdate.HDate, locale, cc string, il bool) string {
 	}
 	// Other locales: "Molad <month>: <weekday>, <time> and <n> chalakim", with
 	// the month localized and the time formatted per the location's country.
-	month := gettext(monthEn, locale)
+	// Molad.render() curls the apostrophe in the month name ("Sh'vat" =>
+	// "Sh’vat"), and only there — the Hebrew sentence above does not.
+	month := smartApostrophe(gettext(monthEn, locale))
 	dow := m.Date.Weekday().String()
 	fmtTime := reformatTimeStr(fmt.Sprintf("%d:%02d", m.Hours, m.Minutes), "pm", cc, il)
 	result := gettext("Molad", locale) + " " + month + ": " + dow + ", " + fmtTime
