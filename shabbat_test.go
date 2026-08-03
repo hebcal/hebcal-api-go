@@ -92,6 +92,24 @@ func TestShabbatBasic(t *testing.T) {
 	}
 }
 
+// TestNormMonth pins the "Tammuz" spellings: @hebcal/core writes the month
+// as "Tamuz" but keeps "Tzom Tammuz" for the 17th-of-Tammuz fast, and that
+// description is what title_orig, the MEMO key, the event URL and the
+// /leyning lookup are all built from.
+func TestNormMonth(t *testing.T) {
+	cases := map[string]string{
+		"Rosh Chodesh Tammuz":              "Rosh Chodesh Tamuz",
+		"Shabbat Mevarchim Chodesh Tammuz": "Shabbat Mevarchim Chodesh Tamuz",
+		"Tzom Tammuz":                      "Tzom Tammuz",
+		"Rosh Chodesh Av":                  "Rosh Chodesh Av",
+	}
+	for in, want := range cases {
+		if got := normMonth(in); got != want {
+			t.Errorf("normMonth(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
 func TestShabbatNoDB(t *testing.T) {
 	_, srv := testServer(t)
 	resp, _ := get(t, srv, "/shabbat?cfg=json&geonameid=5128581&leyning=off")

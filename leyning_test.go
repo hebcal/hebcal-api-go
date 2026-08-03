@@ -150,6 +150,9 @@ var leyningGoldens = []struct {
 	{"la-shabbat-shuva", "/shabbat?cfg=json&gd=15&geonameid=5368361&gm=9&gy=2026"},
 	// Yom Kippur midweek: the Mincha reading must not leak into the item
 	{"la-yom-kippur", "/shabbat?cfg=json&gd=1&geonameid=5368361&gm=10&gy=2025"},
+	// Tzom Tammuz: the one event @hebcal/core spells with a double "m",
+	// which normMonth() must leave alone or the reading stops matching
+	{"ny-tzom-tammuz", "/shabbat?cfg=json&geonameid=5128581&dt=2025-07-10"},
 	// the same Sukkot week read two ways: the Diaspora schedule, then the
 	// Israel schedule (i=on), which is a day out of step through Chol
 	// ha-Moed
