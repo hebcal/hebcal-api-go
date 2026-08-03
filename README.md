@@ -86,16 +86,33 @@ solar calculations are backed by [hebcal/noaa-go](https://github.com/hebcal/noaa
   - **Location** — the same parameters as `/zmanim` (see
     [Location resolution](#location-resolution)). Defaults to New York
     when none is given.
-  - `b=<min>` sets candle-lighting minutes before sunset (default 18, or
-    40 in Jerusalem and 30 in Haifa and Zikhron Ya'akov). `M=on` or
-    `td=<deg>` ends Shabbat at a solar depression angle (default 8.5°),
-    `m=<min>` at a fixed number of minutes after sunset, and `m=0`
-    suppresses havdalah entirely.
+  - `b=<min>` sets candle-lighting minutes before sunset; `b=0` lights at
+    sunset itself. The default is 18, or the local custom in Israel (40 in
+    Jerusalem, 30 in Haifa and Zikhron Ya'akov, 20 elsewhere) — which also
+    replaces the `b=18` the web form submits when the reader expressed no
+    preference.
+  - `M=on` or `td=<deg>` ends Shabbat at a solar depression angle
+    (default 8.5°) and `m=<min>` at a fixed number of minutes after
+    sunset; `m=0` suppresses havdalah entirely. When more than one is
+    given, `td` wins over `m`, `M=on` wins over both, and `M=off` picks
+    `m` over `td`.
+  - `ue=on` folds the location's elevation into sunrise and sunset.
+  - `i=on` puts a Diaspora location on the Israel schedule (the
+    candle-lighting custom still follows the location itself).
+  - `molad=on` adds the molad announcement on Shabbat Mevarchim, with the
+    exact moment of the conjunction as a UTC `instant`.
+  - `yto=on` keeps only the Yom Tov days; a week without one has no events
+    left and returns `400`.
+  - `h12=0` forces a 24-hour clock and `h12=1` a 12-hour one, overriding
+    the location's country.
   - `lg=<lang>` translates the event titles (`a=on` is the much older
     spelling of `lg=a`); an unsupported locale returns
     `400 {"error":"Locale 'xx' not found"}`, as hebcal-web does here.
     `hdp=1` adds `heDateParts`.
   - `leyning=off` (or `leyning=0`) omits the Torah readings; see below.
+  - `callback=<fn>` wraps the response in a JSONP call. A callback longer
+    than 128 characters or that is not a plain dotted identifier is
+    ignored, and ordinary JSON is returned.
 
 #### Torah readings
 
@@ -229,6 +246,10 @@ local midnight; an explicit date or range is cached for 30 days with an
 - `/shabbat` honors `date=` and `start=` as ways of pinning the week;
   hebcal-web reads only `dt=` and `gy`/`gm`/`gd` there and quietly falls
   back to today for the others.
+- `/shabbat` with `b=0` recomputes the candle-lighting times after the
+  calendar is built: hebcal-go's `CheckCandleOptions` rewrites a zero
+  `CandleLightingMins` to the 18/20-minute default, so there is no way to
+  ask it for sunset itself. Drop the workaround if hebcal-go grows one.
 
 ## Build and test
 
