@@ -1,0 +1,80 @@
+{
+ "title": "Hebcal New York August 2026",
+ "date": "2026-08-03T17:13:10.766Z",
+ "version": "6.9.1-4.0.3",
+ "location": {
+  "title": "New York, USA",
+  "city": "New York",
+  "tzid": "America/New_York",
+  "latitude": 40.71427,
+  "longitude": -74.00597,
+  "cc": "US",
+  "country": "United States",
+  "elevation": 57,
+  "admin1": "New York",
+  "asciiname": "New York",
+  "geo": "geoname",
+  "geonameid": 5128581
+ },
+ "range": {
+  "start": "2026-08-07",
+  "end": "2026-08-08"
+ },
+ "items": [
+  {
+   "title": "Candle lighting: 7:46pm",
+   "date": "2026-08-07T19:46:00-04:00",
+   "category": "candles",
+   "title_orig": "Candle lighting",
+   "hebrew": "הדלקת נרות",
+   "memo": "Parashat Re’eh"
+  },
+  {
+   "title": "Parashat Re’eh",
+   "date": "2026-08-08",
+   "hdate": "25 Av 5786",
+   "category": "parashat",
+   "title_orig": "Parashat Re'eh",
+   "hebrew": "פרשת ראה",
+   "leyning": {
+    "1": "Deuteronomy 11:26-12:10",
+    "2": "Deuteronomy 12:11-12:28",
+    "3": "Deuteronomy 12:29-13:19",
+    "4": "Deuteronomy 14:1-14:21",
+    "5": "Deuteronomy 14:22-14:29",
+    "6": "Deuteronomy 15:1-15:18",
+    "7": "Deuteronomy 15:19-16:17",
+    "torah": "Deuteronomy 11:26-16:17",
+    "haftarah": "Isaiah 54:11-55:5",
+    "maftir": "Deuteronomy 16:13-16:17",
+    "triennial": {
+     "1": "Deuteronomy 11:26-11:31",
+     "2": "Deuteronomy 11:32-12:5",
+     "3": "Deuteronomy 12:6-12:10",
+     "4": "Deuteronomy 12:11-12:16",
+     "5": "Deuteronomy 12:17-12:19",
+     "6": "Deuteronomy 12:20-12:25",
+     "7": "Deuteronomy 12:26-12:28",
+     "maftir": "Deuteronomy 12:26-12:28"
+    }
+   },
+   "link": "https://hebcal.com/s/5786/47?us=js&um=api"
+  },
+  {
+   "title": "Mevarchim Chodesh Elul",
+   "date": "2026-08-08",
+   "hdate": "25 Av 5786",
+   "category": "mevarchim",
+   "title_orig": "Shabbat Mevarchim Chodesh Elul",
+   "hebrew": "מברכים חודש אלול",
+   "memo": "Molad Elul: Thursday, 8:15am"
+  },
+  {
+   "title": "Havdalah: 8:48pm",
+   "date": "2026-08-08T20:48:00-04:00",
+   "category": "havdalah",
+   "title_orig": "Havdalah",
+   "hebrew": "הבדלה"
+  }
+ ]
+}

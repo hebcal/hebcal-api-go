@@ -1,0 +1,135 @@
+{
+ "title": "Hebcal Los Angeles September 2026",
+ "date": "2026-08-03T17:13:10.804Z",
+ "version": "6.9.1-4.0.3",
+ "location": {
+  "title": "Los Angeles, California, USA",
+  "city": "Los Angeles",
+  "tzid": "America/Los_Angeles",
+  "latitude": 34.05223,
+  "longitude": -118.24368,
+  "cc": "US",
+  "country": "United States",
+  "elevation": 96,
+  "admin1": "California",
+  "asciiname": "Los Angeles",
+  "geo": "geoname",
+  "geonameid": 5368361
+ },
+ "range": {
+  "start": "2026-09-11",
+  "end": "2026-09-14"
+ },
+ "items": [
+  {
+   "title": "Erev Rosh Hashana",
+   "date": "2026-09-11",
+   "hdate": "29 Elul 5786",
+   "category": "holiday",
+   "subcat": "major",
+   "hebrew": "ערב ראש השנה",
+   "link": "https://hebcal.com/h/rosh-hashana-2026?us=js&um=api",
+   "memo": "The Jewish New Year. Also spelled Rosh Hashanah"
+  },
+  {
+   "title": "Candle lighting: 6:46pm",
+   "date": "2026-09-11T18:46:00-07:00",
+   "category": "candles",
+   "title_orig": "Candle lighting",
+   "hebrew": "הדלקת נרות",
+   "memo": "Erev Rosh Hashana"
+  },
+  {
+   "title": "Rosh Hashana 5787",
+   "date": "2026-09-12",
+   "hdate": "1 Tishrei 5787",
+   "category": "holiday",
+   "subcat": "major",
+   "yomtov": true,
+   "hebrew": "ראש השנה 5787",
+   "leyning": {
+    "1": "Genesis 21:1-21:4",
+    "2": "Genesis 21:5-21:8",
+    "3": "Genesis 21:9-21:12",
+    "4": "Genesis 21:13-21:17",
+    "5": "Genesis 21:18-21:21",
+    "6": "Genesis 21:22-21:27",
+    "7": "Genesis 21:28-21:34",
+    "torah": "Genesis 21:1-34; Numbers 29:1-6",
+    "haftarah": "I Samuel 1:1-2:10",
+    "maftir": "Numbers 29:1-29:6"
+   },
+   "link": "https://hebcal.com/h/rosh-hashana-2026?us=js&um=api",
+   "memo": "The Jewish New Year. Also spelled Rosh Hashanah"
+  },
+  {
+   "title": "Candle lighting: 7:41pm",
+   "date": "2026-09-12T19:41:00-07:00",
+   "category": "candles",
+   "title_orig": "Candle lighting",
+   "hebrew": "הדלקת נרות",
+   "memo": "Rosh Hashana 5787"
+  },
+  {
+   "title": "Rosh Hashana II",
+   "date": "2026-09-13",
+   "hdate": "2 Tishrei 5787",
+   "category": "holiday",
+   "subcat": "major",
+   "yomtov": true,
+   "hebrew": "ראש השנה ב׳",
+   "leyning": {
+    "1": "Genesis 22:1-22:3",
+    "2": "Genesis 22:4-22:8",
+    "3": "Genesis 22:9-22:14",
+    "4": "Genesis 22:15-22:19",
+    "5": "Genesis 22:20-22:24",
+    "torah": "Genesis 22:1-24; Numbers 29:1-6",
+    "haftarah": "Jeremiah 31:2-20",
+    "maftir": "Numbers 29:1-29:6"
+   },
+   "link": "https://hebcal.com/h/rosh-hashana-2026?us=js&um=api",
+   "memo": "The Jewish New Year. Also spelled Rosh Hashanah"
+  },
+  {
+   "title": "Havdalah: 7:39pm",
+   "date": "2026-09-13T19:39:00-07:00",
+   "category": "havdalah",
+   "title_orig": "Havdalah",
+   "hebrew": "הבדלה",
+   "memo": "Rosh Hashana II"
+  },
+  {
+   "title": "Fast begins",
+   "date": "2026-09-14T05:21:00-07:00",
+   "category": "zmanim",
+   "subcat": "fast",
+   "hebrew": "תחילת הצום",
+   "memo": "Tzom Gedaliah"
+  },
+  {
+   "title": "Tzom Gedaliah",
+   "date": "2026-09-14",
+   "hdate": "3 Tishrei 5787",
+   "category": "holiday",
+   "subcat": "fast",
+   "hebrew": "צום גדליה",
+   "leyning": {
+    "1": "Exodus 32:11-32:14",
+    "2": "Exodus 34:1-34:3",
+    "3": "Exodus 34:4-34:10",
+    "torah": "Exodus 32:11-14, 34:1-10"
+   },
+   "link": "https://hebcal.com/h/tzom-gedaliah-2026?us=js&um=api",
+   "memo": "Fast of the Seventh Month. Commemorates the assassination of the Jewish governor of Judah"
+  },
+  {
+   "title": "Fast ends",
+   "date": "2026-09-14T19:31:00-07:00",
+   "category": "zmanim",
+   "subcat": "fast",
+   "hebrew": "סיום הצום",
+   "memo": "Tzom Gedaliah"
+  }
+ ]
+}

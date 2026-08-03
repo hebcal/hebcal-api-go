@@ -1,0 +1,127 @@
+{
+ "title": "Hebcal New York February 2026",
+ "date": "2026-08-03T17:13:10.781Z",
+ "version": "6.9.1-4.0.3",
+ "location": {
+  "title": "New York, USA",
+  "city": "New York",
+  "tzid": "America/New_York",
+  "latitude": 40.71427,
+  "longitude": -74.00597,
+  "cc": "US",
+  "country": "United States",
+  "elevation": 57,
+  "admin1": "New York",
+  "asciiname": "New York",
+  "geo": "geoname",
+  "geonameid": 5128581
+ },
+ "range": {
+  "start": "2026-02-13",
+  "end": "2026-02-18"
+ },
+ "items": [
+  {
+   "title": "Candle lighting: 5:10pm",
+   "date": "2026-02-13T17:10:00-05:00",
+   "category": "candles",
+   "title_orig": "Candle lighting",
+   "hebrew": "הדלקת נרות",
+   "memo": "Parashat Mishpatim"
+  },
+  {
+   "title": "Shabbat Shekalim",
+   "date": "2026-02-14",
+   "hdate": "27 Sh'vat 5786",
+   "category": "holiday",
+   "subcat": "shabbat",
+   "hebrew": "שבת שקלים",
+   "leyning": {
+    "haftarah": "II Kings 12:1-17",
+    "haftarah_sephardic": "II Kings 11:17-12:17",
+    "maftir": "Exodus 30:11-30:16"
+   },
+   "link": "https://hebcal.com/h/shabbat-shekalim-2026?us=js&um=api",
+   "memo": "Shabbat before Rosh Chodesh Adar. Read in preparation for Purim"
+  },
+  {
+   "title": "Parashat Mishpatim",
+   "date": "2026-02-14",
+   "hdate": "27 Sh'vat 5786",
+   "category": "parashat",
+   "hebrew": "פרשת משפטים",
+   "leyning": {
+    "1": "Exodus 21:1-21:19",
+    "2": "Exodus 21:20-22:3",
+    "3": "Exodus 22:4-22:26",
+    "4": "Exodus 22:27-23:5",
+    "5": "Exodus 23:6-23:19",
+    "6": "Exodus 23:20-23:25",
+    "7": "Exodus 23:26-24:18",
+    "torah": "Exodus 21:1-24:18, 30:11-16",
+    "haftarah": "II Kings 12:1-17 | Shabbat Shekalim",
+    "haftarah_sephardic": "II Kings 11:17-12:17 | Shabbat Shekalim",
+    "maftir": "Exodus 30:11-30:16 | Shabbat Shekalim",
+    "triennial": {
+     "1": "Exodus 21:1-21:6",
+     "2": "Exodus 21:7-21:11",
+     "3": "Exodus 21:12-21:19",
+     "4": "Exodus 21:20-21:27",
+     "5": "Exodus 21:28-21:32",
+     "6": "Exodus 21:33-21:36",
+     "7": "Exodus 21:37-22:3",
+     "maftir": "Exodus 30:11-30:16"
+    }
+   },
+   "link": "https://hebcal.com/s/5786/18?us=js&um=api"
+  },
+  {
+   "title": "Mevarchim Chodesh Adar",
+   "date": "2026-02-14",
+   "hdate": "27 Sh'vat 5786",
+   "category": "mevarchim",
+   "title_orig": "Shabbat Mevarchim Chodesh Adar",
+   "hebrew": "מברכים חודש אדר",
+   "memo": "Molad Adar: Tuesday, 3:50am and 12 chalakim"
+  },
+  {
+   "title": "Havdalah: 6:11pm",
+   "date": "2026-02-14T18:11:00-05:00",
+   "category": "havdalah",
+   "title_orig": "Havdalah",
+   "hebrew": "הבדלה"
+  },
+  {
+   "title": "Rosh Chodesh Adar",
+   "date": "2026-02-17",
+   "hdate": "30 Sh'vat 5786",
+   "category": "roshchodesh",
+   "hebrew": "ראש חודש אדר",
+   "leyning": {
+    "1": "Numbers 28:1-28:3",
+    "2": "Numbers 28:3-28:5",
+    "3": "Numbers 28:6-28:10",
+    "4": "Numbers 28:11-28:15",
+    "torah": "Numbers 28:1-15"
+   },
+   "link": "https://hebcal.com/h/rosh-chodesh-adar-2026?us=js&um=api",
+   "memo": "Start of month of Adar on the Hebrew calendar. Adar (אֲדָר) is the 6th month of the civil Hebrew year and the 12th month of the biblical Hebrew year. It has 29 days and corresponds to February or March on the Gregorian calendar. רֹאשׁ חוֹדֶשׁ, transliterated Rosh Chodesh or Rosh Hodesh, is a minor holiday that occurs at the beginning of every month in the Hebrew calendar. It is marked by the birth of a new moon"
+  },
+  {
+   "title": "Rosh Chodesh Adar",
+   "date": "2026-02-18",
+   "hdate": "1 Adar 5786",
+   "category": "roshchodesh",
+   "hebrew": "ראש חודש אדר",
+   "leyning": {
+    "1": "Numbers 28:1-28:3",
+    "2": "Numbers 28:3-28:5",
+    "3": "Numbers 28:6-28:10",
+    "4": "Numbers 28:11-28:15",
+    "torah": "Numbers 28:1-15"
+   },
+   "link": "https://hebcal.com/h/rosh-chodesh-adar-2026?us=js&um=api",
+   "memo": "Start of month of Adar on the Hebrew calendar. Adar (אֲדָר) is the 6th month of the civil Hebrew year and the 12th month of the biblical Hebrew year. It has 29 days and corresponds to February or March on the Gregorian calendar. רֹאשׁ חוֹדֶשׁ, transliterated Rosh Chodesh or Rosh Hodesh, is a minor holiday that occurs at the beginning of every month in the Hebrew calendar. It is marked by the birth of a new moon"
+  }
+ ]
+}

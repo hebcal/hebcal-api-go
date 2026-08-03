@@ -28,12 +28,14 @@ type appServer struct {
 	hostname    string // advertised in the X-Backend response header
 	db          *GeoDB // geonames/zips database for the /zmanim API; may be nil
 	geoIPClient *geoIPClient
+	leyning     *leyningClient // Torah readings for /shabbat, from hebcal-web
 }
 
 func newAppServer(logger *accessLogger) *appServer {
 	hostname, _ := os.Hostname()
 	return &appServer{logger: logger, now: todayNewYork,
-		pingFile: defaultPingFile, hostname: hostname}
+		pingFile: defaultPingFile, hostname: hostname,
+		leyning: newLeyningClient(defaultLeyningURL)}
 }
 
 // mux builds the HTTP routing table.

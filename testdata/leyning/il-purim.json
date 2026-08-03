@@ -1,0 +1,118 @@
+{
+ "title": "Hebcal Jerusalem March 2026",
+ "date": "2026-08-03T17:13:10.871Z",
+ "version": "6.9.1-4.0.3",
+ "location": {
+  "title": "Jerusalem, Israel",
+  "city": "Jerusalem",
+  "tzid": "Asia/Jerusalem",
+  "latitude": 31.76904,
+  "longitude": 35.21633,
+  "cc": "IL",
+  "country": "Israel",
+  "elevation": 786,
+  "admin1": "Jerusalem District",
+  "asciiname": "Jerusalem",
+  "geo": "geoname",
+  "geonameid": 281184
+ },
+ "range": {
+  "start": "2026-03-03",
+  "end": "2026-03-07"
+ },
+ "items": [
+  {
+   "title": "Purim",
+   "date": "2026-03-03",
+   "hdate": "14 Adar 5786",
+   "category": "holiday",
+   "subcat": "major",
+   "hebrew": "פורים",
+   "leyning": {
+    "1": "Exodus 17:8-17:10",
+    "2": "Exodus 17:11-17:13",
+    "3": "Exodus 17:14-17:16",
+    "torah": "Exodus 17:8-16; Esther 1:1-10:3"
+   },
+   "link": "https://hebcal.com/h/purim-2026?i=on&us=js&um=api",
+   "memo": "Celebration of Jewish deliverance as told by Megilat Esther. It commemorates a time when the Jewish people living in Persia were saved from extermination"
+  },
+  {
+   "title": "Shushan Purim",
+   "date": "2026-03-04",
+   "hdate": "15 Adar 5786",
+   "category": "holiday",
+   "subcat": "minor",
+   "hebrew": "שושן פורים",
+   "leyning": {
+    "1": "Exodus 17:8-17:10",
+    "2": "Exodus 17:11-17:13",
+    "3": "Exodus 17:14-17:16",
+    "torah": "Exodus 17:8-16; Esther 1:1-10:3"
+   },
+   "link": "https://hebcal.com/h/shushan-purim-2026?i=on&us=js&um=api",
+   "memo": "Purim celebrated in Jerusalem and walled cities"
+  },
+  {
+   "title": "Candle lighting: 17:00",
+   "date": "2026-03-06T17:00:00+02:00",
+   "category": "candles",
+   "title_orig": "Candle lighting",
+   "hebrew": "הדלקת נרות",
+   "memo": "Parashat Ki Tisa"
+  },
+  {
+   "title": "Shabbat Parah",
+   "date": "2026-03-07",
+   "hdate": "18 Adar 5786",
+   "category": "holiday",
+   "subcat": "shabbat",
+   "hebrew": "שבת פרה",
+   "leyning": {
+    "haftarah": "Ezekiel 36:16-38",
+    "haftarah_sephardic": "Ezekiel 36:16-36",
+    "maftir": "Numbers 19:1-19:22"
+   },
+   "link": "https://hebcal.com/h/shabbat-parah-2026?i=on&us=js&um=api",
+   "memo": "Shabbat of the Red Heifer. Shabbat before Shabbat HaChodesh, in preparation for Passover"
+  },
+  {
+   "title": "Parashat Ki Tisa",
+   "date": "2026-03-07",
+   "hdate": "18 Adar 5786",
+   "category": "parashat",
+   "hebrew": "פרשת כי תשא",
+   "leyning": {
+    "1": "Exodus 30:11-31:17",
+    "2": "Exodus 31:18-33:11",
+    "3": "Exodus 33:12-33:16",
+    "4": "Exodus 33:17-33:23",
+    "5": "Exodus 34:1-34:9",
+    "6": "Exodus 34:10-34:26",
+    "7": "Exodus 34:27-34:35",
+    "torah": "Exodus 30:11-34:35; Numbers 19:1-22",
+    "haftarah": "Ezekiel 36:16-38 | Shabbat Parah",
+    "haftarah_sephardic": "Ezekiel 36:16-36 | Shabbat Parah",
+    "maftir": "Numbers 19:1-19:22 | Shabbat Parah",
+    "triennial": {
+     "1": "Exodus 30:11-30:13",
+     "2": "Exodus 30:14-30:16",
+     "3": "Exodus 30:17-30:21",
+     "4": "Exodus 30:22-30:33",
+     "5": "Exodus 30:34-30:38",
+     "6": "Exodus 31:1-31:11",
+     "7": "Exodus 31:12-31:17",
+     "maftir": "Numbers 19:1-19:22"
+    }
+   },
+   "link": "https://hebcal.com/s/5786i/21?us=js&um=api"
+  },
+  {
+   "title": "Havdalah: 18:18",
+   "date": "2026-03-07T18:18:00+02:00",
+   "category": "havdalah",
+   "title_orig": "Havdalah",
+   "hebrew": "הבדלה"
+  }
+ ]
+}

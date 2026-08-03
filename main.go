@@ -43,6 +43,8 @@ func main() {
 		"path to the geonames SQLite database (for the /zmanim API)")
 	socket := flag.String("socket", defaultGeoIPSocket,
 		"path to the GeoIP unix domain socket")
+	leyningURL := flag.String("leyning-url", envOr("LEYNING_URL", defaultLeyningURL),
+		"URL of the hebcal-web /leyning endpoint (Torah readings for /shabbat)")
 	flag.Parse()
 
 	var err error
@@ -62,6 +64,7 @@ func main() {
 	app := newAppServer(logger)
 	app.pingFile = *pingFile
 	app.geoIPClient = newGeoIPClient(*socket)
+	app.leyning = newLeyningClient(*leyningURL)
 
 	// Probe the GeoIP unix domain socket at startup so operators see whether
 	// the geoip2 service is reachable. A failure is not fatal: /complete still
