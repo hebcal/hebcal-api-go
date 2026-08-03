@@ -386,12 +386,28 @@ func shabbatItem(ev event.CalEvent, loc *geoLocation, il bool, locale, lg string
 		item = append(item, jsonKV{"hebrew", hebrew})
 	}
 
-	// leyning, then link (neither for candles/havdalah)
-	if !isTimed {
-		if ley := shabbatLeyning(hd, flags, desc, readings); ley != nil {
-			item = append(item, jsonKV{"leyning", ley})
+	// The holiday an event stands for, which is the event itself except for
+	// the Chanukah candle-lighting: @hebcal/core models that as a
+	// ChanukahEvent subclass carrying a time, so it keeps the holiday's own
+	// basename and URL, while hebcal-go models it as a TimedEvent that
+	// repeats the holiday's description and links back to it.
+	holiday := ev
+	if isTimed {
+		if he, ok := linkedHoliday(timed); ok {
+			holiday = he
 		}
-		if link := shabbatLink(ev, hd, il); link != "" {
+	}
+
+	// leyning and link: neither for candle-lighting or havdalah. Leyning is
+	// also skipped for every other timed event, matching
+	// getLeyningForHoliday(), which rejects anything with an eventTime.
+	if !isCandleOrHavdalah(desc) {
+		if !isTimed {
+			if ley := shabbatLeyning(hd, flags, desc, readings); ley != nil {
+				item = append(item, jsonKV{"leyning", ley})
+			}
+		}
+		if link := shabbatLink(holiday, hd, il); link != "" {
 			item = append(item, jsonKV{"link", link})
 		}
 	}
@@ -408,7 +424,7 @@ func shabbatItem(ev event.CalEvent, loc *geoLocation, il bool, locale, lg string
 		memo = mevarchimMoladMemo(hd, locale, loc.CC, il)
 	}
 	if memo == "" {
-		memo = holidayMemo(desc, normMonth(ev.Basename()), memoLocaleName(locale))
+		memo = holidayMemo(desc, eventBasename(holiday), memoLocaleName(locale))
 	}
 	// As of hebcal-go v0.17.0, erev-Shabbat candle-lighting carries the
 	// upcoming parsha as its LinkedEvent, matching @hebcal/core.
@@ -596,6 +612,37 @@ func shabbatLeyning(hd hdate.HDate, flags event.HolidayFlags, desc string,
 	return formatLeyning(r, false)
 }
 
+// linkedHoliday returns the holiday a timed event stands for, rather than one
+// it is merely attached to. The Chanukah candle-lighting *is* the holiday, so
+// hebcal-go gives it the holiday's own description and links back to it;
+// erev-Yom-Tov candle-lighting and the fast start/end times link to a holiday
+// but describe something else, and are not holidays themselves.
+func linkedHoliday(timed hebcal.TimedEvent) (event.HolidayEvent, bool) {
+	if timed.LinkedEvent == nil {
+		return event.HolidayEvent{}, false
+	}
+	he, ok := timed.LinkedEvent.(event.HolidayEvent)
+	if !ok || he.Desc != timed.Desc {
+		return event.HolidayEvent{}, false
+	}
+	return he, true
+}
+
+// eventBasename ports @hebcal/core's basename(), which strips the qualifiers
+// that distinguish days of one holiday ("Sukkot III (CH”M)" => "Sukkot") so
+// related events share a description and a URL.
+//
+// Rosh Chodesh overrides it to keep the whole description, and must: the
+// generic rule strips a trailing Roman numeral, which would turn "Rosh
+// Chodesh Adar I" into "Rosh Chodesh Adar" — a different month in a leap
+// year, and a URL that 404s.
+func eventBasename(ev event.CalEvent) string {
+	if ev.GetFlags()&event.ROSH_CHODESH != 0 {
+		return descOf(ev)
+	}
+	return normMonth(ev.Basename())
+}
+
 // shabbatLink builds the shortened, tracked hebcal.com URL for an event.
 func shabbatLink(ev event.CalEvent, hd hdate.HDate, il bool) string {
 	flags := ev.GetFlags()
@@ -651,7 +698,7 @@ func holidayShortURL(he event.HolidayEvent, il bool) string {
 	default:
 		suffix = fmt.Sprintf("%d", gy)
 	}
-	u := "https://hebcal.com/h/" + urlFriendly(normMonth(he.Basename())) + "-" + suffix
+	u := "https://hebcal.com/h/" + urlFriendly(eventBasename(he)) + "-" + suffix
 	q := "?us=js&um=api"
 	if il {
 		q = "?i=on&us=js&um=api"
