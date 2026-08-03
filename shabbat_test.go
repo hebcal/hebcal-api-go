@@ -253,6 +253,100 @@ func TestShabbatHavdalahMinutes(t *testing.T) {
 	}
 }
 
+// TestShabbatRoshChodeshLink guards the leap-year Adar URLs. The generic
+// basename() rule strips a trailing Roman numeral, which would collapse
+// "Rosh Chodesh Adar I" and "Rosh Chodesh Adar II" onto the plain-Adar slug —
+// a different month, and a 404.
+func TestShabbatRoshChodeshLink(t *testing.T) {
+	srv := testServerWithDB(t)
+	tests := map[string]string{
+		// 5784 is a leap year: two Adars, two distinct slugs
+		"2024-02-09": "https://hebcal.com/h/rosh-chodesh-adar-i-2024?us=js&um=api",
+		"2024-03-10": "https://hebcal.com/h/rosh-chodesh-adar-ii-2024?us=js&um=api",
+		// 5785 is not, so the same month is just "Adar"
+		"2025-02-26": "https://hebcal.com/h/rosh-chodesh-adar-2025?us=js&um=api",
+		"2024-12-26": "https://hebcal.com/h/rosh-chodesh-tevet-2024?us=js&um=api",
+	}
+	for dt, want := range tests {
+		resp, body := get(t, srv, "/shabbat?cfg=json&geonameid=5128581&leyning=off&dt="+dt)
+		if resp.StatusCode != 200 {
+			t.Fatalf("%s: status = %d: %s", dt, resp.StatusCode, body)
+		}
+		var out struct {
+			Items []struct {
+				Category string `json:"category"`
+				Link     string `json:"link"`
+			} `json:"items"`
+		}
+		if err := json.Unmarshal([]byte(body), &out); err != nil {
+			t.Fatalf("%s: %v", dt, err)
+		}
+		var found bool
+		for _, item := range out.Items {
+			if item.Category != "roshchodesh" {
+				continue
+			}
+			found = true
+			if item.Link != want {
+				t.Errorf("%s: link = %q, want %q", dt, item.Link, want)
+			}
+		}
+		if !found {
+			t.Errorf("%s: no roshchodesh item", dt)
+		}
+	}
+}
+
+// TestShabbatChanukahCandles verifies that the Chanukah candle-lighting, a
+// timed event that is nonetheless the holiday itself, keeps the holiday's
+// description and URL. Candle-lighting and havdalah, which merely link to a
+// holiday, keep neither.
+func TestShabbatChanukahCandles(t *testing.T) {
+	srv := testServerWithDB(t)
+	resp, body := get(t, srv, "/shabbat?cfg=json&geonameid=5128581&dt=2024-12-26&leyning=off")
+	if resp.StatusCode != 200 {
+		t.Fatalf("status = %d: %s", resp.StatusCode, body)
+	}
+	var out struct {
+		Items []struct {
+			Title    string `json:"title"`
+			Category string `json:"category"`
+			Link     string `json:"link"`
+			Memo     string `json:"memo"`
+			Leyning  any    `json:"leyning"`
+		} `json:"items"`
+	}
+	if err := json.Unmarshal([]byte(body), &out); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	var seen int
+	for _, item := range out.Items {
+		// English titles equal the description, so title_orig is absent
+		switch {
+		case strings.HasPrefix(item.Title, "Chanukah: "):
+			seen++
+			if item.Link != "https://hebcal.com/h/chanukah-2024?us=js&um=api" {
+				t.Errorf("%s: link = %q", item.Title, item.Link)
+			}
+			if !strings.HasPrefix(item.Memo, "Hanukkah, the Jewish festival of rededication") {
+				t.Errorf("%s: memo = %q", item.Title, item.Memo)
+			}
+			// a timed event never carries a reading, even when it is the
+			// holiday: getLeyningForHoliday() rejects anything with a time
+			if item.Leyning != nil {
+				t.Errorf("%s: unexpected leyning %v", item.Title, item.Leyning)
+			}
+		case item.Category == "candles" || item.Category == "havdalah":
+			if item.Link != "" {
+				t.Errorf("%s: link = %q, want none", item.Title, item.Link)
+			}
+		}
+	}
+	if seen == 0 {
+		t.Error("no Chanukah candle-lighting items")
+	}
+}
+
 func TestShabbatNoDB(t *testing.T) {
 	_, srv := testServer(t)
 	resp, _ := get(t, srv, "/shabbat?cfg=json&geonameid=5128581&leyning=off")
