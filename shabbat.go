@@ -512,10 +512,7 @@ func descOf(ev event.CalEvent) string {
 // timed events it returns the base label (no time); the caller appends time.
 func renderBriefLike(ev event.CalEvent, locale string) string {
 	if e, ok := ev.(hebcal.TimedEvent); ok {
-		if s, ok := locales.LookupTranslation(e.Desc, locale); ok {
-			return s
-		}
-		return e.Desc
+		return timedEventLabel(e, locale)
 	}
 	// Rosh Hashana renders the year as a number in every locale (matching the
 	// JS API), rather than hebcal-go's gematriya.
@@ -529,6 +526,24 @@ func renderBriefLike(ev event.CalEvent, locale string) string {
 		r = stripMevarchimPrefix(r)
 	}
 	return smartApostrophe(normMonth(r))
+}
+
+// timedEventLabel renders a timed event's label without the ": <time>"
+// suffix hebcal-go appends, since the caller formats the time itself for the
+// location's country. Going through Render rather than translating Desc
+// directly is what keeps the "(50 min)" on a havdalah pinned to a fixed
+// number of minutes after sunset (m=<min>): hebcal-go adds it from the
+// event's sunsetOffset, which is unexported, so the label cannot be rebuilt
+// from the outside. @hebcal/core spells it the same way, in the title and in
+// the Hebrew rendering both.
+func timedEventLabel(ev hebcal.TimedEvent, locale string) string {
+	s := ev.Render(locale)
+	// the time is last and never contains ": ", so a Chanukah candle event
+	// ("Chanukah: 8 Candles: 4:37pm") splits correctly too
+	if i := strings.LastIndex(s, ": "); i >= 0 {
+		return s[:i]
+	}
+	return s
 }
 
 // stripMevarchimPrefix drops the first (space-delimited) word from a Shabbat
