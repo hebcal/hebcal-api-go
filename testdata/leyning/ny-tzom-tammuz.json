@@ -1,0 +1,101 @@
+{
+ "title": "Hebcal New York July 2025",
+ "version": "6.9.1-4.0.3",
+ "location": {
+  "title": "New York, USA",
+  "city": "New York",
+  "tzid": "America/New_York",
+  "latitude": 40.71427,
+  "longitude": -74.00597,
+  "cc": "US",
+  "country": "United States",
+  "elevation": 57,
+  "admin1": "New York",
+  "asciiname": "New York",
+  "geo": "geoname",
+  "geonameid": 5128581
+ },
+ "range": {
+  "start": "2025-07-11",
+  "end": "2025-07-13"
+ },
+ "items": [
+  {
+   "title": "Candle lighting: 8:09pm",
+   "date": "2025-07-11T20:09:00-04:00",
+   "category": "candles",
+   "title_orig": "Candle lighting",
+   "hebrew": "הדלקת נרות",
+   "memo": "Parashat Balak"
+  },
+  {
+   "title": "Parashat Balak",
+   "date": "2025-07-12",
+   "hdate": "16 Tamuz 5785",
+   "category": "parashat",
+   "hebrew": "פרשת בלק",
+   "leyning": {
+    "1": "Numbers 22:2-22:12",
+    "2": "Numbers 22:13-22:20",
+    "3": "Numbers 22:21-22:38",
+    "4": "Numbers 22:39-23:12",
+    "5": "Numbers 23:13-23:26",
+    "6": "Numbers 23:27-24:13",
+    "7": "Numbers 24:14-25:9",
+    "torah": "Numbers 22:2-25:9",
+    "haftarah": "Micah 5:6-6:8",
+    "maftir": "Numbers 25:7-25:9",
+    "triennial": {
+     "1": "Numbers 22:39-23:5",
+     "2": "Numbers 23:6-23:12",
+     "3": "Numbers 23:13-23:26",
+     "4": "Numbers 23:27-23:30",
+     "5": "Numbers 24:1-24:13",
+     "6": "Numbers 24:14-24:25",
+     "7": "Numbers 25:1-25:9",
+     "maftir": "Numbers 25:7-25:9"
+    }
+   },
+   "link": "https://hebcal.com/s/5785/40?us=js&um=api"
+  },
+  {
+   "title": "Havdalah: 9:16pm",
+   "date": "2025-07-12T21:16:00-04:00",
+   "category": "havdalah",
+   "title_orig": "Havdalah",
+   "hebrew": "הבדלה"
+  },
+  {
+   "title": "Fast begins",
+   "date": "2025-07-13T03:52:00-04:00",
+   "category": "zmanim",
+   "subcat": "fast",
+   "hebrew": "תחילת הצום",
+   "memo": "Tzom Tammuz"
+  },
+  {
+   "title": "Tzom Tammuz",
+   "date": "2025-07-13",
+   "hdate": "17 Tamuz 5785",
+   "category": "holiday",
+   "subcat": "fast",
+   "hebrew": "צום י״ז בתמוז",
+   "leyning": {
+    "1": "Exodus 32:11-32:14",
+    "2": "Exodus 34:1-34:3",
+    "3": "Exodus 34:4-34:10",
+    "torah": "Exodus 32:11-14, 34:1-10"
+   },
+   "link": "https://hebcal.com/h/tzom-tammuz-2025?us=js&um=api",
+   "memo": "Fast commemorating breaching of the walls of Jerusalem before the destruction of the Second Temple"
+  },
+  {
+   "title": "Fast ends",
+   "date": "2025-07-13T21:06:00-04:00",
+   "category": "zmanim",
+   "subcat": "fast",
+   "hebrew": "סיום הצום",
+   "memo": "Tzom Tammuz"
+  }
+ ]
+}

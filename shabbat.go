@@ -461,7 +461,14 @@ func mevarchimMoladMemo(hd hdate.HDate, locale, cc string, il bool) string {
 
 // normMonth normalizes hebcal-go's "Tammuz" to the "Tamuz" spelling used by
 // @hebcal/core (and this API), in English strings only (a no-op elsewhere).
+// The 17th of Tammuz fast is the one place @hebcal/core keeps the double
+// "m", so "Tzom Tammuz" is left alone: it is the event description the
+// classic API reports as title_orig, the key the MEMO catalog and the event
+// URL are built from, and the name /leyning uses for the fast's reading.
 func normMonth(s string) string {
+	if strings.Contains(s, "Tzom Tammuz") {
+		return s
+	}
 	return strings.ReplaceAll(s, "Tammuz", "Tamuz")
 }
 
