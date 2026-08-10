@@ -51,14 +51,6 @@ func smartApostrophe(s string) string {
 	return strings.ReplaceAll(s, "'", "’")
 }
 
-// urlFriendly mimics @hebcal/core urlFriendly() used in event URLs.
-func urlFriendly(s string) string {
-	s = strings.ToLower(s)
-	s = strings.ReplaceAll(s, "'", "")
-	s = strings.ReplaceAll(s, " ", "-")
-	return s
-}
-
 var nonWordRe = regexp.MustCompile(`[^a-zA-Z0-9_]`)
 var multiDashRe = regexp.MustCompile(`-+`)
 
