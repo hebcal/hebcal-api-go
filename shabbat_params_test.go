@@ -67,7 +67,10 @@ func TestShabbatHavdalahPrecedence(t *testing.T) {
 		{"M=off alone changes nothing", ny + "&M=off", []string{"Candle lighting: 4:28pm", "Havdalah: 5:28pm"}},
 		{"m=<min> is a fixed offset", ny + "&m=50", []string{"Candle lighting: 4:28pm", "Havdalah (50 min): 5:35pm"}},
 		{"M=on beats m", ny + "&M=on&m=50", []string{"Candle lighting: 4:28pm", "Havdalah: 5:28pm"}},
+		// a zero m asks for no havdalah at all, which is CalOptions.SuppressHavdalah:
+		// a zero HavdalahMins would otherwise read as "use the default tzeit"
 		{"m=0 drops havdalah", ny + "&m=0", []string{"Candle lighting: 4:28pm"}},
+		{"M=off&m=0 drops havdalah", ny + "&M=off&m=0", []string{"Candle lighting: 4:28pm"}},
 		{"m=on is the lowercase M=on", ny + "&m=on", []string{"Candle lighting: 4:28pm", "Havdalah: 5:28pm"}},
 		{"td=<deg> sets the angle", ny + "&td=7.083", []string{"Candle lighting: 4:28pm", "Havdalah: 5:20pm"}},
 		{"td=0 is ignored", ny + "&td=0", []string{"Candle lighting: 4:28pm", "Havdalah: 5:28pm"}},
