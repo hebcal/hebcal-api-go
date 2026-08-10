@@ -136,31 +136,12 @@ func (h holidayEv) render(lg string) string {
 	return smartApostrophe(h.ev.Render(locale))
 }
 
+// url returns the holiday's page on hebcal.com. hebcal-go builds it, which
+// gets the cases this used to miss: the site files Rosh Chodesh Tammuz under
+// "tamuz", gives each Adar of a leap year its own page, and has no page at all
+// for Yom Kippur Katan.
 func (h holidayEv) url() string {
-	gy, gm, gd := h.ev.Date.ProlepticGreg()
-	if gy < 100 || gy > 2999 {
-		return ""
-	}
-	var suffix string
-	switch {
-	case h.ev.Desc == "Asara B'Tevet":
-		// occurs twice in some Gregorian years, so the URL uses YYYYMMDD
-		suffix = fmt.Sprintf("%04d%02d%02d", gy, int(gm), gd)
-	case strings.HasPrefix(h.ev.Desc, "Chanukah"):
-		// Chanukah sometimes starts in December and ends in January
-		year := gy
-		if gm == time.January {
-			year--
-		}
-		suffix = strconv.Itoa(year)
-	default:
-		suffix = strconv.Itoa(gy)
-	}
-	url := "https://www.hebcal.com/holidays/" + urlFriendly(h.ev.Basename()) + "-" + suffix
-	if h.ev.Flags&event.IL_ONLY != 0 {
-		url += "?i=on"
-	}
-	return url
+	return event.URL(h.ev)
 }
 
 // genericEv adapts any other hebcal-go event (e.g. Molad) unchanged.
@@ -170,7 +151,11 @@ type genericEv struct {
 
 func (g genericEv) desc() string     { return g.ev.Basename() }
 func (g genericEv) chanukahDay() int { return 0 }
-func (g genericEv) url() string      { return "" }
+
+// url is empty for every event this wraps today -- Molad and Shabbat
+// Mevarchim have no page -- but asking hebcal-go keeps that answer tied to
+// what the website actually publishes.
+func (g genericEv) url() string { return event.URL(g.ev) }
 
 func (g genericEv) render(lg string) string {
 	return smartApostrophe(g.ev.Render(strings.ToLower(aliasLocale(lg))))
@@ -194,17 +179,7 @@ func (p parshaEv) render(lg string) string {
 }
 
 func (p parshaEv) url() string {
-	gy, gm, gd := p.sat.ProlepticGreg()
-	if gy < 100 || gy > 2999 {
-		return ""
-	}
-	url := "https://www.hebcal.com/sedrot/" +
-		urlFriendly(strings.Join(p.parsha.Name, "-")) +
-		fmt.Sprintf("-%04d%02d%02d", gy, int(gm), gd)
-	if p.il {
-		url += "?i=on"
-	}
-	return url
+	return event.URL(event.NewParshaEvent(p.sat, p.parsha, p.il))
 }
 
 // pseudoParshaEv represents "Parashat <holiday>" when the upcoming Saturday
@@ -236,11 +211,7 @@ func (o omerEv) render(lg string) string {
 }
 
 func (o omerEv) url() string {
-	hy := o.ev.Date.Year()
-	if hy < 5000 || hy > 6759 {
-		return ""
-	}
-	return fmt.Sprintf("https://www.hebcal.com/omer/%d/%d", hy, o.ev.OmerDay)
+	return event.URL(o.ev)
 }
 
 // ---------------------------------------------------------------- getEvents

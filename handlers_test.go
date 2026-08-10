@@ -498,6 +498,29 @@ func TestXMLDiasporaIsrael(t *testing.T) {
 	}
 }
 
+// TestXMLRoshChodeshLink guards the Rosh Chodesh slugs, which do not simply
+// fall out of the description: the website spells Tammuz "tamuz", and files
+// each Adar of a leap year under its own page. hebcal-go's event.URL() knows
+// both, where building the slug from the description alone produced a 404.
+func TestXMLRoshChodeshLink(t *testing.T) {
+	_, srv := testServer(t)
+	tests := map[string]string{
+		// 1 Tamuz 5786
+		"gy=2026&gm=6&gd=16": "https://www.hebcal.com/holidays/rosh-chodesh-tamuz-2026",
+		// 5784 is a leap year: 1 Adar I and 1 Adar II are separate pages
+		"gy=2024&gm=2&gd=10": "https://www.hebcal.com/holidays/rosh-chodesh-adar-i-2024",
+		"gy=2024&gm=3&gd=11": "https://www.hebcal.com/holidays/rosh-chodesh-adar-ii-2024",
+		// 5785 is not, so the single Adar keeps the undecorated slug
+		"gy=2025&gm=3&gd=1": "https://www.hebcal.com/holidays/rosh-chodesh-adar-2025",
+	}
+	for query, want := range tests {
+		_, body := get(t, srv, "/converter?cfg=xml&g2h=1&"+query)
+		if !strings.Contains(body, `href="`+want+`"`) {
+			t.Errorf("%s: expected %q in %s", query, want, body)
+		}
+	}
+}
+
 func TestXMLError(t *testing.T) {
 	_, srv := testServer(t)
 	resp, body := get(t, srv, "/converter?cfg=xml&gy=2026&gm=99&gd=5&g2h=1")

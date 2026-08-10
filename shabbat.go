@@ -876,12 +876,12 @@ func linkedHoliday(timed hebcal.TimedEvent) (event.HolidayEvent, bool) {
 
 // eventBasename ports @hebcal/core's basename(), which strips the qualifiers
 // that distinguish days of one holiday ("Sukkot III (CH”M)" => "Sukkot") so
-// related events share a description and a URL.
+// related events share one description. It is the fallback key for the memo
+// catalog, looked up when the full description has no memo of its own.
 //
-// Rosh Chodesh overrides it to keep the whole description, and must: the
-// generic rule strips a trailing Roman numeral, which would turn "Rosh
-// Chodesh Adar I" into "Rosh Chodesh Adar" — a different month in a leap
-// year, and a URL that 404s.
+// Rosh Chodesh keeps its whole description: the generic rule strips a
+// trailing Roman numeral, which would turn "Rosh Chodesh Adar I" into "Rosh
+// Chodesh Adar" — a different month in a leap year, with a memo of its own.
 func eventBasename(ev event.CalEvent) string {
 	if ev.GetFlags()&event.ROSH_CHODESH != 0 {
 		return descOf(ev)
@@ -925,31 +925,34 @@ func sedrotShortURL(sat hdate.HDate, il bool) string {
 	return "https://hebcal.com" + path + "?us=js&um=api"
 }
 
+// canonicalHolidayPrefix is what hebcal-go's event.URL() puts in front of a
+// holiday's "<slug>-<suffix>". The short links here point at those same pages.
+const canonicalHolidayPrefix = "https://www.hebcal.com/holidays/"
+
 // holidayShortURL builds /h/<slug>-<year>?us=js&um=api.
+//
+// The slug and suffix are taken from the canonical URL rather than derived a
+// second time, so the rules that do not fall out of the description -- Asara
+// B'Tevet needs a full date because it can fall twice in one Gregorian year,
+// Chanukah is filed under the year it began, Rosh Chodesh Tammuz is spelled
+// "tamuz", each Adar of a leap year has its own page -- are stated once,
+// upstream. An event with no page yields no link.
+//
+// The ?i=on on a canonical URL marks an Israel-only observance. The feed's
+// own i=on means something else -- the schedule the reader asked for, which
+// every link in the response carries -- so it is dropped here and re-added
+// from il.
 func holidayShortURL(he event.HolidayEvent, il bool) string {
-	gy, gm, gd := he.Date.ProlepticGreg()
-	if gy < 100 || gy > 2999 {
+	slug, ok := strings.CutPrefix(strings.TrimSuffix(event.URL(he), "?i=on"),
+		canonicalHolidayPrefix)
+	if !ok {
 		return ""
 	}
-	var suffix string
-	switch {
-	case he.Desc == "Asara B'Tevet":
-		suffix = fmt.Sprintf("%04d%02d%02d", gy, int(gm), gd)
-	case strings.HasPrefix(he.Desc, "Chanukah"):
-		year := gy
-		if gm == time.January {
-			year--
-		}
-		suffix = fmt.Sprintf("%d", year)
-	default:
-		suffix = fmt.Sprintf("%d", gy)
-	}
-	u := "https://hebcal.com/h/" + urlFriendly(eventBasename(he)) + "-" + suffix
 	q := "?us=js&um=api"
 	if il {
 		q = "?i=on&us=js&um=api"
 	}
-	return u + q
+	return "https://hebcal.com/h/" + slug + q
 }
 
 // categoriesOf ports @hebcal/rest-api getEventCategories + @hebcal/core
