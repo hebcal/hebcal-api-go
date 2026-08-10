@@ -199,9 +199,6 @@ func (app *appServer) shabbatHandler(w http.ResponseWriter, r *http.Request) {
 		app.writeZmanimError(w, badRequest("%s", err.Error()))
 		return
 	}
-	if candleOpts.noHavdalah {
-		events = filterOutHavdalah(events)
-	}
 	if candleOpts.atSunset {
 		moveCandleLightingToSunset(events, &opts)
 	}
@@ -306,6 +303,7 @@ func shabbatCalOptions(loc *geoLocation, il bool, start, end gregDate, q url.Val
 	opts.CandleLightingMins = c.candleMins
 	opts.HavdalahMins = c.havdalahMins
 	opts.HavdalahDeg = c.havdalahDeg
+	opts.SuppressHavdalah = c.noHavdalah
 	return opts
 }
 
@@ -316,7 +314,9 @@ type candleOptions struct {
 	candleMins   int
 	havdalahMins int
 	havdalahDeg  float64
-	// noHavdalah marks m=0, which asks for no havdalah at all.
+	// noHavdalah marks m=0, which asks for no havdalah at all. It becomes
+	// CalOptions.SuppressHavdalah: a zero HavdalahMins means "use the default
+	// tzeit" to hebcal-go, so the intent needs its own flag.
 	noHavdalah bool
 	// atSunset marks b=0, which asks for candle-lighting exactly at sunset.
 	// hebcal-go cannot express it (CheckCandleOptions rewrites a zero
@@ -416,21 +416,6 @@ func locationDefaultCandleMins(loc *geoLocation) int {
 // booleanOpts loop in hebcal-web src/calendar.js.
 func isOn(v string) bool {
 	return v == "on" || v == "1"
-}
-
-// filterOutHavdalah drops the havdalah times, for m=0. It matches on the
-// event description rather than a flag: an ordinary Saturday-night havdalah
-// carries LIGHT_CANDLES_TZEIS, and only the one ending a Yom Tov carries
-// YOM_TOV_ENDS.
-func filterOutHavdalah(events []event.CalEvent) []event.CalEvent {
-	out := events[:0]
-	for _, ev := range events {
-		if timed, ok := ev.(hebcal.TimedEvent); ok && timed.Desc == "Havdalah" {
-			continue
-		}
-		out = append(out, ev)
-	}
-	return out
 }
 
 // filterYomTovOnly keeps only the Yom Tov days, for yto=on. Ported from
