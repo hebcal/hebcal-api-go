@@ -1,4 +1,5 @@
 BIN := hebcal-api
+CMD := ./cmd/hebcal-api
 PREFIX := /usr/local
 SVCUSER := www-data
 SVCGROUP := hebcal
@@ -14,7 +15,7 @@ all: build
 GOTAGS := sqlite_fts5,sqlite_math_functions
 
 build:
-	CGO_ENABLED=1 go build -tags $(GOTAGS) -trimpath -ldflags="-s -w" -o $(BIN) .
+	CGO_ENABLED=1 go build -tags $(GOTAGS) -trimpath -ldflags="-s -w" -o $(BIN) $(CMD)
 
 test:
 	go test -tags $(GOTAGS) ./...
@@ -23,7 +24,7 @@ vet:
 	go vet -tags $(GOTAGS) ./...
 
 fmt:
-	gofmt -w *.go
+	gofmt -w cmd internal pkg
 
 clean:
 	rm -f $(BIN)

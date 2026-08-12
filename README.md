@@ -254,6 +254,48 @@ local midnight; an explicit date or range is cached for 30 days with an
   `CandleLightingMins` to the 18/20-minute default, so there is no way to
   ask it for sunset itself. Drop the workaround if hebcal-go grows one.
 
+## Package layout
+
+The service follows the standard Go microservice layout: `cmd` wires
+dependencies and starts the listener, `internal` holds the application, and
+`pkg` holds the two pieces that are useful on their own.
+
+```
+cmd/hebcal-api/          main: config, logger, data sources, HTTP listener
+internal/
+  config/                flag/env configuration and build metadata
+  handler/               transport layer: one file per route, plus the mux
+  service/               business logic, one package per route
+    converter/             /converter parsing and JSON/XML/CSV rendering
+    zmanim/                /zmanim halachic times and date resolution
+    shabbat/               /shabbat calendar, candle options, item rendering
+    complete/              /complete result serialization
+    location/              query -> location, and the two location JSON shapes
+  repository/
+    leyning/               HTTP client for hebcal-web's /leyning endpoint
+  model/                 domain layer: dates, locales, calendar events, errors
+  httpx/                 shared transport utilities: ETag, CORS, content types,
+                         error rendering, compression/metrics/logging middleware
+  jsutil/                JavaScript-compatibility helpers (parseInt,
+                         JSON.stringify, ordered objects, query conventions)
+  logger/                pino-compatible JSON access log
+pkg/
+  geodb/                 SQLite geonames/zips reader and geographic typeahead;
+                         a Go port of @hebcal/geo-sqlite
+  geoip/                 client for the geoip2 unix-socket lookup service
+```
+
+`pkg/geodb` and `pkg/geoip` depend only on their own third-party libraries,
+never on `internal`, so either can be reused by another program or split out
+into its own module without untangling anything first. `geodb` embeds
+`city2geonameid.json` and carries the US state-name table, so it needs no
+data files beyond the two SQLite databases.
+
+The dependency direction is one-way: `handler` → `service` → `repository`,
+`model`, `pkg`. Nothing in `service` writes to an `http.ResponseWriter` —
+the handlers own status codes, headers, and cache validators, and the
+services return values.
+
 ## Build and test
 
 Requires Go >= 1.24 and **cgo** (a C compiler), because the location
@@ -262,8 +304,10 @@ must be built with the `sqlite_fts5` tag so the `/complete` full-text
 queries work; the `Makefile` targets pass it for you.
 
 ```bash
-make build     # builds ./hebcal-api (CGO_ENABLED=1 -tags sqlite_fts5)
-make test      # runs the unit tests (-tags sqlite_fts5)
+make build     # builds ./hebcal-api from ./cmd/hebcal-api (CGO_ENABLED=1)
+make test      # runs the unit tests
+make vet       # go vet
+make fmt       # gofmt -w cmd internal pkg
 ```
 
 If you invoke `go` directly rather than through the `Makefile`, add the
