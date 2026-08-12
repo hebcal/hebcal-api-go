@@ -1,0 +1,95 @@
+// Package httpx bundles the transport-layer plumbing every route shares:
+// content-type and cache-control constants, CORS headers, weak ETags and
+// freshness checks, error rendering, client-IP extraction, and the middleware
+// that buffers, compresses, measures, and logs each response.
+package httpx
+
+import (
+	"fmt"
+	"net"
+	"net/http"
+	"strings"
+
+	"github.com/hebcal/hebcal-api-go/internal/jsutil"
+	"github.com/hebcal/hebcal-api-go/internal/model"
+)
+
+// Cache-Control values used across the routes.
+const (
+	CacheControl1Year  = "public, max-age=31536000, s-maxage=31536000"
+	CacheControl30Days = "public, max-age=2592000, s-maxage=2592000"
+	CacheControl7Days  = "public, max-age=604800, s-maxage=604800"
+)
+
+// Content types used across the routes.
+const (
+	ContentTypeJSON  = "application/json; charset=utf-8"
+	ContentTypeXML   = "text/xml; charset=utf-8"
+	ContentTypeCSV   = "text/x-csv; charset=utf-8"
+	ContentTypeText  = "text/plain; charset=utf-8"
+	ContentTypeJSONP = "text/javascript; charset=utf-8"
+)
+
+// SetCORS mirrors hebcal-web: API responses (cfg param present) are
+// world-readable.
+func SetCORS(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Cross-Origin-Resource-Policy", "cross-origin")
+}
+
+// CORSPreflight answers an OPTIONS request with a CORS preflight response
+// advertising the given allowed methods.
+func CORSPreflight(w http.ResponseWriter, methods string) {
+	SetCORS(w)
+	w.Header().Set("Access-Control-Allow-Methods", methods)
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// MethodNotAllowed answers with 405 and an Allow header listing allowed.
+func MethodNotAllowed(w http.ResponseWriter, method, allowed string) {
+	w.Header().Set("Allow", allowed)
+	http.Error(w, fmt.Sprintf("Method %s not allowed", method), http.StatusMethodNotAllowed)
+}
+
+// WritePlainError emits a plain-text error carrying the error's own status.
+func WritePlainError(w http.ResponseWriter, err error) {
+	w.Header().Set("Content-Type", ContentTypeText)
+	w.WriteHeader(model.StatusOf(err))
+	fmt.Fprintln(w, err.Error())
+}
+
+// WriteJSONError emits a JSON {"error": ...} body carrying the error's own
+// status. It is the error shape the /geo, /zmanim, /shabbat and /complete
+// routes share.
+func WriteJSONError(w http.ResponseWriter, err error) {
+	w.Header().Set("Content-Type", ContentTypeJSON)
+	w.WriteHeader(model.StatusOf(err))
+	w.Write(jsutil.Marshal(map[string]string{"error": err.Error()}))
+}
+
+// WriteNotFoundText emits the plain-text 404 used by /ping and the catch-all
+// route.
+func WriteNotFoundText(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", ContentTypeText)
+	w.WriteHeader(http.StatusNotFound)
+	w.Write([]byte("Not Found\n"))
+}
+
+// ClientIP returns the client IP address, preferring X-Client-IP over
+// X-Forwarded-For when the service runs behind a reverse proxy.
+func ClientIP(r *http.Request) string {
+	if xcip := r.Header.Get("X-Client-IP"); xcip != "" {
+		return strings.TrimSpace(xcip)
+	}
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		if idx := strings.IndexByte(xff, ','); idx != -1 {
+			return strings.TrimSpace(xff[:idx])
+		}
+		return strings.TrimSpace(xff)
+	}
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return r.RemoteAddr
+	}
+	return host
+}
