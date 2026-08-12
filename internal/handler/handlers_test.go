@@ -380,6 +380,62 @@ func TestBareConverterRedirects(t *testing.T) {
 	}
 }
 
+// TestBareConverterRedirectMethods pins GET/HEAD parity on the date-less
+// redirect. RFC 9110 §9.3.2 makes HEAD identical to GET but for the content,
+// so a HEAD probe must see the same 302 and Location a GET would -- it
+// previously answered 200 and dropped the Location entirely. POST is
+// deliberately excluded and still renders "today" directly, as hebcal-web does.
+func TestBareConverterRedirectMethods(t *testing.T) {
+	_, srv := testServer(t)
+	const path = "/converter?cfg=json"
+	const wantLocation = "https://www.hebcal.com/converter?gd=5&gm=7&gy=2026&g2h=1&cfg=json"
+
+	do := func(method string) *http.Response {
+		t.Helper()
+		req, err := http.NewRequest(method, srv.URL+path, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.Header.Set("Accept-Encoding", "identity")
+		resp, err := http.DefaultTransport.RoundTrip(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		body, _ := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if method == http.MethodHead && len(body) != 0 {
+			t.Errorf("HEAD returned %d bytes of content, want none", len(body))
+		}
+		return resp
+	}
+
+	getResp := do(http.MethodGet)
+	headResp := do(http.MethodHead)
+	for _, h := range []string{"Location", "Cache-Control", "Content-Length", "Content-Type"} {
+		if got, want := headResp.Header.Get(h), getResp.Header.Get(h); got != want {
+			t.Errorf("HEAD %s = %q, want %q (as GET)", h, got, want)
+		}
+	}
+	if headResp.StatusCode != getResp.StatusCode {
+		t.Errorf("HEAD status = %d, want %d (as GET)", headResp.StatusCode, getResp.StatusCode)
+	}
+	if getResp.StatusCode != http.StatusFound {
+		t.Fatalf("GET status = %d, want 302", getResp.StatusCode)
+	}
+	if got := headResp.Header.Get("Location"); got != wantLocation {
+		t.Errorf("HEAD Location = %q, want %q", got, wantLocation)
+	}
+
+	// POST keeps the JS behavior: no redirect, today's conversion rendered.
+	postResp := do(http.MethodPost)
+	if postResp.StatusCode != http.StatusOK {
+		t.Errorf("POST status = %d, want 200 (no redirect)", postResp.StatusCode)
+	}
+	if loc := postResp.Header.Get("Location"); loc != "" {
+		t.Errorf("POST Location = %q, want none", loc)
+	}
+}
+
 func TestErrorMessages(t *testing.T) {
 	_, srv := testServer(t)
 	cases := []struct {

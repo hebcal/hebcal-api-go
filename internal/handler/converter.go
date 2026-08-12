@@ -54,7 +54,14 @@ func (s *Server) converter(w http.ResponseWriter, r *http.Request) {
 	// hy/hm/hd or gy/gm/gd) resolves against "today" and so must not be
 	// cached under a stable URL. Redirect to an equivalent request that
 	// pins the date explicitly, with a short private Cache-Control.
-	if err == nil && r.Method == http.MethodGet && p.NoCache {
+	//
+	// HEAD redirects alongside GET: RFC 9110 §9.3.2 makes HEAD identical to
+	// GET but for the content, so answering 200 here while GET answers 302
+	// would misreport the resource to any client that probes with HEAD.
+	// hebcal-web tests only for GET, so this deliberately diverges from it;
+	// POST keeps the JS behavior and renders "today" directly, since a POST
+	// is not the cacheable, followable request the redirect exists to fix.
+	if err == nil && (r.Method == http.MethodGet || r.Method == http.MethodHead) && p.NoCache {
 		redirectConverterNoCache(w, q, cfg, now)
 		return
 	}
