@@ -15,9 +15,16 @@ import (
 )
 
 // Cache-Control values used across the routes.
+//
+// The two PDF lifetimes come from hebcal-web's cacheControl(days): its download
+// dispatcher (src/app-download.js) sets 14 days before dispatching to the .pdf
+// branch, and src/holidayPdf.js sets 60 for the /holidays/ calendars, which are
+// a pure function of the year.
 const (
 	CacheControl1Year  = "public, max-age=31536000, s-maxage=31536000"
+	CacheControl60Days = "public, max-age=5184000, s-maxage=5184000"
 	CacheControl30Days = "public, max-age=2592000, s-maxage=2592000"
+	CacheControl14Days = "public, max-age=1209600, s-maxage=1209600"
 	CacheControl7Days  = "public, max-age=604800, s-maxage=604800"
 )
 

@@ -1,3 +1,17 @@
 /hebcal-api
 /hebcal-api-go
 *.log
+
+# Development conveniences: the fonts and the geo databases live in a
+# hebcal-web checkout, and are symlinked here so the PDF calendars and their
+# tests can find them without flags. They are absolute paths on one machine, so
+# they must not be committed -- deployments pass -fonts, -zips-db and
+# -geonames-db instead. See README.md.
+/fonts
+/geonames.sqlite3
+/zips.sqlite3
+
+# Test and profiling output
+*.out
+*.test
+*.pdf

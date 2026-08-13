@@ -26,6 +26,11 @@ func NotFound(format string, args ...interface{}) *HTTPError {
 	return &HTTPError{Status: http.StatusNotFound, Message: fmt.Sprintf(format, args...)}
 }
 
+// Internal builds a 500 error with a formatted message.
+func Internal(format string, args ...interface{}) *HTTPError {
+	return &HTTPError{Status: http.StatusInternalServerError, Message: fmt.Sprintf(format, args...)}
+}
+
 // Unavailable builds a 503 error with a formatted message.
 func Unavailable(format string, args ...interface{}) *HTTPError {
 	return &HTTPError{Status: http.StatusServiceUnavailable, Message: fmt.Sprintf(format, args...)}

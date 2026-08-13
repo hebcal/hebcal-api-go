@@ -56,3 +56,25 @@ func Gettext(key, locale string) string {
 	str, _ := locales.LookupTranslation(key, locale)
 	return str
 }
+
+// FixMonthSpelling reconciles the month name that differs between hebcal-go's
+// event descriptions and @hebcal/core's: hdate renders "Tammuz" with two m's,
+// while @hebcal/core (and the website) render the month "Tamuz" -- in "Rosh
+// Chodesh Tamuz", "Molad Tamuz", "Mevarchim Chodesh Tamuz", "17th of Tamuz" and
+// a PDF subtitle alike. The one exception is the 17th-of-Tammuz fast, whose
+// hard-coded holiday name "Tzom Tammuz" keeps two m's in both libraries. So
+// normalize the month everywhere, then restore the fast. Hebrew text never
+// contains the ASCII spelling, so this is a no-op on Hebrew-locale subjects.
+//
+// (internal/service/shabbat has its own normMonth, which leaves a whole string
+// alone once it contains "Tzom Tammuz" rather than restoring the fast
+// afterwards. The two agree on every string either service renders; the /shabbat
+// one is kept as it is because its result feeds title_orig, the MEMO catalog key
+// and the /leyning lookup, none of which this one touches.)
+func FixMonthSpelling(s string) string {
+	if !strings.Contains(s, "Tammuz") {
+		return s
+	}
+	s = strings.ReplaceAll(s, "Tammuz", "Tamuz")
+	return strings.ReplaceAll(s, "Tzom Tamuz", "Tzom Tammuz")
+}
