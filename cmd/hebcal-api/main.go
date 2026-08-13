@@ -1,8 +1,10 @@
 // Command hebcal-api is a small HTTP microservice implementing a subset of the
 // Hebcal.com REST APIs in Go: the Hebrew Date Converter (JSON, XML, and CSV,
 // ported from hebcal-web src/converter.js), Zmanim / Assur Melacha (JSON,
-// ported from src/zmanim.js), the Shabbat candle-lighting times, and the
-// /geo and /complete location endpoints.
+// ported from src/zmanim.js), the Shabbat candle-lighting times, the /geo and
+// /complete location endpoints, and the PDF calendars served from
+// download.hebcal.com/v4/ and www.hebcal.com/holidays/ (ported from
+// src/pdf.js and src/holidayPdf.js).
 //
 // It wires the configuration, logger, and data sources together and starts the
 // listener; all request handling lives in internal/handler.
@@ -23,6 +25,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/logger"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/repository/leyning"
+	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 	"github.com/hebcal/hebcal-api-go/pkg/geoip"
 )
@@ -68,7 +71,25 @@ func main() {
 		fmt.Fprintln(os.Stderr, "warning: /zmanim disabled:", err)
 	} else {
 		app.DB = db
+		app.PDF.Geo = db
 		defer db.Close()
+	}
+
+	// Load the calendar fonts once, at startup: sfnt.Font is read-only after
+	// parsing, so every request shares them and only the per-document embedded
+	// instances are rebuilt. A failure is not fatal either -- the PDF routes
+	// report 503 and the JSON APIs are unaffected.
+	if fonts, err := pdf.LoadFonts(cfg.FontDir); err != nil {
+		lg.Warn("cannot load fonts; the PDF calendars are disabled: " + err.Error())
+		fmt.Fprintln(os.Stderr, "warning: PDF calendars disabled:", err)
+	} else {
+		app.PDF.Renderer = pdf.NewRenderer(fonts)
+	}
+	// The six daily-learning series with no Go schedule come from hebcal-web.
+	// With no URL configured those requests are refused with 501 rather than
+	// rendered without the rows the user asked for.
+	if cfg.HebcalURL != "" {
+		app.PDF.Learning = pdf.NewLearningFetcher(cfg.HebcalURL)
 	}
 
 	srv := &http.Server{

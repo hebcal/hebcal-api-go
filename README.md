@@ -16,6 +16,10 @@ Currently implemented:
   service (see [Torah readings](#torah-readings))
 - **Geolocation** (`/geo`) — resolve query parameters to a location, JSON
 - **Geo autocomplete** (`/complete`) — city/ZIP typeahead, JSON
+- **PDF calendars** — the `download.hebcal.com/v4/…pdf` downloads (ported
+  from `src/pdf.js`) and `www.hebcal.com/holidays/hebcal-<year>.pdf`
+  (ported from `src/holidayPdf.js`). These came from the separate
+  hebcal-pdf-go service, which this repository replaces.
 
 Date conversions use [hebcal/hdate](https://github.com/hebcal/hdate)
 (`FromProlepticGregorian`, matching JavaScript `Date` behavior); holidays,
@@ -179,6 +183,83 @@ altogether.
   must be built with the `sqlite_fts5` tag (the `Makefile` and CI already
   pass `-tags sqlite_fts5`).
 
+### PDF calendars
+
+Each calendar is US Letter, landscape, one Gregorian or Hebrew month per
+page, with holidays, candle-lighting and Havdalah times, Torah readings,
+daily-learning schedules, the Omer, alternate (Hebrew or Gregorian) dates,
+and tracked links over every event. Hebrew and other right-to-left text is
+laid out with real Unicode bidi and OpenType shaping, and event titles are
+available in 13 locales. Rendering needs the fonts (see
+[Fonts](#fonts)); without them these two routes answer 503 and the JSON
+APIs are unaffected.
+
+- `GET|HEAD /v4/<base64>/<filename>.pdf` — render a calendar. The
+  `<base64>` segment is a `Download` protobuf message (defined in
+  `pkg/downloadpb/download.proto`, shared with hebcal-web) carrying the
+  calendar options: year or month range, location, event categories,
+  locale, candle-lighting and Havdalah preferences, daily-learning series,
+  and so on. These URLs are produced by the hebcal.com download form. A
+  request whose options select no events returns `400`; an unknown location
+  returns `404`; a year outside the supported range returns `410`. A
+  rendered PDF is served with a 14-day `Cache-Control` and a weak `ETag`; a
+  conditional request whose `If-None-Match` still matches gets `304 Not
+  Modified`.
+- `GET|HEAD /holidays/hebcal-<year>.pdf` — render a year of Jewish
+  holidays, the calendar www.hebcal.com links from its holiday pages. A
+  year of 3761 or more is a Hebrew year, as is the Gregorian-span form the
+  year-index pages use, `hebcal-2026-2027.pdf`; anything smaller is a
+  Gregorian year. `?i=on` selects the Israel schedule, and that is the only
+  parameter: these calendars are always English, as every link to them on
+  the website is. Every day carries its Hebrew date, and there are no
+  candle-lighting times, since they have no location. A URL that is not a
+  holiday calendar returns `404`, a year outside 1..32000 returns `400`,
+  and a year with no calendar returns `410`. A rendered PDF is served with
+  a 60-day `Cache-Control` — four times the download path's, since these
+  depend on nothing but the year — and the same weak `ETag` and `304`
+  handling. Nothing else under `/holidays/` belongs to this service: the
+  HTML pages there are still hebcal-web's, and this route answers them
+  `404`.
+
+#### Daily learning
+
+hebcal-web offers 20 daily-learning series. Thirteen of them — Daf Yomi,
+Mishna Yomi, Nach Yomi, the two Yerushalmi editions, Perek Yomi,
+Daf-a-Week, 929, Psalms, the two Rambam schedules, Tanakh Yomi and Pirkei
+Avot — are generated in-process by
+[hebcal/learning](https://github.com/hebcal/learning). The remaining six —
+Sefer HaMitzvot, Kitzur Shulchan Arukh, Arukh HaShulchan, Amud HaYomi
+(Dirshu), Chofetz Chaim and Shemirat HaLashon — are fetched from
+hebcal-web's `/hebcal?cfg=json` endpoint and merged into the calendar, so
+every series still renders. Each learning row links to its source on
+Sefaria (or dafyomi.org).
+
+`-hebcal-url` (or `HEBCAL_URL`) sets where hebcal-web is reached for the
+fetched series, defaulting to `http://www.hebcal.com` over plain http on
+port 80. The download backends do not serve `/hebcal`, so the request goes
+out through the `www.hebcal.com` Varnish front door, which also caches the
+responses.
+
+Neither failure mode serves a calendar quietly missing rows the reader
+asked for; both name the missing series in an `X-Unsupported-Series`
+header (which the access log records as `unsupported`):
+
+- **501** when `-hebcal-url` is empty — this build cannot render those
+  series and retrying will not help (unreachable in the default
+  configuration).
+- **503**, with `Retry-After`, when a configured hebcal-web does not
+  answer — transient, and worth retrying or falling back to the Node.js
+  service.
+
+#### Fonts
+
+The calendars are drawn with the Source Sans Pro and Adobe Hebrew families
+hebcal-web uses. `-fonts` (or `FONT_DIR`, default `fonts`) names a
+directory holding `Source_Sans_Pro/` and `Adobe_Hebrew/`. The fonts are
+parsed once at startup and shared by every request; only the per-document
+embedded instances are rebuilt. A failure to load them is logged and
+disables the two PDF routes rather than stopping the server.
+
 ### Operational
 
 - `GET /ping` — health check. Serves the contents of `/var/www/html/ping`
@@ -254,6 +335,37 @@ local midnight; an explicit date or range is cached for 30 days with an
   `CandleLightingMins` to the 18/20-minute default, so there is no way to
   ask it for sunset itself. Drop the workaround if hebcal-go grows one.
 
+For the PDF calendars, where the bar is that a rendered calendar is
+indistinguishable from the one production serves for the same URL:
+
+- **Chanukah candle-lighting order on Saturday night.** On a motzei-Shabbat
+  Chanukah day the same rows and times appear, but the "Chanukah: N
+  Candles" candle-lighting row is grouped with the day's other timed rows
+  at the foot of the cell here, where production places it at the top. Same
+  content, an accepted ordering difference — not a missing, extra, or
+  merged row.
+- **Zmanim differ by up to about a minute**, for the same reason as the
+  JSON routes above.
+- **Day numbers sit ~3.3pt lower** than www.hebcal.com (and the month title
+  ~6pt), a small, uniform vertical offset in the Latin faces; horizontal
+  alignment is unaffected. The currently deployed download.hebcal.com
+  places them exactly where this service does, so the offset shows up only
+  against the newer of the two production builds.
+- **A localized `/v4/` alternate date reads `12 Tewet`, not `12. Tewet`.**
+  The day line comes from hebcal-go's `hebrewDateEvent.Render()`, which is
+  behind `@hebcal/hdate` on the ordinal it writes for locales other than
+  English and Spanish. The fix belongs in hebcal-go.
+- **Two holidays on one day can be ordered differently.** hebcal-go sorts a
+  date's holidays alphabetically; @hebcal/core keeps the order it created
+  them in. So a cell holding both Rosh Chodesh Elul and Rosh Hashana
+  LaBehemot, or both Erev Purim and Shabbat Zachor, can list them the other
+  way round — one or two cells a year, with no row missing, added or
+  retimed.
+- **An unknown-location `404` is not cached.** hebcal-web lets its 14-day
+  `Cache-Control` survive onto the 404; this service omits it there, since
+  a location missing today may be added later. The out-of-range `410` and
+  the rendered PDF are cached as in production.
+
 ## Package layout
 
 The service follows the standard Go microservice layout: `cmd` wires
@@ -271,6 +383,9 @@ internal/
     shabbat/               /shabbat calendar, candle options, item rendering
     complete/              /complete result serialization
     location/              query -> location, and the two location JSON shapes
+    pdf/                   /v4/ PDF calendars: protobuf -> options, event
+                           generation, page layout, shaping, fonts, links
+    holidaypdf/            /holidays/hebcal-<year>.pdf URL parsing
   repository/
     leyning/               HTTP client for hebcal-web's /leyning endpoint
   model/                 domain layer: dates, locales, calendar events, errors
@@ -283,9 +398,14 @@ pkg/
   geodb/                 SQLite geonames/zips reader and geographic typeahead;
                          a Go port of @hebcal/geo-sqlite
   geoip/                 client for the geoip2 unix-socket lookup service
+  downloadpb/            the Download protobuf a /v4/ URL carries, shared
+                         with hebcal-web
+tools/                   porting tools: PDF comparison, width measurement,
+                         locale and URL dumps (not part of the build)
 ```
 
-`pkg/geodb` and `pkg/geoip` depend only on their own third-party libraries,
+`pkg/geodb`, `pkg/geoip` and `pkg/downloadpb` depend only on their own
+third-party libraries,
 never on `internal`, so either can be reused by another program or split out
 into its own module without untangling anything first. `geodb` embeds
 `city2geonameid.json` and carries the US state-name table, so it needs no
@@ -313,6 +433,10 @@ make fmt       # gofmt -w cmd internal pkg
 If you invoke `go` directly rather than through the `Makefile`, add the
 tag yourself, e.g. `go test -tags sqlite_fts5 ./...`.
 
+The tests that render a calendar need the fonts: they look for `$FONT_DIR`,
+then a `fonts` directory at the repository root, and skip rather than fail
+when neither is present.
+
 ## Run
 
 ```bash
@@ -320,14 +444,16 @@ tag yourself, e.g. `go test -tags sqlite_fts5 ./...`.
 ./hebcal-api -port 8082 -logfile /var/log/hebcal/api.log \
     -zips-db /var/lib/hebcal/zips.sqlite3 \
     -geonames-db /var/lib/hebcal/geonames.sqlite3 \
-    -leyning-url http://localhost:8080/leyning
+    -leyning-url http://localhost:8080/leyning \
+    -fonts /var/www/fonts
 ```
 
 The port defaults to `8082` (or the `PORT` environment variable); the
 access log defaults to stdout (pass `-logfile <path>`). The geonames/zips
 database paths default to the working directory (see
 [Location databases](#location-databases)). `/shabbat` needs hebcal-web
-reachable at `-leyning-url` (or `LEYNING_URL`) for Torah readings.
+reachable at `-leyning-url` (or `LEYNING_URL`) for Torah readings, and the
+PDF calendars need `-fonts` (see [Fonts](#fonts)).
 
 Access logs are pino-compatible JSON lines, e.g.:
 
@@ -351,3 +477,10 @@ to `/etc/systemd/system/hebcal-api.service`, and the logrotate drop-in to
 its access log to `/var/log/hebcal/api.log` (same directory hebcal-web
 uses), rotated daily; logrotate signals the service with `SIGUSR1` to
 reopen the file after rotation.
+
+Varnish decides which URLs reach this service. Alongside the JSON APIs, two
+PDF families now belong here rather than to the Node.js service:
+`download.hebcal.com/v4/**.pdf` and `www.hebcal.com/holidays/hebcal-*.pdf`
+(and nothing else under `/holidays/`). Both used to be served by the
+separate hebcal-pdf-go process on port 8083, which this service replaces —
+route them to 8082 and retire that backend.

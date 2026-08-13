@@ -4,16 +4,22 @@ go 1.25.0
 
 require (
 	github.com/andybalholm/brotli v1.2.2
+	github.com/go-text/typesetting v0.3.4
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/hebcal/gematriya v1.1.0
 	github.com/hebcal/greg v1.1.0
 	github.com/hebcal/hdate v1.4.0
 	github.com/hebcal/hebcal-go v0.19.1
+	github.com/hebcal/learning v0.5.0
 	github.com/hebcal/locales v1.1.1
 	github.com/mattn/go-sqlite3 v1.14.47
 	github.com/prometheus/client_golang v1.23.2
+	golang.org/x/image v0.44.0
 	golang.org/x/sync v0.22.0
 	golang.org/x/text v0.40.0
+	google.golang.org/protobuf v1.36.11
+	seehuhn.de/go/pdf v0.7.4
+	seehuhn.de/go/sfnt v0.7.4
 )
 
 require (
@@ -25,6 +31,12 @@ require (
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.70.0 // indirect
 	github.com/prometheus/procfs v0.21.1 // indirect
+	github.com/xdg-go/stringprep v1.0.4 // indirect
 	golang.org/x/sys v0.47.0 // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
+	seehuhn.de/go/dag v1.0.0 // indirect
+	seehuhn.de/go/geom v0.7.4 // indirect
+	seehuhn.de/go/icc v0.7.4 // indirect
+	seehuhn.de/go/membudget v0.7.4 // indirect
+	seehuhn.de/go/postscript v0.7.4 // indirect
+	seehuhn.de/go/xmp v0.7.4 // indirect
 )

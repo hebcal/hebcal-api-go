@@ -15,6 +15,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/logger"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/repository/leyning"
+	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 	"github.com/hebcal/hebcal-api-go/pkg/geoip"
 )
@@ -38,6 +39,10 @@ type Server struct {
 	GeoIP *geoip.Client
 	// Leyning supplies Torah readings for /shabbat.
 	Leyning *leyning.Client
+	// PDF renders the calendar PDFs. Its Renderer is nil when the fonts could
+	// not be loaded, in which case the PDF routes answer 503 and the rest of
+	// the API keeps working.
+	PDF *pdf.Service
 }
 
 // New returns a Server with the defaults main and the tests share.
@@ -49,6 +54,7 @@ func New(lg *logger.AccessLogger) *Server {
 		PingFile: config.DefaultPingFile,
 		Hostname: hostname,
 		Leyning:  leyning.New(leyning.DefaultURL),
+		PDF:      &pdf.Service{},
 	}
 }
 
@@ -84,6 +90,12 @@ func (s *Server) Routes() http.Handler {
 	mux.HandleFunc("/complete", mw.Serve(s.complete))
 	mux.HandleFunc("/complete/", mw.Serve(s.complete))
 	mux.HandleFunc("/complete.php", mw.Serve(s.complete))
+	// The PDF calendars: download.hebcal.com's /v4/ downloads and
+	// www.hebcal.com's /holidays/ holiday calendars, both routed here by
+	// Varnish. Nothing else under /holidays/ belongs to this service -- the
+	// HTML pages there are hebcal-web's, and pdfHoliday answers them 404.
+	mux.HandleFunc("/v4/", mw.Serve(s.pdfDownload))
+	mux.HandleFunc("/holidays/", mw.Serve(s.pdfHoliday))
 	mux.HandleFunc("/", mw.Serve(s.notFound))
 	return s.withBackend(mux)
 }

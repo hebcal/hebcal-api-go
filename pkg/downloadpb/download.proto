@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+option go_package = "github.com/hebcal/hebcal-api-go/pkg/downloadpb";
+
+message Download {
+  bool major = 1;
+  bool minor = 2;
+  bool roshChodesh = 3;
+  bool modern = 4;
+  bool minorFast = 5;
+  bool specialShabbat = 6;
+  bool israel = 7;
+  bool havdalahTzeit = 8;
+  bool isHebrewYear = 9;
+  bool candlelighting = 10;
+
+  int32 geonameid = 11;
+  int32 year = 12;
+  string locale = 13;
+  int32 havdalahMins = 14;
+  int32 candleLightingMins = 15;
+
+  bool emoji = 16;
+  bool sedrot = 17;
+  string zip = 18;
+  bool yearNow = 19;
+  bool subscribe = 20;
+
+  bool addAltDates = 23;
+  bool addAltDatesForEvents = 24;
+  bool omer = 25;
+  bool dafyomi = 26;
+  bool euro = 27;
+  bool mishnaYomi = 28;
+
+  bool geoPos = 29;
+  int32 month = 30;
+  int32 numYears = 31;
+  oneof lat_oneof {
+    double old_latitude = 32;
+    float latitude = 41;
+  }
+  oneof long_oneof {
+    double old_longitude = 33;
+    float longitude = 42;
+  }
+  string tzid = 34;
+  oneof start_oneof {
+    string start_str = 35;
+    int64 start = 43;
+  }
+  oneof end_oneof {
+    string end_str = 36;
+    int64 end = 44;
+  }
+  bool yomKippurKatan = 37;
+  reserved 38;
+  enum Hour12 {
+    UNSET = 0;
+    ON = 1;
+    OFF = 2;
+  }
+  Hour12 hour12 = 39;
+  string cityName = 40;
+  bool yerushalmiYomi = 45;
+  bool nachYomi = 46;
+  bool rambam1 = 47;
+  bool chofetzChaim = 48;
+  bool shemiratHaLashon = 49;
+  bool psalms = 50;
+  bool dafWeekly = 51;
+  int32 elev = 52;
+  bool useElevation = 53;
+  bool tanakhYomi = 54;
+  bool pirkeiAvotSummer = 55;
+  bool yizkor = 56;
+  bool arukhHaShulchanYomi = 57;
+  bool yySchottenstein = 58;
+  bool perekYomi = 59;
+  bool shabbatMevarchim = 60;
+  bool rambam3 = 61;
+  bool seferHaMitzvot = 62;
+  bool kitzurShulchanAruch = 63;
+  enum MonthMode {
+    GREGORIAN_ARABIC = 0;
+    HEBREW_ARABIC = 1;
+    HEBREW_HEBREW = 2;
+  }
+  MonthMode monthMode = 64;
+  bool yomTovOnly = 65;
+  bool dirshuAmudYomi = 66;
+  float tzeit = 67;
+  bool nine29 = 68;
+}

@@ -553,6 +553,11 @@ func moladDayName(dow time.Weekday, locale string) string {
 // "m", so "Tzom Tammuz" is left alone: it is the event description the
 // classic API reports as title_orig, the key the MEMO catalog and the event
 // URL are built from, and the name /leyning uses for the fast's reading.
+//
+// model.FixMonthSpelling does the same job for the PDF calendars, restoring the
+// fast after a blanket replace rather than skipping the whole string. The two
+// agree on every string either service renders; this one stays as it is because
+// its result feeds title_orig and the /leyning lookup.
 func normMonth(s string) string {
 	if strings.Contains(s, "Tzom Tammuz") {
 		return s

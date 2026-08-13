@@ -1,5 +1,5 @@
 [Unit]
-Description=Hebcal API server (Hebrew Date Converter + Zmanim REST APIs)
+Description=Hebcal API server (REST APIs + PDF calendars)
 Documentation=https://github.com/hebcal/hebcal-api-go
 After=network.target
 
@@ -11,7 +11,8 @@ ExecStart=/usr/local/bin/hebcal-api \
   -port 8082 \
   -logfile /var/log/hebcal/api.log \
   -zips-db /var/www/zips.sqlite3 \
-  -geonames-db /var/www/geonames.sqlite3
+  -geonames-db /var/www/geonames.sqlite3 \
+  -fonts /var/www/fonts
 # SIGUSR1 (or SIGHUP) reopens the access log after rotation
 ExecReload=/bin/kill -USR1 $MAINPID
 Restart=on-failure

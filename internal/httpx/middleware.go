@@ -157,6 +157,11 @@ func (m *Middleware) logAccess(r *http.Request, bw *bufWriter, length int, start
 	if enc := bw.header.Get("Content-Encoding"); enc != "" {
 		fields = append(fields, logger.KV{K: "enc", V: logger.String(enc)})
 	}
+	// A PDF request answered with the daily-learning fallback header records
+	// which series were involved, so those requests can be found in the log.
+	if un := bw.header.Get("X-Unsupported-Series"); un != "" {
+		fields = append(fields, logger.KV{K: "unsupported", V: logger.String(un)})
+	}
 	level := logger.LevelInfo
 	if bw.status >= 400 && bw.status != 404 {
 		level = logger.LevelWarn
