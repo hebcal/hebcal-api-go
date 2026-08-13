@@ -1,3 +1,5 @@
 /hebcal-api
 /hebcal-api-go
 *.log
+geonames.sqlite3
+zips.sqlite3
