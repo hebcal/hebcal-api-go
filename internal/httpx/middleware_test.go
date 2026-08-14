@@ -37,9 +37,12 @@ func serveAndReadLog(t *testing.T, h http.HandlerFunc, req *http.Request) map[st
 
 // The log format has to match hebcal-web's makeLogInfo(), field for field, so
 // one pipeline reads both and hebcal-web's tools/perf analysis works against
-// these logs too.
+// these logs too. "host" is the one deliberate addition: this binary answers
+// both www.hebcal.com and download.hebcal.com, where hebcal-web's makeLogInfo
+// only ever logs for a single vhost.
 func TestAccessLogFormat(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/v4/abc/hebcal_2026.pdf?x=1&y=2", nil)
+	req.Host = "download.hebcal.com"
 	req.Header.Set("User-Agent", "curl/8")
 	req.Header.Set("X-Client-IP", "203.0.113.7")
 	m := serveAndReadLog(t, func(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +51,7 @@ func TestAccessLogFormat(t *testing.T) {
 	}, req)
 
 	for _, k := range []string{"level", "time", "pid", "hostname", "status", "length",
-		"duration", "ip", "method", "url", "ua"} {
+		"duration", "ip", "method", "host", "url", "ua"} {
 		if _, ok := m[k]; !ok {
 			t.Errorf("missing field %q; hebcal-web's log tooling expects it", k)
 		}
@@ -58,6 +61,11 @@ func TestAccessLogFormat(t *testing.T) {
 	}
 	if m["ip"] != "203.0.113.7" {
 		t.Errorf("ip = %v, want the X-Client-IP value Varnish sets", m["ip"])
+	}
+	// This binary answers both www.hebcal.com and download.hebcal.com, so the
+	// Host header distinguishes them in the shared log.
+	if m["host"] != "download.hebcal.com" {
+		t.Errorf("host = %v, want the request's Host header", m["host"])
 	}
 	// The query string is part of the logged URL, and an ampersand must not be
 	// escaped to &amp; or the tooling cannot match URLs.

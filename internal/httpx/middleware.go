@@ -142,6 +142,7 @@ func (m *Middleware) logAccess(r *http.Request, bw *bufWriter, length int, start
 		logger.KV{K: "duration", V: logger.Int(int(time.Since(start).Milliseconds()))},
 		logger.KV{K: "ip", V: logger.String(ClientIP(r))},
 		logger.KV{K: "method", V: logger.String(r.Method)},
+		logger.KV{K: "host", V: logger.String(r.Host)},
 		logger.KV{K: "url", V: logger.String(r.URL.RequestURI())},
 		logger.KV{K: "ua", V: logger.String(r.Header.Get("User-Agent"))},
 	)
