@@ -4,11 +4,12 @@
 //
 // Scope: only cfg=json is supported by the handler; any other cfg returns 501
 // Not Implemented. Torah readings (the default, suppressed with
-// leyning={off,0}) come from the hebcal-web /leyning endpoint; see
-// internal/repository/leyning.
+// leyning={off,0}) come from the readings-svc sidecar's /leyning endpoint;
+// see internal/repository/readings.
 package shabbat
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -26,7 +27,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/config"
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
-	"github.com/hebcal/hebcal-api-go/internal/repository/leyning"
+	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
 	"github.com/hebcal/hebcal-api-go/internal/service/location"
 	zmanimsvc "github.com/hebcal/hebcal-api-go/internal/service/zmanim"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
@@ -274,7 +275,7 @@ func MoveCandleLightingToSunset(events []event.CalEvent, opts *hebcal.CalOptions
 // Response builds the ordered top-level JSON object. readings is nil
 // when leyning is suppressed.
 func Response(events []event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hdp bool,
-	hour12 *bool, readings map[string][]*leyning.Reading) jsutil.OrderedObj {
+	hour12 *bool, leyning map[string][]readings.Item) jsutil.OrderedObj {
 	body := jsutil.OrderedObj{
 		{Key: "title", Val: title(events, loc)},
 		{Key: "date", Val: time.Now().UTC().Format("2006-01-02T15:04:05.000Z")},
@@ -291,7 +292,7 @@ func Response(events []event.CalEvent, loc *geodb.Location, il bool, locale, lg 
 	}
 	items := make([]interface{}, 0, len(events))
 	for _, ev := range events {
-		items = append(items, item(ev, loc, il, locale, lg, hdp, hour12, readings))
+		items = append(items, item(ev, loc, il, locale, lg, hdp, hour12, leyning))
 	}
 	body = append(body, jsutil.KV{Key: "items", Val: items})
 	return body
@@ -316,7 +317,7 @@ func title(events []event.CalEvent, loc *geodb.Location) string {
 // item serializes one event to the classic-API item object. Ordered to
 // match @hebcal/rest-api eventToClassicApiObject.
 func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hdp bool,
-	hour12 *bool, readings map[string][]*leyning.Reading) jsutil.OrderedObj {
+	hour12 *bool, leyning map[string][]readings.Item) jsutil.OrderedObj {
 	flags := ev.GetFlags()
 	hd := ev.GetDate()
 	desc := descOf(ev)
@@ -381,7 +382,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 	// getLeyningForHoliday(), which rejects anything with an eventTime.
 	if !isCandleOrHavdalah(desc) {
 		if !isTimed {
-			if ley := itemLeyning(hd, flags, desc, readings); ley != nil {
+			if ley := itemLeyning(hd, flags, desc, leyning); len(ley) != 0 {
 				item = append(item, jsutil.KV{Key: "leyning", Val: ley})
 			}
 		}
@@ -639,37 +640,35 @@ func isCandleOrHavdalah(desc string) bool {
 }
 
 // itemLeyning returns the Torah reading for an event, or nil when it has
-// none (or when readings were not requested). It reproduces the lookup in
-// eventToClassicApiObject: a parsha ha-shavua event gets
-// getLeyningForParshaHaShavua(), every other event gets
-// getLeyningForHoliday(). Timed events are never passed here, matching the
-// JS side, where getLeyningForHoliday() rejects anything with an eventTime.
+// none (or when readings were not requested).
 //
-// The triennial cycle is added for parsha events only, and only from Hebrew
-// year 5745 on, per hebcal-web src/myEventsToClassicApi.js.
+// readings-svc builds each item with eventToClassicApiObject(), so the reading
+// is already the object this response wants -- aliyot, torah, haftarah, the
+// "| Shabbat Shekalim" reasons, and (for a parsha from Hebrew year 5745 on)
+// the triennial cycle -- in @hebcal/rest-api's own key order. It is passed
+// through as raw JSON rather than decoded and rebuilt.
+//
+// The lookup is the JS one turned inside out: there, each event asks for its
+// reading; here, hebcal-go's events are matched to the sidecar's by the
+// untranslated event description, except for the parsha, which is the one item
+// on the day whose category is "parashat". Timed events are never passed here,
+// matching the JS side, where getLeyningForHoliday() rejects anything with an
+// eventTime.
 func itemLeyning(hd hdate.HDate, flags event.HolidayFlags, desc string,
-	readings map[string][]*leyning.Reading) jsutil.OrderedObj {
-	if readings == nil {
+	leyning map[string][]readings.Item) json.RawMessage {
+	if leyning == nil {
 		return nil
 	}
-	onDate := readings[model.IsoGreg(hd)]
+	onDate := leyning[model.IsoGreg(hd)]
 	if len(onDate) == 0 {
 		return nil
 	}
 	// @hebcal/rest-api tests the mask for equality, so an event merely
 	// carrying PARSHA_HASHAVUA alongside other flags is not a parsha.
 	if flags == event.PARSHA_HASHAVUA {
-		r := leyning.FindParshaReading(onDate)
-		if r == nil {
-			return nil
-		}
-		return leyning.FormatLeyning(r, hd.Year() >= 5745)
+		return readings.FindParsha(onDate)
 	}
-	r := leyning.FindHolidayReading(onDate, desc)
-	if r == nil {
-		return nil
-	}
-	return leyning.FormatLeyning(r, false)
+	return readings.FindHoliday(onDate, desc)
 }
 
 // linkedHoliday returns the holiday a timed event stands for, rather than one

@@ -12,8 +12,9 @@ Currently implemented:
 - **Assur Melacha** ("is work prohibited right now", JSON) — the `im=1` mode
   of the zmanim API
 - **Shabbat** (candle-lighting / Torah portion, JSON) — ported from
-  `src/shabbat.js`; Torah readings come from hebcal-web's `/leyning`
-  service (see [Torah readings](#torah-readings))
+  `src/shabbat.js`; Torah readings come from the
+  [readings-svc](https://github.com/hebcal/readings-svc) sidecar (see
+  [Torah readings](#torah-readings))
 - **Geolocation** (`/geo`) — resolve query parameters to a location, JSON
 - **Geo autocomplete** (`/complete`) — city/ZIP typeahead, JSON
 - **PDF calendars** — the `download.hebcal.com/v4/…pdf` downloads (ported
@@ -131,14 +132,22 @@ cycle:
  "triennial":{"1":"Deuteronomy 11:26-11:31","…":"…"}}
 ```
 
-hebcal-go has no leyning data, so the readings come from hebcal-web's
-`/leyning?cfg=json&events=on` endpoint over HTTP. Set its URL with
-`-leyning-url` or `LEYNING_URL` (default `http://localhost:8080/leyning`).
+hebcal-go has no leyning data, so the readings come from the
+[readings-svc](https://github.com/hebcal/readings-svc) sidecar's `/leyning`
+endpoint, over a unix domain socket set with `-readings-socket` or
+`READINGS_SOCKET` (default `/run/hebcal/readings-svc.sock`). That service
+answers in @hebcal/rest-api's classic-API shape, so each reading is passed
+through into the response verbatim, key order and all, rather than being
+reformatted here.
+
 Readings depend only on the date and on Israel vs. Diaspora — every city
 in Israel reads the same portion on a given day, as does every city in the
 Diaspora — so they are cached in a 400-entry LRU keyed by `(date, il)`,
-which a week's worth of requests for any location shares. When the
-`/leyning` service cannot be reached, `/shabbat` returns `503` rather than
+which a week's worth of requests for any location shares. `/leyning` takes no
+locale at all: the readings are locale-invariant, and items are matched to
+hebcal-go's events by the untranslated event description, so they stay English
+however `lg` was set.
+When readings-svc cannot be reached, `/shabbat` returns `503` rather than
 a response that silently omits the readings; `leyning=off` skips the call
 altogether.
 
@@ -229,25 +238,23 @@ Daf-a-Week, 929, Psalms, the two Rambam schedules, Tanakh Yomi and Pirkei
 Avot — are generated in-process by
 [hebcal/learning](https://github.com/hebcal/learning). The remaining six —
 Sefer HaMitzvot, Kitzur Shulchan Arukh, Arukh HaShulchan, Amud HaYomi
-(Dirshu), Chofetz Chaim and Shemirat HaLashon — are fetched from
-hebcal-web's `/hebcal?cfg=json` endpoint and merged into the calendar, so
-every series still renders. Each learning row links to its source on
-Sefaria (or dafyomi.org).
+(Dirshu), Chofetz Chaim and Shemirat HaLashon — are fetched from the
+[readings-svc](https://github.com/hebcal/readings-svc) sidecar's
+`/learning` endpoint and merged into the calendar, so every series still
+renders. Each learning row links to its source on Sefaria (or
+dafyomi.org).
 
-`-hebcal-url` (or `HEBCAL_URL`) sets where hebcal-web is reached for the
-fetched series, defaulting to `http://www.hebcal.com` over plain http on
-port 80. The download backends do not serve `/hebcal`, so the request goes
-out through the `www.hebcal.com` Varnish front door, which also caches the
-responses.
+`-readings-socket` (or `READINGS_SOCKET`) is the same socket `/shabbat`
+uses for Torah readings; the two endpoints are served by one process.
 
 Neither failure mode serves a calendar quietly missing rows the reader
 asked for; both name the missing series in an `X-Unsupported-Series`
 header (which the access log records as `unsupported`):
 
-- **501** when `-hebcal-url` is empty — this build cannot render those
-  series and retrying will not help (unreachable in the default
+- **501** when `-readings-socket` is empty — this build cannot render
+  those series and retrying will not help (unreachable in the default
   configuration).
-- **503**, with `Retry-After`, when a configured hebcal-web does not
+- **503**, with `Retry-After`, when a configured readings-svc does not
   answer — transient, and worth retrying or falling back to the Node.js
   service.
 
@@ -387,7 +394,9 @@ internal/
                            generation, page layout, shaping, fonts, links
     holidaypdf/            /holidays/hebcal-<year>.pdf URL parsing
   repository/
-    leyning/               HTTP client for hebcal-web's /leyning endpoint
+    readings/              client for the readings-svc sidecar (/leyning
+                           for /shabbat, /learning for the PDF calendars)
+                           over its unix domain socket
   model/                 domain layer: dates, locales, calendar events, errors
   httpx/                 shared transport utilities: ETag, CORS, content types,
                          error rendering, compression/metrics/logging middleware
@@ -444,16 +453,16 @@ when neither is present.
 ./hebcal-api -port 8082 -logfile /var/log/hebcal/api.log \
     -zips-db /var/lib/hebcal/zips.sqlite3 \
     -geonames-db /var/lib/hebcal/geonames.sqlite3 \
-    -leyning-url http://localhost:8080/leyning \
+    -readings-socket /run/hebcal/readings-svc.sock \
     -fonts /var/www/fonts
 ```
 
 The port defaults to `8082` (or the `PORT` environment variable); the
 access log defaults to stdout (pass `-logfile <path>`). The geonames/zips
 database paths default to the working directory (see
-[Location databases](#location-databases)). `/shabbat` needs hebcal-web
-reachable at `-leyning-url` (or `LEYNING_URL`) for Torah readings, and the
-PDF calendars need `-fonts` (see [Fonts](#fonts)).
+[Location databases](#location-databases)). `/shabbat` needs readings-svc
+listening on `-readings-socket` (or `READINGS_SOCKET`) for Torah readings,
+and the PDF calendars need `-fonts` (see [Fonts](#fonts)).
 
 Access logs are pino-compatible JSON lines, e.g.:
 
