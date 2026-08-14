@@ -36,6 +36,8 @@ install: build
 	install -d -m 0775 -o $(SVCUSER) -g $(SVCGROUP) /var/log/hebcal
 	install -m 0644 etc/$(BIN).service /etc/systemd/system/$(BIN).service
 	install -m 0644 etc/$(BIN).logrotate /etc/logrotate.d/$(BIN)
+	find fonts -type d -exec install -d -m 0775 /var/www/{} \;
+	find fonts -type f -exec install -m 0644 {} /var/www/{} \;
 	systemctl daemon-reload
 	systemctl enable $(BIN).service
 	@echo ""

@@ -584,12 +584,14 @@ ordering below). www.hebcal.com's `/holidays/` calendars are served too, from
 
 ### Blocking a deployment
 
-- **The `fonts` directory and both SQLite databases are symlinks** into a
-  hebcal-web checkout, so a development build only runs on a machine that has
-  one. `etc/hebcal-api.service` passes `-fonts`, `-zips-db` and `-geonames-db`,
-  so this is a packaging question rather than a code one. Unlike the databases,
-  missing fonts are not fatal: the two PDF routes answer 503 and the JSON APIs
-  keep working.
+- **Both SQLite databases are symlinks** into a hebcal-web checkout, so a
+  development build only runs on a machine that has one. The `fonts`
+  directory is not: it is owned by this repository, checked in as real files
+  (`fonts/Source_Sans_Pro/`, `fonts/Adobe_Hebrew/`), and `make install`
+  copies it to `/var/www/fonts`. `etc/hebcal-api.service` passes `-fonts`,
+  `-zips-db` and `-geonames-db`, so the databases remain a packaging
+  question rather than a code one. Unlike the databases, missing fonts are
+  not fatal: the two PDF routes answer 503 and the JSON APIs keep working.
 - **readings-svc has to be running**, on `/run/hebcal/readings-svc.sock`,
   before this service is deployed: without it `/shabbat` answers 503 and any
   PDF naming one of the six daily-learning series answers 503. Its systemd

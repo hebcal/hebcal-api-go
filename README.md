@@ -260,12 +260,13 @@ header (which the access log records as `unsupported`):
 
 #### Fonts
 
-The calendars are drawn with the Source Sans Pro and Adobe Hebrew families
-hebcal-web uses. `-fonts` (or `FONT_DIR`, default `fonts`) names a
-directory holding `Source_Sans_Pro/` and `Adobe_Hebrew/`. The fonts are
-parsed once at startup and shared by every request; only the per-document
-embedded instances are rebuilt. A failure to load them is logged and
-disables the two PDF routes rather than stopping the server.
+The calendars are drawn with the Source Sans Pro and Adobe Hebrew families,
+checked into this repository under `fonts/`. `-fonts` (or `FONT_DIR`,
+default `fonts`) names a directory holding `Source_Sans_Pro/` and
+`Adobe_Hebrew/`. The fonts are parsed once at startup and shared by every
+request; only the per-document embedded instances are rebuilt. A failure to
+load them is logged and disables the two PDF routes rather than stopping
+the server.
 
 ### Operational
 
