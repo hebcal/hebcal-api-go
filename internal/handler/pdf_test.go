@@ -17,6 +17,7 @@ import (
 
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
 	"github.com/hebcal/hebcal-api-go/internal/logger"
+	"github.com/hebcal/hebcal-api-go/internal/repository/readings/readingstest"
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
@@ -205,14 +206,14 @@ func TestPDFCacheHeaders(t *testing.T) {
 }
 
 // The two daily-learning failure modes are different and the status codes have
-// to say so: a build with no hebcal-web URL can never render these, while a
-// configured hebcal-web that does not answer is transient.
+// to say so: a build with no readings-svc socket can never render these, while
+// a configured readings-svc that does not answer is transient.
 func TestFallbackStatusCodes(t *testing.T) {
 	// A calendar naming one of the six, with nothing else that needs geo.
 	msg := &pb.Download{Year: 2026, Month: 8, Major: true, DirshuAmudYomi: true}
 	path := "/v4/" + encode(t, msg) + "/hebcal_2026.pdf"
 
-	t.Run("no hebcal-web configured is 501", func(t *testing.T) {
+	t.Run("no readings-svc configured is 501", func(t *testing.T) {
 		_, srv := pdfServer(t)
 		resp, _ := get(t, srv, path)
 		if resp.StatusCode != http.StatusNotImplemented {
@@ -223,13 +224,12 @@ func TestFallbackStatusCodes(t *testing.T) {
 		}
 	})
 
-	t.Run("hebcal-web unreachable is 503", func(t *testing.T) {
-		down := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	t.Run("readings-svc unreachable is 503", func(t *testing.T) {
+		down := readingstest.Serve(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "down", http.StatusBadGateway)
 		}))
-		defer down.Close()
 		app, srv := pdfServer(t)
-		app.PDF.Learning = pdf.NewLearningFetcher(down.URL)
+		app.PDF.Learning = pdf.NewLearningFetcher(down)
 		resp, _ := get(t, srv, path)
 		if resp.StatusCode != http.StatusServiceUnavailable {
 			t.Errorf("status = %d, want 503", resp.StatusCode)
@@ -239,14 +239,13 @@ func TestFallbackStatusCodes(t *testing.T) {
 		}
 	})
 
-	t.Run("hebcal-web answering renders", func(t *testing.T) {
-		up := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	t.Run("readings-svc answering renders", func(t *testing.T) {
+		up := readingstest.Serve(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(`{"items":[{"title":"Yoma 49a","date":"2026-08-01",` +
 				`"category":"dirshuAmudYomi"}]}`))
 		}))
-		defer up.Close()
 		app, srv := pdfServer(t)
-		app.PDF.Learning = pdf.NewLearningFetcher(up.URL)
+		app.PDF.Learning = pdf.NewLearningFetcher(up)
 		resp, body := get(t, srv, path)
 		if resp.StatusCode != http.StatusOK {
 			t.Fatalf("status = %d, want 200: %s", resp.StatusCode, body)

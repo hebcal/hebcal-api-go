@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
 	"github.com/hebcal/hebcal-api-go/pkg/geoip"
 )
 
@@ -17,13 +18,7 @@ const (
 	DefaultPingFile   = "/var/www/html/ping"
 	DefaultZipsDB     = "zips.sqlite3"
 	DefaultGeonamesDB = "geonames.sqlite3"
-	DefaultLeyningURL = "http://localhost:8080/leyning"
 	DefaultFontDir    = "fonts"
-	// DefaultHebcalURL is plain http on port 80, not the loopback: the backends
-	// this runs on do not serve /hebcal themselves, so the daily-learning
-	// fallback has to go out through the www.hebcal.com Varnish front door,
-	// which caches those /hebcal?cfg=json responses for free.
-	DefaultHebcalURL = "http://www.hebcal.com"
 )
 
 // Config is the resolved runtime configuration.
@@ -39,16 +34,15 @@ type Config struct {
 	GeonamesDB string
 	// GeoIPSocket is the unix domain socket of the geoip2 service.
 	GeoIPSocket string
-	// LeyningURL is the hebcal-web /leyning endpoint supplying Torah readings.
-	LeyningURL string
+	// ReadingsSocket is the unix domain socket of the readings-svc sidecar,
+	// which supplies Torah readings for /shabbat and the daily-learning series
+	// no Go schedule generates. Empty disables both: /shabbat answers 503 and
+	// a PDF asking for one of those six series is refused with 501.
+	ReadingsSocket string
 	// FontDir holds the Source_Sans_Pro/ and Adobe_Hebrew/ faces the PDF
 	// calendars are drawn with. Without it the PDF routes report 503 and the
 	// rest of the API is unaffected.
 	FontDir string
-	// HebcalURL is the hebcal-web base URL used to fetch the six daily-learning
-	// series no Go schedule generates; empty disables the fallback and those
-	// PDF requests are refused with 501.
-	HebcalURL string
 }
 
 // Load parses flags (with environment-variable fallbacks) into a Config. It
@@ -72,13 +66,12 @@ func Load() *Config {
 		"path to the geonames SQLite database (for the /zmanim API)")
 	flag.StringVar(&cfg.GeoIPSocket, "socket", geoip.DefaultSocket,
 		"path to the GeoIP unix domain socket")
-	flag.StringVar(&cfg.LeyningURL, "leyning-url", envOr("LEYNING_URL", DefaultLeyningURL),
-		"URL of the hebcal-web /leyning endpoint (Torah readings for /shabbat)")
+	flag.StringVar(&cfg.ReadingsSocket, "readings-socket",
+		envOr("READINGS_SOCKET", readings.DefaultSocket),
+		"path to the readings-svc unix domain socket (Torah readings for "+
+			"/shabbat and the daily-learning series with no Go schedule)")
 	flag.StringVar(&cfg.FontDir, "fonts", envOr("FONT_DIR", DefaultFontDir),
 		"directory holding Source_Sans_Pro/ and Adobe_Hebrew/ (for the PDF calendars)")
-	flag.StringVar(&cfg.HebcalURL, "hebcal-url", envOr("HEBCAL_URL", DefaultHebcalURL),
-		"hebcal-web base URL, used for the six daily-learning series with no Go "+
-			"schedule; empty disables the fallback and those requests return 501")
 	flag.Parse()
 	return cfg
 }

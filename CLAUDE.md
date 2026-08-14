@@ -53,7 +53,7 @@ The service follows the repository's usual direction — `handler` → `service`
 | `internal/service/pdf/text.go` | bidi and shaping |
 | `internal/service/pdf/fonts.go` | font loading, metrics, per-document embedding |
 | `internal/service/pdf/links.go` | URL shortening and tracking |
-| `internal/service/pdf/fallback.go` | the `/hebcal?cfg=json` fetch for unsupported learning series |
+| `internal/service/pdf/fallback.go` | the readings-svc `/learning` fetch for unsupported learning series |
 | `internal/service/holidaypdf/` | `/holidays/hebcal-<year>.pdf` URL parsing; port of `holidayPdf.js` |
 | `internal/model/calendarnames.go` | month and weekday names, generated |
 | `pkg/downloadpb/` | the `Download` protobuf a `/v4/` URL carries |
@@ -74,7 +74,7 @@ the whole document and the middleware sets `Content-Length` and drops the body
 for a `HEAD`.
 
 Events come from [hebcal-go](https://github.com/hebcal/hebcal-go) **in-process**,
-not over HTTP from hebcal-web's `/hebcal?cfg=json`. That endpoint reports a
+not over HTTP from a classic-API endpoint. Such an endpoint reports a
 category string per event, but the renderer needs the numeric flag bitmask —
 colour and font weight both switch on it, and the category is a lossy projection
 of it. (The learning fallback in `fallback.go` is the one exception, and it is
@@ -343,6 +343,80 @@ Do not "fix" these without checking production first.
 - **The `ft` ligature is absent from both documents' ToUnicode maps**, so
   `Shoftim` extracts oddly from either. A pdftotext artifact, not a regression.
 
+## The readings-svc sidecar
+
+Two things this service cannot do in Go come from
+[readings-svc](https://github.com/hebcal/readings-svc), a small Node.js process
+in a sibling checkout (`../readings-svc`) that wraps the mature `@hebcal`
+packages and answers HTTP **over a unix domain socket**
+(`-readings-socket`, default `/run/hebcal/readings-svc.sock`):
+
+- `/leyning` — Torah readings, including triennial, for `/shabbat`;
+- `/learning` — the six daily-learning series with no Go schedule, for the PDF
+  calendars.
+
+`internal/repository/readings` is the whole client: the socket transport, the
+`Item` type, the LRU, and the two request builders. Both callers -- `/shabbat`
+and `internal/service/pdf/fallback.go` -- share one `*readings.Client`, so
+there is one socket, one connection pool and one place that knows the
+transport. Keep it that way, the same rule the `httpx` note above states.
+
+It replaced two separate dependencies on hebcal-web, and both replacements
+simplified this side rather than merely moving it:
+
+- **Readings are no longer reformatted here.** hebcal-web's
+  `/leyning?cfg=json&events=on` returns `getLeyningOnDate()`'s shape -- readings
+  keyed by date, each labelled with the descriptions of the events that produce
+  it -- so this service had to port `formatLeyningResult()` and
+  `makeSummaryFromParts()` from `@hebcal/rest-api`, reproduce JavaScript's
+  integer-key-first object ordering by hand, and suffix the `| Shabbat
+  Shekalim` reasons itself. readings-svc returns the classic-API item shape
+  instead: `eventToClassicApiObject()` has already run, so each item's
+  `leyning` is exactly the object the response wants, and it is passed through
+  as `json.RawMessage` with its key order intact. About 200 lines of port went
+  away, and the result is now the *same code* production runs rather than a
+  faithful copy of it.
+- **Daily learning no longer leaves the machine.** It used to be fetched from
+  `http://www.hebcal.com/hebcal?cfg=json` -- out through the Varnish front
+  door, because the download backends do not serve `/hebcal` themselves. It is
+  now a local socket call. The item shape is unchanged (`category` still names
+  the series), so `fallback.go` kept its parsing.
+
+Three things about the client are load-bearing:
+
+- **`/leyning` takes no locale at all**, the same choice `holidayPdf.js`
+  makes and for the same reason. Readings are locale-invariant -- book names,
+  verse references and the `| Shabbat Shekalim` reasons come out of
+  @hebcal/leyning in English whatever the locale (measured: `lg=he`, `a`, `es`
+  produce byte-identical `leyning` objects) -- so a locale would only change
+  each item's `title`, which nothing reads. hebcal-go's events are matched to
+  the sidecar's items by the untranslated event description instead:
+  `Item.Desc()` is `title_orig`, falling back to `title` when the classic API
+  omitted it, which it does exactly when the two are equal. That is why the
+  match would survive a localized sidecar even so -- but the locale is gone
+  from `leyning.js` rather than left as something to reason about. A localized
+  `/shabbat` request therefore gets English readings, which is what hebcal-web
+  does too. The parsha is matched differently -- it is the one item on the day
+  whose category is `parashat` -- because `eventToClassicApiObject` tests the
+  flag mask for equality, and so does `itemLeyning`. `/learning` does still
+  take `lg`, because there the titles *are* the content.
+- **The LRU is keyed by `(date, il)` and nothing else.** Every city in Israel
+  reads the same portion on a given day, as does every city in the Diaspora, so
+  a week's worth of dates is shared by all the requests for that week whatever
+  the location. `singleflight` collapses the concurrent misses.
+- **A macOS socket path must stay under ~104 bytes.** `sun_path` is that long,
+  and `t.TempDir()` returns a `/var/folders/...` path that overflows it, so
+  `internal/repository/readings/readingstest` anchors its socket under `/tmp`
+  (as `pkg/geoip`'s test already did). readings-svc itself takes `--socket` for
+  the same reason: Debian puts the socket in `/run`, which macOS has no
+  equivalent of.
+
+`readingstest.Serve` starts an `httptest.Server` on a unix socket, so the PDF
+and `/shabbat` tests exercise the real transport rather than a TCP substitute.
+`internal/handler/testdata/leyning/readings.json` holds one day of captured
+classic-API items per `YYYY-MM-DD|<0 or 1 for Israel>` key; regenerate it from a
+running sidecar when a golden needs a new date.
+
 ## Daily learning
 
 Schedules are not selected through the four dedicated `CalOptions` booleans but
@@ -356,20 +430,21 @@ away from a consumer that forgets it.)
 
 `learningSchedules` in `params.go` maps each protobuf field to a registry name.
 `unsupportedSeries` lists the six with no schedule at all, and `fallback.go`
-fetches those from hebcal-web's `/hebcal?cfg=json` and merges them. Those three
-lists move together.
+fetches those from readings-svc's `/learning` and merges them. Those three
+lists move together, and a fourth list is in a different repository:
+`queryToDailyLearningName` in readings-svc's `learning.js`, which resolves the
+same query codes (`dcc`, `dshl`, `dsm`, `dksa`, `ayd`, `ahsy`) to
+@hebcal/learning schedule names.
 
-`-hebcal-url` defaults to `http://www.hebcal.com` (plain http, port 80), not the
-loopback: the download backends this runs on do not serve `/hebcal`, so the
-fetch has to go out through the `www.hebcal.com` Varnish front door. That is
-marginally less direct than a loopback call but rare, and Varnish caches the
-`/hebcal?cfg=json` responses for free.
+The fetch goes over the readings-svc unix domain socket (`-readings-socket`,
+default `/run/hebcal/readings-svc.sock`) -- see "The readings-svc sidecar"
+below.
 
 The two failure modes are deliberately different codes, carried out of the
 service as one `UnsupportedSeriesError` and split by `writeDownloadError`:
-**501** when no hebcal-web URL is configured, because retrying cannot help, and
-**503** with `Retry-After` when a configured hebcal-web does not answer. In the default
-configuration 501 is unreachable. Keep the two
+**501** when no socket is configured, because retrying cannot help, and
+**503** with `Retry-After` when a configured readings-svc does not answer. In the
+default configuration 501 is unreachable. Keep the two
 together: anything the learning package gains moves from the second to the
 first. `learning_test.go` asserts every name is registered and produces events.
 
@@ -515,6 +590,11 @@ ordering below). www.hebcal.com's `/holidays/` calendars are served too, from
   so this is a packaging question rather than a code one. Unlike the databases,
   missing fonts are not fatal: the two PDF routes answer 503 and the JSON APIs
   keep working.
+- **readings-svc has to be running**, on `/run/hebcal/readings-svc.sock`,
+  before this service is deployed: without it `/shabbat` answers 503 and any
+  PDF naming one of the six daily-learning series answers 503. Its systemd
+  unit is in that repository, and its `RuntimeDirectory=hebcal` is what
+  creates the socket directory.
 - **Varnish is not configured** to route PDF URLs here, and the 503 path
   assumes it will retry or fall back to Node. Two families need routing now, to
   **port 8082** rather than the retired hebcal-pdf service on 8083:

@@ -11,7 +11,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
-	"github.com/hebcal/hebcal-api-go/internal/repository/leyning"
+	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
 	"github.com/hebcal/hebcal-api-go/internal/service/location"
 	"github.com/hebcal/hebcal-api-go/internal/service/shabbat"
 )
@@ -125,13 +125,13 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Torah readings come from the hebcal-web /leyning service, fetched only
-	// once a body is actually going out. They are part of that body, so a
-	// failure there is a failure of this request rather than something to
-	// paper over with a partial answer.
-	var readings map[string][]*leyning.Reading
+	// Torah readings come from the readings-svc sidecar, fetched only once a
+	// body is actually going out. They are part of that body, so a failure
+	// there is a failure of this request rather than something to paper over
+	// with a partial answer.
+	var leyningByDate map[string][]readings.Item
 	if !leyningOff {
-		readings, err = s.Leyning.Readings(r.Context(), start, end, il)
+		leyningByDate, err = s.Readings.Leyning(r.Context(), start, end, il)
 		if err != nil {
 			s.Logger.Warn("leyning lookup failed: " + err.Error())
 			// the validators and freshness above describe the body we are
@@ -145,7 +145,7 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 	}
 
 	hdp := q.Get("hdp") == "1"
-	body := shabbat.Response(events, loc, il, locale, lg, hdp, queryHour12(q), readings)
+	body := shabbat.Response(events, loc, il, locale, lg, hdp, queryHour12(q), leyningByDate)
 	writeShabbatBody(w, q, body)
 }
 

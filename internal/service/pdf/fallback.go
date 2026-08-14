@@ -2,26 +2,26 @@ package pdf
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/hebcal/hdate"
 
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
+	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
 )
 
 // fallbackSeries maps a daily-learning series with no schedule in
-// github.com/hebcal/learning to the hebcal-web query parameter that selects it.
+// github.com/hebcal/learning to the readings-svc /learning query code that
+// selects it.
 //
 // Six series have no Go implementation. Rather than refuse those calendars,
-// their rows are fetched from hebcal-web's /hebcal?cfg=json and merged into the
+// their rows are fetched from the readings-svc sidecar and merged into the
 // locally generated events. Keep this in step with unsupportedSeries in
 // params.go: a series gaining a Go schedule moves to learningSchedules and
-// leaves both lists.
+// leaves both lists. The codes are the ones readings-svc documents, which are
+// also hebcal-web's own /hebcal query parameters.
 var fallbackSeries = map[string]string{
 	"chofetzChaim":        "dcc",
 	"shemiratHaLashon":    "dshl",
@@ -31,84 +31,46 @@ var fallbackSeries = map[string]string{
 	"arukhHaShulchanYomi": "ahsy",
 }
 
-// LearningFetcher retrieves daily-learning rows this service cannot generate.
+// LearningFetcher retrieves daily-learning rows this service cannot generate,
+// from the readings-svc sidecar over its unix domain socket.
 type LearningFetcher struct {
-	// BaseURL is where hebcal-web is reachable, e.g. http://www.hebcal.com.
-	BaseURL string
-	// Client bounds the request; a calendar should not hang on a slow sibling.
-	Client *http.Client
+	// Client talks to readings-svc; nil disables the fallback.
+	Client *readings.Client
 }
 
-// NewLearningFetcher returns a fetcher pointed at a hebcal-web instance.
-func NewLearningFetcher(baseURL string) *LearningFetcher {
-	return &LearningFetcher{
-		BaseURL: strings.TrimSuffix(baseURL, "/"),
-		Client:  &http.Client{Timeout: 10 * time.Second},
-	}
-}
-
-// hebcalJSON is the part of the /hebcal?cfg=json response this needs.
-type hebcalJSON struct {
-	Items []struct {
-		Title    string `json:"title"`
-		Date     string `json:"date"`
-		Category string `json:"category"`
-		Hebrew   string `json:"hebrew"`
-		Link     string `json:"link"`
-	} `json:"items"`
+// NewLearningFetcher returns a fetcher backed by the given readings client.
+func NewLearningFetcher(client *readings.Client) *LearningFetcher {
+	return &LearningFetcher{Client: client}
 }
 
 // Fetch returns the events for the named series over [start, end].
 //
-// The series are requested in one call rather than one call each: hebcal-web
+// The series are requested in one call rather than one call each: /learning
 // accepts several at once and returns them interleaved, and each item names its
-// own category.
+// own series in its category.
 func (f *LearningFetcher) Fetch(ctx context.Context, series []string, lg string, start, end time.Time) ([]Event, error) {
 	if len(series) == 0 {
 		return nil, nil
 	}
-	q := url.Values{}
-	q.Set("v", "1")
-	q.Set("cfg", "json")
-	q.Set("start", start.Format("2006-01-02"))
-	q.Set("end", end.Format("2006-01-02"))
-	if lg != "" {
-		q.Set("lg", lg)
-	}
+	codes := make([]string, 0, len(series))
+	wanted := make(map[string]bool, len(series))
 	for _, s := range series {
-		param, ok := fallbackSeries[s]
+		code, ok := fallbackSeries[s]
 		if !ok {
 			return nil, fmt.Errorf("no query parameter known for series %q", s)
 		}
-		q.Set(param, "on")
+		codes = append(codes, code)
+		wanted[s] = true
 	}
 
-	u := f.BaseURL + "/hebcal?" + q.Encode()
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
-	if err != nil {
-		return nil, err
-	}
-	resp, err := f.Client.Do(req)
+	items, err := f.Client.Learning(ctx, codes, lg, start, end)
 	if err != nil {
 		return nil, fmt.Errorf("fetching daily learning: %w", err)
 	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("fetching daily learning: %s returned %d", u, resp.StatusCode)
-	}
 
-	var body hebcalJSON
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("decoding daily learning: %w", err)
-	}
-
-	wanted := make(map[string]bool, len(series))
-	for _, s := range series {
-		wanted[s] = true
-	}
-	out := make([]Event, 0, len(body.Items))
-	for _, it := range body.Items {
-		// The response can carry other rows if hebcal-web decides to add
+	out := make([]Event, 0, len(items))
+	for _, it := range items {
+		// The response can carry other rows if the sidecar decides to add
 		// something by default; take only what was asked for.
 		if !wanted[it.Category] {
 			continue
@@ -132,8 +94,9 @@ func (f *LearningFetcher) Fetch(ctx context.Context, series []string, lg string,
 	return out, nil
 }
 
-// canonicalLearningURL strips the tracking hebcal-web already added, since the
-// renderer applies its own campaign. A Sefaria link is left otherwise intact.
+// canonicalLearningURL strips the tracking @hebcal/rest-api already added,
+// since the renderer applies its own campaign. A Sefaria link is left
+// otherwise intact.
 func canonicalLearningURL(link string) string {
 	if link == "" {
 		return ""

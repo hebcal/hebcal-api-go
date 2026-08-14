@@ -24,7 +24,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/handler"
 	"github.com/hebcal/hebcal-api-go/internal/logger"
 	"github.com/hebcal/hebcal-api-go/internal/model"
-	"github.com/hebcal/hebcal-api-go/internal/repository/leyning"
+	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 	"github.com/hebcal/hebcal-api-go/pkg/geoip"
@@ -48,7 +48,7 @@ func main() {
 	app := handler.New(lg)
 	app.PingFile = cfg.PingFile
 	app.GeoIP = geoip.New(cfg.GeoIPSocket)
-	app.Leyning = leyning.New(cfg.LeyningURL)
+	app.Readings = readings.New(cfg.ReadingsSocket)
 
 	// Probe the GeoIP unix domain socket at startup so operators see whether
 	// the geoip2 service is reachable. A failure is not fatal: /complete still
@@ -58,6 +58,17 @@ func main() {
 		lg.Warn(fmt.Sprintf("GeoIP unix socket %s not reachable: %v", cfg.GeoIPSocket, err))
 	} else {
 		lg.Info("GeoIP unix socket connected: " + cfg.GeoIPSocket)
+	}
+	probeCancel()
+
+	// Probe readings-svc the same way. A failure is not fatal either, but it is
+	// worth saying loudly: without it /shabbat cannot answer with Torah
+	// readings and the PDF calendars lose six daily-learning series.
+	probeCtx, probeCancel = context.WithTimeout(context.Background(), 200*time.Millisecond)
+	if err := app.Readings.DialSocket(probeCtx); err != nil {
+		lg.Warn(fmt.Sprintf("readings-svc unix socket %s not reachable: %v", cfg.ReadingsSocket, err))
+	} else {
+		lg.Info("readings-svc unix socket connected: " + cfg.ReadingsSocket)
 	}
 	probeCancel()
 
@@ -85,11 +96,11 @@ func main() {
 	} else {
 		app.PDF.Renderer = pdf.NewRenderer(fonts)
 	}
-	// The six daily-learning series with no Go schedule come from hebcal-web.
-	// With no URL configured those requests are refused with 501 rather than
+	// The six daily-learning series with no Go schedule come from readings-svc.
+	// With no socket configured those requests are refused with 501 rather than
 	// rendered without the rows the user asked for.
-	if cfg.HebcalURL != "" {
-		app.PDF.Learning = pdf.NewLearningFetcher(cfg.HebcalURL)
+	if cfg.ReadingsSocket != "" {
+		app.PDF.Learning = pdf.NewLearningFetcher(app.Readings)
 	}
 
 	srv := &http.Server{

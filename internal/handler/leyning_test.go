@@ -13,15 +13,14 @@ import (
 	"time"
 
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
-	"github.com/hebcal/hebcal-api-go/internal/repository/leyning"
+	"github.com/hebcal/hebcal-api-go/internal/repository/readings/readingstest"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 )
 
-// stubLeyning stands in for the hebcal-web /leyning endpoint, answering from
-// testdata/leyning/readings.json, which holds one day of readings per
-// "YYYY-MM-DD|<0 or 1 for Israel>" key, captured with &events=on.
+// stubLeyning stands in for readings-svc's /leyning endpoint, answering from
+// testdata/leyning/readings.json, which holds one day of classic-API items per
+// "YYYY-MM-DD|<0 or 1 for Israel>" key, captured from the sidecar itself.
 type stubLeyning struct {
-	*httptest.Server
 	days     map[string][]json.RawMessage
 	requests atomic.Int32
 	status   int // when non-zero, every request fails with this status
@@ -37,19 +36,30 @@ func newStubLeyning(t *testing.T) *stubLeyning {
 	if err := json.Unmarshal(raw, &stub.days); err != nil {
 		t.Fatalf("readings.json: %v", err)
 	}
-	stub.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return stub
+}
+
+func (stub *stubLeyning) handler(t *testing.T) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		stub.requests.Add(1)
 		if stub.status != 0 {
 			http.Error(w, "nope", stub.status)
 			return
+		}
+		if r.URL.Path != "/leyning" {
+			t.Errorf("readings-svc called on %s, want /leyning", r.URL.Path)
 		}
 		q := r.URL.Query()
 		il := "0"
 		if q.Get("i") == "on" {
 			il = "1"
 		}
-		if q.Get("events") != "on" {
-			t.Errorf("/leyning called without events=on: %s", r.URL.RawQuery)
+		// /leyning is English-only by design: items are matched to hebcal-go's
+		// events by the untranslated event description, and the readings
+		// themselves are locale-invariant. The sidecar ignores lg outright, so
+		// sending one would only be misleading.
+		if q.Get("lg") != "" {
+			t.Errorf("/leyning called with lg=%q; readings must stay English", q.Get("lg"))
 		}
 		start, err1 := time.Parse("2006-01-02", q.Get("start"))
 		end, err2 := time.Parse("2006-01-02", q.Get("end"))
@@ -68,12 +78,11 @@ func newStubLeyning(t *testing.T) *stubLeyning {
 		}
 		w.Header().Set("Content-Type", httpx.ContentTypeJSON)
 		json.NewEncoder(w).Encode(map[string]any{"items": items})
-	}))
-	t.Cleanup(stub.Close)
-	return stub
+	})
 }
 
-// testServerWithLeyning is testServerWithDB plus a stub /leyning upstream.
+// testServerWithLeyning is testServerWithDB plus a stub readings-svc, served
+// over a unix domain socket so the real transport is exercised.
 func testServerWithLeyning(t *testing.T) (*httptest.Server, *stubLeyning) {
 	t.Helper()
 	app, _ := testServer(t)
@@ -84,7 +93,7 @@ func testServerWithLeyning(t *testing.T) (*httptest.Server, *stubLeyning) {
 	t.Cleanup(func() { db.Close() })
 	app.DB = db
 	stub := newStubLeyning(t)
-	app.Leyning = leyning.New(stub.URL)
+	app.Readings = readingstest.Serve(t, stub.handler(t))
 	srv := httptest.NewServer(app.Routes())
 	t.Cleanup(srv.Close)
 	return srv, stub

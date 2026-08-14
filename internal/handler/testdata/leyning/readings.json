@@ -1,1948 +1,442 @@
 {
- "2025-07-10|0": [
-  {
-   "date": "2025-07-10",
-   "hdate": "14 Tamuz 5785",
-   "name": {
-    "en": "Balak",
-    "he": "בָּלָק"
-   },
-   "parshaNum": 40,
-   "summary": "Numbers 22:2-12",
-   "type": "weekday",
-   "weekday": {
-    "1": {
-     "b": "22:2",
-     "e": "22:4",
-     "k": "Numbers",
-     "v": 3
-    },
-    "2": {
-     "b": "22:5",
-     "e": "22:7",
-     "k": "Numbers",
-     "v": 3
-    },
-    "3": {
-     "b": "22:8",
-     "e": "22:12",
-     "k": "Numbers",
-     "v": 5
-    }
-   }
-  }
- ],
+ "2025-07-10|0": [],
  "2025-07-11|0": [],
  "2025-07-12|0": [
   {
+   "title": "Parashat Balak",
    "date": "2025-07-12",
-   "fullkriyah": {
-    "1": {
-     "b": "22:2",
-     "e": "22:12",
-     "k": "Numbers",
-     "v": 11
-    },
-    "2": {
-     "b": "22:13",
-     "e": "22:20",
-     "k": "Numbers",
-     "v": 8
-    },
-    "3": {
-     "b": "22:21",
-     "e": "22:38",
-     "k": "Numbers",
-     "v": 18
-    },
-    "4": {
-     "b": "22:39",
-     "e": "23:12",
-     "k": "Numbers",
-     "v": 15
-    },
-    "5": {
-     "b": "23:13",
-     "e": "23:26",
-     "k": "Numbers",
-     "v": 14
-    },
-    "6": {
-     "b": "23:27",
-     "e": "24:13",
-     "k": "Numbers",
-     "v": 17
-    },
-    "7": {
-     "b": "24:14",
-     "e": "25:9",
-     "k": "Numbers",
-     "v": 21
-    },
-    "M": {
-     "b": "25:7",
-     "e": "25:9",
-     "k": "Numbers",
-     "v": 3
-    }
-   },
-   "haft": {
-    "b": "5:6",
-    "e": "6:8",
-    "k": "Micah",
-    "v": 17
-   },
-   "haftara": "Micah 5:6-6:8",
    "hdate": "16 Tamuz 5785",
-   "name": {
-    "en": "Balak",
-    "he": "בָּלָק"
-   },
-   "parshaNum": 40,
-   "summary": "Numbers 22:2-25:9",
-   "triHaft": {
-    "b": "24:1",
-    "e": "24:14",
-    "k": "Joshua",
-    "note": "history mentions Balak",
-    "v": 14
-   },
-   "triHaftara": "Joshua 24:1-14",
-   "triYear": 3,
-   "triennial": {
-    "1": {
-     "b": "22:39",
-     "e": "23:5",
-     "k": "Numbers",
-     "v": 8
-    },
-    "2": {
-     "b": "23:6",
-     "e": "23:12",
-     "k": "Numbers",
-     "v": 7
-    },
-    "3": {
-     "b": "23:13",
-     "e": "23:26",
-     "k": "Numbers",
-     "v": 14
-    },
-    "4": {
-     "b": "23:27",
-     "e": "23:30",
-     "k": "Numbers",
-     "v": 4
-    },
-    "5": {
-     "b": "24:1",
-     "e": "24:13",
-     "k": "Numbers",
-     "v": 13
-    },
-    "6": {
-     "b": "24:14",
-     "e": "24:25",
-     "k": "Numbers",
-     "v": 12
-    },
-    "7": {
-     "b": "25:1",
-     "e": "25:9",
-     "k": "Numbers",
-     "v": 9
-    },
-    "M": {
-     "b": "25:7",
-     "e": "25:9",
-     "k": "Numbers",
-     "v": 3
+   "category": "parashat",
+   "leyning": {
+    "1": "Numbers 22:2-22:12",
+    "2": "Numbers 22:13-22:20",
+    "3": "Numbers 22:21-22:38",
+    "4": "Numbers 22:39-23:12",
+    "5": "Numbers 23:13-23:26",
+    "6": "Numbers 23:27-24:13",
+    "7": "Numbers 24:14-25:9",
+    "torah": "Numbers 22:2-25:9",
+    "haftarah": "Micah 5:6-6:8",
+    "maftir": "Numbers 25:7-25:9",
+    "triennial": {
+     "1": "Numbers 22:39-23:5",
+     "2": "Numbers 23:6-23:12",
+     "3": "Numbers 23:13-23:26",
+     "4": "Numbers 23:27-23:30",
+     "5": "Numbers 24:1-24:13",
+     "6": "Numbers 24:14-24:25",
+     "7": "Numbers 25:1-25:9",
+     "maftir": "Numbers 25:7-25:9"
     }
-   },
-   "type": "shabbat"
+   }
   }
  ],
  "2025-07-13|0": [
   {
+   "title": "Tzom Tammuz",
    "date": "2025-07-13",
-   "desc": [
-    "Tzom Tammuz"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "32:11",
-     "e": "32:14",
-     "k": "Exodus",
-     "p": 21,
-     "v": 4
-    },
-    "2": {
-     "b": "34:1",
-     "e": "34:3",
-     "k": "Exodus",
-     "p": 21,
-     "v": 3
-    },
-    "3": {
-     "b": "34:4",
-     "e": "34:10",
-     "k": "Exodus",
-     "p": 21,
-     "v": 7
-    }
-   },
    "hdate": "17 Tamuz 5785",
-   "name": {
-    "en": "Tzom Tammuz",
-    "he": "צוֹם י״ז בְּתַמּוּז"
-   },
-   "summary": "Exodus 32:11-14, 34:1-10",
-   "summaryParts": [
-    {
-     "b": "32:11",
-     "e": "32:14",
-     "k": "Exodus"
-    },
-    {
-     "b": "34:1",
-     "e": "34:10",
-     "k": "Exodus"
-    }
-   ],
-   "type": "holiday"
-  },
-  {
-   "date": "2025-07-13",
-   "fullkriyah": {
-    "1": {
-     "b": "32:11",
-     "e": "32:14",
-     "k": "Exodus",
-     "p": 21,
-     "v": 4
-    },
-    "2": {
-     "b": "34:1",
-     "e": "34:3",
-     "k": "Exodus",
-     "p": 21,
-     "v": 3
-    },
-    "M": {
-     "b": "34:4",
-     "e": "34:10",
-     "k": "Exodus",
-     "p": 21,
-     "v": 7
-    }
-   },
-   "haft": {
-    "b": "55:6",
-    "e": "56:8",
-    "k": "Isaiah",
-    "v": 16
-   },
-   "haftara": "Isaiah 55:6-56:8",
-   "hdate": "17 Tamuz 5785",
-   "name": {
-    "en": "Tzom Tammuz (Mincha)",
-    "he": "צוֹם י״ז בְּתַמּוּז (מִנְחָה)"
-   },
-   "summary": "Exodus 32:11-14, 34:1-10",
-   "summaryParts": [
-    {
-     "b": "32:11",
-     "e": "32:14",
-     "k": "Exodus"
-    },
-    {
-     "b": "34:1",
-     "e": "34:10",
-     "k": "Exodus"
-    }
-   ],
-   "type": "holiday"
-  }
- ],
- "2025-07-14|0": [
-  {
-   "date": "2025-07-14",
-   "hdate": "18 Tamuz 5785",
-   "name": {
-    "en": "Pinchas",
-    "he": "פִּינְחָס"
-   },
-   "parshaNum": 41,
-   "summary": "Numbers 25:10-26:4",
-   "type": "weekday",
-   "weekday": {
-    "1": {
-     "b": "25:10",
-     "e": "25:12",
-     "k": "Numbers",
-     "v": 3
-    },
-    "2": {
-     "b": "25:13",
-     "e": "25:15",
-     "k": "Numbers",
-     "v": 3
-    },
-    "3": {
-     "b": "25:16",
-     "e": "26:4",
-     "k": "Numbers",
-     "v": 8
-    }
+   "category": "holiday",
+   "subcat": "fast",
+   "leyning": {
+    "1": "Exodus 32:11-32:14",
+    "2": "Exodus 34:1-34:3",
+    "3": "Exodus 34:4-34:10",
+    "torah": "Exodus 32:11-14, 34:1-10"
    }
   }
  ],
+ "2025-07-14|0": [],
  "2025-07-15|0": [],
  "2025-10-01|0": [],
  "2025-10-02|0": [
   {
+   "title": "Yom Kippur",
    "date": "2025-10-02",
-   "desc": [
-    "Yom Kippur"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "16:1",
-     "e": "16:6",
-     "k": "Leviticus",
-     "p": 29,
-     "v": 6
-    },
-    "2": {
-     "b": "16:7",
-     "e": "16:11",
-     "k": "Leviticus",
-     "p": 29,
-     "v": 5
-    },
-    "3": {
-     "b": "16:12",
-     "e": "16:17",
-     "k": "Leviticus",
-     "p": 29,
-     "v": 6
-    },
-    "4": {
-     "b": "16:18",
-     "e": "16:24",
-     "k": "Leviticus",
-     "p": 29,
-     "v": 7
-    },
-    "5": {
-     "b": "16:25",
-     "e": "16:30",
-     "k": "Leviticus",
-     "p": 29,
-     "v": 6
-    },
-    "6": {
-     "b": "16:31",
-     "e": "16:34",
-     "k": "Leviticus",
-     "p": 29,
-     "v": 4
-    },
-    "M": {
-     "b": "29:7",
-     "e": "29:11",
-     "k": "Numbers",
-     "p": 41,
-     "v": 5
-    }
-   },
-   "haft": {
-    "b": "57:14",
-    "e": "58:14",
-    "k": "Isaiah",
-    "v": 22
-   },
-   "haftara": "Isaiah 57:14-58:14",
    "hdate": "10 Tishrei 5786",
-   "name": {
-    "en": "Yom Kippur",
-    "he": "יוֹם כִּפּוּר"
-   },
-   "summary": "Leviticus 16:1-34; Numbers 29:7-11",
-   "summaryParts": [
-    {
-     "b": "16:1",
-     "e": "16:34",
-     "k": "Leviticus"
-    },
-    {
-     "b": "29:7",
-     "e": "29:11",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
-  },
-  {
-   "date": "2025-10-02",
-   "fullkriyah": {
-    "1": {
-     "b": "18:1",
-     "e": "18:5",
-     "k": "Leviticus",
-     "p": 29,
-     "v": 5
-    },
-    "2": {
-     "b": "18:6",
-     "e": "18:21",
-     "k": "Leviticus",
-     "p": 29,
-     "v": 16
-    },
-    "M": {
-     "b": "18:22",
-     "e": "18:30",
-     "k": "Leviticus",
-     "p": 29,
-     "v": 9
-    }
-   },
-   "haft": [
-    {
-     "b": "1:1",
-     "e": "4:11",
-     "k": "Jonah",
-     "v": 48
-    },
-    {
-     "b": "7:18",
-     "e": "7:20",
-     "k": "Micah",
-     "v": 3
-    }
-   ],
-   "haftara": "Jonah 1:1-4:11; Micah 7:18-20",
-   "hdate": "10 Tishrei 5786",
-   "name": {
-    "en": "Yom Kippur (Mincha)",
-    "he": "יוֹם כִּפּוּר (מִנְחָה)"
-   },
-   "summary": "Leviticus 18:1-30",
-   "summaryParts": [
-    {
-     "b": "18:1",
-     "e": "18:30",
-     "k": "Leviticus"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "yomtov": true,
+   "leyning": {
+    "1": "Leviticus 16:1-16:6",
+    "2": "Leviticus 16:7-16:11",
+    "3": "Leviticus 16:12-16:17",
+    "4": "Leviticus 16:18-16:24",
+    "5": "Leviticus 16:25-16:30",
+    "6": "Leviticus 16:31-16:34",
+    "torah": "Leviticus 16:1-34; Numbers 29:7-11",
+    "haftarah": "Isaiah 57:14-58:14",
+    "maftir": "Numbers 29:7-29:11"
+   }
   }
  ],
  "2025-10-03|0": [],
  "2025-10-04|0": [
   {
+   "title": "Parashat Ha’azinu",
    "date": "2025-10-04",
-   "fullkriyah": {
-    "1": {
-     "b": "32:1",
-     "e": "32:6",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "2": {
-     "b": "32:7",
-     "e": "32:12",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "3": {
-     "b": "32:13",
-     "e": "32:18",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "4": {
-     "b": "32:19",
-     "e": "32:28",
-     "k": "Deuteronomy",
-     "v": 10
-    },
-    "5": {
-     "b": "32:29",
-     "e": "32:39",
-     "k": "Deuteronomy",
-     "v": 11
-    },
-    "6": {
-     "b": "32:40",
-     "e": "32:43",
-     "k": "Deuteronomy",
-     "v": 4
-    },
-    "7": {
-     "b": "32:44",
-     "e": "32:52",
-     "k": "Deuteronomy",
-     "v": 9
-    },
-    "M": {
-     "b": "32:48",
-     "e": "32:52",
-     "k": "Deuteronomy",
-     "v": 5
-    }
-   },
-   "haft": {
-    "b": "22:1",
-    "e": "22:51",
-    "k": "II Samuel",
-    "v": 51
-   },
-   "haftara": "II Samuel 22:1-51",
    "hdate": "12 Tishrei 5786",
-   "name": {
-    "en": "Ha'azinu",
-    "he": "הַאֲזִינוּ"
-   },
-   "parshaNum": 53,
-   "summary": "Deuteronomy 32:1-52",
-   "triHaft": [
-    {
-     "b": "22:1",
-     "e": "22:1",
-     "k": "II Samuel",
-     "note": "David // Moses' song",
-     "v": 1
-    },
-    {
-     "b": "22:31",
-     "e": "22:51",
-     "k": "II Samuel",
-     "v": 21
-    }
-   ],
-   "triHaftara": "II Samuel 22:1, 22:31-51",
-   "triYear": 1,
-   "triennial": {
-    "1": {
-     "b": "32:1",
-     "e": "32:6",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "2": {
-     "b": "32:7",
-     "e": "32:12",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "3": {
-     "b": "32:13",
-     "e": "32:18",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "4": {
-     "b": "32:19",
-     "e": "32:28",
-     "k": "Deuteronomy",
-     "v": 10
-    },
-    "5": {
-     "b": "32:29",
-     "e": "32:39",
-     "k": "Deuteronomy",
-     "v": 11
-    },
-    "6": {
-     "b": "32:40",
-     "e": "32:43",
-     "k": "Deuteronomy",
-     "v": 4
-    },
-    "7": {
-     "b": "32:44",
-     "e": "32:52",
-     "k": "Deuteronomy",
-     "v": 9
-    },
-    "M": {
-     "b": "32:48",
-     "e": "32:52",
-     "k": "Deuteronomy",
-     "v": 5
-    }
-   },
-   "type": "shabbat"
-  }
- ],
- "2025-10-05|0": [],
- "2025-10-06|0": [
-  {
-   "date": "2025-10-06",
-   "hdate": "14 Tishrei 5786",
-   "name": {
-    "en": "Vezot Haberakhah",
-    "he": "וְזֹאת הַבְּרָכָה"
-   },
-   "parshaNum": 54,
-   "summary": "Deuteronomy 33:1-17",
-   "type": "weekday",
-   "weekday": {
-    "1": {
-     "b": "33:1",
-     "e": "33:7",
-     "k": "Deuteronomy",
-     "v": 7
-    },
-    "2": {
-     "b": "33:8",
-     "e": "33:12",
-     "k": "Deuteronomy",
-     "v": 5
-    },
-    "3": {
-     "b": "33:13",
-     "e": "33:17",
-     "k": "Deuteronomy",
-     "v": 5
+   "category": "parashat",
+   "title_orig": "Parashat Ha'azinu",
+   "leyning": {
+    "1": "Deuteronomy 32:1-32:6",
+    "2": "Deuteronomy 32:7-32:12",
+    "3": "Deuteronomy 32:13-32:18",
+    "4": "Deuteronomy 32:19-32:28",
+    "5": "Deuteronomy 32:29-32:39",
+    "6": "Deuteronomy 32:40-32:43",
+    "7": "Deuteronomy 32:44-32:52",
+    "torah": "Deuteronomy 32:1-52",
+    "haftarah": "II Samuel 22:1-51",
+    "maftir": "Deuteronomy 32:48-32:52",
+    "triennial": {
+     "1": "Deuteronomy 32:1-32:6",
+     "2": "Deuteronomy 32:7-32:12",
+     "3": "Deuteronomy 32:13-32:18",
+     "4": "Deuteronomy 32:19-32:28",
+     "5": "Deuteronomy 32:29-32:39",
+     "6": "Deuteronomy 32:40-32:43",
+     "7": "Deuteronomy 32:44-32:52",
+     "maftir": "Deuteronomy 32:48-32:52"
     }
    }
   }
  ],
+ "2025-10-05|0": [],
+ "2025-10-06|0": [],
  "2025-10-07|0": [
   {
+   "title": "Sukkot I",
    "date": "2025-10-07",
-   "desc": [
-    "Sukkot I"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "22:26",
-     "e": "23:3",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 11
-    },
-    "2": {
-     "b": "23:4",
-     "e": "23:14",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 11
-    },
-    "3": {
-     "b": "23:15",
-     "e": "23:22",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 8
-    },
-    "4": {
-     "b": "23:23",
-     "e": "23:32",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 10
-    },
-    "5": {
-     "b": "23:33",
-     "e": "23:44",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 12
-    },
-    "M": {
-     "b": "29:12",
-     "e": "29:16",
-     "k": "Numbers",
-     "p": 41,
-     "v": 5
-    }
-   },
-   "haft": {
-    "b": "14:1",
-    "e": "14:21",
-    "k": "Zechariah",
-    "v": 21
-   },
-   "haftara": "Zechariah 14:1-21",
    "hdate": "15 Tishrei 5786",
-   "name": {
-    "en": "Sukkot I",
-    "he": "סֻכּוֹת א׳"
-   },
-   "summary": "Leviticus 22:26-23:44; Numbers 29:12-16",
-   "summaryParts": [
-    {
-     "b": "22:26",
-     "e": "23:44",
-     "k": "Leviticus"
-    },
-    {
-     "b": "29:12",
-     "e": "29:16",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "yomtov": true,
+   "leyning": {
+    "1": "Leviticus 22:26-23:3",
+    "2": "Leviticus 23:4-23:14",
+    "3": "Leviticus 23:15-23:22",
+    "4": "Leviticus 23:23-23:32",
+    "5": "Leviticus 23:33-23:44",
+    "torah": "Leviticus 22:26-23:44; Numbers 29:12-16",
+    "haftarah": "Zechariah 14:1-21",
+    "maftir": "Numbers 29:12-29:16"
+   }
   }
  ],
  "2025-10-07|1": [
   {
+   "title": "Sukkot I",
    "date": "2025-10-07",
-   "desc": [
-    "Sukkot I"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "22:26",
-     "e": "23:3",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 11
-    },
-    "2": {
-     "b": "23:4",
-     "e": "23:14",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 11
-    },
-    "3": {
-     "b": "23:15",
-     "e": "23:22",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 8
-    },
-    "4": {
-     "b": "23:23",
-     "e": "23:32",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 10
-    },
-    "5": {
-     "b": "23:33",
-     "e": "23:44",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 12
-    },
-    "M": {
-     "b": "29:12",
-     "e": "29:16",
-     "k": "Numbers",
-     "p": 41,
-     "v": 5
-    }
-   },
-   "haft": {
-    "b": "14:1",
-    "e": "14:21",
-    "k": "Zechariah",
-    "v": 21
-   },
-   "haftara": "Zechariah 14:1-21",
    "hdate": "15 Tishrei 5786",
-   "name": {
-    "en": "Sukkot I",
-    "he": "סֻכּוֹת א׳"
-   },
-   "summary": "Leviticus 22:26-23:44; Numbers 29:12-16",
-   "summaryParts": [
-    {
-     "b": "22:26",
-     "e": "23:44",
-     "k": "Leviticus"
-    },
-    {
-     "b": "29:12",
-     "e": "29:16",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "yomtov": true,
+   "leyning": {
+    "1": "Leviticus 22:26-23:3",
+    "2": "Leviticus 23:4-23:14",
+    "3": "Leviticus 23:15-23:22",
+    "4": "Leviticus 23:23-23:32",
+    "5": "Leviticus 23:33-23:44",
+    "torah": "Leviticus 22:26-23:44; Numbers 29:12-16",
+    "haftarah": "Zechariah 14:1-21",
+    "maftir": "Numbers 29:12-29:16"
+   }
   }
  ],
  "2025-10-08|0": [
   {
+   "title": "Sukkot II",
    "date": "2025-10-08",
-   "desc": [
-    "Sukkot II"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "22:26",
-     "e": "23:3",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 11
-    },
-    "2": {
-     "b": "23:4",
-     "e": "23:14",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 11
-    },
-    "3": {
-     "b": "23:15",
-     "e": "23:22",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 8
-    },
-    "4": {
-     "b": "23:23",
-     "e": "23:32",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 10
-    },
-    "5": {
-     "b": "23:33",
-     "e": "23:44",
-     "k": "Leviticus",
-     "p": 31,
-     "v": 12
-    },
-    "M": {
-     "b": "29:12",
-     "e": "29:16",
-     "k": "Numbers",
-     "p": 41,
-     "v": 5
-    }
-   },
-   "haft": {
-    "b": "8:2",
-    "e": "8:21",
-    "k": "I Kings",
-    "v": 20
-   },
-   "haftara": "I Kings 8:2-21",
    "hdate": "16 Tishrei 5786",
-   "name": {
-    "en": "Sukkot II",
-    "he": "סֻכּוֹת ב׳"
-   },
-   "summary": "Leviticus 22:26-23:44; Numbers 29:12-16",
-   "summaryParts": [
-    {
-     "b": "22:26",
-     "e": "23:44",
-     "k": "Leviticus"
-    },
-    {
-     "b": "29:12",
-     "e": "29:16",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "yomtov": true,
+   "leyning": {
+    "1": "Leviticus 22:26-23:3",
+    "2": "Leviticus 23:4-23:14",
+    "3": "Leviticus 23:15-23:22",
+    "4": "Leviticus 23:23-23:32",
+    "5": "Leviticus 23:33-23:44",
+    "torah": "Leviticus 22:26-23:44; Numbers 29:12-16",
+    "haftarah": "I Kings 8:2-21",
+    "maftir": "Numbers 29:12-29:16"
+   }
   }
  ],
  "2025-10-08|1": [
   {
+   "title": "Sukkot II (CH’’M)",
    "date": "2025-10-08",
-   "desc": [
-    "Sukkot II (CH''M)"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "29:17",
-     "e": "29:19",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "2": {
-     "b": "29:20",
-     "e": "29:22",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "3": {
-     "b": "29:23",
-     "e": "29:25",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "4": {
-     "b": "29:17",
-     "e": "29:22",
-     "k": "Numbers",
-     "p": 41,
-     "v": 6
-    }
-   },
    "hdate": "16 Tishrei 5786",
-   "name": {
-    "en": "Sukkot Chol ha-Moed Day 1",
-    "he": "סֻכּוֹת חֹל הַמּוֹעֵד יוֹם א׳"
-   },
-   "summary": "Numbers 29:17-25, 29:17-22",
-   "summaryParts": [
-    {
-     "b": "29:17",
-     "e": "29:25",
-     "k": "Numbers"
-    },
-    {
-     "b": "29:17",
-     "e": "29:22",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "title_orig": "Sukkot II (CH''M)",
+   "leyning": {
+    "1": "Numbers 29:17-29:19",
+    "2": "Numbers 29:20-29:22",
+    "3": "Numbers 29:23-29:25",
+    "4": "Numbers 29:17-29:22",
+    "torah": "Numbers 29:17-25, 29:17-22"
+   }
   }
  ],
  "2025-10-09|0": [
   {
+   "title": "Sukkot III (CH’’M)",
    "date": "2025-10-09",
-   "desc": [
-    "Sukkot III (CH''M)"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "29:17",
-     "e": "29:19",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "2": {
-     "b": "29:20",
-     "e": "29:22",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "3": {
-     "b": "29:23",
-     "e": "29:25",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "4": {
-     "b": "29:17",
-     "e": "29:22",
-     "k": "Numbers",
-     "p": 41,
-     "v": 6
-    }
-   },
    "hdate": "17 Tishrei 5786",
-   "name": {
-    "en": "Sukkot Chol ha-Moed Day 1",
-    "he": "סֻכּוֹת חֹל הַמּוֹעֵד יוֹם א׳"
-   },
-   "summary": "Numbers 29:17-25, 29:17-22",
-   "summaryParts": [
-    {
-     "b": "29:17",
-     "e": "29:25",
-     "k": "Numbers"
-    },
-    {
-     "b": "29:17",
-     "e": "29:22",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "title_orig": "Sukkot III (CH''M)",
+   "leyning": {
+    "1": "Numbers 29:17-29:19",
+    "2": "Numbers 29:20-29:22",
+    "3": "Numbers 29:23-29:25",
+    "4": "Numbers 29:17-29:22",
+    "torah": "Numbers 29:17-25, 29:17-22"
+   }
   }
  ],
  "2025-10-09|1": [
   {
+   "title": "Sukkot III (CH’’M)",
    "date": "2025-10-09",
-   "desc": [
-    "Sukkot III (CH''M)"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "29:20",
-     "e": "29:22",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "2": {
-     "b": "29:23",
-     "e": "29:25",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "3": {
-     "b": "29:26",
-     "e": "29:28",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "4": {
-     "b": "29:20",
-     "e": "29:25",
-     "k": "Numbers",
-     "p": 41,
-     "v": 6
-    }
-   },
    "hdate": "17 Tishrei 5786",
-   "name": {
-    "en": "Sukkot Chol ha-Moed Day 2",
-    "he": "סֻכּוֹת חֹל הַמּוֹעֵד יוֹם ב׳"
-   },
-   "summary": "Numbers 29:20-28, 29:20-25",
-   "summaryParts": [
-    {
-     "b": "29:20",
-     "e": "29:28",
-     "k": "Numbers"
-    },
-    {
-     "b": "29:20",
-     "e": "29:25",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "title_orig": "Sukkot III (CH''M)",
+   "leyning": {
+    "1": "Numbers 29:20-29:22",
+    "2": "Numbers 29:23-29:25",
+    "3": "Numbers 29:26-29:28",
+    "4": "Numbers 29:20-29:25",
+    "torah": "Numbers 29:20-28, 29:20-25"
+   }
   }
  ],
  "2025-10-10|0": [
   {
+   "title": "Sukkot IV (CH’’M)",
    "date": "2025-10-10",
-   "desc": [
-    "Sukkot IV (CH''M)"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "29:20",
-     "e": "29:22",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "2": {
-     "b": "29:23",
-     "e": "29:25",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "3": {
-     "b": "29:26",
-     "e": "29:28",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "4": {
-     "b": "29:20",
-     "e": "29:25",
-     "k": "Numbers",
-     "p": 41,
-     "v": 6
-    }
-   },
    "hdate": "18 Tishrei 5786",
-   "name": {
-    "en": "Sukkot Chol ha-Moed Day 2",
-    "he": "סֻכּוֹת חֹל הַמּוֹעֵד יוֹם ב׳"
-   },
-   "summary": "Numbers 29:20-28, 29:20-25",
-   "summaryParts": [
-    {
-     "b": "29:20",
-     "e": "29:28",
-     "k": "Numbers"
-    },
-    {
-     "b": "29:20",
-     "e": "29:25",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "title_orig": "Sukkot IV (CH''M)",
+   "leyning": {
+    "1": "Numbers 29:20-29:22",
+    "2": "Numbers 29:23-29:25",
+    "3": "Numbers 29:26-29:28",
+    "4": "Numbers 29:20-29:25",
+    "torah": "Numbers 29:20-28, 29:20-25"
+   }
   }
  ],
  "2025-10-10|1": [
   {
+   "title": "Sukkot IV (CH’’M)",
    "date": "2025-10-10",
-   "desc": [
-    "Sukkot IV (CH''M)"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "29:23",
-     "e": "29:25",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "2": {
-     "b": "29:26",
-     "e": "29:28",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "3": {
-     "b": "29:29",
-     "e": "29:31",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "4": {
-     "b": "29:23",
-     "e": "29:28",
-     "k": "Numbers",
-     "p": 41,
-     "v": 6
-    }
-   },
    "hdate": "18 Tishrei 5786",
-   "name": {
-    "en": "Sukkot Chol ha-Moed Day 3",
-    "he": "סֻכּוֹת חֹל הַמּוֹעֵד יוֹם ג׳"
-   },
-   "summary": "Numbers 29:23-31, 29:23-28",
-   "summaryParts": [
-    {
-     "b": "29:23",
-     "e": "29:31",
-     "k": "Numbers"
-    },
-    {
-     "b": "29:23",
-     "e": "29:28",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "title_orig": "Sukkot IV (CH''M)",
+   "leyning": {
+    "1": "Numbers 29:23-29:25",
+    "2": "Numbers 29:26-29:28",
+    "3": "Numbers 29:29-29:31",
+    "4": "Numbers 29:23-29:28",
+    "torah": "Numbers 29:23-31, 29:23-28"
+   }
   }
  ],
  "2025-10-11|0": [
   {
+   "title": "Sukkot V (CH’’M)",
    "date": "2025-10-11",
-   "desc": [
-    "Sukkot V (CH''M)"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "33:12",
-     "e": "33:16",
-     "k": "Exodus",
-     "p": 21,
-     "v": 5
-    },
-    "2": {
-     "b": "33:17",
-     "e": "33:19",
-     "k": "Exodus",
-     "p": 21,
-     "v": 3
-    },
-    "3": {
-     "b": "33:20",
-     "e": "33:23",
-     "k": "Exodus",
-     "p": 21,
-     "v": 4
-    },
-    "4": {
-     "b": "34:1",
-     "e": "34:3",
-     "k": "Exodus",
-     "p": 21,
-     "v": 3
-    },
-    "5": {
-     "b": "34:4",
-     "e": "34:10",
-     "k": "Exodus",
-     "p": 21,
-     "v": 7
-    },
-    "6": {
-     "b": "34:11",
-     "e": "34:17",
-     "k": "Exodus",
-     "p": 21,
-     "v": 7
-    },
-    "7": {
-     "b": "34:18",
-     "e": "34:26",
-     "k": "Exodus",
-     "p": 21,
-     "v": 9
-    },
-    "M": {
-     "b": "29:23",
-     "e": "29:28",
-     "k": "Numbers",
-     "p": 41,
-     "v": 6
-    }
-   },
-   "haft": {
-    "b": "38:18",
-    "e": "39:16",
-    "k": "Ezekiel",
-    "v": 22
-   },
-   "haftara": "Ezekiel 38:18-39:16",
    "hdate": "19 Tishrei 5786",
-   "megillah": {
-    "1": {
-     "b": "1:1",
-     "e": "1:18",
-     "k": "Ecclesiastes",
-     "v": 18
-    },
-    "10": {
-     "b": "10:1",
-     "e": "10:20",
-     "k": "Ecclesiastes",
-     "v": 20
-    },
-    "11": {
-     "b": "11:1",
-     "e": "11:10",
-     "k": "Ecclesiastes",
-     "v": 10
-    },
-    "12": {
-     "b": "12:1",
-     "e": "12:14",
-     "k": "Ecclesiastes",
-     "v": 14
-    },
-    "2": {
-     "b": "2:1",
-     "e": "2:26",
-     "k": "Ecclesiastes",
-     "v": 26
-    },
-    "3": {
-     "b": "3:1",
-     "e": "3:22",
-     "k": "Ecclesiastes",
-     "v": 22
-    },
-    "4": {
-     "b": "4:1",
-     "e": "4:17",
-     "k": "Ecclesiastes",
-     "v": 17
-    },
-    "5": {
-     "b": "5:1",
-     "e": "5:19",
-     "k": "Ecclesiastes",
-     "v": 19
-    },
-    "6": {
-     "b": "6:1",
-     "e": "6:12",
-     "k": "Ecclesiastes",
-     "v": 12
-    },
-    "7": {
-     "b": "7:1",
-     "e": "7:29",
-     "k": "Ecclesiastes",
-     "v": 29
-    },
-    "8": {
-     "b": "8:1",
-     "e": "8:17",
-     "k": "Ecclesiastes",
-     "v": 17
-    },
-    "9": {
-     "b": "9:1",
-     "e": "9:18",
-     "k": "Ecclesiastes",
-     "v": 18
-    }
-   },
-   "name": {
-    "en": "Sukkot Shabbat Chol ha-Moed",
-    "he": "שַׁבַּת חֹל הַמּוֹעֵד סֻכּוֹת"
-   },
-   "summary": "Exodus 33:12-34:26; Numbers 29:23-28; Ecclesiastes 1:1-12:14",
-   "summaryParts": [
-    {
-     "b": "33:12",
-     "e": "34:26",
-     "k": "Exodus"
-    },
-    {
-     "b": "29:23",
-     "e": "29:28",
-     "k": "Numbers"
-    },
-    {
-     "b": "1:1",
-     "e": "12:14",
-     "k": "Ecclesiastes"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "title_orig": "Sukkot V (CH''M)",
+   "leyning": {
+    "1": "Exodus 33:12-33:16",
+    "2": "Exodus 33:17-33:19",
+    "3": "Exodus 33:20-33:23",
+    "4": "Exodus 34:1-34:3",
+    "5": "Exodus 34:4-34:10",
+    "6": "Exodus 34:11-34:17",
+    "7": "Exodus 34:18-34:26",
+    "torah": "Exodus 33:12-34:26; Numbers 29:23-28; Ecclesiastes 1:1-12:14",
+    "haftarah": "Ezekiel 38:18-39:16",
+    "maftir": "Numbers 29:23-29:28"
+   }
   }
  ],
  "2025-10-11|1": [
   {
+   "title": "Sukkot V (CH’’M)",
    "date": "2025-10-11",
-   "desc": [
-    "Sukkot V (CH''M)"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "33:12",
-     "e": "33:16",
-     "k": "Exodus",
-     "p": 21,
-     "v": 5
-    },
-    "2": {
-     "b": "33:17",
-     "e": "33:19",
-     "k": "Exodus",
-     "p": 21,
-     "v": 3
-    },
-    "3": {
-     "b": "33:20",
-     "e": "33:23",
-     "k": "Exodus",
-     "p": 21,
-     "v": 4
-    },
-    "4": {
-     "b": "34:1",
-     "e": "34:3",
-     "k": "Exodus",
-     "p": 21,
-     "v": 3
-    },
-    "5": {
-     "b": "34:4",
-     "e": "34:10",
-     "k": "Exodus",
-     "p": 21,
-     "v": 7
-    },
-    "6": {
-     "b": "34:11",
-     "e": "34:17",
-     "k": "Exodus",
-     "p": 21,
-     "v": 7
-    },
-    "7": {
-     "b": "34:18",
-     "e": "34:26",
-     "k": "Exodus",
-     "p": 21,
-     "v": 9
-    },
-    "M": {
-     "b": "29:26",
-     "e": "29:31",
-     "k": "Numbers",
-     "p": 41,
-     "v": 6
-    }
-   },
-   "haft": {
-    "b": "38:18",
-    "e": "39:16",
-    "k": "Ezekiel",
-    "v": 22
-   },
-   "haftara": "Ezekiel 38:18-39:16",
    "hdate": "19 Tishrei 5786",
-   "megillah": {
-    "1": {
-     "b": "1:1",
-     "e": "1:18",
-     "k": "Ecclesiastes",
-     "v": 18
-    },
-    "10": {
-     "b": "10:1",
-     "e": "10:20",
-     "k": "Ecclesiastes",
-     "v": 20
-    },
-    "11": {
-     "b": "11:1",
-     "e": "11:10",
-     "k": "Ecclesiastes",
-     "v": 10
-    },
-    "12": {
-     "b": "12:1",
-     "e": "12:14",
-     "k": "Ecclesiastes",
-     "v": 14
-    },
-    "2": {
-     "b": "2:1",
-     "e": "2:26",
-     "k": "Ecclesiastes",
-     "v": 26
-    },
-    "3": {
-     "b": "3:1",
-     "e": "3:22",
-     "k": "Ecclesiastes",
-     "v": 22
-    },
-    "4": {
-     "b": "4:1",
-     "e": "4:17",
-     "k": "Ecclesiastes",
-     "v": 17
-    },
-    "5": {
-     "b": "5:1",
-     "e": "5:19",
-     "k": "Ecclesiastes",
-     "v": 19
-    },
-    "6": {
-     "b": "6:1",
-     "e": "6:12",
-     "k": "Ecclesiastes",
-     "v": 12
-    },
-    "7": {
-     "b": "7:1",
-     "e": "7:29",
-     "k": "Ecclesiastes",
-     "v": 29
-    },
-    "8": {
-     "b": "8:1",
-     "e": "8:17",
-     "k": "Ecclesiastes",
-     "v": 17
-    },
-    "9": {
-     "b": "9:1",
-     "e": "9:18",
-     "k": "Ecclesiastes",
-     "v": 18
-    }
-   },
-   "name": {
-    "en": "Sukkot Shabbat Chol ha-Moed",
-    "he": "שַׁבַּת חֹל הַמּוֹעֵד סֻכּוֹת"
-   },
-   "summary": "Exodus 33:12-34:26; Numbers 29:26-31; Ecclesiastes 1:1-12:14",
-   "summaryParts": [
-    {
-     "b": "33:12",
-     "e": "34:26",
-     "k": "Exodus"
-    },
-    {
-     "b": "29:26",
-     "e": "29:31",
-     "k": "Numbers"
-    },
-    {
-     "b": "1:1",
-     "e": "12:14",
-     "k": "Ecclesiastes"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "title_orig": "Sukkot V (CH''M)",
+   "leyning": {
+    "1": "Exodus 33:12-33:16",
+    "2": "Exodus 33:17-33:19",
+    "3": "Exodus 33:20-33:23",
+    "4": "Exodus 34:1-34:3",
+    "5": "Exodus 34:4-34:10",
+    "6": "Exodus 34:11-34:17",
+    "7": "Exodus 34:18-34:26",
+    "torah": "Exodus 33:12-34:26; Numbers 29:26-31; Ecclesiastes 1:1-12:14",
+    "haftarah": "Ezekiel 38:18-39:16",
+    "maftir": "Numbers 29:26-29:31"
+   }
   }
  ],
  "2025-10-12|0": [
   {
+   "title": "Sukkot VI (CH’’M)",
    "date": "2025-10-12",
-   "desc": [
-    "Sukkot VI (CH''M)"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "29:26",
-     "e": "29:28",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "2": {
-     "b": "29:29",
-     "e": "29:31",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "3": {
-     "b": "29:32",
-     "e": "29:34",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "4": {
-     "b": "29:26",
-     "e": "29:31",
-     "k": "Numbers",
-     "p": 41,
-     "v": 6
-    }
-   },
    "hdate": "20 Tishrei 5786",
-   "name": {
-    "en": "Sukkot Chol ha-Moed Day 4",
-    "he": "סֻכּוֹת חֹל הַמּוֹעֵד יוֹם ד׳"
-   },
-   "summary": "Numbers 29:26-34, 29:26-31",
-   "summaryParts": [
-    {
-     "b": "29:26",
-     "e": "29:34",
-     "k": "Numbers"
-    },
-    {
-     "b": "29:26",
-     "e": "29:31",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "title_orig": "Sukkot VI (CH''M)",
+   "leyning": {
+    "1": "Numbers 29:26-29:28",
+    "2": "Numbers 29:29-29:31",
+    "3": "Numbers 29:32-29:34",
+    "4": "Numbers 29:26-29:31",
+    "torah": "Numbers 29:26-34, 29:26-31"
+   }
   }
  ],
  "2025-10-12|1": [
   {
+   "title": "Sukkot VI (CH’’M)",
    "date": "2025-10-12",
-   "desc": [
-    "Sukkot VI (CH''M)"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "29:29",
-     "e": "29:31",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "2": {
-     "b": "29:32",
-     "e": "29:34",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "3": {
-     "b": "29:35",
-     "e": "29:37",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "4": {
-     "b": "29:29",
-     "e": "29:34",
-     "k": "Numbers",
-     "p": 41,
-     "v": 6
-    }
-   },
    "hdate": "20 Tishrei 5786",
-   "name": {
-    "en": "Sukkot Chol ha-Moed Day 5",
-    "he": "סֻכּוֹת חֹל הַמּוֹעֵד יוֹם ה׳"
-   },
-   "summary": "Numbers 29:29-37, 29:29-34",
-   "summaryParts": [
-    {
-     "b": "29:29",
-     "e": "29:37",
-     "k": "Numbers"
-    },
-    {
-     "b": "29:29",
-     "e": "29:34",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "title_orig": "Sukkot VI (CH''M)",
+   "leyning": {
+    "1": "Numbers 29:29-29:31",
+    "2": "Numbers 29:32-29:34",
+    "3": "Numbers 29:35-29:37",
+    "4": "Numbers 29:29-29:34",
+    "torah": "Numbers 29:29-37, 29:29-34"
+   }
   }
  ],
  "2025-12-19|0": [
   {
-   "alt": {
-    "1": {
-     "b": "7:36",
-     "e": "7:38",
-     "k": "Numbers",
-     "p": 35,
-     "v": 3
-    },
-    "2": {
-     "b": "7:39",
-     "e": "7:41",
-     "k": "Numbers",
-     "p": 35,
-     "v": 3
-    },
-    "3": {
-     "b": "7:36",
-     "e": "7:41",
-     "k": "Numbers",
-     "p": 35,
-     "v": 6
-    }
-   },
+   "title": "Chanukah: 6 Candles",
    "date": "2025-12-19",
-   "desc": [
-    "Chanukah: 6 Candles"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "7:36",
-     "e": "7:38",
-     "k": "Numbers",
-     "p": 35,
-     "v": 3
-    },
-    "2": {
-     "b": "7:39",
-     "e": "7:41",
-     "k": "Numbers",
-     "p": 35,
-     "v": 3
-    },
-    "3": {
-     "b": "7:42",
-     "e": "7:47",
-     "k": "Numbers",
-     "p": 35,
-     "v": 6
-    }
-   },
    "hdate": "29 Kislev 5786",
-   "name": {
-    "en": "Chanukah Day 5",
-    "he": "חֲנוּכָּה יוֹם ה׳"
-   },
-   "summary": "Numbers 7:36-47",
-   "summaryParts": [
-    {
-     "b": "7:36",
-     "e": "7:47",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "leyning": {
+    "1": "Numbers 7:36-7:38",
+    "2": "Numbers 7:39-7:41",
+    "3": "Numbers 7:42-7:47",
+    "torah": "Numbers 7:36-47"
+   }
   }
  ],
  "2025-12-20|0": [
   {
+   "title": "Chanukah: 7 Candles",
    "date": "2025-12-20",
-   "fullkriyah": {
-    "1": {
-     "b": "41:1",
-     "e": "41:14",
-     "k": "Genesis",
-     "v": 14
-    },
-    "2": {
-     "b": "41:15",
-     "e": "41:38",
-     "k": "Genesis",
-     "v": 24
-    },
-    "3": {
-     "b": "41:39",
-     "e": "41:52",
-     "k": "Genesis",
-     "v": 14
-    },
-    "4": {
-     "b": "41:53",
-     "e": "42:18",
-     "k": "Genesis",
-     "v": 23
-    },
-    "5": {
-     "b": "42:19",
-     "e": "43:15",
-     "k": "Genesis",
-     "v": 35
-    },
-    "6": {
-     "b": "43:16",
-     "e": "44:17",
-     "k": "Genesis",
-     "v": 36
-    },
-    "7": {
-     "b": "28:9",
-     "e": "28:15",
-     "k": "Numbers",
-     "p": 41,
-     "reason": "Shabbat Rosh Chodesh Chanukah",
-     "v": 7
-    },
-    "M": {
-     "b": "7:42",
-     "e": "7:47",
-     "k": "Numbers",
-     "p": 35,
-     "reason": "Shabbat Rosh Chodesh Chanukah",
-     "v": 6
-    }
-   },
-   "haft": {
-    "b": "2:14",
-    "e": "4:7",
-    "k": "Zechariah",
-    "reason": "Shabbat Rosh Chodesh Chanukah",
-    "v": 21
-   },
-   "haftara": "Zechariah 2:14-4:7",
    "hdate": "30 Kislev 5786",
-   "name": {
-    "en": "Miketz",
-    "he": "מִקֵּץ"
-   },
-   "parshaNum": 10,
-   "reason": {
-    "7": "Shabbat Rosh Chodesh Chanukah",
-    "M": "Shabbat Rosh Chodesh Chanukah",
-    "haftara": "Shabbat Rosh Chodesh Chanukah"
-   },
-   "summary": "Genesis 41:1-44:17; Numbers 28:9-15, 7:42-47",
-   "summaryParts": [
-    {
-     "b": "41:1",
-     "e": "44:17",
-     "k": "Genesis"
-    },
-    {
-     "b": "28:9",
-     "e": "28:15",
-     "k": "Numbers"
-    },
-    {
-     "b": "7:42",
-     "e": "7:47",
-     "k": "Numbers"
-    }
-   ],
-   "triYear": 1,
-   "triennial": {
-    "1": {
-     "b": "41:1",
-     "e": "41:4",
-     "k": "Genesis",
-     "v": 4
-    },
-    "2": {
-     "b": "41:5",
-     "e": "41:7",
-     "k": "Genesis",
-     "v": 3
-    },
-    "3": {
-     "b": "41:8",
-     "e": "41:14",
-     "k": "Genesis",
-     "v": 7
-    },
-    "4": {
-     "b": "41:15",
-     "e": "41:24",
-     "k": "Genesis",
-     "v": 10
-    },
-    "5": {
-     "b": "41:25",
-     "e": "41:38",
-     "k": "Genesis",
-     "v": 14
-    },
-    "6": {
-     "b": "41:39",
-     "e": "41:52",
-     "k": "Genesis",
-     "v": 14
-    },
-    "7": {
-     "b": "28:9",
-     "e": "28:15",
-     "k": "Numbers",
-     "p": 41,
-     "reason": "Shabbat Rosh Chodesh Chanukah",
-     "v": 7
-    },
-    "M": {
-     "b": "7:42",
-     "e": "7:47",
-     "k": "Numbers",
-     "p": 35,
-     "reason": "Shabbat Rosh Chodesh Chanukah",
-     "v": 6
-    }
-   },
-   "type": "shabbat"
+   "category": "holiday",
+   "subcat": "major",
+   "leyning": {
+    "7": "Numbers 28:9-28:15",
+    "haftarah": "Zechariah 2:14-4:7",
+    "maftir": "Numbers 7:42-7:47"
+   }
   },
   {
+   "title": "Rosh Chodesh Tevet",
    "date": "2025-12-20",
-   "desc": [
-    "Chanukah: 7 Candles",
-    "Rosh Chodesh Tevet"
-   ],
-   "fullkriyah": {
-    "7": {
-     "b": "28:9",
-     "e": "28:15",
-     "k": "Numbers",
-     "p": 41,
-     "v": 7
-    },
-    "M": {
-     "b": "7:42",
-     "e": "7:47",
-     "k": "Numbers",
-     "p": 35,
-     "v": 6
-    }
-   },
-   "haft": {
-    "b": "2:14",
-    "e": "4:7",
-    "k": "Zechariah",
-    "v": 21
-   },
-   "haftara": "Zechariah 2:14-4:7",
    "hdate": "30 Kislev 5786",
-   "name": {
-    "en": "Shabbat Rosh Chodesh Chanukah",
-    "he": "שַׁבָּת רֹאשׁ חוֹדֶשׁ חֲנוּכָּה"
-   },
-   "type": "holiday"
+   "category": "roshchodesh",
+   "leyning": {
+    "7": "Numbers 28:9-28:15",
+    "haftarah": "Zechariah 2:14-4:7",
+    "maftir": "Numbers 7:42-7:47"
+   }
+  },
+  {
+   "title": "Parashat Miketz",
+   "date": "2025-12-20",
+   "hdate": "30 Kislev 5786",
+   "category": "parashat",
+   "leyning": {
+    "1": "Genesis 41:1-41:14",
+    "2": "Genesis 41:15-41:38",
+    "3": "Genesis 41:39-41:52",
+    "4": "Genesis 41:53-42:18",
+    "5": "Genesis 42:19-43:15",
+    "6": "Genesis 43:16-44:17",
+    "7": "Numbers 28:9-28:15 | Shabbat Rosh Chodesh Chanukah",
+    "torah": "Genesis 41:1-44:17; Numbers 28:9-15, 7:42-47",
+    "haftarah": "Zechariah 2:14-4:7 | Shabbat Rosh Chodesh Chanukah",
+    "maftir": "Numbers 7:42-7:47 | Shabbat Rosh Chodesh Chanukah",
+    "triennial": {
+     "1": "Genesis 41:1-41:4",
+     "2": "Genesis 41:5-41:7",
+     "3": "Genesis 41:8-41:14",
+     "4": "Genesis 41:15-41:24",
+     "5": "Genesis 41:25-41:38",
+     "6": "Genesis 41:39-41:52",
+     "7": "Numbers 28:9-28:15",
+     "maftir": "Numbers 7:42-7:47"
+    }
+   }
   }
  ],
  "2025-12-21|0": [
   {
+   "title": "Chanukah: 8 Candles",
    "date": "2025-12-21",
-   "desc": [
-    "Chanukah: 8 Candles",
-    "Rosh Chodesh Tevet"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "28:1",
-     "e": "28:5",
-     "k": "Numbers",
-     "p": 41,
-     "v": 5
-    },
-    "2": {
-     "b": "28:6",
-     "e": "28:10",
-     "k": "Numbers",
-     "p": 41,
-     "v": 5
-    },
-    "3": {
-     "b": "28:11",
-     "e": "28:15",
-     "k": "Numbers",
-     "p": 41,
-     "v": 5
-    },
-    "4": {
-     "b": "7:48",
-     "e": "7:53",
-     "k": "Numbers",
-     "p": 35,
-     "v": 6
-    }
-   },
    "hdate": "1 Tevet 5786",
-   "name": {
-    "en": "Chanukah Day 7 (on Rosh Chodesh)",
-    "he": "חֲנוּכָּה יוֹם ז׳ (רֹאשׁ חוֹדֶשׁ)"
-   },
-   "summary": "Numbers 28:1-15, 7:48-53",
-   "summaryParts": [
-    {
-     "b": "28:1",
-     "e": "28:15",
-     "k": "Numbers"
-    },
-    {
-     "b": "7:48",
-     "e": "7:53",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "leyning": {
+    "1": "Numbers 28:1-28:5",
+    "2": "Numbers 28:6-28:10",
+    "3": "Numbers 28:11-28:15",
+    "4": "Numbers 7:48-7:53",
+    "torah": "Numbers 28:1-15, 7:48-53"
+   }
+  },
+  {
+   "title": "Rosh Chodesh Tevet",
+   "date": "2025-12-21",
+   "hdate": "1 Tevet 5786",
+   "category": "roshchodesh",
+   "leyning": {
+    "1": "Numbers 28:1-28:5",
+    "2": "Numbers 28:6-28:10",
+    "3": "Numbers 28:11-28:15",
+    "4": "Numbers 7:48-7:53",
+    "torah": "Numbers 28:1-15, 7:48-53"
+   }
   }
  ],
  "2025-12-22|0": [
   {
+   "title": "Chanukah: 8th Day",
    "date": "2025-12-22",
-   "desc": [
-    "Chanukah: 8th Day"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "7:54",
-     "e": "7:56",
-     "k": "Numbers",
-     "p": 35,
-     "v": 3
-    },
-    "2": {
-     "b": "7:57",
-     "e": "7:59",
-     "k": "Numbers",
-     "p": 35,
-     "v": 3
-    },
-    "3": {
-     "b": "7:60",
-     "e": "8:4",
-     "k": "Numbers",
-     "p": 35,
-     "v": 34
-    }
-   },
    "hdate": "2 Tevet 5786",
-   "name": {
-    "en": "Chanukah Day 8",
-    "he": "חֲנוּכָּה יוֹם ח׳"
-   },
-   "summary": "Numbers 7:54-8:4",
-   "summaryParts": [
-    {
-     "b": "7:54",
-     "e": "8:4",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "leyning": {
+    "1": "Numbers 7:54-7:56",
+    "2": "Numbers 7:57-7:59",
+    "3": "Numbers 7:60-8:4",
+    "torah": "Numbers 7:54-8:4"
+   }
   }
  ],
  "2025-12-23|0": [],
@@ -1950,1473 +444,294 @@
  "2026-02-13|0": [],
  "2026-02-14|0": [
   {
+   "title": "Shabbat Shekalim",
    "date": "2026-02-14",
-   "fullkriyah": {
-    "1": {
-     "b": "21:1",
-     "e": "21:19",
-     "k": "Exodus",
-     "v": 19
-    },
-    "2": {
-     "b": "21:20",
-     "e": "22:3",
-     "k": "Exodus",
-     "v": 21
-    },
-    "3": {
-     "b": "22:4",
-     "e": "22:26",
-     "k": "Exodus",
-     "v": 23
-    },
-    "4": {
-     "b": "22:27",
-     "e": "23:5",
-     "k": "Exodus",
-     "v": 9
-    },
-    "5": {
-     "b": "23:6",
-     "e": "23:19",
-     "k": "Exodus",
-     "v": 14
-    },
-    "6": {
-     "b": "23:20",
-     "e": "23:25",
-     "k": "Exodus",
-     "v": 6
-    },
-    "7": {
-     "b": "23:26",
-     "e": "24:18",
-     "k": "Exodus",
-     "v": 26
-    },
-    "M": {
-     "b": "30:11",
-     "e": "30:16",
-     "k": "Exodus",
-     "p": 21,
-     "reason": "Shabbat Shekalim",
-     "v": 6
-    }
-   },
-   "haft": {
-    "b": "12:1",
-    "e": "12:17",
-    "k": "II Kings",
-    "reason": "Shabbat Shekalim",
-    "v": 17
-   },
-   "haftara": "II Kings 12:1-17",
    "hdate": "27 Sh'vat 5786",
-   "name": {
-    "en": "Mishpatim",
-    "he": "מִשְׁפָּטִים"
-   },
-   "parshaNum": 18,
-   "reason": {
-    "M": "Shabbat Shekalim",
-    "haftara": "Shabbat Shekalim",
-    "sephardic": "Shabbat Shekalim"
-   },
-   "seph": {
-    "b": "11:17",
-    "e": "12:17",
-    "k": "II Kings",
-    "reason": "Shabbat Shekalim",
-    "v": 21
-   },
-   "sephardic": "II Kings 11:17-12:17",
-   "sephardicNumV": 21,
-   "summary": "Exodus 21:1-24:18, 30:11-16",
-   "summaryParts": [
-    {
-     "b": "21:1",
-     "e": "24:18",
-     "k": "Exodus"
-    },
-    {
-     "b": "30:11",
-     "e": "30:16",
-     "k": "Exodus"
-    }
-   ],
-   "triYear": 1,
-   "triennial": {
-    "1": {
-     "b": "21:1",
-     "e": "21:6",
-     "k": "Exodus",
-     "v": 6
-    },
-    "2": {
-     "b": "21:7",
-     "e": "21:11",
-     "k": "Exodus",
-     "v": 5
-    },
-    "3": {
-     "b": "21:12",
-     "e": "21:19",
-     "k": "Exodus",
-     "v": 8
-    },
-    "4": {
-     "b": "21:20",
-     "e": "21:27",
-     "k": "Exodus",
-     "v": 8
-    },
-    "5": {
-     "b": "21:28",
-     "e": "21:32",
-     "k": "Exodus",
-     "v": 5
-    },
-    "6": {
-     "b": "21:33",
-     "e": "21:36",
-     "k": "Exodus",
-     "v": 4
-    },
-    "7": {
-     "b": "21:37",
-     "e": "22:3",
-     "k": "Exodus",
-     "v": 4
-    },
-    "M": {
-     "b": "30:11",
-     "e": "30:16",
-     "k": "Exodus",
-     "p": 21,
-     "reason": "Shabbat Shekalim",
-     "v": 6
-    }
-   },
-   "type": "shabbat"
+   "category": "holiday",
+   "subcat": "shabbat",
+   "leyning": {
+    "haftarah": "II Kings 12:1-17",
+    "haftarah_sephardic": "II Kings 11:17-12:17",
+    "maftir": "Exodus 30:11-30:16"
+   }
   },
   {
+   "title": "Parashat Mishpatim",
    "date": "2026-02-14",
-   "desc": [
-    "Shabbat Shekalim"
-   ],
-   "fullkriyah": {
-    "M": {
-     "b": "30:11",
-     "e": "30:16",
-     "k": "Exodus",
-     "p": 21,
-     "v": 6
-    }
-   },
-   "haft": {
-    "b": "12:1",
-    "e": "12:17",
-    "k": "II Kings",
-    "v": 17
-   },
-   "haftara": "II Kings 12:1-17",
    "hdate": "27 Sh'vat 5786",
-   "name": {
-    "en": "Shabbat Shekalim",
-    "he": "שַׁבַּת שְׁקָלִים"
-   },
-   "seph": {
-    "b": "11:17",
-    "e": "12:17",
-    "k": "II Kings",
-    "v": 21
-   },
-   "sephardic": "II Kings 11:17-12:17",
-   "sephardicNumV": 21,
-   "type": "holiday"
-  }
- ],
- "2026-02-15|0": [],
- "2026-02-16|0": [
-  {
-   "date": "2026-02-16",
-   "hdate": "29 Sh'vat 5786",
-   "name": {
-    "en": "Terumah",
-    "he": "תְּרוּמָה"
-   },
-   "parshaNum": 19,
-   "summary": "Exodus 25:1-16",
-   "type": "weekday",
-   "weekday": {
-    "1": {
-     "b": "25:1",
-     "e": "25:5",
-     "k": "Exodus",
-     "v": 5
-    },
-    "2": {
-     "b": "25:6",
-     "e": "25:9",
-     "k": "Exodus",
-     "v": 4
-    },
-    "3": {
-     "b": "25:10",
-     "e": "25:16",
-     "k": "Exodus",
-     "v": 7
+   "category": "parashat",
+   "leyning": {
+    "1": "Exodus 21:1-21:19",
+    "2": "Exodus 21:20-22:3",
+    "3": "Exodus 22:4-22:26",
+    "4": "Exodus 22:27-23:5",
+    "5": "Exodus 23:6-23:19",
+    "6": "Exodus 23:20-23:25",
+    "7": "Exodus 23:26-24:18",
+    "torah": "Exodus 21:1-24:18, 30:11-16",
+    "haftarah": "II Kings 12:1-17 | Shabbat Shekalim",
+    "haftarah_sephardic": "II Kings 11:17-12:17 | Shabbat Shekalim",
+    "maftir": "Exodus 30:11-30:16 | Shabbat Shekalim",
+    "triennial": {
+     "1": "Exodus 21:1-21:6",
+     "2": "Exodus 21:7-21:11",
+     "3": "Exodus 21:12-21:19",
+     "4": "Exodus 21:20-21:27",
+     "5": "Exodus 21:28-21:32",
+     "6": "Exodus 21:33-21:36",
+     "7": "Exodus 21:37-22:3",
+     "maftir": "Exodus 30:11-30:16"
     }
    }
   }
  ],
+ "2026-02-15|0": [],
+ "2026-02-16|0": [],
  "2026-02-17|0": [
   {
+   "title": "Rosh Chodesh Adar",
    "date": "2026-02-17",
-   "desc": [
-    "Rosh Chodesh Adar"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "28:1",
-     "e": "28:3",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "2": {
-     "b": "28:3",
-     "e": "28:5",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "3": {
-     "b": "28:6",
-     "e": "28:10",
-     "k": "Numbers",
-     "p": 41,
-     "v": 5
-    },
-    "4": {
-     "b": "28:11",
-     "e": "28:15",
-     "k": "Numbers",
-     "p": 41,
-     "v": 5
-    }
-   },
    "hdate": "30 Sh'vat 5786",
-   "name": {
-    "en": "Rosh Chodesh Adar",
-    "he": "רֹאשׁ חוֹדֶשׁ אֲדָר"
-   },
-   "summary": "Numbers 28:1-15",
-   "summaryParts": [
-    {
-     "b": "28:1",
-     "e": "28:15",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "roshchodesh",
+   "leyning": {
+    "1": "Numbers 28:1-28:3",
+    "2": "Numbers 28:3-28:5",
+    "3": "Numbers 28:6-28:10",
+    "4": "Numbers 28:11-28:15",
+    "torah": "Numbers 28:1-15"
+   }
   }
  ],
  "2026-02-18|0": [
   {
+   "title": "Rosh Chodesh Adar",
    "date": "2026-02-18",
-   "desc": [
-    "Rosh Chodesh Adar"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "28:1",
-     "e": "28:3",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "2": {
-     "b": "28:3",
-     "e": "28:5",
-     "k": "Numbers",
-     "p": 41,
-     "v": 3
-    },
-    "3": {
-     "b": "28:6",
-     "e": "28:10",
-     "k": "Numbers",
-     "p": 41,
-     "v": 5
-    },
-    "4": {
-     "b": "28:11",
-     "e": "28:15",
-     "k": "Numbers",
-     "p": 41,
-     "v": 5
-    }
-   },
    "hdate": "1 Adar 5786",
-   "name": {
-    "en": "Rosh Chodesh Adar",
-    "he": "רֹאשׁ חוֹדֶשׁ אֲדָר"
-   },
-   "summary": "Numbers 28:1-15",
-   "summaryParts": [
-    {
-     "b": "28:1",
-     "e": "28:15",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "roshchodesh",
+   "leyning": {
+    "1": "Numbers 28:1-28:3",
+    "2": "Numbers 28:3-28:5",
+    "3": "Numbers 28:6-28:10",
+    "4": "Numbers 28:11-28:15",
+    "torah": "Numbers 28:1-15"
+   }
   }
  ],
  "2026-03-03|1": [
   {
+   "title": "Purim",
    "date": "2026-03-03",
-   "desc": [
-    "Purim"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "17:8",
-     "e": "17:10",
-     "k": "Exodus",
-     "p": 16,
-     "v": 3
-    },
-    "2": {
-     "b": "17:11",
-     "e": "17:13",
-     "k": "Exodus",
-     "p": 16,
-     "v": 3
-    },
-    "3": {
-     "b": "17:14",
-     "e": "17:16",
-     "k": "Exodus",
-     "p": 16,
-     "v": 3
-    }
-   },
    "hdate": "14 Adar 5786",
-   "megillah": {
-    "1": {
-     "b": "1:1",
-     "e": "1:22",
-     "k": "Esther",
-     "v": 22
-    },
-    "10": {
-     "b": "10:1",
-     "e": "10:3",
-     "k": "Esther",
-     "v": 3
-    },
-    "2": {
-     "b": "2:1",
-     "e": "2:23",
-     "k": "Esther",
-     "v": 23
-    },
-    "3": {
-     "b": "3:1",
-     "e": "3:15",
-     "k": "Esther",
-     "v": 15
-    },
-    "4": {
-     "b": "4:1",
-     "e": "4:17",
-     "k": "Esther",
-     "v": 17
-    },
-    "5": {
-     "b": "5:1",
-     "e": "5:14",
-     "k": "Esther",
-     "v": 14
-    },
-    "6": {
-     "b": "6:1",
-     "e": "6:14",
-     "k": "Esther",
-     "v": 14
-    },
-    "7": {
-     "b": "7:1",
-     "e": "7:10",
-     "k": "Esther",
-     "v": 10
-    },
-    "8": {
-     "b": "8:1",
-     "e": "8:17",
-     "k": "Esther",
-     "v": 17
-    },
-    "9": {
-     "b": "9:1",
-     "e": "9:32",
-     "k": "Esther",
-     "v": 32
-    }
-   },
-   "name": {
-    "en": "Purim",
-    "he": "פּוּרִים"
-   },
-   "summary": "Exodus 17:8-16; Esther 1:1-10:3",
-   "summaryParts": [
-    {
-     "b": "17:8",
-     "e": "17:16",
-     "k": "Exodus"
-    },
-    {
-     "b": "1:1",
-     "e": "10:3",
-     "k": "Esther"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "leyning": {
+    "1": "Exodus 17:8-17:10",
+    "2": "Exodus 17:11-17:13",
+    "3": "Exodus 17:14-17:16",
+    "torah": "Exodus 17:8-16; Esther 1:1-10:3"
+   }
   }
  ],
  "2026-03-04|1": [
   {
+   "title": "Shushan Purim",
    "date": "2026-03-04",
-   "desc": [
-    "Shushan Purim"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "17:8",
-     "e": "17:10",
-     "k": "Exodus",
-     "p": 16,
-     "v": 3
-    },
-    "2": {
-     "b": "17:11",
-     "e": "17:13",
-     "k": "Exodus",
-     "p": 16,
-     "v": 3
-    },
-    "3": {
-     "b": "17:14",
-     "e": "17:16",
-     "k": "Exodus",
-     "p": 16,
-     "v": 3
-    }
-   },
    "hdate": "15 Adar 5786",
-   "megillah": {
-    "1": {
-     "b": "1:1",
-     "e": "1:22",
-     "k": "Esther",
-     "v": 22
-    },
-    "10": {
-     "b": "10:1",
-     "e": "10:3",
-     "k": "Esther",
-     "v": 3
-    },
-    "2": {
-     "b": "2:1",
-     "e": "2:23",
-     "k": "Esther",
-     "v": 23
-    },
-    "3": {
-     "b": "3:1",
-     "e": "3:15",
-     "k": "Esther",
-     "v": 15
-    },
-    "4": {
-     "b": "4:1",
-     "e": "4:17",
-     "k": "Esther",
-     "v": 17
-    },
-    "5": {
-     "b": "5:1",
-     "e": "5:14",
-     "k": "Esther",
-     "v": 14
-    },
-    "6": {
-     "b": "6:1",
-     "e": "6:14",
-     "k": "Esther",
-     "v": 14
-    },
-    "7": {
-     "b": "7:1",
-     "e": "7:10",
-     "k": "Esther",
-     "v": 10
-    },
-    "8": {
-     "b": "8:1",
-     "e": "8:17",
-     "k": "Esther",
-     "v": 17
-    },
-    "9": {
-     "b": "9:1",
-     "e": "9:32",
-     "k": "Esther",
-     "v": 32
-    }
-   },
-   "name": {
-    "en": "Shushan Purim",
-    "he": "שׁוּשָׁן פּוּרִים"
-   },
-   "note": "Jerusalem & walled cities only",
-   "summary": "Exodus 17:8-16; Esther 1:1-10:3",
-   "summaryParts": [
-    {
-     "b": "17:8",
-     "e": "17:16",
-     "k": "Exodus"
-    },
-    {
-     "b": "1:1",
-     "e": "10:3",
-     "k": "Esther"
-    }
-   ],
-   "type": "holiday"
-  }
- ],
- "2026-03-05|1": [
-  {
-   "date": "2026-03-05",
-   "hdate": "16 Adar 5786",
-   "name": {
-    "en": "Ki Tisa",
-    "he": "כִּי תִשָּׂא"
-   },
-   "parshaNum": 21,
-   "summary": "Exodus 30:11-21",
-   "type": "weekday",
-   "weekday": {
-    "1": {
-     "b": "30:11",
-     "e": "30:13",
-     "k": "Exodus",
-     "v": 3
-    },
-    "2": {
-     "b": "30:14",
-     "e": "30:16",
-     "k": "Exodus",
-     "v": 3
-    },
-    "3": {
-     "b": "30:17",
-     "e": "30:21",
-     "k": "Exodus",
-     "v": 5
-    }
+   "category": "holiday",
+   "subcat": "minor",
+   "leyning": {
+    "1": "Exodus 17:8-17:10",
+    "2": "Exodus 17:11-17:13",
+    "3": "Exodus 17:14-17:16",
+    "torah": "Exodus 17:8-16; Esther 1:1-10:3"
    }
   }
  ],
+ "2026-03-05|1": [],
  "2026-03-06|1": [],
  "2026-03-07|1": [
   {
+   "title": "Shabbat Parah",
    "date": "2026-03-07",
-   "fullkriyah": {
-    "1": {
-     "b": "30:11",
-     "e": "31:17",
-     "k": "Exodus",
-     "v": 45
-    },
-    "2": {
-     "b": "31:18",
-     "e": "33:11",
-     "k": "Exodus",
-     "v": 47
-    },
-    "3": {
-     "b": "33:12",
-     "e": "33:16",
-     "k": "Exodus",
-     "v": 5
-    },
-    "4": {
-     "b": "33:17",
-     "e": "33:23",
-     "k": "Exodus",
-     "v": 7
-    },
-    "5": {
-     "b": "34:1",
-     "e": "34:9",
-     "k": "Exodus",
-     "v": 9
-    },
-    "6": {
-     "b": "34:10",
-     "e": "34:26",
-     "k": "Exodus",
-     "v": 17
-    },
-    "7": {
-     "b": "34:27",
-     "e": "34:35",
-     "k": "Exodus",
-     "v": 9
-    },
-    "M": {
-     "b": "19:1",
-     "e": "19:22",
-     "k": "Numbers",
-     "p": 39,
-     "reason": "Shabbat Parah",
-     "v": 22
-    }
-   },
-   "haft": {
-    "b": "36:16",
-    "e": "36:38",
-    "k": "Ezekiel",
-    "reason": "Shabbat Parah",
-    "v": 23
-   },
-   "haftara": "Ezekiel 36:16-38",
    "hdate": "18 Adar 5786",
-   "name": {
-    "en": "Ki Tisa",
-    "he": "כִּי תִשָּׂא"
-   },
-   "parshaNum": 21,
-   "reason": {
-    "M": "Shabbat Parah",
-    "haftara": "Shabbat Parah",
-    "sephardic": "Shabbat Parah"
-   },
-   "seph": {
-    "b": "36:16",
-    "e": "36:36",
-    "k": "Ezekiel",
-    "reason": "Shabbat Parah",
-    "v": 21
-   },
-   "sephardic": "Ezekiel 36:16-36",
-   "sephardicNumV": 21,
-   "summary": "Exodus 30:11-34:35; Numbers 19:1-22",
-   "summaryParts": [
-    {
-     "b": "30:11",
-     "e": "34:35",
-     "k": "Exodus"
-    },
-    {
-     "b": "19:1",
-     "e": "19:22",
-     "k": "Numbers"
-    }
-   ],
-   "triYear": 1,
-   "triennial": {
-    "1": {
-     "b": "30:11",
-     "e": "30:13",
-     "k": "Exodus",
-     "v": 3
-    },
-    "2": {
-     "b": "30:14",
-     "e": "30:16",
-     "k": "Exodus",
-     "v": 3
-    },
-    "3": {
-     "b": "30:17",
-     "e": "30:21",
-     "k": "Exodus",
-     "v": 5
-    },
-    "4": {
-     "b": "30:22",
-     "e": "30:33",
-     "k": "Exodus",
-     "v": 12
-    },
-    "5": {
-     "b": "30:34",
-     "e": "30:38",
-     "k": "Exodus",
-     "v": 5
-    },
-    "6": {
-     "b": "31:1",
-     "e": "31:11",
-     "k": "Exodus",
-     "v": 11
-    },
-    "7": {
-     "b": "31:12",
-     "e": "31:17",
-     "k": "Exodus",
-     "v": 6
-    },
-    "M": {
-     "b": "19:1",
-     "e": "19:22",
-     "k": "Numbers",
-     "p": 39,
-     "reason": "Shabbat Parah",
-     "v": 22
-    }
-   },
-   "type": "shabbat"
+   "category": "holiday",
+   "subcat": "shabbat",
+   "leyning": {
+    "haftarah": "Ezekiel 36:16-38",
+    "haftarah_sephardic": "Ezekiel 36:16-36",
+    "maftir": "Numbers 19:1-19:22"
+   }
   },
   {
+   "title": "Parashat Ki Tisa",
    "date": "2026-03-07",
-   "desc": [
-    "Shabbat Parah"
-   ],
-   "fullkriyah": {
-    "M": {
-     "b": "19:1",
-     "e": "19:22",
-     "k": "Numbers",
-     "p": 39,
-     "v": 22
-    }
-   },
-   "haft": {
-    "b": "36:16",
-    "e": "36:38",
-    "k": "Ezekiel",
-    "v": 23
-   },
-   "haftara": "Ezekiel 36:16-38",
    "hdate": "18 Adar 5786",
-   "name": {
-    "en": "Shabbat Parah",
-    "he": "שַׁבַּת פָּרָה"
-   },
-   "seph": {
-    "b": "36:16",
-    "e": "36:36",
-    "k": "Ezekiel",
-    "v": 21
-   },
-   "sephardic": "Ezekiel 36:16-36",
-   "sephardicNumV": 21,
-   "type": "holiday"
+   "category": "parashat",
+   "leyning": {
+    "1": "Exodus 30:11-31:17",
+    "2": "Exodus 31:18-33:11",
+    "3": "Exodus 33:12-33:16",
+    "4": "Exodus 33:17-33:23",
+    "5": "Exodus 34:1-34:9",
+    "6": "Exodus 34:10-34:26",
+    "7": "Exodus 34:27-34:35",
+    "torah": "Exodus 30:11-34:35; Numbers 19:1-22",
+    "haftarah": "Ezekiel 36:16-38 | Shabbat Parah",
+    "haftarah_sephardic": "Ezekiel 36:16-36 | Shabbat Parah",
+    "maftir": "Numbers 19:1-19:22 | Shabbat Parah",
+    "triennial": {
+     "1": "Exodus 30:11-30:13",
+     "2": "Exodus 30:14-30:16",
+     "3": "Exodus 30:17-30:21",
+     "4": "Exodus 30:22-30:33",
+     "5": "Exodus 30:34-30:38",
+     "6": "Exodus 31:1-31:11",
+     "7": "Exodus 31:12-31:17",
+     "maftir": "Numbers 19:1-19:22"
+    }
+   }
   }
  ],
  "2026-03-08|1": [],
  "2026-08-07|0": [],
  "2026-08-08|0": [
   {
-   "consolation": 3,
+   "title": "Parashat Re’eh",
    "date": "2026-08-08",
-   "fullkriyah": {
-    "1": {
-     "b": "11:26",
-     "e": "12:10",
-     "k": "Deuteronomy",
-     "v": 17
-    },
-    "2": {
-     "b": "12:11",
-     "e": "12:28",
-     "k": "Deuteronomy",
-     "v": 18
-    },
-    "3": {
-     "b": "12:29",
-     "e": "13:19",
-     "k": "Deuteronomy",
-     "v": 22
-    },
-    "4": {
-     "b": "14:1",
-     "e": "14:21",
-     "k": "Deuteronomy",
-     "v": 21
-    },
-    "5": {
-     "b": "14:22",
-     "e": "14:29",
-     "k": "Deuteronomy",
-     "v": 8
-    },
-    "6": {
-     "b": "15:1",
-     "e": "15:18",
-     "k": "Deuteronomy",
-     "v": 18
-    },
-    "7": {
-     "b": "15:19",
-     "e": "16:17",
-     "k": "Deuteronomy",
-     "v": 22
-    },
-    "M": {
-     "b": "16:13",
-     "e": "16:17",
-     "k": "Deuteronomy",
-     "v": 5
-    }
-   },
-   "haft": {
-    "b": "54:11",
-    "e": "55:5",
-    "k": "Isaiah",
-    "v": 12
-   },
-   "haftara": "Isaiah 54:11-55:5",
    "hdate": "25 Av 5786",
-   "name": {
-    "en": "Re'eh",
-    "he": "רְאֵה"
-   },
-   "parshaNum": 47,
-   "summary": "Deuteronomy 11:26-16:17",
-   "triHaft": {
-    "b": "54:11",
-    "e": "55:5",
-    "k": "Isaiah",
-    "note": "aniya soarah",
-    "note2": "when this haftarah is pre-empted by Rosh Hodesh, it has been the tradition to recite it at the end of the haftarah of the fifth week of nechemta, in its natural order. Those who wish may do so, but there is no need to, as the resulting double haftarah would be quite long",
-    "v": 12
-   },
-   "triHaftara": "Isaiah 54:11-55:5",
-   "triYear": 1,
-   "triennial": {
-    "1": {
-     "b": "11:26",
-     "e": "11:31",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "2": {
-     "b": "11:32",
-     "e": "12:5",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "3": {
-     "b": "12:6",
-     "e": "12:10",
-     "k": "Deuteronomy",
-     "v": 5
-    },
-    "4": {
-     "b": "12:11",
-     "e": "12:16",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "5": {
-     "b": "12:17",
-     "e": "12:19",
-     "k": "Deuteronomy",
-     "v": 3
-    },
-    "6": {
-     "b": "12:20",
-     "e": "12:25",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "7": {
-     "b": "12:26",
-     "e": "12:28",
-     "k": "Deuteronomy",
-     "v": 3
-    },
-    "M": {
-     "b": "12:26",
-     "e": "12:28",
-     "k": "Deuteronomy",
-     "v": 3
+   "category": "parashat",
+   "title_orig": "Parashat Re'eh",
+   "leyning": {
+    "1": "Deuteronomy 11:26-12:10",
+    "2": "Deuteronomy 12:11-12:28",
+    "3": "Deuteronomy 12:29-13:19",
+    "4": "Deuteronomy 14:1-14:21",
+    "5": "Deuteronomy 14:22-14:29",
+    "6": "Deuteronomy 15:1-15:18",
+    "7": "Deuteronomy 15:19-16:17",
+    "torah": "Deuteronomy 11:26-16:17",
+    "haftarah": "Isaiah 54:11-55:5",
+    "maftir": "Deuteronomy 16:13-16:17",
+    "triennial": {
+     "1": "Deuteronomy 11:26-11:31",
+     "2": "Deuteronomy 11:32-12:5",
+     "3": "Deuteronomy 12:6-12:10",
+     "4": "Deuteronomy 12:11-12:16",
+     "5": "Deuteronomy 12:17-12:19",
+     "6": "Deuteronomy 12:20-12:25",
+     "7": "Deuteronomy 12:26-12:28",
+     "maftir": "Deuteronomy 12:26-12:28"
     }
-   },
-   "type": "shabbat"
+   }
   }
  ],
  "2026-08-09|0": [],
- "2026-08-10|0": [
-  {
-   "date": "2026-08-10",
-   "hdate": "27 Av 5786",
-   "name": {
-    "en": "Shoftim",
-    "he": "שׁוֹפְטִים"
-   },
-   "parshaNum": 48,
-   "summary": "Deuteronomy 16:18-17:13",
-   "type": "weekday",
-   "weekday": {
-    "1": {
-     "b": "16:18",
-     "e": "16:20",
-     "k": "Deuteronomy",
-     "v": 3
-    },
-    "2": {
-     "b": "16:21",
-     "e": "17:10",
-     "k": "Deuteronomy",
-     "v": 12
-    },
-    "3": {
-     "b": "17:11",
-     "e": "17:13",
-     "k": "Deuteronomy",
-     "v": 3
-    }
-   }
-  }
- ],
+ "2026-08-10|0": [],
  "2026-08-11|0": [],
  "2026-08-12|0": [],
- "2026-09-10|0": [
-  {
-   "date": "2026-09-10",
-   "hdate": "28 Elul 5786",
-   "name": {
-    "en": "Ha'azinu",
-    "he": "הַאֲזִינוּ"
-   },
-   "parshaNum": 53,
-   "summary": "Deuteronomy 32:1-12",
-   "type": "weekday",
-   "weekday": {
-    "1": {
-     "b": "32:1",
-     "e": "32:3",
-     "k": "Deuteronomy",
-     "v": 3
-    },
-    "2": {
-     "b": "32:4",
-     "e": "32:6",
-     "k": "Deuteronomy",
-     "v": 3
-    },
-    "3": {
-     "b": "32:7",
-     "e": "32:12",
-     "k": "Deuteronomy",
-     "v": 6
-    }
-   }
-  }
- ],
+ "2026-09-10|0": [],
  "2026-09-11|0": [],
  "2026-09-12|0": [
   {
+   "title": "Rosh Hashana 5787",
    "date": "2026-09-12",
-   "desc": [
-    "Rosh Hashana 5787"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "21:1",
-     "e": "21:4",
-     "k": "Genesis",
-     "p": 4,
-     "v": 4
-    },
-    "2": {
-     "b": "21:5",
-     "e": "21:8",
-     "k": "Genesis",
-     "p": 4,
-     "v": 4
-    },
-    "3": {
-     "b": "21:9",
-     "e": "21:12",
-     "k": "Genesis",
-     "p": 4,
-     "v": 4
-    },
-    "4": {
-     "b": "21:13",
-     "e": "21:17",
-     "k": "Genesis",
-     "p": 4,
-     "v": 5
-    },
-    "5": {
-     "b": "21:18",
-     "e": "21:21",
-     "k": "Genesis",
-     "p": 4,
-     "v": 4
-    },
-    "6": {
-     "b": "21:22",
-     "e": "21:27",
-     "k": "Genesis",
-     "p": 4,
-     "v": 6
-    },
-    "7": {
-     "b": "21:28",
-     "e": "21:34",
-     "k": "Genesis",
-     "p": 4,
-     "v": 7
-    },
-    "M": {
-     "b": "29:1",
-     "e": "29:6",
-     "k": "Numbers",
-     "p": 41,
-     "v": 6
-    }
-   },
-   "haft": {
-    "b": "1:1",
-    "e": "2:10",
-    "k": "I Samuel",
-    "v": 38
-   },
-   "haftara": "I Samuel 1:1-2:10",
    "hdate": "1 Tishrei 5787",
-   "name": {
-    "en": "Rosh Hashana I (on Shabbat)",
-    "he": "רֹאשׁ הַשָּׁנָה א׳ (בְּשַׁבָּת)"
-   },
-   "summary": "Genesis 21:1-34; Numbers 29:1-6",
-   "summaryParts": [
-    {
-     "b": "21:1",
-     "e": "21:34",
-     "k": "Genesis"
-    },
-    {
-     "b": "29:1",
-     "e": "29:6",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "yomtov": true,
+   "leyning": {
+    "1": "Genesis 21:1-21:4",
+    "2": "Genesis 21:5-21:8",
+    "3": "Genesis 21:9-21:12",
+    "4": "Genesis 21:13-21:17",
+    "5": "Genesis 21:18-21:21",
+    "6": "Genesis 21:22-21:27",
+    "7": "Genesis 21:28-21:34",
+    "torah": "Genesis 21:1-34; Numbers 29:1-6",
+    "haftarah": "I Samuel 1:1-2:10",
+    "maftir": "Numbers 29:1-29:6"
+   }
   }
  ],
  "2026-09-13|0": [
   {
+   "title": "Rosh Hashana II",
    "date": "2026-09-13",
-   "desc": [
-    "Rosh Hashana II"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "22:1",
-     "e": "22:3",
-     "k": "Genesis",
-     "p": 4,
-     "v": 3
-    },
-    "2": {
-     "b": "22:4",
-     "e": "22:8",
-     "k": "Genesis",
-     "p": 4,
-     "v": 5
-    },
-    "3": {
-     "b": "22:9",
-     "e": "22:14",
-     "k": "Genesis",
-     "p": 4,
-     "v": 6
-    },
-    "4": {
-     "b": "22:15",
-     "e": "22:19",
-     "k": "Genesis",
-     "p": 4,
-     "v": 5
-    },
-    "5": {
-     "b": "22:20",
-     "e": "22:24",
-     "k": "Genesis",
-     "p": 4,
-     "v": 5
-    },
-    "M": {
-     "b": "29:1",
-     "e": "29:6",
-     "k": "Numbers",
-     "p": 41,
-     "v": 6
-    }
-   },
-   "haft": {
-    "b": "31:2",
-    "e": "31:20",
-    "k": "Jeremiah",
-    "note": "labeled 31:1–19 in some books",
-    "v": 19
-   },
-   "haftara": "Jeremiah 31:2-20",
    "hdate": "2 Tishrei 5787",
-   "name": {
-    "en": "Rosh Hashana II",
-    "he": "רֹאשׁ הַשָּׁנָה ב׳"
-   },
-   "summary": "Genesis 22:1-24; Numbers 29:1-6",
-   "summaryParts": [
-    {
-     "b": "22:1",
-     "e": "22:24",
-     "k": "Genesis"
-    },
-    {
-     "b": "29:1",
-     "e": "29:6",
-     "k": "Numbers"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "major",
+   "yomtov": true,
+   "leyning": {
+    "1": "Genesis 22:1-22:3",
+    "2": "Genesis 22:4-22:8",
+    "3": "Genesis 22:9-22:14",
+    "4": "Genesis 22:15-22:19",
+    "5": "Genesis 22:20-22:24",
+    "torah": "Genesis 22:1-24; Numbers 29:1-6",
+    "haftarah": "Jeremiah 31:2-20",
+    "maftir": "Numbers 29:1-29:6"
+   }
   }
  ],
  "2026-09-14|0": [
   {
+   "title": "Tzom Gedaliah",
    "date": "2026-09-14",
-   "desc": [
-    "Tzom Gedaliah"
-   ],
-   "fullkriyah": {
-    "1": {
-     "b": "32:11",
-     "e": "32:14",
-     "k": "Exodus",
-     "p": 21,
-     "v": 4
-    },
-    "2": {
-     "b": "34:1",
-     "e": "34:3",
-     "k": "Exodus",
-     "p": 21,
-     "v": 3
-    },
-    "3": {
-     "b": "34:4",
-     "e": "34:10",
-     "k": "Exodus",
-     "p": 21,
-     "v": 7
-    }
-   },
    "hdate": "3 Tishrei 5787",
-   "name": {
-    "en": "Tzom Gedaliah",
-    "he": "צוֹם גְּדַלְיָה"
-   },
-   "summary": "Exodus 32:11-14, 34:1-10",
-   "summaryParts": [
-    {
-     "b": "32:11",
-     "e": "32:14",
-     "k": "Exodus"
-    },
-    {
-     "b": "34:1",
-     "e": "34:10",
-     "k": "Exodus"
-    }
-   ],
-   "type": "holiday"
-  },
-  {
-   "date": "2026-09-14",
-   "fullkriyah": {
-    "1": {
-     "b": "32:11",
-     "e": "32:14",
-     "k": "Exodus",
-     "p": 21,
-     "v": 4
-    },
-    "2": {
-     "b": "34:1",
-     "e": "34:3",
-     "k": "Exodus",
-     "p": 21,
-     "v": 3
-    },
-    "M": {
-     "b": "34:4",
-     "e": "34:10",
-     "k": "Exodus",
-     "p": 21,
-     "v": 7
-    }
-   },
-   "haft": {
-    "b": "55:6",
-    "e": "56:8",
-    "k": "Isaiah",
-    "v": 16
-   },
-   "haftara": "Isaiah 55:6-56:8",
-   "hdate": "3 Tishrei 5787",
-   "name": {
-    "en": "Tzom Gedaliah (Mincha)",
-    "he": "צוֹם גְּדַלְיָה (מִנְחָה)"
-   },
-   "summary": "Exodus 32:11-14, 34:1-10",
-   "summaryParts": [
-    {
-     "b": "32:11",
-     "e": "32:14",
-     "k": "Exodus"
-    },
-    {
-     "b": "34:1",
-     "e": "34:10",
-     "k": "Exodus"
-    }
-   ],
-   "type": "holiday"
+   "category": "holiday",
+   "subcat": "fast",
+   "leyning": {
+    "1": "Exodus 32:11-32:14",
+    "2": "Exodus 34:1-34:3",
+    "3": "Exodus 34:4-34:10",
+    "torah": "Exodus 32:11-14, 34:1-10"
+   }
   }
  ],
  "2026-09-15|0": [],
  "2026-09-16|0": [],
- "2026-09-17|0": [
-  {
-   "date": "2026-09-17",
-   "hdate": "6 Tishrei 5787",
-   "name": {
-    "en": "Ha'azinu",
-    "he": "הַאֲזִינוּ"
-   },
-   "parshaNum": 53,
-   "summary": "Deuteronomy 32:1-12",
-   "type": "weekday",
-   "weekday": {
-    "1": {
-     "b": "32:1",
-     "e": "32:3",
-     "k": "Deuteronomy",
-     "v": 3
-    },
-    "2": {
-     "b": "32:4",
-     "e": "32:6",
-     "k": "Deuteronomy",
-     "v": 3
-    },
-    "3": {
-     "b": "32:7",
-     "e": "32:12",
-     "k": "Deuteronomy",
-     "v": 6
-    }
-   }
-  }
- ],
+ "2026-09-17|0": [],
  "2026-09-18|0": [],
  "2026-09-19|0": [
   {
+   "title": "Shabbat Shuva",
    "date": "2026-09-19",
-   "fullkriyah": {
-    "1": {
-     "b": "32:1",
-     "e": "32:6",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "2": {
-     "b": "32:7",
-     "e": "32:12",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "3": {
-     "b": "32:13",
-     "e": "32:18",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "4": {
-     "b": "32:19",
-     "e": "32:28",
-     "k": "Deuteronomy",
-     "v": 10
-    },
-    "5": {
-     "b": "32:29",
-     "e": "32:39",
-     "k": "Deuteronomy",
-     "v": 11
-    },
-    "6": {
-     "b": "32:40",
-     "e": "32:43",
-     "k": "Deuteronomy",
-     "v": 4
-    },
-    "7": {
-     "b": "32:44",
-     "e": "32:52",
-     "k": "Deuteronomy",
-     "v": 9
-    },
-    "M": {
-     "b": "32:48",
-     "e": "32:52",
-     "k": "Deuteronomy",
-     "v": 5
-    }
-   },
-   "haft": [
-    {
-     "b": "14:2",
-     "e": "14:10",
-     "k": "Hosea",
-     "reason": "Shabbat Shuva (with Ha'azinu)",
-     "v": 9
-    },
-    {
-     "b": "2:15",
-     "e": "2:27",
-     "k": "Joel",
-     "reason": "Shabbat Shuva (with Ha'azinu)",
-     "v": 13
-    }
-   ],
-   "haftara": "Hosea 14:2-10; Joel 2:15-27",
    "hdate": "8 Tishrei 5787",
-   "name": {
-    "en": "Ha'azinu",
-    "he": "הַאֲזִינוּ"
-   },
-   "parshaNum": 53,
-   "reason": {
-    "haftara": "Shabbat Shuva (with Ha'azinu)",
-    "sephardic": "Shabbat Shuva (with Ha'azinu)"
-   },
-   "seph": [
-    {
-     "b": "14:2",
-     "e": "14:10",
-     "k": "Hosea",
-     "reason": "Shabbat Shuva (with Ha'azinu)",
-     "v": 9
-    },
-    {
-     "b": "7:18",
-     "e": "7:20",
-     "k": "Micah",
-     "reason": "Shabbat Shuva (with Ha'azinu)",
-     "v": 3
-    }
-   ],
-   "sephardic": "Hosea 14:2-10; Micah 7:18-20",
-   "sephardicNumV": 12,
-   "summary": "Deuteronomy 32:1-52",
-   "triYear": 2,
-   "triennial": {
-    "1": {
-     "b": "32:1",
-     "e": "32:6",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "2": {
-     "b": "32:7",
-     "e": "32:12",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "3": {
-     "b": "32:13",
-     "e": "32:18",
-     "k": "Deuteronomy",
-     "v": 6
-    },
-    "4": {
-     "b": "32:19",
-     "e": "32:28",
-     "k": "Deuteronomy",
-     "v": 10
-    },
-    "5": {
-     "b": "32:29",
-     "e": "32:39",
-     "k": "Deuteronomy",
-     "v": 11
-    },
-    "6": {
-     "b": "32:40",
-     "e": "32:43",
-     "k": "Deuteronomy",
-     "v": 4
-    },
-    "7": {
-     "b": "32:44",
-     "e": "32:52",
-     "k": "Deuteronomy",
-     "v": 9
-    },
-    "M": {
-     "b": "32:48",
-     "e": "32:52",
-     "k": "Deuteronomy",
-     "v": 5
-    }
-   },
-   "type": "shabbat"
+   "category": "holiday",
+   "subcat": "shabbat",
+   "leyning": {
+    "haftarah": "Hosea 14:2-10; Micah 7:18-20; Joel 2:15-27"
+   }
   },
   {
+   "title": "Parashat Ha’azinu",
    "date": "2026-09-19",
-   "desc": [
-    "Shabbat Shuva"
-   ],
-   "haft": [
-    {
-     "b": "14:2",
-     "e": "14:10",
-     "k": "Hosea",
-     "v": 9
-    },
-    {
-     "b": "7:18",
-     "e": "7:20",
-     "k": "Micah",
-     "v": 3
-    },
-    {
-     "b": "2:15",
-     "e": "2:27",
-     "k": "Joel",
-     "v": 13
-    }
-   ],
-   "haftara": "Hosea 14:2-10; Micah 7:18-20; Joel 2:15-27",
    "hdate": "8 Tishrei 5787",
-   "name": {
-    "en": "Shabbat Shuva",
-    "he": "שַׁבַּת שׁוּבָה"
-   },
-   "type": "holiday"
+   "category": "parashat",
+   "title_orig": "Parashat Ha'azinu",
+   "leyning": {
+    "1": "Deuteronomy 32:1-32:6",
+    "2": "Deuteronomy 32:7-32:12",
+    "3": "Deuteronomy 32:13-32:18",
+    "4": "Deuteronomy 32:19-32:28",
+    "5": "Deuteronomy 32:29-32:39",
+    "6": "Deuteronomy 32:40-32:43",
+    "7": "Deuteronomy 32:44-32:52",
+    "torah": "Deuteronomy 32:1-52",
+    "haftarah": "Hosea 14:2-10; Joel 2:15-27 | Shabbat Shuva (with Ha'azinu)",
+    "haftarah_sephardic": "Hosea 14:2-10; Micah 7:18-20 | Shabbat Shuva (with Ha'azinu)",
+    "maftir": "Deuteronomy 32:48-32:52",
+    "triennial": {
+     "1": "Deuteronomy 32:1-32:6",
+     "2": "Deuteronomy 32:7-32:12",
+     "3": "Deuteronomy 32:13-32:18",
+     "4": "Deuteronomy 32:19-32:28",
+     "5": "Deuteronomy 32:29-32:39",
+     "6": "Deuteronomy 32:40-32:43",
+     "7": "Deuteronomy 32:44-32:52",
+     "maftir": "Deuteronomy 32:48-32:52"
+    }
+   }
   }
  ],
  "2026-09-20|0": []

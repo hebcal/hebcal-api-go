@@ -4,16 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/hebcal/hebcal-api-go/internal/repository/readings/readingstest"
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 )
 
-// The six series with no Go schedule are fetched from hebcal-web rather than
+// The six series with no Go schedule are fetched from readings-svc rather than
 // refusing the calendar, so every one needs a query parameter.
 func TestEveryUnsupportedSeriesHasAQueryParameter(t *testing.T) {
 	msg := &pb.Download{
@@ -33,14 +33,15 @@ func TestEveryUnsupportedSeriesHasAQueryParameter(t *testing.T) {
 
 func TestFetchBuildsTheExpectedQuery(t *testing.T) {
 	var got url.Values
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	var gotPath string
+	client := readingstest.Serve(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotPath = r.URL.Path
 		got = r.URL.Query()
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"items": []any{}})
 	}))
-	defer srv.Close()
 
-	f := NewLearningFetcher(srv.URL)
+	f := NewLearningFetcher(client)
 	_, err := f.Fetch(context.Background(),
 		[]string{"dirshuAmudYomi", "chofetzChaim"}, "es",
 		time.Date(2026, 8, 1, 0, 0, 0, 0, time.UTC),
@@ -48,18 +49,17 @@ func TestFetchBuildsTheExpectedQuery(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if gotPath != "/learning" {
+		t.Errorf("path = %q, want /learning", gotPath)
+	}
 	for k, want := range map[string]string{
-		"v": "1", "cfg": "json", "lg": "es",
+		"lg":    "es",
 		"start": "2026-08-01", "end": "2026-08-31",
 		"ayd": "on", "dcc": "on",
 	} {
 		if got.Get(k) != want {
 			t.Errorf("query %s = %q, want %q", k, got.Get(k), want)
 		}
-	}
-	// set=off is not sent: cfg=json already implies the empty base calendar.
-	if got.Get("set") != "" {
-		t.Errorf("set should be absent, got %q", got.Get("set"))
 	}
 	// Series that were not asked for must not be enabled.
 	if got.Get("dsm") != "" {
@@ -68,7 +68,7 @@ func TestFetchBuildsTheExpectedQuery(t *testing.T) {
 }
 
 func TestFetchParsesItems(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	client := readingstest.Serve(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"items":[
       {"title":"Yoma 49a","date":"2026-08-01","category":"dirshuAmudYomi",
        "hebrew":"יומא מ״ט א",
@@ -77,9 +77,8 @@ func TestFetchParsesItems(t *testing.T) {
       {"title":"Candle lighting","date":"2026-08-01T18:56:00-07:00","category":"candles"}
     ]}`))
 	}))
-	defer srv.Close()
 
-	f := NewLearningFetcher(srv.URL)
+	f := NewLearningFetcher(client)
 	evs, err := f.Fetch(context.Background(), []string{"dirshuAmudYomi"}, "",
 		time.Date(2026, 8, 1, 0, 0, 0, 0, time.UTC),
 		time.Date(2026, 8, 31, 0, 0, 0, 0, time.UTC))
@@ -97,7 +96,7 @@ func TestFetchParsesItems(t *testing.T) {
 	if !e.Learning {
 		t.Error("fetched rows must be marked as learning, which drives their colour and order")
 	}
-	// hebcal-web's own tracking is stripped; the renderer adds its own.
+	// @hebcal/rest-api's own tracking is stripped; the renderer adds its own.
 	if strings.Contains(e.URL, "utm_") {
 		t.Errorf("URL still carries hebcal-web's tracking: %s", e.URL)
 	}
@@ -109,11 +108,10 @@ func TestFetchParsesItems(t *testing.T) {
 // A failed fetch must be an error, so the handler can return 501 rather than a
 // calendar quietly missing the rows the user asked for.
 func TestFetchReportsFailures(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	client := readingstest.Serve(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "nope", http.StatusInternalServerError)
 	}))
-	defer srv.Close()
-	f := NewLearningFetcher(srv.URL)
+	f := NewLearningFetcher(client)
 	if _, err := f.Fetch(context.Background(), []string{"dirshuAmudYomi"}, "",
 		time.Now(), time.Now()); err == nil {
 		t.Error("expected an error for a 500 response")

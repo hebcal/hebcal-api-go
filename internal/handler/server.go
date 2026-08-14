@@ -14,7 +14,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
 	"github.com/hebcal/hebcal-api-go/internal/logger"
 	"github.com/hebcal/hebcal-api-go/internal/model"
-	"github.com/hebcal/hebcal-api-go/internal/repository/leyning"
+	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 	"github.com/hebcal/hebcal-api-go/pkg/geoip"
@@ -37,8 +37,10 @@ type Server struct {
 	// GeoIP resolves the caller's approximate location for /complete. It may
 	// be nil or unreachable; the route then ranks results without that hint.
 	GeoIP *geoip.Client
-	// Leyning supplies Torah readings for /shabbat.
-	Leyning *leyning.Client
+	// Readings is the client for the readings-svc sidecar, which supplies
+	// Torah readings for /shabbat and the daily-learning series the PDF
+	// calendars cannot generate in-process.
+	Readings *readings.Client
 	// PDF renders the calendar PDFs. Its Renderer is nil when the fonts could
 	// not be loaded, in which case the PDF routes answer 503 and the rest of
 	// the API keeps working.
@@ -53,7 +55,7 @@ func New(lg *logger.AccessLogger) *Server {
 		Now:      model.TodayNewYork,
 		PingFile: config.DefaultPingFile,
 		Hostname: hostname,
-		Leyning:  leyning.New(leyning.DefaultURL),
+		Readings: readings.New(readings.DefaultSocket),
 		PDF:      &pdf.Service{},
 	}
 }
