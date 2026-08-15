@@ -64,6 +64,12 @@ type Params struct {
 	Hour12 int32
 	// CityName is the typeahead label for a lat/long location, used in the subtitle.
 	CityName string
+	// CityNameAscii is the location's plain-ASCII geonames name ("Zuerich",
+	// "New York City"), which the link campaign uses in place of CityName.
+	// getCalendarTitle takes it whenever it is a string, so it is empty for the
+	// locations that have none -- lat/long and ZIP -- and CityName stands in.
+	// See CampaignName.
+	CityNameAscii string
 	// Subscribe marks the calendar as a subscription (affects the footer only).
 	Subscribe bool
 	// YomTovOnly suppresses non-yom-tov holidays.
@@ -133,13 +139,9 @@ func decodeBase64(s string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(s)
 }
 
-// DecodeParams turns the base64 protobuf payload from a /v4/ URL into Params.
-//
-// This is the Go port of hebcal-web's src/deserializeDownload.js followed by
-// the parts of src/makeDownloadProps.js that matter to the PDF: rather than
-// round-tripping through a query-string map the way the Node code does, it
-// writes straight into hebcal.CalOptions.
-func DecodeParams(payload string, db *geodb.DB) (*Params, error) {
+// DecodeMessage turns the base64 protobuf payload from a /v4/ URL back into
+// the Download message it encodes.
+func DecodeMessage(payload string) (*downloadpb.Download, error) {
 	raw, err := decodeBase64(payload)
 	if err != nil {
 		return nil, fmt.Errorf("base64: %w", err)
@@ -148,7 +150,25 @@ func DecodeParams(payload string, db *geodb.DB) (*Params, error) {
 	if err := proto.Unmarshal(raw, &msg); err != nil {
 		return nil, fmt.Errorf("protobuf: %w", err)
 	}
+	return &msg, nil
+}
 
+// DecodeParams turns the base64 protobuf payload from a /v4/ URL into Params.
+func DecodeParams(payload string, db *geodb.DB) (*Params, error) {
+	msg, err := DecodeMessage(payload)
+	if err != nil {
+		return nil, err
+	}
+	return ParamsFromMessage(msg, db)
+}
+
+// ParamsFromMessage resolves a decoded Download message into Params.
+//
+// This is the Go port of hebcal-web's src/deserializeDownload.js followed by
+// the parts of src/makeDownloadProps.js that matter to the PDF: rather than
+// round-tripping through a query-string map the way the Node code does, it
+// writes straight into hebcal.CalOptions.
+func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) {
 	p := &Params{
 		MonthMode:            MonthMode(msg.GetMonthMode()),
 		AddAltDates:          msg.GetAddAltDates(),
@@ -230,7 +250,7 @@ func DecodeParams(payload string, db *geodb.DB) (*Params, error) {
 	}
 	o.CandleLightingMins = int(msg.GetCandleLightingMins())
 
-	if err := applyDateRange(&msg, p); err != nil {
+	if err := applyDateRange(msg, p); err != nil {
 		return nil, err
 	}
 	// A single-year request outside the supported range is 410, matching
@@ -238,7 +258,7 @@ func DecodeParams(payload string, db *geodb.DB) (*Params, error) {
 	if o.Year != 0 && !YearIsSupported(o.Year, o.IsHebrewYear) {
 		return nil, &OutOfRangeError{Year: o.Year}
 	}
-	if err := applyLocation(&msg, p, db); err != nil {
+	if err := applyLocation(msg, p, db); err != nil {
 		return nil, err
 	}
 	// Candle-lighting is switched off for years before the modern zmanim tables
@@ -250,7 +270,7 @@ func DecodeParams(payload string, db *geodb.DB) (*Params, error) {
 			o.CandleLighting = false
 		}
 	}
-	applyDailyLearning(&msg, o)
+	applyDailyLearning(msg, o)
 	return p, nil
 }
 
@@ -309,6 +329,9 @@ func setLocation(p *Params, loc *geodb.Location, msg *downloadpb.Download) error
 	if p.CityName == "" {
 		p.CityName = loc.ShortName()
 	}
+	// Only the geonames rows carry an asciiname; a ZIP location has none, and
+	// its short name is already ASCII ("Palo Alto", "Washington, DC").
+	p.CityNameAscii = loc.Asciiname
 	p.Opts.CandleLighting = true
 	if loc.IsIsrael() {
 		p.Opts.IL = true
@@ -489,7 +512,13 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 		return setLocation(p, loc, msg)
 	}
 	if city := msg.GetCityName(); city != "" {
+		// A cityName with no geoPos is a legacy Hebcal city identifier, which
+		// only a /v2/ URL carries (downloadHref2 sets cityName only alongside
+		// geoPos, from the typeahead). It is a lookup key -- "GB-London" --
+		// rather than a label, so clear it and let setLocation name the
+		// calendar after the resolved location, as getCalendarTitle does.
 		if loc := db.LookupLegacyCity(city); loc != nil {
+			p.CityName = ""
 			return setLocation(p, loc, msg)
 		}
 		return NotFoundf("unknown city %q", city)

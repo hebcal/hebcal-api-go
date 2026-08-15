@@ -96,6 +96,12 @@ func (s *Server) Routes() http.Handler {
 	// www.hebcal.com's /holidays/ holiday calendars, both routed here by
 	// Varnish. Nothing else under /holidays/ belongs to this service -- the
 	// HTML pages there are hebcal-web's, and pdfHoliday answers them 404.
+	//
+	// /v2/ is the legacy download URL, which hebcal-web answers with a 301 to
+	// the /v4/ form; this service renders it instead. Only /v2/h/<...>.pdf is
+	// ours -- the other /v2/ families are .ics feeds and yahrzeit calendars,
+	// and pdfDownload answers them 404.
+	mux.HandleFunc("/v2/", mw.Serve(s.pdfDownload))
 	mux.HandleFunc("/v4/", mw.Serve(s.pdfDownload))
 	mux.HandleFunc("/holidays/", mw.Serve(s.pdfHoliday))
 	mux.HandleFunc("/", mw.Serve(s.notFound))

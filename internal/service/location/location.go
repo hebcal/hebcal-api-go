@@ -79,6 +79,21 @@ func FromQuery(db *geodb.DB, q url.Values) (*geodb.Location, error) {
 	return nil, nil
 }
 
+// FromLegacyLatLong resolves the ladeg/lamin/ladir + lodeg/lomin/lodir
+// degree-minute-direction form on its own, for a caller that has already ruled
+// out the named location forms ahead of it. It returns (nil, nil) when the six
+// parameters are not all present, and the same errors FromQuery would.
+//
+// The PDF service's legacy /v2/ URLs are the caller: they reach that branch
+// through a different route than a query string, but the form is identical and
+// there is no reason for a second copy of it.
+func FromLegacyLatLong(q url.Values) (*geodb.Location, error) {
+	if !hasLatLongLegacy(q) {
+		return nil, nil
+	}
+	return fromLatLongLegacy(q, strings.TrimSpace(q.Get("city-typeahead")))
+}
+
 // geoposLegacy lists the legacy degree/minute parameters and their maximum
 // values, matching hebcal-web src/urlArgs.js.
 var geoposLegacy = []struct {

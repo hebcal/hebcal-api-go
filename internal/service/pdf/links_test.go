@@ -4,6 +4,9 @@ import (
 	"net/url"
 	"strings"
 	"testing"
+	"time"
+
+	"github.com/hebcal/hebcal-go/hebcal"
 )
 
 // eventLink turns the canonical URL from hebcal-go into the short, tracked
@@ -101,8 +104,24 @@ func TestUrlSlug(t *testing.T) {
 	tests := []struct{ in, want string }{
 		{"Rosh Chodesh Elul", "rosh-chodesh-elul"},
 		{"Yom HaAtzma'ut", "yom-haatzmaut"},
-		{"Ta’anit Bechorot", "taanit-bechorot"},
+		// Only the straight apostrophe is deleted. makeAnchor's character
+		// class is JavaScript's `\w` without the `u` flag, so the typographic
+		// one is not a word character and becomes a hyphen like any other
+		// punctuation (measured against @hebcal/rest-api: "Ta’anit Bechorot"
+		// gives "ta-anit-bechorot"). Nothing reaches this function with one --
+		// a holiday's slug comes from its event URL, not from here -- but the
+		// two apostrophes really do behave differently.
+		{"Ta’anit Bechorot", "ta-anit-bechorot"},
 		{"Palo Alto", "palo-alto"},
+		// A location, which is what campaignFromTitle actually feeds this:
+		// punctuation collapses to single hyphens and the ends are trimmed,
+		// rather than surviving into the campaign to be percent-encoded.
+		{"Washington, D.C", "washington-d-c"},
+		{"St. Louis", "st-louis"},
+		{"GB-London", "gb-london"},
+		// The degrees/minutes name a legacy /v2/ ladeg location produces.
+		// Underscore is a word character and survives.
+		{"40°42′N 74°0′W America/New_York 2026", "40-42-n-74-0-w-america-new_york-2026"},
 	}
 	for _, tt := range tests {
 		if got := urlSlug(tt.in); got != tt.want {
@@ -111,8 +130,9 @@ func TestUrlSlug(t *testing.T) {
 	}
 }
 
-// The campaign ties a link back to the calendar that produced it, and is
-// derived from the document title so the two cannot drift apart.
+// The campaign ties a link back to the calendar that produced it. It is the
+// second half of campaignName(); the first half, which decides whether the
+// location is named by its display name or its asciiname, is CampaignName.
 func TestCampaignFromTitle(t *testing.T) {
 	tests := []struct{ title, want string }{
 		{"Hebcal Palo Alto 2026-2027", "pdf-palo-alto-2026-2027"},
@@ -189,5 +209,108 @@ func TestAchreiMotKedoshimFallsBackToTheLongForm(t *testing.T) {
 	single := eventLink("https://www.hebcal.com/sedrot/achrei-mot-20270501", 5787, "", false)
 	if !strings.HasSuffix(single, "/29") {
 		t.Errorf("single Achrei Mot = %q, want it to end in /29", single)
+	}
+}
+
+// appendIsraelAndTracking sets i=on with searchParams.set(), and does it before
+// shortening. Both halves matter, and getting either wrong put a wrong link on
+// every event of every Israel calendar -- 56 of 103 on a Jerusalem 2026
+// download, measured against hebcal-web.
+func TestIsraelParameterIsSetNotAppended(t *testing.T) {
+	const campaign = "pdf-jerusalem-2026"
+
+	// The Israel-only modern holidays already carry i=on in the URL hebcal-go
+	// hands over, so appending a second one produced ...?i=on&i=on.
+	t.Run("a page that already asks for Israel", func(t *testing.T) {
+		got := eventLink("https://www.hebcal.com/holidays/ben-gurion-day-2026?i=on",
+			5786, campaign, true)
+		want := "https://hebcal.com/h/ben-gurion-day-2026?i=on&uc=" + campaign
+		if got != want {
+			t.Errorf("eventLink() = %q, want %q", got, want)
+		}
+	})
+
+	t.Run("a page that does not", func(t *testing.T) {
+		got := eventLink("https://www.hebcal.com/holidays/sukkot-2026", 5787, campaign, true)
+		want := "https://hebcal.com/h/sukkot-2026?i=on&uc=" + campaign
+		if got != want {
+			t.Errorf("eventLink() = %q, want %q", got, want)
+		}
+	})
+
+	// A parsha link spends the i on its path -- /s/5786i/12 -- and
+	// shortenSedrotUrl deletes the parameter as it does so, rather than
+	// carrying both.
+	t.Run("a parsha spends it on the path", func(t *testing.T) {
+		got := eventLink("https://www.hebcal.com/sedrot/vayechi-20260103?i=on",
+			5786, campaign, true)
+		want := "https://hebcal.com/s/5786i/12?uc=" + campaign
+		if got != want {
+			t.Errorf("eventLink() = %q, want %q", got, want)
+		}
+	})
+
+	// The fallback that only trims /sedrot/ to /s/ has no path to spend it on,
+	// so there the parameter survives into the query.
+	t.Run("the long-form fallback keeps it in the query", func(t *testing.T) {
+		got := eventLink("https://www.hebcal.com/sedrot/achrei-mot-kedoshim-20270501",
+			5787, campaign, true)
+		if !strings.Contains(got, "/s/achrei-mot-kedoshim-20270501") ||
+			!strings.Contains(got, "i=on") {
+			t.Errorf("eventLink() = %q, want the long form with i=on", got)
+		}
+	})
+
+	// A diaspora calendar adds nothing, and does not strip an i=on the page
+	// came with either -- appendIsraelAndTracking only ever sets.
+	t.Run("a diaspora calendar", func(t *testing.T) {
+		got := eventLink("https://www.hebcal.com/holidays/sukkot-2026", 5787,
+			"pdf-boston-2026", false)
+		if strings.Contains(got, "i=on") {
+			t.Errorf("eventLink() = %q, want no i=on on a diaspora calendar", got)
+		}
+	})
+}
+
+// campaignName() builds its title with preferAsciiName, so the campaign names
+// the location by its raw geonames asciiname wherever there is one, while the
+// document title uses the display short name. Measured against hebcal-web:
+// geonameid 2657896 renders "Hebcal Zürich 2026" and tags every link
+// pdf-zuerich-2026, and 5128581 renders "Hebcal New York 2026" and tags
+// pdf-new-york-city-2026. Deriving the campaign from the document title gave
+// "pdf-z-rich-2026", which matched nothing production had ever emitted.
+func TestCampaignPrefersTheAsciiName(t *testing.T) {
+	// A range spanning more than one month of one year, so the title is the
+	// location plus a bare year rather than "<Month> <year>".
+	events := []Event{
+		{Greg: time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC)},
+		{Greg: time.Date(2026, time.December, 31, 0, 0, 0, 0, time.UTC)},
+	}
+	tests := []struct {
+		name         string
+		city, ascii  string
+		wantTitle    string
+		wantCampaign string
+	}{
+		{"an accented city", "Zürich", "Zuerich", "Hebcal Zürich 2026", "pdf-zuerich-2026"},
+		{"a longer geonames name", "New York", "New York City",
+			"Hebcal New York 2026", "pdf-new-york-city-2026"},
+		{"the two agree", "Boston", "Boston", "Hebcal Boston 2026", "pdf-boston-2026"},
+		// A ZIP or lat/long location has no asciiname, so the display name
+		// stands in for both -- which is how "washington-dc" comes out of a
+		// ZIP whose city column says only "Washington".
+		{"no asciiname at all", "Washington, DC", "", "Hebcal Washington, DC 2026",
+			"pdf-washington-dc-2026"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := &Params{CityName: tt.city, CityNameAscii: tt.ascii, Opts: hebcal.CalOptions{Year: 2026}}
+			if got := CalendarTitle(p, events); got != tt.wantTitle {
+				t.Errorf("CalendarTitle() = %q, want %q", got, tt.wantTitle)
+			}
+			if got := CampaignName(p, events); got != tt.wantCampaign {
+				t.Errorf("CampaignName() = %q, want %q", got, tt.wantCampaign)
+			}
+		})
 	}
 }

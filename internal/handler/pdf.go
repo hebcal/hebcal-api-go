@@ -12,12 +12,14 @@ import (
 )
 
 // This file is the transport half of the two PDF calendar families Varnish
-// routes here: download.hebcal.com's /v4/<data>/<name>.pdf downloads and
-// www.hebcal.com's /holidays/hebcal-<year>.pdf holiday calendars. They share a
-// generator and a renderer (internal/service/pdf) and differ in their headers,
-// which is most of what is below.
+// routes here: download.hebcal.com's /v4/<data>/<name>.pdf downloads (and
+// their legacy /v2/h/<data>/<name>.pdf spelling) and www.hebcal.com's
+// /holidays/hebcal-<year>.pdf holiday calendars. They share a generator and a
+// renderer (internal/service/pdf) and differ in their headers, which is most
+// of what is below.
 
-// pdfDownload renders one /v4/ calendar.
+// pdfDownload renders one /v4/ calendar, or the legacy /v2/h/ spelling of the
+// same request (see internal/service/pdf/v2.go).
 //
 // The response headers follow hebcal-web: its download dispatcher
 // (src/app-download.js) sets a 14-day Cache-Control before rendering and the

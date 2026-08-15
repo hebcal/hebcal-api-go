@@ -214,6 +214,19 @@ APIs are unaffected.
   rendered PDF is served with a 14-day `Cache-Control` and a weak `ETag`; a
   conditional request whose `If-None-Match` still matches gets `304 Not
   Modified`.
+- `GET|HEAD /v2/h/<base64>/<filename>.pdf` — the same calendar from the
+  older URL form, still linked from a decade of pages and still crawled.
+  Here the `<base64>` segment is a query string rather than a protobuf
+  (`v=1&geonameid=5128581&year=2026&c=on&…`). hebcal-web answers these with
+  a `301` to the `/v4/` form; this service converts the query string to the
+  same `Download` message that redirect would have carried and renders it,
+  so the response is a `200` with the identical calendar and headers. Two
+  location forms `downloadHref2()` has no branch for — a legacy `city=`
+  identifier and the `ladeg`/`lamin`/`ladir` degrees-and-minutes form — are
+  resolved rather than dropped, which is what these URLs rendered before
+  hebcal-web's redirect was added. Only
+  `.pdf` under `/v2/h/` is served: the `.ics` feeds and the yahrzeit
+  calendars sharing that prefix get `404`, as does a URL with no `v=`.
 - `GET|HEAD /holidays/hebcal-<year>.pdf` — render a year of Jewish
   holidays, the calendar www.hebcal.com links from its holiday pages. A
   year of 3761 or more is a Hebrew year, as is the Gregorian-span form the
@@ -391,8 +404,8 @@ internal/
     shabbat/               /shabbat calendar, candle options, item rendering
     complete/              /complete result serialization
     location/              query -> location, and the two location JSON shapes
-    pdf/                   /v4/ PDF calendars: protobuf -> options, event
-                           generation, page layout, shaping, fonts, links
+    pdf/                   /v4/ and /v2/ PDF calendars: protobuf -> options,
+                           event generation, page layout, shaping, fonts, links
     holidaypdf/            /holidays/hebcal-<year>.pdf URL parsing
   repository/
     readings/              client for the readings-svc sidecar (/leyning
@@ -490,7 +503,8 @@ reopen the file after rotation.
 
 Varnish decides which URLs reach this service. Alongside the JSON APIs, two
 PDF families now belong here rather than to the Node.js service:
-`download.hebcal.com/v4/**.pdf` and `www.hebcal.com/holidays/hebcal-*.pdf`
-(and nothing else under `/holidays/`). Both used to be served by the
+`download.hebcal.com/v4/**.pdf` (with its legacy `/v2/h/**.pdf` spelling)
+and `www.hebcal.com/holidays/hebcal-*.pdf` (and nothing else under
+`/holidays/`). Both used to be served by the
 separate hebcal-pdf-go process on port 8083, which this service replaces —
 route them to 8082 and retire that backend.
