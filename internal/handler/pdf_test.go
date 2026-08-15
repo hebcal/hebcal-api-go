@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 
@@ -359,4 +360,172 @@ func TestPDFUnavailableWithoutFonts(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("/converter status = %d, want 200 with the PDF routes disabled", resp.StatusCode)
 	}
+}
+
+// The legacy /v2/h/<base64-querystring>/<name>.pdf URLs, which hebcal-web
+// answers with a 301 to the /v4/ form. This service renders them directly, so
+// the test that matters is that the two spellings of one request draw the same
+// calendar; that they decode to the same protobuf as hebcal-web's redirect is
+// internal/service/pdf/v2_test.go's business.
+func TestPDFLegacyV2(t *testing.T) {
+	// The shape of a real request from a download.hebcal.com access log, moved
+	// onto a city the trimmed test database has, and the /v4/ payload
+	// hebcal-web's 301 points at for it.
+	const (
+		legacy = "/v2/h/dj0xJmdlb25hbWVpZD00OTMwOTU2Jm09NTAmeWVhcj0yMDIxJmM9MSZzPTEm" +
+			"bWFqPTEmbWluPTEmbW9kPTEmbWY9MSZzcz0xJm54PTE/hebcal_2021_boston.pdf"
+		modern = "/v4/CAEQARgBIAEoATABUAFYjPusAmDlD3AyiAEB/hebcal_2021_boston.pdf"
+	)
+	app, srv := pdfServer(t)
+	app.PDF.Geo = testGeoDB(t)
+
+	resp, body := get(t, srv, legacy)
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d, want 200: %s", resp.StatusCode, body)
+	}
+	// The legacy URL is a download like any other, so it carries the download
+	// path's headers rather than a redirect's.
+	if got := resp.Header.Get("Cache-Control"); got != httpx.CacheControl14Days {
+		t.Errorf("Cache-Control = %q, want %q", got, httpx.CacheControl14Days)
+	}
+	if got := resp.Header.Get("Content-Type"); got != "application/pdf" {
+		t.Errorf("Content-Type = %q", got)
+	}
+	if !strings.HasPrefix(body, "%PDF-") {
+		t.Fatal("body is not a PDF")
+	}
+
+	// Same calendar as the /v4/ URL production redirects to. The documents are
+	// not byte-identical -- each carries its own creation date -- so compare
+	// the drawn content: every link, which encodes the events and their dates.
+	_, v4body := get(t, srv, modern)
+	links := func(doc string) []string {
+		return regexp.MustCompile(`https://hebcal\.com/[^\s()>]*`).
+			FindAllString(string(inflateAll([]byte(doc))), -1)
+	}
+	got, want := links(body), links(v4body)
+	if len(want) == 0 {
+		t.Fatal("the /v4/ calendar drew no links; the comparison proves nothing")
+	}
+	if !slices.Equal(got, want) {
+		t.Errorf("the legacy URL drew %d links, the /v4/ one %d; first difference at %d",
+			len(got), len(want), firstDiff(got, want))
+	}
+}
+
+// firstDiff reports the index of the first element the two slices disagree on.
+func firstDiff(a, b []string) int {
+	for i := range min(len(a), len(b)) {
+		if a[i] != b[i] {
+			return i
+		}
+	}
+	return min(len(a), len(b))
+}
+
+// Only /v2/h/<...>.pdf belongs to this service. Everything else Varnish might
+// send here is refused with the status hebcal-web's download dispatcher gives
+// it: a URL that is not a PDF download at all is 404, and one whose v= names
+// another kind of calendar is 400.
+func TestPDFLegacyV2Errors(t *testing.T) {
+	enc := func(qs string) string {
+		return strings.TrimRight(base64.StdEncoding.EncodeToString([]byte(qs)), "=")
+	}
+	tests := []struct {
+		name string
+		path string
+		want int
+	}{
+		{"an ics feed", "/v2/h/" + enc("v=1&year=2026&maj=on") + "/hebcal.ics", http.StatusNotFound},
+		{"a yahrzeit calendar", "/v2/y/" + enc("v=yahrzeit") + "/yahrzeit.pdf", http.StatusNotFound},
+		{"no v at all", "/v2/h/" + enc("year=2026&maj=on") + "/x.pdf", http.StatusNotFound},
+		{"not base64", "/v2/h/!!!!/x.pdf", http.StatusNotFound},
+		{"a yahrzeit v=", "/v2/h/" + enc("v=yahrzeit&y1=1990") + "/x.pdf", http.StatusBadRequest},
+		{"an out-of-range year", "/v2/h/" + enc("v=1&year=9999&maj=on") + "/x.pdf", http.StatusGone},
+	}
+	_, srv := pdfServerNoFonts(t)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resp, _ := get(t, srv, tt.path)
+			if resp.StatusCode != tt.want {
+				t.Errorf("%s: status = %d, want %d", tt.path, resp.StatusCode, tt.want)
+			}
+		})
+	}
+}
+
+// The two location forms downloadHref2() has no branch for, so hebcal-web's
+// 301 loses them. They are resolved here (see applyV2Location), which is what
+// these URLs drew before redirV2 was added, and the check that matters at this
+// level is that the location actually reaches the rendered document: a
+// calendar with no location is titled "Hebcal Diaspora" and carries no times.
+func TestPDFLegacyV2LocationForms(t *testing.T) {
+	enc := func(qs string) string {
+		return "/v2/h/" + strings.TrimRight(base64.StdEncoding.EncodeToString([]byte(qs)), "=") +
+			"/x.pdf"
+	}
+	app, srv := pdfServer(t)
+	app.PDF.Geo = testGeoDB(t)
+
+	t.Run("a legacy city identifier", func(t *testing.T) {
+		resp, body := get(t, srv, enc("v=1&city=AU-Melbourne&year=2026&c=on&maj=on&s=on"))
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("status = %d, want 200: %s", resp.StatusCode, body)
+		}
+		// The title comes from the resolved location, not from the lookup key:
+		// "AU-Melbourne" names a row, getCalendarTitle names a city.
+		if want := "Hebcal Melbourne 2026"; !strings.Contains(pdfTitle(t, body), want) {
+			t.Errorf("title = %q, want %q", pdfTitle(t, body), want)
+		}
+	})
+
+	t.Run("degrees, minutes and a direction", func(t *testing.T) {
+		resp, body := get(t, srv, enc("v=1&ladeg=40&lamin=42&ladir=n&lodeg=74&lomin=0&"+
+			"lodir=w&tzid=America/New_York&year=2026&c=on&maj=on&s=on"))
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("status = %d, want 200: %s", resp.StatusCode, body)
+		}
+		// With no city-typeahead the location names itself by its coordinates.
+		if title := pdfTitle(t, body); !strings.Contains(title, "40") ||
+			strings.Contains(title, "Diaspora") {
+			t.Errorf("title = %q, want the coordinates rather than Diaspora", title)
+		}
+		// The campaign is that name run through makeAnchor, so the punctuation
+		// is hyphenated rather than surviving to be percent-encoded.
+		all := string(inflateAll([]byte(body)))
+		if want := "uc=pdf-40-42-n-74-0-w-america-new_york-2026"; !strings.Contains(all, want) {
+			t.Errorf("no link carries %s", want)
+		}
+	})
+
+	t.Run("an unresolvable city is 404 and an impossible degree 400", func(t *testing.T) {
+		resp, _ := get(t, srv, enc("v=1&city=Nowhereville&year=2026&c=on&maj=on"))
+		if resp.StatusCode != http.StatusNotFound {
+			t.Errorf("unknown city status = %d, want 404", resp.StatusCode)
+		}
+		resp, _ = get(t, srv, enc("v=1&ladeg=99&lamin=42&ladir=n&lodeg=74&lomin=0&"+
+			"lodir=w&tzid=America/New_York&year=2026&c=on&maj=on"))
+		if resp.StatusCode != http.StatusBadRequest {
+			t.Errorf("ladeg=99 status = %d, want 400", resp.StatusCode)
+		}
+	})
+}
+
+// pdfTitle reads the document's /Title string, which the renderer writes as
+// UTF-16BE when it is not pure ASCII.
+func pdfTitle(t *testing.T, doc string) string {
+	t.Helper()
+	m := regexp.MustCompile(`/Title\s*\(([^)]*)\)`).FindStringSubmatch(doc)
+	if m == nil {
+		t.Fatal("no /Title in the document")
+	}
+	raw := m[1]
+	if !strings.HasPrefix(raw, "\xfe\xff") {
+		return raw
+	}
+	var b strings.Builder
+	for i := 2; i+1 < len(raw); i += 2 {
+		b.WriteRune(rune(raw[i])<<8 | rune(raw[i+1]))
+	}
+	return b.String()
 }

@@ -21,8 +21,6 @@ import (
 	"strconv"
 	"strings"
 
-	"google.golang.org/protobuf/proto"
-
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
@@ -90,12 +88,11 @@ func (e *UnsupportedSeriesError) Header() string { return strings.Join(e.Series,
 // *OutOfRangeError 410, *UnsupportedSeriesError 501 or 503, a *model.HTTPError
 // whatever it says, and anything else is a malformed request (400).
 func (s *Service) Prepare(ctx context.Context, urlPath string) (*Calendar, error) {
-	payload, err := ParsePath(urlPath)
+	msg, err := decodeRequest(urlPath)
 	if err != nil {
-		// Not a download URL at all, which hebcal-web's router answers 404.
-		return nil, NotFoundf("%s", err.Error())
+		return nil, err
 	}
-	params, err := DecodeParams(payload, s.Geo)
+	params, err := ParamsFromMessage(msg, s.Geo)
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +101,7 @@ func (s *Service) Prepare(ctx context.Context, urlPath string) (*Calendar, error
 		return nil, model.Internal("render: %s", err.Error())
 	}
 
-	if missing := unsupportedForPayload(payload); len(missing) > 0 {
+	if missing := unsupportedSeries(msg); len(missing) > 0 {
 		if s.Learning == nil {
 			return nil, &UnsupportedSeriesError{Series: missing}
 		}
@@ -145,29 +142,65 @@ func (s *Service) Render(cal *Calendar) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// unsupportedForPayload re-decodes the payload to report unsupported series.
-func unsupportedForPayload(payload string) []string {
-	raw, err := decodeBase64(payload)
+// decodeRequest turns either download URL shape into the Download message it
+// carries: the current /v4/<base64-protobuf>/<name>.pdf, and the legacy
+// /v2/h/<base64-querystring>/<name>.pdf that hebcal-web answers with a 301 to
+// the former (see v2.go). From here on the two are the same request.
+//
+// A path that is neither is 404, which is what hebcal-web's router answers.
+func decodeRequest(urlPath string) (*downloadpb.Download, error) {
+	if strings.HasPrefix(urlPath, "/v2/") {
+		q, err := ParseV2Path(urlPath)
+		if err != nil {
+			return nil, NotFoundf("%s", err.Error())
+		}
+		return DecodeV2(q)
+	}
+	payload, err := ParsePath(urlPath)
 	if err != nil {
-		return nil
+		return nil, NotFoundf("%s", err.Error())
 	}
-	var msg downloadpb.Download
-	if err := proto.Unmarshal(raw, &msg); err != nil {
-		return nil
-	}
-	return unsupportedSeries(&msg)
+	return DecodeMessage(payload)
 }
 
 // CalendarTitle builds the document title, e.g. "Hebcal Palo Alto 2028",
 // "Hebcal Diaspora August 2026" or "Hebcal Palo Alto 2026-2027".
 //
-// Port of getCalendarTitle() in @hebcal/rest-api. It is also what the link
-// tracking campaign is derived from, so the two cannot drift apart.
+// Port of getCalendarTitle() in @hebcal/rest-api. CampaignName builds the link
+// tracking campaign from the same function, so the date range the two show can
+// never drift apart -- only the location name differs, deliberately.
 func CalendarTitle(p *Params, events []Event) string {
+	return calendarTitle(p, events, false)
+}
+
+// CampaignName is the uc= / utm_campaign value every link on the calendar
+// carries. Port of campaignName() in src/hebcal-download.js, which is the
+// document title again -- but built with `preferAsciiName: true`, and that is
+// not a cosmetic difference:
+//
+//	geonameid=5128581  title "Hebcal New York 2026"  campaign pdf-new-york-city-2026
+//	geonameid=2657896  title "Hebcal Zürich 2026"    campaign pdf-zuerich-2026
+//
+// shortLocationName() takes the location's raw geonames asciiname whenever it
+// has one, and getShortName() only otherwise. So the campaign is not
+// urlSlug(title) for a location whose asciiname differs from its short name --
+// which is every accented city, and a few whose geonames row is longer than
+// their display name.
+func CampaignName(p *Params, events []Event) string {
+	return campaignFromTitle(calendarTitle(p, events, true))
+}
+
+// calendarTitle is getCalendarTitle(); preferAscii is its preferAsciiName
+// option, which only the campaign sets.
+func calendarTitle(p *Params, events []Event, preferAscii bool) string {
 	title := "Hebcal"
+	cityName := p.CityName
+	if preferAscii && p.CityNameAscii != "" {
+		cityName = p.CityNameAscii
+	}
 	switch {
-	case p.CityName != "":
-		title += " " + p.CityName
+	case cityName != "":
+		title += " " + cityName
 	case p.Opts.Location != nil && p.Opts.Location.Name != "":
 		title += " " + p.Opts.Location.Name
 	case p.Opts.IL:
@@ -197,9 +230,10 @@ func CalendarTitle(p *Params, events []Event) string {
 	return title
 }
 
-// campaignFromTitle derives the uc= / utm_campaign value from the document
-// title, which is what hebcal-web's campaignName() does: drop the leading
-// "Hebcal" and slugify the rest, giving "pdf-diaspora-august-2026".
+// campaignFromTitle is the second half of campaignName(): drop the leading
+// "Hebcal" and makeAnchor the rest, giving "pdf-diaspora-august-2026". Its
+// argument is the ascii-preferring title, so call it through CampaignName
+// rather than passing the document's own title.
 func campaignFromTitle(title string) string {
 	if i := strings.Index(title, " "); i >= 0 {
 		return "pdf-" + urlSlug(title[i+1:])

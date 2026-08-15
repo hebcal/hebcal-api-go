@@ -125,7 +125,7 @@ func (r *Renderer) Render(w io.Writer, p *Params, events []Event, title string) 
 		if len(hpages) == 0 {
 			return fmt.Errorf("no events to render")
 		}
-		campaign := campaignFromTitle(title)
+		campaign := CampaignName(p, events)
 		for _, hp := range hpages {
 			if err := r.renderHebMonth(doc, inst, p, hp, campaign); err != nil {
 				return err
@@ -138,7 +138,7 @@ func (r *Renderer) Render(w io.Writer, p *Params, events []Event, title string) 
 	if len(pages) == 0 {
 		return fmt.Errorf("no events to render")
 	}
-	campaign := campaignFromTitle(title)
+	campaign := CampaignName(p, events)
 	for _, mp := range pages {
 		if err := r.renderMonth(doc, inst, p, mp, campaign); err != nil {
 			return err

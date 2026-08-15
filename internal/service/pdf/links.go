@@ -57,12 +57,38 @@ var doubledSlugs = func() map[string]bool {
 }()
 
 // urlSlug lower-cases a name and hyphenates it the way hebcal.com paths do.
+// Port of makeAnchor() in @hebcal/rest-api: drop the apostrophes, turn
+// everything that is not an ASCII word character into a hyphen, then collapse
+// and trim the hyphens.
+//
+// The character class is JavaScript's `\w` without the `u` flag, so it is
+// ASCII-only -- `_` survives, and every accented letter becomes a hyphen. Only
+// the straight apostrophe is deleted rather than hyphenated, which is why
+// "Sh'vat" slugs to "shvat" but the typographic "Sh’vat" slugs to "sh-vat".
+//
+// Parsha names need none of that, but a location does: campaignFromTitle feeds
+// this the document title, and a title like "Hebcal Washington, D.C 2026" or
+// the "40°42′N 74°0′W America/New_York" name a degrees/minutes location gets
+// (see applyV2Location) otherwise leaves punctuation in the uc= campaign, where
+// it is then percent-encoded and no longer matches production's.
 func urlSlug(s string) string {
 	s = strings.ToLower(s)
 	s = strings.ReplaceAll(s, "'", "")
-	s = strings.ReplaceAll(s, "’", "")
-	s = strings.ReplaceAll(s, " ", "-")
-	return s
+	var b strings.Builder
+	b.Grow(len(s))
+	for _, r := range s {
+		switch {
+		case r >= 'a' && r <= 'z', r >= '0' && r <= '9', r == '_':
+			b.WriteRune(r)
+		default:
+			// Collapse a run of non-word characters to a single hyphen as the
+			// `-+` pass does, rather than writing one hyphen per rune.
+			if n := b.Len(); n > 0 && b.String()[n-1] != '-' {
+				b.WriteByte('-')
+			}
+		}
+	}
+	return strings.Trim(b.String(), "-")
 }
 
 // eventLink turns the canonical URL from hebcal-go into the short, tracked
@@ -91,6 +117,11 @@ func eventLink(rawURL string, hyear int, campaign string, il bool) string {
 			strings.HasPrefix(u.Path, "/sedrot/") ||
 			strings.HasPrefix(u.Path, "/omer/"))
 	if !shortenable {
+		// appendIsraelAndTracking sets i=on for any www.hebcal.com URL, not
+		// only a shortenable one, but no event carries such a URL: the only
+		// links that reach here are the external Sefaria and dafyomi.org pages
+		// the daily-learning series produce, which take full utm_* parameters
+		// and no i.
 		u.RawQuery = appendParams(u.RawQuery,
 			[2]string{"utm_source", utmSource},
 			[2]string{"utm_medium", utmMedium},
@@ -99,24 +130,31 @@ func eventLink(rawURL string, hyear int, campaign string, il bool) string {
 	}
 
 	u.Host = "hebcal.com"
+
+	// Israel calendars ask every page for the Israel schedule, not just the
+	// events that are Israel-only. appendIsraelAndTracking does this with
+	// searchParams.set() and does it *before* shortening, which matters twice:
+	// a page whose canonical URL already carries i=on -- the Israel-only
+	// modern holidays, ben-gurion-day and friends -- must come out with one
+	// parameter rather than two, and a parsha link spends the i on its path
+	// (/s/5786i/12) instead of repeating it in the query.
+	if il {
+		q.Set("i", "on")
+	}
 	switch {
 	case strings.HasPrefix(u.Path, "/sedrot/"):
-		shortenSedrot(u, hyear, q.Get("i") == "on")
-		q.Del("i")
+		// shortenSedrotUrl consumes the parameter only when it recognised the
+		// path; the fallback that merely trims /sedrot/ to /s/ leaves it.
+		if shortenSedrot(u, hyear, q.Get("i") == "on") {
+			q.Del("i")
+		}
 	case strings.HasPrefix(u.Path, "/holidays/"):
 		u.Path = "/h/" + strings.TrimPrefix(u.Path, "/holidays/")
 	case strings.HasPrefix(u.Path, "/omer/"):
 		u.Path = "/o/" + strings.TrimPrefix(u.Path, "/omer/")
 	}
 
-	// Israel calendars ask every page for the Israel schedule, not just the
-	// events that are Israel-only.
-	extra := make([][2]string, 0, 2)
-	if il {
-		extra = append(extra, [2]string{"i", "on"})
-	}
-	extra = append(extra, [2]string{"uc", campaign})
-	u.RawQuery = appendParams(q.Encode(), extra...)
+	u.RawQuery = appendParams(q.Encode(), [2]string{"uc", campaign})
 	return u.String()
 }
 
@@ -147,18 +185,21 @@ func appendParams(raw string, params ...[2]string) string {
 // shortenSedrot rewrites /sedrot/<parsha>-<YYYYMMDD> to /s/<hyear>[i]/<id>[d].
 // If the path does not have that shape the prefix is simply trimmed to /s/,
 // which is what @hebcal/rest-api does.
-func shortenSedrot(u *url.URL, hyear int, israel bool) {
+//
+// It reports whether the short form was produced, because that is the only
+// case in which shortenSedrotUrl consumes the i=on parameter into the path.
+func shortenSedrot(u *url.URL, hyear int, israel bool) bool {
 	path := strings.TrimPrefix(u.Path, "/sedrot/")
 	dash := strings.LastIndex(path, "-")
 	if dash < 0 || len(path)-dash-1 != 8 {
 		u.Path = "/s/" + path
-		return
+		return false
 	}
 	slug := path[:dash]
 	id, ok := parshaID[slug]
 	if !ok {
 		u.Path = "/s/" + path
-		return
+		return false
 	}
 	p := "/s/" + strconv.Itoa(hyear)
 	if israel {
@@ -169,4 +210,5 @@ func shortenSedrot(u *url.URL, hyear int, israel bool) {
 		p += "d"
 	}
 	u.Path = p
+	return true
 }

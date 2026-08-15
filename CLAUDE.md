@@ -9,9 +9,9 @@ Guidance for Claude Code (claude.ai/code) working in this repository.
 - the Hebcal.com **REST APIs** — `/converter`, `/zmanim`, `/shabbat`, `/geo`,
   `/complete` — ported from [hebcal-web](https://github.com/hebcal/hebcal-web)'s
   `src/converter.js`, `src/zmanim.js` and `src/shabbat.js`;
-- the **PDF calendars** — `download.hebcal.com/v4/…pdf` and
-  `www.hebcal.com/holidays/hebcal-<year>.pdf` — ported from `src/pdf.js` and
-  `src/holidayPdf.js`. These arrived from the separate `hebcal-pdf-go`
+- the **PDF calendars** — `download.hebcal.com/v4/…pdf` (and its legacy
+  `/v2/h/…pdf` spelling) and `www.hebcal.com/holidays/hebcal-<year>.pdf` —
+  ported from `src/pdf.js` and `src/holidayPdf.js`. These arrived from the separate `hebcal-pdf-go`
   repository in August 2026, which this repository replaces; most of this file
   is that service's engineering notes.
 
@@ -47,6 +47,7 @@ The service follows the repository's usual direction — `handler` → `service`
 | `internal/handler/pdf.go` | both routes' transport: methods, headers, ETag/304, the status each error maps to |
 | `internal/service/pdf/pdf.go` | `Service.Prepare`/`Render`, the document title, the 501/503 learning error |
 | `internal/service/pdf/params.go` | protobuf → `hebcal.CalOptions`; port of `deserializeDownload.js` |
+| `internal/service/pdf/v2.go` | the legacy `/v2/h/` URL: query string → protobuf; port of `downloadHref2()` |
 | `internal/service/pdf/events.go` | event generation via hebcal-go, ordering within a day |
 | `internal/service/pdf/hebmonth.go` | Hebrew-month pagination (`mm=1`, `mm=2`) |
 | `internal/service/pdf/render.go` | page layout; port of `renderPdf()` |
@@ -231,6 +232,81 @@ and only then the parsha and candle lighting. Sorting both to one position put
 "Fast ends" above the fast day (e.g. Asara B'Tevet, Tzom Gedaliah); `Event.FastEnds`
 (set from the untranslated `Desc` in `isFastEnds`, since the localized subject
 would not survive `lg=he`) gives it its own slot after the day.
+
+### The legacy /v2/ URL is a query string, not a protobuf
+
+`/v2/h/<base64>/<name>.pdf` is the download URL hebcal.com emitted before the
+protobuf one, and crawlers still ask for it daily. Its base64 decodes to a
+plain query string (`v=1&geonameid=3584003&m=50&year=2021&c=1&…`), not to a
+`Download` message.
+
+hebcal-web answers it with a **301** to the `/v4/` form: `redirV2` in
+`src/app-download.js` decodes the path, and `downloadHref2()` in
+`src/makeDownloadProps.js` re-encodes the query as the protobuf. This service
+answers **200** instead, by running that same conversion in `v2.go` and handing
+the message to `ParamsFromMessage` — so from `pdf.go`'s `decodeRequest` onward a
+`/v2/` request *is* a `/v4/` request, and there is no second decoding path to
+keep in step. The three sample URLs in `v2_test.go` are checked against the
+exact payloads production's 301 points at, and a 41-case sweep of hand-written
+query strings against live `downloadHref2()` output agreed on every one.
+
+**Two location forms are resolved that the 301 drops.** `downloadHref2` has no
+branch for a legacy `city=` identifier ("GB-London") or for the degrees/minutes
+`ladeg`/`lamin`/`ladir` form, so the /v4/ URL it redirects to carries no
+location -- and, since a location implies candle-lighting, the calendar comes
+out titled "Hebcal Diaspora" with no times. That is a regression the redirect
+introduced: before `redirV2` existed these URLs were rewritten to `/export/`
+and rendered by `hebcalDownload`, whose `makeHebcalOptions` calls
+`getLocationFromQuery`, and that function resolves both. `applyV2Location`
+restores them, which is the one place this file deliberately disagrees with the
+301 rather than reproducing it.
+
+Neither cost anything: the legacy city name rides in the protobuf's `cityName`
+(free, because `downloadHref2` sets that only alongside `geoPos`) and is
+resolved by the `LookupLegacyCity` branch `applyLocation` already had, and the
+degrees/minutes form by `location.FromLegacyLatLong`, since
+`internal/service/location` is already a port of that whole branch of
+`getLocationFromQuery` -- range checks, the legacy numeric-timezone mapping and
+the "40°42′N 74°0′W America/New_York" city name included. Measured against a
+local hebcal-web's `/export/` (the pre-redirect path) with
+`tools/compare-pdfs.py`: 99.4-99.6% Latin agreement and **identical link sets,
+96 of 96, on all five** of a legacy city, a `GB-` city, and three
+degrees/minutes locations (north/west, south/east, and `tz`/`dst` instead of a
+tzid).
+
+Two details of that: the legacy city name is a lookup key rather than a label,
+so `applyLocation` clears `Params.CityName` and lets the resolved location name
+the calendar ("Hebcal Melbourne 2026", not "Hebcal AU-Melbourne 2026"); and the
+coordinates in the rendered name are one arc-minute below the input
+(`31°46′` in, `31°45′` drawn), which is `makeGeoCityName`'s own floating-point
+truncation and is what hebcal-web draws too -- `60 * (31.766666666666666 - 31)`
+is `45.99999999999994` in JavaScript as much as in Go.
+
+Three things about the rest of the conversion look wrong and are not:
+
+- **`euro` and `subscribe` are tested with a bare `if (q.x)`, `h12` with
+  `off()`.** Every non-empty string is truthy in JavaScript, so `euro=0` sets
+  euro while `h12=0` does not set 12-hour. The three cannot share one helper;
+  `v2Query` has `on`, `off` and `truthy` for that reason.
+- **A URL that names no Havdalah rule means tzeit.** `getInt(undefined)` is
+  null, and `downloadHref2`'s `q.M === 'on' || m === null` then sets
+  `havdalahTzeit`. `urlArgsObj()` has already collapsed `M=on`, a `td=`, and a
+  bare `M=off` onto the same case.
+- **Sedrot has no line of its own.** It arrives through the
+  `dailyLearningConfig` loop, whose last entry maps the `s` parameter to the
+  protobuf's `sedrot`. That config file is one more copy of the daily-learning
+  mapping named under "Daily learning" below.
+
+Two encodings deliberately differ from `downloadHref2`'s output, neither
+observable in the rendered calendar: protobuf field order (Go writes `oneof`
+fields last), and `start`/`end`, which travel as the ISO string the message can
+also carry rather than as epoch seconds — the same date, without a trip through
+the server's local timezone.
+
+Only `/v2/h/` and only `.pdf` is ours. The `.ics` feeds and the yahrzeit
+calendars under `/v2/` are still hebcal-web's, so those are 404, as is a URL
+with no `v=`; a `v=` naming another kind of calendar is 400, which is what the
+download dispatcher answers.
 
 ### The /holidays/ calendars come from a different hebcal-web host
 
@@ -430,8 +506,10 @@ away from a consumer that forgets it.)
 
 `learningSchedules` in `params.go` maps each protobuf field to a registry name.
 `unsupportedSeries` lists the six with no schedule at all, and `fallback.go`
-fetches those from readings-svc's `/learning` and merges them. Those three
-lists move together, and a fourth list is in a different repository:
+fetches those from readings-svc's `/learning` and merges them.
+`applyV2DailyLearning` in `v2.go` maps the legacy URLs' query codes onto the
+same protobuf fields, mirroring hebcal-web's `dailyLearningConfig.json`. Those
+four lists move together, and a fifth is in a different repository:
 `queryToDailyLearningName` in readings-svc's `learning.js`, which resolves the
 same query codes (`dcc`, `dshl`, `dsm`, `dksa`, `ayd`, `ahsy`) to
 @hebcal/learning schedule names.
@@ -602,7 +680,9 @@ ordering below). www.hebcal.com's `/holidays/` calendars are served too, from
   **port 8082** rather than the retired hebcal-pdf service on 8083:
   `download.hebcal.com/v4/**.pdf` and `www.hebcal.com/holidays/hebcal-*.pdf`.
   Nothing else under `/holidays/` -- the HTML pages there are still hebcal-web's,
-  and this service answers them 404.
+  and this service answers them 404. `download.hebcal.com/v2/h/**.pdf` can be
+  routed here too, which turns hebcal-web's 301 into a 200; leaving it with Node
+  keeps the redirect working, so it is a choice rather than a requirement.
 
 ### Known differences from production
 
@@ -648,6 +728,45 @@ calendar.js gap and none a missing or extra event:
    calendar, no row missing, added or retimed. Fixing it means ranking the
    holiday slot by that emission order, which needs the untranslated `Desc` on
    `Event`; not attempted, since it changes `/v4/` output too.
+
+Also formerly on that list, and worth knowing because the earlier link
+verification missed all three: **the tracked link on every event carried three
+separate errors, none of them visible on a plain Diaspora calendar.** Found
+while adding the legacy `/v2/` locations above, whose city names are the first
+to contain punctuation, and all three fixed against a locally-run hebcal-web:
+
+- **`i=on` was appended rather than set.** `appendIsraelAndTracking` uses
+  `searchParams.set()`, so a holiday whose canonical URL already asks for the
+  Israel schedule -- ben-gurion-day, family-day, herzl-day and the other
+  Israel-only modern holidays -- must come out with one parameter. `eventLink`
+  appended a second: `/h/ben-gurion-day-2026?i=on&i=on`.
+- **The parsha links repeated it.** `appendIsraelAndTracking` sets `i=on`
+  *before* shortening, and `shortenSedrotUrl` then spends it on the path and
+  deletes the parameter, giving `/s/5786i/12?uc=…`. `eventLink` shortened first
+  and appended after, giving `/s/5786i/12?i=on&uc=…`. Together these two were
+  **56 of the 103 links wrong on a Jerusalem 2026 download**, and every Israel
+  calendar had them; the check that reported "links at parity" had been run on
+  a Diaspora calendar, where neither can fire.
+- **The campaign ignored `preferAsciiName`.** `campaignName()` builds the title
+  again with that option, and `shortLocationName()` then takes the location's
+  raw geonames **asciiname** rather than its display short name. So the
+  document title and the `uc=` disagree on purpose: geonameid 2657896 renders
+  "Hebcal Zürich 2026" and tags `pdf-zuerich-2026`, and 5128581 renders "Hebcal
+  New York 2026" and tags `pdf-new-york-city-2026`. Deriving the campaign from
+  the document title gave `pdf-z-rich-2026`, which matched nothing production
+  has ever emitted. `Params.CityNameAscii` and `CampaignName` carry the
+  distinction; a ZIP or lat/long location has no asciiname, so the display name
+  stands in and `washington-dc` still comes out of ZIP 20001.
+
+`urlSlug` was fixed in the same pass: it only replaced spaces, where
+`makeAnchor` hyphenates everything outside ASCII `[A-Za-z0-9_]`, collapses the
+runs and trims the ends. That had been wrong for "St. Louis" and
+"Washington, D.C" all along and became obvious with the `40°42′N 74°0′W`
+name.
+
+Eight calendars -- Jerusalem, Ashdod, New York, Zürich, São Paulo, Tokyo and
+ZIPs 20001 and 94303 -- now have **link sets identical to hebcal-web's**, 145
+to 152 links each, none only on one side.
 
 Formerly on that list: **event order within a day when a fast fell on the
 date**.
@@ -695,14 +814,30 @@ with the day's other timed rows at the foot of the Saturday cell. Every event is
 present, correct and identically timed; only the vertical order within that one
 cell differs. Left as an accepted divergence.
 
-Daily-learning links are now at parity. github.com/hebcal/learning v0.5.0 gives
+Daily-learning links are at parity for the schedules hebcal-go generates the
+same rows for. **Mishna Yomi and Rambam 3-chapter are not** (measured
+2026-08-14, Boston 2027 against a local hebcal-web): 31 links only on the Node
+side, 23 only here, and 1052 in common -- different Mishnah ranges
+(`Mishnah_Berakhot.4.2-3` against ours) and different Rambam chapter groupings,
+which also shifts the whole page and drops the Latin word match to 20.8%. That
+is a schedule difference between github.com/hebcal/learning and
+@hebcal/learning, not a rendering or a link one, and it predates the link fixes
+above -- the two builds' link sets are byte-identical to each other.
+Separately, a `mm=2` Hebrew-year calendar draws five fewer links than hebcal-web
+at the very end of the year (Sukkot/Yom Kippur/Shmini Atzeret 2027 and two 5788
+parshiyot on a 5787 calendar), which looks like a page-range difference rather
+than a link one. Neither is investigated yet.
+
+github.com/hebcal/learning v0.5.0 gives
 each schedule event a `URL()` method, so it satisfies hebcal-go's `event.URLer`
 interface and the `event.URL(ev)` call in `events.go` already picks it up — the
 in-process rows now carry the same Sefaria (or dafyomi.org) links production
 draws, with no code change here beyond the dependency bump. Verified by
 comparing the whole link set of a Daf Yomi / Psalms / Mishna Yomi / Rambam
 (3ch) / Yerushalmi calendar against the Node reference: identical annotation and
-URL counts, zero only-on-one-side. Two schedules carry links on only some rows,
+URL counts, zero only-on-one-side. (That comparison used a year in which the
+Mishna Yomi and Rambam schedules happened to agree; the divergence noted above
+is in the rows themselves, not in how a row's link is built.) Two schedules carry links on only some rows,
 and that too matches @hebcal/core: **Schottenstein Yerushalmi** has no Sefaria
 mapping at all, and **Rambam 3-chapters** drops the link on days whose three
 chapters do not collapse to a single reading (single-reading days keep it),
