@@ -366,7 +366,13 @@ func eventOrder(ev *Event) int {
 		return 3 // the Erev Pesach chametz deadlines carry no flags
 	case f&event.PARSHA_HASHAVUA != 0:
 		return 5
-	case f&(event.DAF_YOMI|event.MISHNA_YOMI|event.NACH_YOMI|event.YERUSHALMI_YOMI) != 0:
+	// DAILY_LEARNING is the generic flag; only four schedules have one of their
+	// own. Testing just those four left the other nine -- Psalms, both Rambam
+	// cycles, Daf-a-Week, Perek Yomi, Tanakh Yomi, 929 and Pirkei Avot -- to
+	// fall through to the holiday slot below, where they sorted *above* Daf
+	// Yomi and Mishna Yomi instead of beside them.
+	case f&(event.DAF_YOMI|event.MISHNA_YOMI|event.NACH_YOMI|event.YERUSHALMI_YOMI|
+		event.DAILY_LEARNING) != 0:
 		return 6
 	case f&event.OMER_COUNT != 0:
 		return 6

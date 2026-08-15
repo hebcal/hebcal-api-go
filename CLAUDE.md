@@ -814,19 +814,57 @@ with the day's other timed rows at the foot of the Saturday cell. Every event is
 present, correct and identically timed; only the vertical order within that one
 cell differs. Left as an accepted divergence.
 
-Daily-learning links are at parity for the schedules hebcal-go generates the
-same rows for. **Mishna Yomi and Rambam 3-chapter are not** (measured
-2026-08-14, Boston 2027 against a local hebcal-web): 31 links only on the Node
-side, 23 only here, and 1052 in common -- different Mishnah ranges
-(`Mishnah_Berakhot.4.2-3` against ours) and different Rambam chapter groupings,
-which also shifts the whole page and drops the Latin word match to 20.8%. That
-is a schedule difference between github.com/hebcal/learning and
-@hebcal/learning, not a rendering or a link one, and it predates the link fixes
-above -- the two builds' link sets are byte-identical to each other.
-Separately, a `mm=2` Hebrew-year calendar draws five fewer links than hebcal-web
+The daily-learning **rows sort into one slot in the order the request listed
+them** -- which they did not until 2026-08-14. Only four of the thirteen schedules have a flag of their own;
+the rest carry the generic `DAILY_LEARNING`, and `eventOrder()` tested only the
+four, so the other nine fell through to the *holiday* slot and sorted above Daf
+Yomi and Mishna Yomi. A Boston 2027 calendar with `F`+`myomi`+`dps`+`dr3` drew
+every cell as Psalms / Rambam / Daf Yomi / Mishna Yomi where hebcal-web draws
+Daf Yomi / Mishna Yomi / Psalms / Rambam.
+
+It is worth knowing how that looked before it was understood, because the
+symptom pointed somewhere else entirely. The link sets differed by 31 on the
+Node side and 23 here, and the two sets looked like *different schedules* --
+`Mishnah_Berakhot.4.2-3` only there, `Mishneh_Torah,_Agents_and_Partners.2-4`
+only here -- so it was first recorded, wrongly, as @hebcal/learning and
+github.com/hebcal/learning generating different readings. They do not: dumping
+every schedule day by day from both libraries over 2025-2030 gives **zero
+differing days** for Mishna Yomi, Rambam 3-chapter and Psalms, URLs included,
+and Daf Yomi differs only in its rendered prefix ("Daf Yomi: Temurah 12" against
+"Temurah 12"). The missing links were on the *same dates* on both sides: on a
+crowded day the last row overflows its cell, and because the order differed, a
+different row was lost. Reordering alone took that calendar from 20.8% Latin
+agreement to 99.3%, and its links from 1052 common with 31/23 unmatched to 1083
+common with none.
+
+The lesson for the next one of these: a link-set difference is not evidence
+about the *rows*. Dump the schedule from both libraries and diff it before
+concluding anything about the data (`internal/service/pdf/events_test.go` now
+pins the ordering, and the flag to key on is `DAILY_LEARNING`, not the four
+named ones).
+
+Two daily-learning schedules are still **named or rendered differently**, both
+found by that same day-by-day dump and neither fixed:
+
+- **`dw` resolves to the wrong schedule.** `dailyLearningConfig.json` maps the
+  `dw` query parameter to **`dafWeeklySunday`**, one row per week; the
+  `learningSchedules` list in `params.go` maps it to `dafWeekly`, which returns
+  the same daf on all seven days. The readings agree -- every hebcal-web row
+  appears here -- but a Daf-a-Week calendar draws 365 rows a year where
+  production draws 52. This is the fourth-list problem CLAUDE.md warns about
+  under "Daily learning": the name only exists in that JSON file, so nothing
+  here can catch it.
+- **`tanakhYomi` renders the verse range.** hebcal-go draws "Kings Seder 6
+  (I Kings 7:21-8:10)" where @hebcal/core draws "Kings Seder 6". Same day, same
+  URL, longer row. That belongs in github.com/hebcal/learning.
+
+Together those two put a `F`+`nyomi`+`dr1`+`dw`+`dpy`+`dty` calendar at 83.3%
+Latin agreement; every other sampled combination is 98-99.8%.
+
+Also open: a `mm=2` Hebrew-year calendar draws five fewer links than hebcal-web
 at the very end of the year (Sukkot/Yom Kippur/Shmini Atzeret 2027 and two 5788
 parshiyot on a 5787 calendar), which looks like a page-range difference rather
-than a link one. Neither is investigated yet.
+than a link one. Not investigated.
 
 github.com/hebcal/learning v0.5.0 gives
 each schedule event a `URL()` method, so it satisfies hebcal-go's `event.URLer`
@@ -835,9 +873,7 @@ in-process rows now carry the same Sefaria (or dafyomi.org) links production
 draws, with no code change here beyond the dependency bump. Verified by
 comparing the whole link set of a Daf Yomi / Psalms / Mishna Yomi / Rambam
 (3ch) / Yerushalmi calendar against the Node reference: identical annotation and
-URL counts, zero only-on-one-side. (That comparison used a year in which the
-Mishna Yomi and Rambam schedules happened to agree; the divergence noted above
-is in the rows themselves, not in how a row's link is built.) Two schedules carry links on only some rows,
+URL counts, zero only-on-one-side. Two schedules carry links on only some rows,
 and that too matches @hebcal/core: **Schottenstein Yerushalmi** has no Sefaria
 mapping at all, and **Rambam 3-chapters** drops the link on days whose three
 chapters do not collapse to a single reading (single-reading days keep it),

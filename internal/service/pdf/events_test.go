@@ -116,6 +116,48 @@ func TestSortDayHolidaysBeforeParsha(t *testing.T) {
 	}
 }
 
+// Every daily-learning schedule sorts into one slot, in the order hebcal-go
+// emitted them -- which is the order the request listed them in. Only four of
+// the thirteen have a flag of their own; the rest carry the generic
+// DAILY_LEARNING, and testing only the four dropped them into the holiday slot,
+// where they came out above Daf Yomi and Mishna Yomi rather than beside them.
+//
+// A Boston 2027 calendar with F+myomi+dps+dr3 drew every cell as Psalms,
+// Rambam, Daf Yomi, Mishna Yomi where hebcal-web draws Daf Yomi, Mishna Yomi,
+// Psalms, Rambam. That also cost 30 Mishna Yomi links, because on a crowded day
+// the row that overflows the cell is whichever one is last.
+func TestSortDayKeepsAllDailyLearningTogether(t *testing.T) {
+	evs := []Event{
+		ev("Temurah 12", event.DAF_YOMI, ""),
+		ev("Negaim 12:7-13:1", event.MISHNA_YOMI, ""),
+		ev("Psalms 106-107", event.DAILY_LEARNING, ""),
+		ev("Mourning 6-8", event.DAILY_LEARNING, ""),
+		ev("Rosh Chodesh Tevet", event.ROSH_CHODESH, ""),
+		ev("Candle lighting", event.LIGHT_CANDLES, "3:59p"),
+	}
+	sortDay(evs)
+	want := "Rosh Chodesh Tevet | Temurah 12 | Negaim 12:7-13:1 | " +
+		"Psalms 106-107 | Mourning 6-8 | Candle lighting"
+	if got := subjects(evs); got != want {
+		t.Errorf("sortDay() = %s\n          want %s", got, want)
+	}
+}
+
+// The generic flag must not sort a learning row into the holiday slot, which is
+// the specific regression above.
+func TestDailyLearningIsNotAHoliday(t *testing.T) {
+	learning := eventOrder(&Event{Flags: event.DAILY_LEARNING})
+	holiday := eventOrder(&Event{Flags: event.ROSH_CHODESH})
+	dafYomi := eventOrder(&Event{Flags: event.DAF_YOMI})
+	if learning == holiday {
+		t.Errorf("DAILY_LEARNING sorts to the holiday slot %d", learning)
+	}
+	if learning != dafYomi {
+		t.Errorf("DAILY_LEARNING sorts to %d, Daf Yomi to %d; the two must share a slot",
+			learning, dafYomi)
+	}
+}
+
 // Events sharing a position keep the order hebcal-go produced them in, so a
 // stable sort is required.
 func TestSortDayIsStable(t *testing.T) {
