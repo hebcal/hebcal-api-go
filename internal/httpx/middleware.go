@@ -14,6 +14,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 
 	"github.com/hebcal/hebcal-api-go/internal/logger"
+	"github.com/hebcal/hebcal-api-go/internal/reqlog"
 )
 
 var httpRequestsTotal = promauto.NewCounterVec(prometheus.CounterOpts{
@@ -80,6 +81,10 @@ func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		bw := newBufWriter()
+		// Seed a per-request collector so backend calls made deep in the handler
+		// (readings-svc) can be folded into this request's single log line.
+		ctx, calls := reqlog.NewContext(r.Context())
+		r = r.WithContext(ctx)
 		h(bw, r)
 
 		body := bw.buf.Bytes()
@@ -126,12 +131,12 @@ func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 		}
 
 		httpRequestsTotal.WithLabelValues(r.Method, strconv.Itoa(bw.status)).Inc()
-		m.logAccess(r, bw, uncompressedLen, start)
+		m.logAccess(r, bw, uncompressedLen, start, calls)
 	}
 }
 
 // logAccess writes one access-log line, similar to hebcal-web makeLogInfo().
-func (m *Middleware) logAccess(r *http.Request, bw *bufWriter, length int, start time.Time) {
+func (m *Middleware) logAccess(r *http.Request, bw *bufWriter, length int, start time.Time, calls *reqlog.Collector) {
 	fields := []logger.KV{
 		{K: "status", V: logger.Int(bw.status)},
 	}
@@ -163,9 +168,48 @@ func (m *Middleware) logAccess(r *http.Request, bw *bufWriter, length int, start
 	if un := bw.header.Get("X-Unsupported-Series"); un != "" {
 		fields = append(fields, logger.KV{K: "unsupported", V: logger.String(un)})
 	}
+	// Fold any backend sub-requests this request made into a nested field: one
+	// object for a single call, an array if the handler made several.
+	if rs := encodeSubrequests(calls.Calls()); rs != nil {
+		fields = append(fields, logger.KV{K: "subreq", V: rs})
+	}
 	level := logger.LevelInfo
 	if bw.status >= 400 && bw.status != 404 {
 		level = logger.LevelWarn
 	}
 	m.Logger.Write(level, fields)
+}
+
+// encodeSubrequests renders the backend sub-requests as the log field value: a
+// single {status,url,duration,length} object for one call, a JSON array for
+// several, and nil (the field is omitted) for none. Duration is a float in
+// milliseconds, emitted in its shortest round-tripping form.
+func encodeSubrequests(calls []reqlog.Call) []byte {
+	if len(calls) == 0 {
+		return nil
+	}
+	var b bytes.Buffer
+	if len(calls) > 1 {
+		b.WriteByte('[')
+	}
+	for i, c := range calls {
+		if i > 0 {
+			b.WriteByte(',')
+		}
+		b.WriteString(`{"status":`)
+		b.Write(logger.Int(c.Status))
+		b.WriteString(`,"url":`)
+		b.Write(logger.String(c.URL))
+		b.WriteString(`,"duration":`)
+		durMs := float64(c.Duration.Nanoseconds()) / 1e6
+		// -1 precision emits the shortest form that round-trips: 3.5, not 3.500.
+		b.WriteString(strconv.FormatFloat(durMs, 'f', -1, 64))
+		b.WriteString(`,"length":`)
+		b.Write(logger.Int(c.Length))
+		b.WriteByte('}')
+	}
+	if len(calls) > 1 {
+		b.WriteByte(']')
+	}
+	return b.Bytes()
 }

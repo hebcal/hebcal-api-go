@@ -8,8 +8,10 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/hebcal/hebcal-api-go/internal/logger"
+	"github.com/hebcal/hebcal-api-go/internal/reqlog"
 )
 
 // serveAndReadLog runs one request through the middleware and returns the
@@ -92,6 +94,57 @@ func TestAccessLogLevels(t *testing.T) {
 		if m["level"] != tt.want {
 			t.Errorf("status %d logged at level %v, want %v", tt.status, m["level"], tt.want)
 		}
+	}
+}
+
+// A backend sub-request made while serving the request is folded into the
+// request's own log line as a nested "subreq" object, not logged separately.
+func TestAccessLogFoldsSubrequest(t *testing.T) {
+	m := serveAndReadLog(t, func(w http.ResponseWriter, r *http.Request) {
+		reqlog.FromContext(r.Context()).Add(reqlog.Call{
+			Status:   200,
+			URL:      "/leyning?end=2026-08-08&start=2026-08-08",
+			Duration: 3500 * time.Microsecond,
+			Length:   842,
+		})
+		w.Write([]byte("ok"))
+	}, httptest.NewRequest(http.MethodGet, "/shabbat?geonameid=3448439", nil))
+
+	rs, ok := m["subreq"].(map[string]any)
+	if !ok {
+		t.Fatalf("subreq = %v (%T), want a nested object", m["subreq"], m["subreq"])
+	}
+	// Duration is a float in milliseconds, so sub-millisecond calls keep their
+	// resolution: 3500µs is logged as 3.5, not truncated to 3.
+	if rs["status"] != float64(200) || rs["length"] != float64(842) ||
+		rs["duration"] != float64(3.5) || rs["url"] != "/leyning?end=2026-08-08&start=2026-08-08" {
+		t.Errorf("subreq = %#v", rs)
+	}
+}
+
+// Several sub-requests in one request are logged as a JSON array under the same
+// key.
+func TestAccessLogFoldsMultipleSubrequests(t *testing.T) {
+	m := serveAndReadLog(t, func(w http.ResponseWriter, r *http.Request) {
+		c := reqlog.FromContext(r.Context())
+		c.Add(reqlog.Call{Status: 200, URL: "/leyning?x=1", Length: 10})
+		c.Add(reqlog.Call{Status: 200, URL: "/learning?y=2", Length: 20})
+		w.Write([]byte("ok"))
+	}, httptest.NewRequest(http.MethodGet, "/x", nil))
+
+	arr, ok := m["subreq"].([]any)
+	if !ok || len(arr) != 2 {
+		t.Fatalf("subreq = %v, want a 2-element array", m["subreq"])
+	}
+}
+
+// A request that makes no sub-request has no such field.
+func TestAccessLogOmitsSubreqWhenUnused(t *testing.T) {
+	m := serveAndReadLog(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("ok"))
+	}, httptest.NewRequest(http.MethodGet, "/x", nil))
+	if _, ok := m["subreq"]; ok {
+		t.Errorf("subreq present on a request that made no call")
 	}
 }
 

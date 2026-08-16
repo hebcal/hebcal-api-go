@@ -26,10 +26,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/hebcal/hebcal-api-go/internal/reqlog"
 )
 
 // DefaultSocket is the conventional path of the readings-svc socket.
@@ -126,21 +129,39 @@ func (c *Client) get(ctx context.Context, path string, q url.Values) ([]Item, er
 	if c == nil || c.socketPath == "" {
 		return nil, ErrNoSocket
 	}
-	u := "http://unix" + path + "?" + q.Encode()
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	// The host is a placeholder; the transport dials the socket whatever it
+	// says. reqURI is what gets logged, so it drops the fake host.
+	reqURI := path + "?" + q.Encode()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http://unix"+reqURI, nil)
 	if err != nil {
 		return nil, err
 	}
+	start := time.Now()
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("readings: %s: %w", path, err)
 	}
 	defer resp.Body.Close()
+	// Read the whole body so the recorded length is the real byte count; the
+	// classic-API envelope is small enough that buffering it is free.
+	data, err := io.ReadAll(resp.Body)
+	// Record this round trip so the access-log middleware can fold it into the
+	// request's log line as a nested "subreq" object. A no-op when the context
+	// carries no collector (a background call, or a test).
+	reqlog.FromContext(ctx).Add(reqlog.Call{
+		Status:   resp.StatusCode,
+		URL:      reqURI,
+		Duration: time.Since(start),
+		Length:   len(data),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("readings: reading %s: %w", path, err)
+	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("readings: %s returned %s", path, resp.Status)
 	}
 	var body apiResponse
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := json.Unmarshal(data, &body); err != nil {
 		return nil, fmt.Errorf("readings: decoding %s: %w", path, err)
 	}
 	return body.Items, nil
