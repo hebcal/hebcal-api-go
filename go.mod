@@ -12,12 +12,12 @@ require (
 	github.com/hebcal/hebcal-go v0.19.1
 	github.com/hebcal/learning v0.5.0
 	github.com/hebcal/locales v1.1.1
-	github.com/mattn/go-sqlite3 v1.14.47
-	github.com/prometheus/client_golang v1.23.2
-	golang.org/x/image v0.44.0
+	github.com/mattn/go-sqlite3 v1.14.49
+	github.com/prometheus/client_golang v1.24.1
+	golang.org/x/image v0.45.0
 	golang.org/x/sync v0.22.0
-	golang.org/x/text v0.40.0
-	google.golang.org/protobuf v1.36.11
+	golang.org/x/text v0.41.0
+	google.golang.org/protobuf v1.36.12
 	seehuhn.de/go/pdf v0.7.4
 	seehuhn.de/go/sfnt v0.7.4
 )
@@ -29,7 +29,7 @@ require (
 	github.com/hebcal/noaa-go v1.0.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
-	github.com/prometheus/common v0.70.0 // indirect
+	github.com/prometheus/common v0.70.1 // indirect
 	github.com/prometheus/procfs v0.21.1 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	golang.org/x/sys v0.47.0 // indirect
