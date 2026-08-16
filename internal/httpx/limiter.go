@@ -1,6 +1,7 @@
 package httpx
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
@@ -82,14 +83,18 @@ func (l *Limiter) Wrap(h http.HandlerFunc) http.HandlerFunc {
 			h(w, r)
 		case <-r.Context().Done():
 			pdfShedTotal.Inc()
-			http.Error(w, "client closed request", 499)
+			err := errors.New("client closed request")
+			RecordError(w, err)
+			http.Error(w, err.Error(), 499)
 		case <-timer.C:
 			pdfShedTotal.Inc()
 			// A shed response must not be cached: it says "busy now", not
 			// "this calendar does not exist". http.Error sets no Cache-Control,
 			// and the handler that would have set the 14-day one never runs.
 			w.Header().Set("Retry-After", "5")
-			http.Error(w, "PDF renderer is busy; please retry", http.StatusServiceUnavailable)
+			err := errors.New("PDF renderer is busy; please retry")
+			RecordError(w, err)
+			http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		}
 	}
 }

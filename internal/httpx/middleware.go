@@ -23,15 +23,18 @@ var httpRequestsTotal = promauto.NewCounterVec(prometheus.CounterOpts{
 }, []string{"method", "status"})
 
 // bufWriter buffers the response so the middleware can compress it, set
-// Content-Length, and log the final status/size.
+// Content-Length, and log the final status/size. It also carries the request's
+// reqlog.Collector, so an error helper handed this writer can record the error
+// value it renders for the access log's "msg" field (see RecordError).
 type bufWriter struct {
 	header http.Header
 	buf    bytes.Buffer
 	status int
+	calls  *reqlog.Collector
 }
 
-func newBufWriter() *bufWriter {
-	return &bufWriter{header: make(http.Header), status: 200}
+func newBufWriter(calls *reqlog.Collector) *bufWriter {
+	return &bufWriter{header: make(http.Header), status: 200, calls: calls}
 }
 
 func (w *bufWriter) Header() http.Header { return w.header }
@@ -80,10 +83,10 @@ type Middleware struct {
 func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		bw := newBufWriter()
 		// Seed a per-request collector so backend calls made deep in the handler
 		// (readings-svc) can be folded into this request's single log line.
 		ctx, calls := reqlog.NewContext(r.Context())
+		bw := newBufWriter(calls)
 		r = r.WithContext(ctx)
 		h(bw, r)
 
@@ -139,6 +142,14 @@ func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 func (m *Middleware) logAccess(r *http.Request, bw *bufWriter, length int, start time.Time, calls *reqlog.Collector) {
 	fields := []logger.KV{
 		{K: "status", V: logger.Int(bw.status)},
+	}
+	// On a 4xx/5xx, log the error the response is rendering (e.g. the
+	// OutOfRangeError's "No calendar for year 38") under "msg", mirroring
+	// pino/koa. The error helpers record the value into the request's collector
+	// (see RecordError); we render it here and place it right after status, as
+	// hebcal-web's log does.
+	if err := calls.Err(); err != nil {
+		fields = append(fields, logger.KV{K: "msg", V: logger.String(err.Error())})
 	}
 	if length > 0 {
 		fields = append(fields, logger.KV{K: "length", V: logger.Int(length)})

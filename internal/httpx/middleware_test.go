@@ -2,6 +2,7 @@ package httpx
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	"github.com/hebcal/hebcal-api-go/internal/logger"
+	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/reqlog"
 )
 
@@ -94,6 +96,46 @@ func TestAccessLogLevels(t *testing.T) {
 		if m["level"] != tt.want {
 			t.Errorf("status %d logged at level %v, want %v", tt.status, m["level"], tt.want)
 		}
+	}
+}
+
+// A 4xx/5xx response logs the error it rendered under "msg", so the reason (an
+// OutOfRangeError's "No calendar for year 38", a bad location, etc.) is
+// searchable in the access log without re-deriving it from the URL. The error
+// value is recorded by the write helpers (here directly, via RecordError) onto
+// the request's collector and rendered on the log line, not parsed back out of
+// the response body.
+func TestAccessLogErrorMessage(t *testing.T) {
+	// A plain-text error, as the PDF routes write it: the error value is recorded
+	// separately from the (here identical) body http.Error writes.
+	m := serveAndReadLog(t, func(w http.ResponseWriter, r *http.Request) {
+		RecordError(w, errors.New("No calendar for year 38"))
+		http.Error(w, "No calendar for year 38", http.StatusGone)
+	}, httptest.NewRequest(http.MethodGet, "/v4/CAEYAUABYCY/hebcal_38.pdf", nil))
+	if m["msg"] != "No calendar for year 38" {
+		t.Errorf("msg = %v, want the recorded error text", m["msg"])
+	}
+	if m["status"] != float64(410) {
+		t.Errorf("status = %v", m["status"])
+	}
+
+	// The JSON APIs go through WriteJSONError, which records the error itself, so
+	// msg is the bare message even though the body is {"error": ...}.
+	m = serveAndReadLog(t, func(w http.ResponseWriter, r *http.Request) {
+		WriteJSONError(w, model.BadRequest("bad geonameid"))
+	}, httptest.NewRequest(http.MethodGet, "/zmanim?geonameid=x", nil))
+	if m["msg"] != "bad geonameid" {
+		t.Errorf("msg = %v, want the recorded error message", m["msg"])
+	}
+}
+
+// A successful response carries no "msg" field.
+func TestAccessLogNoMessageOnSuccess(t *testing.T) {
+	m := serveAndReadLog(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("hello"))
+	}, httptest.NewRequest(http.MethodGet, "/x", nil))
+	if _, ok := m["msg"]; ok {
+		t.Errorf("msg present on a 200 response")
 	}
 }
 

@@ -52,14 +52,30 @@ func CORSPreflight(w http.ResponseWriter, methods string) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// RecordError stashes the error a response is rendering onto the request's
+// reqlog.Collector, so the access-log middleware can emit its message under
+// "msg". It reaches the collector through the middleware's own response writer;
+// when w is some other writer (a bare httptest recorder in a unit test, say) it
+// is a no-op, so callers never have to check. The shared error helpers below
+// call it for free; a route that writes an error with http.Error directly
+// (the PDF handler does, to control caching per status) calls it itself.
+func RecordError(w http.ResponseWriter, err error) {
+	if bw, ok := w.(*bufWriter); ok {
+		bw.calls.SetError(err)
+	}
+}
+
 // MethodNotAllowed answers with 405 and an Allow header listing allowed.
 func MethodNotAllowed(w http.ResponseWriter, method, allowed string) {
 	w.Header().Set("Allow", allowed)
-	http.Error(w, fmt.Sprintf("Method %s not allowed", method), http.StatusMethodNotAllowed)
+	err := fmt.Errorf("Method %s not allowed", method)
+	RecordError(w, err)
+	http.Error(w, err.Error(), http.StatusMethodNotAllowed)
 }
 
 // WritePlainError emits a plain-text error carrying the error's own status.
 func WritePlainError(w http.ResponseWriter, err error) {
+	RecordError(w, err)
 	w.Header().Set("Content-Type", ContentTypeText)
 	w.WriteHeader(model.StatusOf(err))
 	fmt.Fprintln(w, err.Error())
@@ -69,6 +85,7 @@ func WritePlainError(w http.ResponseWriter, err error) {
 // status. It is the error shape the /geo, /zmanim, /shabbat and /complete
 // routes share.
 func WriteJSONError(w http.ResponseWriter, err error) {
+	RecordError(w, err)
 	w.Header().Set("Content-Type", ContentTypeJSON)
 	w.WriteHeader(model.StatusOf(err))
 	w.Write(jsutil.Marshal(map[string]string{"error": err.Error()}))

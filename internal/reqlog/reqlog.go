@@ -25,6 +25,7 @@ type Call struct {
 type Collector struct {
 	mu    sync.Mutex
 	calls []Call
+	err   error
 }
 
 // Add records one backend call.
@@ -35,6 +36,28 @@ func (c *Collector) Add(call Call) {
 	c.mu.Lock()
 	c.calls = append(c.calls, call)
 	c.mu.Unlock()
+}
+
+// SetError records the error a 4xx/5xx response is rendering, so the access-log
+// middleware can emit its message under "msg" without re-parsing the response
+// body. The last writer wins, matching the response the client actually gets.
+func (c *Collector) SetError(err error) {
+	if c == nil {
+		return
+	}
+	c.mu.Lock()
+	c.err = err
+	c.mu.Unlock()
+}
+
+// Err returns the error recorded by SetError, or nil.
+func (c *Collector) Err() error {
+	if c == nil {
+		return nil
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.err
 }
 
 // Calls returns the recorded calls in the order they were added.

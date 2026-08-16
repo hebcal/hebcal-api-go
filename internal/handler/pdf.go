@@ -157,6 +157,9 @@ func (s *Server) writePDF(w http.ResponseWriter, cal *pdf.Calendar) {
 // only after this function has returned without writing, so a 410 sets its own
 // and nothing else carries one.
 func writeDownloadError(w http.ResponseWriter, err error) {
+	// Record the underlying error (not the possibly-terser body some cases
+	// write) for the access log's "msg" field.
+	httpx.RecordError(w, err)
 	var oor *pdf.OutOfRangeError
 	var unsup *pdf.UnsupportedSeriesError
 	switch {
@@ -190,6 +193,8 @@ func writeDownloadError(w http.ResponseWriter, err error) {
 // Cache-Control, so none of these responses is cacheable -- and its 410 says
 // only "Gone", where the download path names the year.
 func writeHolidayError(w http.ResponseWriter, err error) {
+	// The holiday 410 body is only "Gone"; log the richer error naming the year.
+	httpx.RecordError(w, err)
 	var oor *pdf.OutOfRangeError
 	if errors.As(err, &oor) {
 		http.Error(w, "Gone", http.StatusGone)
