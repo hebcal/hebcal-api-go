@@ -79,7 +79,7 @@ func TestLearningFieldsMapToTheRightSchedules(t *testing.T) {
 		{"yerushalmi vilna", &pb.Download{Year: 2026, YerushalmiYomi: true}, "yerushalmi-vilna"},
 		{"yerushalmi schottenstein", &pb.Download{Year: 2026, YySchottenstein: true}, "yerushalmi-schottenstein"},
 		{"perek yomi", &pb.Download{Year: 2026, PerekYomi: true}, "perekYomi"},
-		{"daf weekly", &pb.Download{Year: 2026, DafWeekly: true}, "dafWeekly"},
+		{"daf weekly", &pb.Download{Year: 2026, DafWeekly: true}, "dafWeeklySunday"},
 		{"929", &pb.Download{Year: 2026, Nine29: true}, "929"},
 		{"psalms", &pb.Download{Year: 2026, Psalms: true}, "psalms"},
 		{"rambam 1", &pb.Download{Year: 2026, Rambam1: true}, "rambam1"},

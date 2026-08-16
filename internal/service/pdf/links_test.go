@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-go/hebcal"
 )
 
@@ -100,36 +101,6 @@ func TestUnrecognizedSedrotPathIsNotGuessed(t *testing.T) {
 	}
 }
 
-func TestUrlSlug(t *testing.T) {
-	tests := []struct{ in, want string }{
-		{"Rosh Chodesh Elul", "rosh-chodesh-elul"},
-		{"Yom HaAtzma'ut", "yom-haatzmaut"},
-		// Only the straight apostrophe is deleted. makeAnchor's character
-		// class is JavaScript's `\w` without the `u` flag, so the typographic
-		// one is not a word character and becomes a hyphen like any other
-		// punctuation (measured against @hebcal/rest-api: "Ta’anit Bechorot"
-		// gives "ta-anit-bechorot"). Nothing reaches this function with one --
-		// a holiday's slug comes from its event URL, not from here -- but the
-		// two apostrophes really do behave differently.
-		{"Ta’anit Bechorot", "ta-anit-bechorot"},
-		{"Palo Alto", "palo-alto"},
-		// A location, which is what campaignFromTitle actually feeds this:
-		// punctuation collapses to single hyphens and the ends are trimmed,
-		// rather than surviving into the campaign to be percent-encoded.
-		{"Washington, D.C", "washington-d-c"},
-		{"St. Louis", "st-louis"},
-		{"GB-London", "gb-london"},
-		// The degrees/minutes name a legacy /v2/ ladeg location produces.
-		// Underscore is a word character and survives.
-		{"40°42′N 74°0′W America/New_York 2026", "40-42-n-74-0-w-america-new_york-2026"},
-	}
-	for _, tt := range tests {
-		if got := urlSlug(tt.in); got != tt.want {
-			t.Errorf("urlSlug(%q) = %q, want %q", tt.in, got, tt.want)
-		}
-	}
-}
-
 // The campaign ties a link back to the calendar that produced it. It is the
 // second half of campaignName(); the first half, which decides whether the
 // location is named by its display name or its asciiname, is CampaignName.
@@ -183,7 +154,7 @@ func TestEveryParshaHasAnID(t *testing.T) {
 // id with a "d" suffix.
 func TestDoubledPortionsWithSingleWordFirstHalf(t *testing.T) {
 	for _, name := range []string{"Tazria-Metzora", "Chukat-Balak", "Matot-Masei"} {
-		slug := urlSlug(name)
+		slug := jsutil.MakeAnchor(name)
 		if _, ok := parshaID[slug]; !ok {
 			t.Errorf("parshaID is missing %q", slug)
 		}

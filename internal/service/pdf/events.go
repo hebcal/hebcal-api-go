@@ -276,7 +276,7 @@ func timeStringOf(ev event.CalEvent, p *Params) string {
 // learningFlags are the daily-learning series, which @hebcal/rest-api groups as
 // LEARNING_MASK.
 const learningFlags = event.DAF_YOMI | event.MISHNA_YOMI |
-	event.NACH_YOMI | event.YERUSHALMI_YOMI
+	event.NACH_YOMI | event.YERUSHALMI_YOMI | event.DAILY_LEARNING
 
 // renderSubject renders an event the way hebcal-web's renderPdfEvent does:
 // shouldRenderBrief() in @hebcal/rest-api decides between render() and
@@ -371,8 +371,7 @@ func eventOrder(ev *Event) int {
 	// cycles, Daf-a-Week, Perek Yomi, Tanakh Yomi, 929 and Pirkei Avot -- to
 	// fall through to the holiday slot below, where they sorted *above* Daf
 	// Yomi and Mishna Yomi instead of beside them.
-	case f&(event.DAF_YOMI|event.MISHNA_YOMI|event.NACH_YOMI|event.YERUSHALMI_YOMI|
-		event.DAILY_LEARNING) != 0:
+	case f&learningFlags != 0:
 		return 6
 	case f&event.OMER_COUNT != 0:
 		return 6

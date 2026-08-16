@@ -510,49 +510,6 @@ func TestDecodeV2JavaScriptTruthiness(t *testing.T) {
 	}
 }
 
-// Number.parseInt stops at the first non-digit and Number.parseFloat does the
-// same, so a legacy URL with trailing junk is read exactly as production reads
-// it rather than rejected.
-func TestParseIntAndFloatJS(t *testing.T) {
-	intTests := []struct {
-		in   string
-		want int64
-		ok   bool
-	}{
-		{"50", 50, true},
-		{"50abc", 50, true},
-		{" 50", 50, true},
-		{"-5", -5, true},
-		{"+5", 5, true},
-		{"", 0, false},
-		{"abc", 0, false},
-		{"2026.pdf", 2026, true},
-	}
-	for _, tt := range intTests {
-		got, ok := parseIntJS(tt.in)
-		if ok != tt.ok || (ok && got != tt.want) {
-			t.Errorf("parseIntJS(%q) = %d, %v; want %d, %v", tt.in, got, ok, tt.want, tt.ok)
-		}
-	}
-	floatTests := []struct {
-		in   string
-		want float64
-		ok   bool
-	}{
-		{"7.083", 7.083, true},
-		{"8.5deg", 8.5, true},
-		{"-122.143", -122.143, true},
-		{"", 0, false},
-		{"east", 0, false},
-	}
-	for _, tt := range floatTests {
-		got, ok := parseFloatJS(tt.in)
-		if ok != tt.ok || (ok && got != tt.want) {
-			t.Errorf("parseFloatJS(%q) = %v, %v; want %v, %v", tt.in, got, ok, tt.want, tt.ok)
-		}
-	}
-}
-
 // A repeated parameter keeps its last value, because redirV2 builds its query
 // object with Object.fromEntries(), where later entries overwrite earlier
 // ones. url.Values.Get would keep the first.

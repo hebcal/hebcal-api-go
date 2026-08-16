@@ -22,6 +22,7 @@ import (
 
 	"github.com/hebcal/hebcal-api-go/internal/config"
 	"github.com/hebcal/hebcal-api-go/internal/handler"
+	"github.com/hebcal/hebcal-api-go/internal/httpx"
 	"github.com/hebcal/hebcal-api-go/internal/logger"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
@@ -101,6 +102,16 @@ func main() {
 	// rendered without the rows the user asked for.
 	if cfg.ReadingsSocket != "" {
 		app.PDF.Learning = pdf.NewLearningFetcher(app.Readings)
+	}
+
+	// Cap concurrent PDF renders so a flood cannot grow the heap into swap (each
+	// render churns tens of MiB). The overflow is shed with 503 + Retry-After
+	// after a bounded wait. A soft GOMEMLIMIT and a systemd MemoryMax (see
+	// etc/hebcal-api.service) are the ceiling behind this cap.
+	if cfg.PDFMaxConcurrency > 0 {
+		app.PDFLimiter = httpx.NewLimiter(cfg.PDFMaxConcurrency, cfg.PDFQueueTimeout)
+		lg.Info(fmt.Sprintf("PDF render concurrency capped at %d (queue timeout %s)",
+			cfg.PDFMaxConcurrency, cfg.PDFQueueTimeout))
 	}
 
 	srv := &http.Server{

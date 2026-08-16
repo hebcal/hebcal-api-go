@@ -36,6 +36,27 @@ func TestJsParseInt(t *testing.T) {
 	}
 }
 
+func TestParseFloat(t *testing.T) {
+	cases := []struct {
+		in   string
+		want float64
+		ok   bool
+	}{
+		{"7.083", 7.083, true},
+		{"8.5deg", 8.5, true}, // trailing garbage ignored, like Number.parseFloat
+		{"-122.143", -122.143, true},
+		{" 40.7", 40.7, true},
+		{"", 0, false},
+		{"east", 0, false},
+	}
+	for _, c := range cases {
+		got, err := ParseFloat(c.in)
+		if (err == nil) != c.ok || (c.ok && got != c.want) {
+			t.Errorf("ParseFloat(%q) = %v,%v want %v, ok=%v", c.in, got, err, c.want, c.ok)
+		}
+	}
+}
+
 func TestIsoDateString(t *testing.T) {
 	cases := []struct {
 		y    int
@@ -57,10 +78,27 @@ func TestIsoDateString(t *testing.T) {
 
 func TestMakeAnchor(t *testing.T) {
 	cases := map[string]string{
-		"Tamuz":   "tamuz",
-		"Sh'vat":  "shvat",
-		"Adar I":  "adar-i",
-		"Adar II": "adar-ii",
+		"Tamuz":             "tamuz",
+		"Sh'vat":            "shvat",
+		"Adar I":            "adar-i",
+		"Adar II":           "adar-ii",
+		"Rosh Chodesh Elul": "rosh-chodesh-elul",
+		"Yom HaAtzma'ut":    "yom-haatzmaut",
+		// Only the straight apostrophe is deleted. The character class is
+		// JavaScript's `\w` without the `u` flag, so the typographic one is not a
+		// word character and becomes a hyphen like any other punctuation
+		// (measured against @hebcal/rest-api: "Ta’anit Bechorot" gives
+		// "ta-anit-bechorot").
+		"Ta’anit Bechorot": "ta-anit-bechorot",
+		// A PDF campaign slug (campaignFromTitle): punctuation collapses to
+		// single hyphens and the ends are trimmed, rather than surviving into the
+		// uc= campaign to be percent-encoded.
+		"Washington, D.C": "washington-d-c",
+		"St. Louis":       "st-louis",
+		"GB-London":       "gb-london",
+		// The degrees/minutes name a legacy /v2/ ladeg location produces.
+		// Underscore is a word character and survives.
+		"40°42′N 74°0′W America/New_York 2026": "40-42-n-74-0-w-america-new_york-2026",
 	}
 	for in, want := range cases {
 		if got := MakeAnchor(in); got != want {

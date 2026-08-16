@@ -511,6 +511,90 @@ func TestPDFLegacyV2LocationForms(t *testing.T) {
 	})
 }
 
+// The classic /hebcal/index.cgi/<name>.pdf?<query> download URL, older than
+// both /v2/ and /v4/. Like the /v2/ test, what matters here is that it draws
+// the same calendar as the /v4/ URL it corresponds to, and that the two legacy
+// query encodings (plain, and the doubly-encoded form fixup2 unescapes) reach
+// the same result. The protobuf-level agreement is cgi_test.go's business.
+func TestPDFLegacyCGI(t *testing.T) {
+	app, srv := pdfServer(t)
+	app.PDF.Geo = testGeoDB(t)
+
+	// The same request as TestPDFLegacyV2 (Boston 2021), carried in the CGI
+	// query string rather than a base64 path, and the /v4/ payload it matches.
+	const (
+		query  = "v=1&geonameid=4930956&m=50&year=2021&c=1&s=1&maj=1&min=1&mod=1&mf=1&ss=1&nx=1"
+		cgi    = "/hebcal/index.cgi/hebcal_2021_boston.pdf?" + query
+		modern = "/v4/CAEQARgBIAEoATABUAFYjPusAmDlD3AyiAEB/hebcal_2021_boston.pdf"
+	)
+	links := func(doc string) []string {
+		return regexp.MustCompile(`https://hebcal\.com/[^\s()>]*`).
+			FindAllString(string(inflateAll([]byte(doc))), -1)
+	}
+
+	resp, body := get(t, srv, cgi)
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d, want 200: %s", resp.StatusCode, body)
+	}
+	// A CGI download carries the download path's headers, not a redirect's.
+	if got := resp.Header.Get("Cache-Control"); got != httpx.CacheControl14Days {
+		t.Errorf("Cache-Control = %q, want %q", got, httpx.CacheControl14Days)
+	}
+	if got := resp.Header.Get("Content-Type"); got != "application/pdf" {
+		t.Errorf("Content-Type = %q", got)
+	}
+
+	_, v4body := get(t, srv, modern)
+	got, want := links(body), links(v4body)
+	if len(want) == 0 {
+		t.Fatal("the /v4/ calendar drew no links; the comparison proves nothing")
+	}
+	if !slices.Equal(got, want) {
+		t.Errorf("the CGI URL drew %d links, the /v4/ one %d; first difference at %d",
+			len(got), len(want), firstDiff(got, want))
+	}
+
+	// The doubly-encoded spelling of the same request (its separators as %3B and
+	// its '=' as %3D, the form fixup2 detects by the dl=1%3B prefix) must render
+	// the identical calendar.
+	semi := "dl=1;" + strings.ReplaceAll(query, "&", ";")
+	i := strings.Index(semi, "=")
+	doubled := semi[:i+1] + strings.NewReplacer(";", "%3B", "=", "%3D").Replace(semi[i+1:])
+	resp, dblbody := get(t, srv, "/hebcal/index.cgi/hebcal_2021_boston.pdf?"+doubled)
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("doubly-encoded status = %d, want 200: %s", resp.StatusCode, dblbody)
+	}
+	if !slices.Equal(links(dblbody), got) {
+		t.Errorf("the doubly-encoded URL drew a different calendar than the plain one")
+	}
+}
+
+// A CGI URL that is not a PDF download, or that names no download version, is
+// refused with the status hebcal-web's router gives it: 404 for a request that
+// is not a download at all (v=undefined, or a non-.pdf), 400 for a v= naming
+// another kind of calendar.
+func TestPDFLegacyCGIErrors(t *testing.T) {
+	_, srv := pdfServerNoFonts(t)
+	tests := []struct {
+		name, path string
+		want       int
+	}{
+		{"no query at all", "/hebcal/index.cgi/hebcal_2028_may.pdf", http.StatusNotFound},
+		{"no v", "/hebcal/index.cgi/x.pdf?year=2026&maj=on", http.StatusNotFound},
+		{"an ics feed", "/hebcal/index.cgi/hebcal.ics?v=1&year=2026&maj=on", http.StatusNotFound},
+		{"a yahrzeit v=", "/hebcal/index.cgi/x.pdf?v=yahrzeit&y1=1990", http.StatusBadRequest},
+		{"an out-of-range year", "/hebcal/index.cgi/x.pdf?v=1&year=9999&maj=on", http.StatusGone},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resp, _ := get(t, srv, tt.path)
+			if resp.StatusCode != tt.want {
+				t.Errorf("%s: status = %d, want %d", tt.path, resp.StatusCode, tt.want)
+			}
+		})
+	}
+}
+
 // pdfTitle reads the document's /Title string, which the renderer writes as
 // UTF-16BE when it is not pure ASCII.
 func pdfTitle(t *testing.T, doc string) string {

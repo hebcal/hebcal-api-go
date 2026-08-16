@@ -48,6 +48,7 @@ The service follows the repository's usual direction — `handler` → `service`
 | `internal/service/pdf/pdf.go` | `Service.Prepare`/`Render`, the document title, the 501/503 learning error |
 | `internal/service/pdf/params.go` | protobuf → `hebcal.CalOptions`; port of `deserializeDownload.js` |
 | `internal/service/pdf/v2.go` | the legacy `/v2/h/` URL: query string → protobuf; port of `downloadHref2()` |
+| `internal/service/pdf/cgi.go` | the classic `/hebcal/index.cgi/…pdf?query` URL: its two query encodings → `v2Query`, then `DecodeV2` |
 | `internal/service/pdf/events.go` | event generation via hebcal-go, ordering within a day |
 | `internal/service/pdf/hebmonth.go` | Hebrew-month pagination (`mm=1`, `mm=2`) |
 | `internal/service/pdf/render.go` | page layout; port of `renderPdf()` |
@@ -307,6 +308,42 @@ Only `/v2/h/` and only `.pdf` is ours. The `.ics` feeds and the yahrzeit
 calendars under `/v2/` are still hebcal-web's, so those are 404, as is a URL
 with no `v=`; a `v=` naming another kind of calendar is 400, which is what the
 download dispatcher answers.
+
+### The classic /hebcal/index.cgi/ URL is a query string in two encodings
+
+`/hebcal/index.cgi/<name>.pdf?<query>` is the download URL older than both the
+`/v2/` base64 and the `/v4/` protobuf, and crawlers still ask for it. Unlike
+`/v2/`, hebcal-web does not run it through `downloadHref2`: `src/app-download.js`'s
+router hands `/hebcal/index.cgi/` straight to `hebcalDownload`, whose
+`makeHebcalOptions` reads the query string directly. But `makeHebcalOptions(query)`
+and `ParamsFromMessage(downloadHref2(query))` are the same resolution -- that is
+exactly the equivalence `v2.go` was measured to hold, the legacy city and
+degrees/minutes location forms included -- so `cgi.go` decodes a CGI request by
+building the same `v2Query` and running it through `DecodeV2`, after the two
+`makeHebcalOptions` preprocessing steps `downloadHref2` has no counterpart for
+(`applyCGILegacyParams`): the very old `nh=on` (which expands to `maj`/`min`/
+`mod`/`mf`/`ss`, every negative option but Rosh Chodesh, and overrides an
+explicit one beside it), and lowercase `m=on` as the old spelling of `M=on`.
+`tag` and `set` are ancient and ignored -- `set` only ever suppressed a cookie
+on www, never on download. From `decodeRequest` onward a CGI request *is* a
+`/v4/` request, the same collapse `/v2/` makes.
+
+**The query arrives in two encodings, both handled by `normalizeCGIQuery`
+(a port of the CGI half of `fixup2`).** The old CGI accepted `;` as a parameter
+separator, so a query can be semicolon-separated (`dl=1;v=1;...`), which is
+turned into `&`. And the whole query can be percent-encoded a second time, its
+`;` as `%3B` and usually its `=` as `%3D`; `fixup2` spots that by the `dl=1%3B`
+(or `subscribe=1%3B`) prefix and `unescape`s it -- a **Latin-1** decode that
+leaves `+` alone, not `decodeURIComponent` -- before splitting. Production
+answers that second form with a 301 to the `&` spelling and renders the redirect;
+this service does the `unescape` inline (`unescapeLatin1`) and renders in one hop.
+
+The status codes match the router: only `.pdf` is ours (a `.ics` is 404), a URL
+naming no `v=` is 404 (which is why `hebcal_2028_may.pdf` with no query string is
+404, not a calendar), and a `v=` naming another kind of calendar is 400. The
+finite `redirectDownload.json` map of specific no-query legacy URLs that
+hebcal-web 301s is not reproduced -- those 404 here, which is acceptable for a
+handful of curated redirects.
 
 ### The /holidays/ calendars come from a different hebcal-web host
 
@@ -680,9 +717,11 @@ ordering below). www.hebcal.com's `/holidays/` calendars are served too, from
   **port 8082** rather than the retired hebcal-pdf service on 8083:
   `download.hebcal.com/v4/**.pdf` and `www.hebcal.com/holidays/hebcal-*.pdf`.
   Nothing else under `/holidays/` -- the HTML pages there are still hebcal-web's,
-  and this service answers them 404. `download.hebcal.com/v2/h/**.pdf` can be
-  routed here too, which turns hebcal-web's 301 into a 200; leaving it with Node
-  keeps the redirect working, so it is a choice rather than a requirement.
+  and this service answers them 404. `download.hebcal.com/v2/h/**.pdf` and
+  `download.hebcal.com/hebcal/index.cgi/*.pdf` can be routed here too, which
+  serves what hebcal-web would (a 301 to /v4/ for the first, a direct render for
+  the second) as a 200; leaving them with Node keeps the current behaviour, so
+  both are a choice rather than a requirement.
 
 ### Known differences from production
 
@@ -843,23 +882,11 @@ concluding anything about the data (`internal/service/pdf/events_test.go` now
 pins the ordering, and the flag to key on is `DAILY_LEARNING`, not the four
 named ones).
 
-Two daily-learning schedules are still **named or rendered differently**, both
-found by that same day-by-day dump and neither fixed:
-
-- **`dw` resolves to the wrong schedule.** `dailyLearningConfig.json` maps the
-  `dw` query parameter to **`dafWeeklySunday`**, one row per week; the
-  `learningSchedules` list in `params.go` maps it to `dafWeekly`, which returns
-  the same daf on all seven days. The readings agree -- every hebcal-web row
-  appears here -- but a Daf-a-Week calendar draws 365 rows a year where
-  production draws 52. This is the fourth-list problem CLAUDE.md warns about
-  under "Daily learning": the name only exists in that JSON file, so nothing
-  here can catch it.
-- **`tanakhYomi` renders the verse range.** hebcal-go draws "Kings Seder 6
-  (I Kings 7:21-8:10)" where @hebcal/core draws "Kings Seder 6". Same day, same
-  URL, longer row. That belongs in github.com/hebcal/learning.
-
-Together those two put a `F`+`nyomi`+`dr1`+`dw`+`dpy`+`dty` calendar at 83.3%
-Latin agreement; every other sampled combination is 98-99.8%.
+One daily-learning schedule is still **rendered differently**, found by that
+same day-by-day dump and not yet fixed: **`tanakhYomi` renders the verse
+range.** hebcal-go draws "Kings Seder 6 (I Kings 7:21-8:10)" where @hebcal/core
+draws "Kings Seder 6". Same day, same URL, longer row. That belongs in
+github.com/hebcal/learning.
 
 Also open: a `mm=2` Hebrew-year calendar draws five fewer links than hebcal-web
 at the very end of the year (Sukkot/Yom Kippur/Shmini Atzeret 2027 and two 5788

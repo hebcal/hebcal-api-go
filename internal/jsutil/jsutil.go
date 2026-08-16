@@ -36,10 +36,35 @@ func ParseInt(s string) (int, bool) {
 	return n, true
 }
 
-// ParseFloat parses a query float, returning an error for empty/invalid input.
+// ParseFloat mimics JavaScript Number.parseFloat: leading whitespace is
+// skipped, then the longest prefix that forms a valid float is consumed and
+// whatever follows is ignored ("8.5deg" => 8.5). It returns an error only when
+// no number could be read at all (NaN in JS), so a legacy URL with a
+// trailing-junk float is read the way production reads it rather than rejected.
 func ParseFloat(s string) (float64, error) {
-	return strconv.ParseFloat(strings.TrimSpace(s), 64)
+	s = strings.TrimLeft(s, " \t\n\r\v\f")
+	end := 0
+	for end < len(s) {
+		c := s[end]
+		if (c >= '0' && c <= '9') || c == '.' || c == '+' || c == '-' ||
+			c == 'e' || c == 'E' {
+			end++
+			continue
+		}
+		break
+	}
+	for end > 0 {
+		if f, err := strconv.ParseFloat(s[:end], 64); err == nil {
+			return f, nil
+		}
+		end--
+	}
+	return 0, errNaN
 }
+
+// errNaN is returned by ParseFloat when JavaScript's Number.parseFloat would
+// yield NaN, i.e. no numeric prefix.
+var errNaN = errors.New("not a number")
 
 // IsoDateString formats a date the way JavaScript Date.prototype.toISOString
 // does for the date portion: 4 digits for years 0-9999, "+"/"-" and 6 digits

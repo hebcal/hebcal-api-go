@@ -11,6 +11,7 @@ import (
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
 	"github.com/hebcal/locales"
+
 	// Aliased because this package is itself named pdf; pdflib is seehuhn's
 	// PDF writer, not anything in here.
 	pdflib "seehuhn.de/go/pdf"
@@ -69,8 +70,7 @@ func rgb(hex string) color.Color {
 // matters: an event can carry several flags and the first match wins.
 func eventColor(f event.HolidayFlags) color.Color {
 	switch {
-	case f&(event.DAF_YOMI|event.OMER_COUNT|event.HEBREW_DATE|
-		event.MISHNA_YOMI|event.YERUSHALMI_YOMI|event.NACH_YOMI) != 0:
+	case f&(learningFlags|event.OMER_COUNT|event.HEBREW_DATE) != 0:
 		return colorLearning
 	case f&event.ROSH_CHODESH != 0:
 		return colorRoshChod

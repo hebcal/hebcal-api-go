@@ -45,6 +45,10 @@ type Server struct {
 	// not be loaded, in which case the PDF routes answer 503 and the rest of
 	// the API keeps working.
 	PDF *pdf.Service
+	// PDFLimiter caps how many PDF calendars render at once, shedding the
+	// overflow with 503 so a flood cannot grow the heap into swap. Nil (the
+	// zero value) leaves the routes unlimited; main sets it from the config.
+	PDFLimiter *httpx.Limiter
 }
 
 // New returns a Server with the defaults main and the tests share.
@@ -101,9 +105,18 @@ func (s *Server) Routes() http.Handler {
 	// the /v4/ form; this service renders it instead. Only /v2/h/<...>.pdf is
 	// ours -- the other /v2/ families are .ics feeds and yahrzeit calendars,
 	// and pdfDownload answers them 404.
-	mux.HandleFunc("/v2/", mw.Serve(s.pdfDownload))
-	mux.HandleFunc("/v4/", mw.Serve(s.pdfDownload))
-	mux.HandleFunc("/holidays/", mw.Serve(s.pdfHoliday))
+	// The three PDF routes share one renderer and one memory pool, so they
+	// share one concurrency limiter: the cap is on total simultaneous renders,
+	// not per route. Wrapped inside mw.Serve so a shed 503 is still logged and
+	// counted like any other response.
+	mux.HandleFunc("/v2/", mw.Serve(s.PDFLimiter.Wrap(s.pdfDownload)))
+	mux.HandleFunc("/v4/", mw.Serve(s.PDFLimiter.Wrap(s.pdfDownload)))
+	// The classic /hebcal/index.cgi/<name>.pdf?<query> download URL, older than
+	// both /v2/ and /v4/ and still crawled. Only its .pdf is ours (the .ics and
+	// yahrzeit calendars this path also serves are hebcal-web's), so pdfDownload
+	// answers everything else 404.
+	mux.HandleFunc("/hebcal/index.cgi/", mw.Serve(s.PDFLimiter.Wrap(s.pdfDownload)))
+	mux.HandleFunc("/holidays/", mw.Serve(s.PDFLimiter.Wrap(s.pdfHoliday)))
 	mux.HandleFunc("/", mw.Serve(s.notFound))
 	return s.withBackend(mux)
 }

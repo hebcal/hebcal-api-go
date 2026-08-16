@@ -10,6 +10,7 @@ import (
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/hebcal-go/zmanim"
+
 	// Registers every daily-learning schedule with hebcal-go's dailylearning
 	// registry through their init functions. Imported for the side effect only;
 	// learningSchedules below then resolves them by name. It belongs here, in
@@ -543,7 +544,10 @@ var learningSchedules = []struct {
 	{"yerushalmi-vilna", func(m *downloadpb.Download) bool { return m.GetYerushalmiYomi() }},
 	{"yerushalmi-schottenstein", func(m *downloadpb.Download) bool { return m.GetYySchottenstein() }},
 	{"perekYomi", func(m *downloadpb.Download) bool { return m.GetPerekYomi() }},
-	{"dafWeekly", func(m *downloadpb.Download) bool { return m.GetDafWeekly() }},
+	// The dw checkbox resolves to dafWeeklySunday (one row each Sunday), not
+	// dafWeekly (the same daf drawn all seven days), matching hebcal-web's
+	// dailyLearningConfig.json. The protobuf field keeps its dw-derived name.
+	{"dafWeeklySunday", func(m *downloadpb.Download) bool { return m.GetDafWeekly() }},
 	{"929", func(m *downloadpb.Download) bool { return m.GetNine29() }},
 	{"psalms", func(m *downloadpb.Download) bool { return m.GetPsalms() }},
 	{"rambam1", func(m *downloadpb.Download) bool { return m.GetRambam1() }},

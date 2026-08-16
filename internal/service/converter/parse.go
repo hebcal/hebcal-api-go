@@ -94,7 +94,7 @@ func ParseQuery(q url.Values, now model.GregDate) (Props, error) {
 			}
 		}
 	}
-	gs := q.Get("gs") == "on" || q.Get("gs") == "1"
+	gs := jsutil.IsOn(q.Get("gs"))
 	if !jsutil.QueryEmpty(q, "date") {
 		dt, err := model.IsoDateStringToDate(q.Get("date"))
 		if err != nil {

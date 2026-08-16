@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-go/sedra"
 )
 
@@ -24,10 +25,10 @@ const (
 var parshaID = func() map[string]int {
 	m := make(map[string]int, 62)
 	for i, name := range sedra.Parshiot() {
-		m[urlSlug(name)] = i + 1
+		m[jsutil.MakeAnchor(name)] = i + 1
 	}
 	for _, name := range doubledParshiyot {
-		slug := urlSlug(name)
+		slug := jsutil.MakeAnchor(name)
 		first, _, _ := strings.Cut(slug, "-")
 		if id, ok := m[first]; ok {
 			m[slug] = id
@@ -51,45 +52,10 @@ var doubledParshiyot = []string{
 var doubledSlugs = func() map[string]bool {
 	m := make(map[string]bool, len(doubledParshiyot))
 	for _, name := range doubledParshiyot {
-		m[urlSlug(name)] = true
+		m[jsutil.MakeAnchor(name)] = true
 	}
 	return m
 }()
-
-// urlSlug lower-cases a name and hyphenates it the way hebcal.com paths do.
-// Port of makeAnchor() in @hebcal/rest-api: drop the apostrophes, turn
-// everything that is not an ASCII word character into a hyphen, then collapse
-// and trim the hyphens.
-//
-// The character class is JavaScript's `\w` without the `u` flag, so it is
-// ASCII-only -- `_` survives, and every accented letter becomes a hyphen. Only
-// the straight apostrophe is deleted rather than hyphenated, which is why
-// "Sh'vat" slugs to "shvat" but the typographic "Sh’vat" slugs to "sh-vat".
-//
-// Parsha names need none of that, but a location does: campaignFromTitle feeds
-// this the document title, and a title like "Hebcal Washington, D.C 2026" or
-// the "40°42′N 74°0′W America/New_York" name a degrees/minutes location gets
-// (see applyV2Location) otherwise leaves punctuation in the uc= campaign, where
-// it is then percent-encoded and no longer matches production's.
-func urlSlug(s string) string {
-	s = strings.ToLower(s)
-	s = strings.ReplaceAll(s, "'", "")
-	var b strings.Builder
-	b.Grow(len(s))
-	for _, r := range s {
-		switch {
-		case r >= 'a' && r <= 'z', r >= '0' && r <= '9', r == '_':
-			b.WriteRune(r)
-		default:
-			// Collapse a run of non-word characters to a single hyphen as the
-			// `-+` pass does, rather than writing one hyphen per rune.
-			if n := b.Len(); n > 0 && b.String()[n-1] != '-' {
-				b.WriteByte('-')
-			}
-		}
-	}
-	return strings.Trim(b.String(), "-")
-}
 
 // eventLink turns the canonical URL from hebcal-go into the short, tracked
 // form that appears in production PDFs, e.g.

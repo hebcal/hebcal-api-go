@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"strconv"
 	"strings"
 
+	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/service/location"
 	"github.com/hebcal/hebcal-api-go/pkg/downloadpb"
@@ -40,8 +40,7 @@ type v2Query map[string]string
 
 // on is makeDownloadProps.js's on(): the two spellings a checkbox arrives in.
 func (q v2Query) on(key string) bool {
-	v := q[key]
-	return v == "on" || v == "1"
+	return jsutil.IsOn(q[key])
 }
 
 // off is urlArgs.js's off(). Note that a missing parameter is "off", which is
@@ -73,7 +72,7 @@ func (q v2Query) truthy(key string) bool { return q[key] != "" }
 // int32 range check that keeps an oversized value from throwing deep inside
 // the protobuf serializer. ok is false where JavaScript would produce NaN.
 func (q v2Query) getInt(key string) (n int32, ok bool, err error) {
-	i, ok := parseIntJS(q[key])
+	i, ok := jsutil.ParseInt(q[key])
 	if !ok {
 		return 0, false, nil
 	}
@@ -85,60 +84,8 @@ func (q v2Query) getInt(key string) (n int32, ok bool, err error) {
 
 // getFloat is Number.parseFloat(): ok is false where JavaScript gives NaN.
 func (q v2Query) getFloat(key string) (float64, bool) {
-	return parseFloatJS(q[key])
-}
-
-// parseIntJS reads the leading integer of s the way Number.parseInt(s, 10)
-// does: optional space, optional sign, then digits, and whatever follows is
-// ignored ("50abc" is 50). ok is false for NaN.
-func parseIntJS(s string) (int64, bool) {
-	s = strings.TrimLeft(s, " \t\n\r\v\f")
-	i := 0
-	if i < len(s) && (s[i] == '+' || s[i] == '-') {
-		i++
-	}
-	start := i
-	for i < len(s) && s[i] >= '0' && s[i] <= '9' {
-		i++
-	}
-	if i == start {
-		return 0, false
-	}
-	n, err := strconv.ParseInt(s[:i], 10, 64)
-	if err != nil {
-		// More digits than an int64 holds. Any such value is far outside the
-		// int32 range, so hand back something the check above rejects.
-		if strings.HasPrefix(s, "-") {
-			return -1 << 62, true
-		}
-		return 1 << 62, true
-	}
-	return n, true
-}
-
-// parseFloatJS is Number.parseFloat() for the two float parameters a legacy
-// URL carries (td and elev): leading number, trailing junk ignored, NaN
-// reported as !ok.
-func parseFloatJS(s string) (float64, bool) {
-	s = strings.TrimLeft(s, " \t\n\r\v\f")
-	end := 0
-	for end < len(s) {
-		c := s[end]
-		if (c >= '0' && c <= '9') || c == '.' || c == '+' || c == '-' ||
-			c == 'e' || c == 'E' {
-			end++
-			continue
-		}
-		break
-	}
-	for end > 0 {
-		f, err := strconv.ParseFloat(s[:end], 64)
-		if err == nil {
-			return f, true
-		}
-		end--
-	}
-	return 0, false
+	f, err := jsutil.ParseFloat(q[key])
+	return f, err == nil
 }
 
 // primaryGeoKeys and allGeoKeys are urlArgs.js's lists, including the

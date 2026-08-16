@@ -12,11 +12,31 @@ ExecStart=/usr/local/bin/hebcal-api \
   -logfile /var/log/hebcal/api.log \
   -zips-db /var/www/zips.sqlite3 \
   -geonames-db /var/www/geonames.sqlite3 \
-  -fonts /var/www/fonts
+  -fonts /var/www/fonts \
+  -pdf-max-concurrency 20
 # SIGUSR1 (or SIGHUP) reopens the access log after rotation
 ExecReload=/bin/kill -USR1 $MAINPID
 Restart=on-failure
 RestartSec=2
+
+# Memory ceiling, three nested backstops behind the -pdf-max-concurrency cap.
+# Each PDF render churns tens of MiB of transient heap, so a flood on a small
+# box used to grow the heap into swap and turn 50ms requests into 10-25s ones.
+# The concurrency cap bounds the working set; these defend the ceiling if it is
+# ever exceeded anyway. Sized for a ~1 GiB host -- raise all three together on a
+# larger box.
+#
+#   GOMEMLIMIT  soft: Go's GC works harder as the live heap nears this, trading
+#               CPU to avoid swapping. It does not abort, so keep it below the
+#               cgroup limits and leave headroom for non-heap memory.
+#   MemoryHigh  cgroup soft: over this, the kernel reclaims aggressively and
+#               throttles the process rather than killing it.
+#   MemoryMax   cgroup hard: over this the process is OOM-killed; Restart above
+#               brings it back. This is the true "abort a runaway process".
+Environment=GOMEMLIMIT=768MiB
+MemoryAccounting=true
+MemoryHigh=850M
+MemoryMax=950M
 
 # systemd creates /var/log/hebcal owned by the service user
 LogsDirectory=hebcal

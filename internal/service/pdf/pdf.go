@@ -18,9 +18,11 @@ package pdf
 import (
 	"bytes"
 	"context"
+	"net/url"
 	"strconv"
 	"strings"
 
+	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
@@ -87,8 +89,8 @@ func (e *UnsupportedSeriesError) Header() string { return strings.Join(e.Series,
 // The errors it returns carry their own status: *NotFoundError is 404,
 // *OutOfRangeError 410, *UnsupportedSeriesError 501 or 503, a *model.HTTPError
 // whatever it says, and anything else is a malformed request (400).
-func (s *Service) Prepare(ctx context.Context, urlPath string) (*Calendar, error) {
-	msg, err := decodeRequest(urlPath)
+func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
+	msg, err := decodeRequest(u)
 	if err != nil {
 		return nil, err
 	}
@@ -142,25 +144,34 @@ func (s *Service) Render(cal *Calendar) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// decodeRequest turns either download URL shape into the Download message it
-// carries: the current /v4/<base64-protobuf>/<name>.pdf, and the legacy
+// decodeRequest turns any of the three download URL shapes into the Download
+// message it carries: the current /v4/<base64-protobuf>/<name>.pdf, the legacy
 // /v2/h/<base64-querystring>/<name>.pdf that hebcal-web answers with a 301 to
-// the former (see v2.go). From here on the two are the same request.
+// the former (see v2.go), and the classic /hebcal/index.cgi/<name>.pdf?<query>
+// older than both (see cgi.go). From here on all three are the same request.
 //
-// A path that is neither is 404, which is what hebcal-web's router answers.
-func decodeRequest(urlPath string) (*downloadpb.Download, error) {
-	if strings.HasPrefix(urlPath, "/v2/") {
-		q, err := ParseV2Path(urlPath)
+// A URL that is none of these is 404, which is what hebcal-web's router answers.
+func decodeRequest(u *url.URL) (*downloadpb.Download, error) {
+	switch path := u.Path; {
+	case strings.HasPrefix(path, cgiPrefix):
+		q, err := ParseCGIPath(path, u.RawQuery)
 		if err != nil {
 			return nil, NotFoundf("%s", err.Error())
 		}
 		return DecodeV2(q)
+	case strings.HasPrefix(path, "/v2/"):
+		q, err := ParseV2Path(path)
+		if err != nil {
+			return nil, NotFoundf("%s", err.Error())
+		}
+		return DecodeV2(q)
+	default:
+		payload, err := ParsePath(path)
+		if err != nil {
+			return nil, NotFoundf("%s", err.Error())
+		}
+		return DecodeMessage(payload)
 	}
-	payload, err := ParsePath(urlPath)
-	if err != nil {
-		return nil, NotFoundf("%s", err.Error())
-	}
-	return DecodeMessage(payload)
 }
 
 // CalendarTitle builds the document title, e.g. "Hebcal Palo Alto 2028",
@@ -183,9 +194,9 @@ func CalendarTitle(p *Params, events []Event) string {
 //
 // shortLocationName() takes the location's raw geonames asciiname whenever it
 // has one, and getShortName() only otherwise. So the campaign is not
-// urlSlug(title) for a location whose asciiname differs from its short name --
-// which is every accented city, and a few whose geonames row is longer than
-// their display name.
+// campaignFromTitle(document title) for a location whose asciiname differs from
+// its short name -- which is every accented city, and a few whose geonames row
+// is longer than their display name.
 func CampaignName(p *Params, events []Event) string {
 	return campaignFromTitle(calendarTitle(p, events, true))
 }
@@ -234,9 +245,17 @@ func calendarTitle(p *Params, events []Event, preferAscii bool) string {
 // "Hebcal" and makeAnchor the rest, giving "pdf-diaspora-august-2026". Its
 // argument is the ascii-preferring title, so call it through CampaignName
 // rather than passing the document's own title.
+//
+// jsutil.MakeAnchor is what keeps punctuation out of the campaign: a title like
+// "Hebcal Washington, D.C 2026" or the "40°42′N 74°0′W America/New_York" name a
+// degrees/minutes location gets (see applyV2Location) would otherwise leave
+// punctuation in the uc= campaign, where it is then percent-encoded and no
+// longer matches production's. It drops the straight apostrophe and hyphenates
+// every other non-ASCII-word character, so "Yom HaAtzma'ut" becomes
+// "yom-haatzmaut" but the typographic "Sh’vat" becomes "sh-vat".
 func campaignFromTitle(title string) string {
 	if i := strings.Index(title, " "); i >= 0 {
-		return "pdf-" + urlSlug(title[i+1:])
+		return "pdf-" + jsutil.MakeAnchor(title[i+1:])
 	}
 	return "pdf"
 }

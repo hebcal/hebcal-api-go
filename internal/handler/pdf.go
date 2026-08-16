@@ -18,8 +18,9 @@ import (
 // renderer (internal/service/pdf) and differ in their headers, which is most
 // of what is below.
 
-// pdfDownload renders one /v4/ calendar, or the legacy /v2/h/ spelling of the
-// same request (see internal/service/pdf/v2.go).
+// pdfDownload renders one /v4/ calendar, or one of its two legacy spellings of
+// the same request: /v2/h/ (see internal/service/pdf/v2.go) and the classic
+// /hebcal/index.cgi/<name>.pdf?<query> (see internal/service/pdf/cgi.go).
 //
 // The response headers follow hebcal-web: its download dispatcher
 // (src/app-download.js) sets a 14-day Cache-Control before rendering and the
@@ -30,7 +31,7 @@ func (s *Server) pdfDownload(w http.ResponseWriter, r *http.Request) {
 	if !pdfMethodAllowed(w, r) || !s.pdfAvailable(w) {
 		return
 	}
-	cal, err := s.PDF.Prepare(r.Context(), r.URL.Path)
+	cal, err := s.PDF.Prepare(r.Context(), r.URL)
 	if err != nil {
 		writeDownloadError(w, err)
 		return
