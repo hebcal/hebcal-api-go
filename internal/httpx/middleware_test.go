@@ -190,6 +190,26 @@ func TestAccessLogOmitsSubreqWhenUnused(t *testing.T) {
 	}
 }
 
+// A /v4/ PDF request records the query string its opaque base64 protobuf decodes
+// to, so the request is readable and reproducible under "qs". A request that
+// records none has no such field.
+func TestAccessLogQueryString(t *testing.T) {
+	m := serveAndReadLog(t, func(w http.ResponseWriter, r *http.Request) {
+		reqlog.FromContext(r.Context()).SetQuery("v=1&M=on&yt=H&year=5787&lg=s&dksa=on&mm=0")
+		w.Write([]byte("ok"))
+	}, httptest.NewRequest(http.MethodGet, "/v4/QAFIAWCbLfgDAQ/hebcal_5787h.pdf", nil))
+	if m["qs"] != "v=1&M=on&yt=H&year=5787&lg=s&dksa=on&mm=0" {
+		t.Errorf("qs = %v, want the recorded query string", m["qs"])
+	}
+
+	m = serveAndReadLog(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("ok"))
+	}, httptest.NewRequest(http.MethodGet, "/x", nil))
+	if _, ok := m["qs"]; ok {
+		t.Errorf("qs present on a request that recorded none")
+	}
+}
+
 // A PDF request answered with the daily-learning fallback header records which
 // series were involved, so those requests can be found in the log.
 func TestAccessLogRecordsUnsupportedSeries(t *testing.T) {

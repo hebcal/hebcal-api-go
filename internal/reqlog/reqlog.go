@@ -26,6 +26,7 @@ type Collector struct {
 	mu    sync.Mutex
 	calls []Call
 	err   error
+	query string
 }
 
 // Add records one backend call.
@@ -48,6 +49,30 @@ func (c *Collector) SetError(err error) {
 	c.mu.Lock()
 	c.err = err
 	c.mu.Unlock()
+}
+
+// SetQuery records a human-readable rendering of an otherwise opaque request,
+// so the access-log middleware can emit it under "qs". The PDF handler uses it
+// to log the query string a base64 download URL (the /v4/ protobuf or the
+// /v2/h/ query string) decodes to, which is otherwise unreadable in the logged
+// URL.
+func (c *Collector) SetQuery(q string) {
+	if c == nil {
+		return
+	}
+	c.mu.Lock()
+	c.query = q
+	c.mu.Unlock()
+}
+
+// Query returns the string recorded by SetQuery, or "".
+func (c *Collector) Query() string {
+	if c == nil {
+		return ""
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.query
 }
 
 // Err returns the error recorded by SetError, or nil.
