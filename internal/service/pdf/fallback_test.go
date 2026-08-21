@@ -153,6 +153,28 @@ func TestLearningRangeFallsBackToTheRequest(t *testing.T) {
 	}
 }
 
+// A Hebrew-year calendar (e.g. 5787h) asking only for one of the six unsupported
+// series generates nothing locally, so the range must come from the Hebrew year:
+// 1 Tishrei of the year through the day before 1 Tishrei of the next, widened to
+// whole Gregorian months. Without this the fetch has nothing to anchor to and the
+// request 500s ("cannot determine the calendar's date range").
+func TestLearningRangeHebrewYear(t *testing.T) {
+	p := &Params{}
+	p.Opts.Year = 5787
+	p.Opts.IsHebrewYear = true
+	start, end, ok := learningRange(p, nil)
+	if !ok {
+		t.Fatal("no range for a Hebrew-year request")
+	}
+	// 5787 runs 12 Sep 2026 .. 1 Oct 2027, so whole months are Sep 2026 .. Oct 2027.
+	if start.Year() != 2026 || start.Month() != time.September || start.Day() != 1 {
+		t.Errorf("start = %v, want 1 September 2026", start)
+	}
+	if end.Year() != 2027 || end.Month() != time.October || end.Day() != 31 {
+		t.Errorf("end = %v, want 31 October 2027", end)
+	}
+}
+
 // Merged rows outside the drawn range are dropped rather than creating pages.
 func TestMergeLearningDropsOutOfRange(t *testing.T) {
 	mk := func(y int, m time.Month, d int) Event {

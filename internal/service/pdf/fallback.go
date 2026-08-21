@@ -150,10 +150,21 @@ func learningRange(p *Params, events []Event) (time.Time, time.Time, bool) {
 	if p.Opts.Start.Abs() != 0 && p.Opts.End.Abs() != 0 {
 		return wholeMonths(p.Opts.Start.Gregorian(), p.Opts.End.Gregorian())
 	}
-	if p.Opts.Year == 0 || p.Opts.IsHebrewYear {
-		// A Hebrew year has no fixed Gregorian span to guess at, and without
-		// any events there is nothing to anchor it to.
+	if p.Opts.Year == 0 {
+		// Without a year or any events there is nothing to anchor a span to.
 		return time.Time{}, time.Time{}, false
+	}
+	if p.Opts.IsHebrewYear {
+		// A Hebrew year runs from 1 Tishrei of the year to the day before
+		// 1 Tishrei of the next; NumYears extends the far end. wholeMonths
+		// then widens it to the Gregorian months the calendar draws.
+		n := p.Opts.NumYears
+		if n < 1 {
+			n = 1
+		}
+		first := hdate.New(p.Opts.Year, hdate.Tishrei, 1).Gregorian()
+		last := hdate.New(p.Opts.Year+n, hdate.Tishrei, 1).Gregorian().AddDate(0, 0, -1)
+		return wholeMonths(first, last)
 	}
 	first := time.Date(p.Opts.Year, time.January, 1, 0, 0, 0, 0, time.UTC)
 	last := time.Date(p.Opts.Year, time.December, 31, 0, 0, 0, 0, time.UTC)
