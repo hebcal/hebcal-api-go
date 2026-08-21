@@ -82,6 +82,32 @@ func TestLeyningCachesEveryDayInTheSpan(t *testing.T) {
 	}
 }
 
+// The "ah"/"sh" transliteration spellings are not @hebcal/locales names --
+// readings-svc 400s on them -- so Learning sends their base locale ("a"/"s")
+// instead; every other lg passes through unchanged.
+func TestLearningMapsTransliterationLocales(t *testing.T) {
+	tests := []struct{ lg, want string }{
+		{"ah", "a"},
+		{"sh", "s"},
+		{"he", "he"},
+		{"", ""},
+	}
+	for _, tt := range tests {
+		var got string
+		c := readingstest.Serve(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			got = r.URL.Query().Get("lg")
+			json.NewEncoder(w).Encode(map[string]any{"items": []any{}})
+		}))
+		day := time.Date(2026, 9, 1, 0, 0, 0, 0, time.UTC)
+		if _, err := c.Learning(t.Context(), []string{"dsm"}, tt.lg, day, day); err != nil {
+			t.Fatalf("lg=%q: %v", tt.lg, err)
+		}
+		if got != tt.want {
+			t.Errorf("lg=%q sent lg=%q to sidecar, want %q", tt.lg, got, tt.want)
+		}
+	}
+}
+
 // A hung sidecar must not hang the /shabbat response. Leyning bounds every
 // request at 3 seconds of its own, and honours an earlier caller deadline,
 // which is what this checks.
