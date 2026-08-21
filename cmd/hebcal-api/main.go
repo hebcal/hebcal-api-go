@@ -44,7 +44,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, "cannot open log file:", err)
 		os.Exit(1)
 	}
-	lg.Info("hebcal-api: starting up")
+	lg.Info(fmt.Sprintf("hebcal-api %s: starting up", config.APIVersion))
 
 	app := handler.New(lg)
 	app.PingFile = cfg.PingFile
@@ -145,12 +145,12 @@ func main() {
 		srv.Shutdown(ctx)
 	}()
 
-	msg := fmt.Sprintf("hebcal-api listening on port %d", cfg.Port)
+	msg := fmt.Sprintf("hebcal-api %s listening on port %d", config.APIVersion, cfg.Port)
 	lg.Info(msg)
 	fmt.Println(msg)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	lg.Info("hebcal-api: exiting")
+	lg.Info(fmt.Sprintf("hebcal-api %s: exiting", config.APIVersion))
 }
