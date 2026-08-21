@@ -162,6 +162,12 @@ func (m *Middleware) logAccess(r *http.Request, bw *bufWriter, length int, start
 		logger.KV{K: "url", V: logger.String(r.URL.RequestURI())},
 		logger.KV{K: "ua", V: logger.String(r.Header.Get("User-Agent"))},
 	)
+	// A base64 PDF download URL (the /v4/ protobuf or the /v2/h/ query string) is
+	// opaque in the logged url; the handler records the query string it decodes
+	// to, which reproduces the request.
+	if qs := calls.Query(); qs != "" {
+		fields = append(fields, logger.KV{K: "qs", V: logger.String(qs)})
+	}
 	if inm := r.Header.Get("If-None-Match"); inm != "" {
 		fields = append(fields, logger.KV{K: "inm", V: logger.String(inm)})
 	}

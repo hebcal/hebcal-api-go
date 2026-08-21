@@ -24,6 +24,7 @@ import (
 
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
+	"github.com/hebcal/hebcal-api-go/internal/reqlog"
 	"github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 )
@@ -94,6 +95,13 @@ func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
 	if err != nil {
 		return nil, err
 	}
+	// The /v4/ base64 protobuf and the /v2/h/ base64 query string are both opaque
+	// in the access log; record the query string the message decodes to so the
+	// request is readable and reproducible under the log's "qs" key. The classic
+	// /hebcal/index.cgi/ form already carries its query in the logged URL.
+	if isOpaquePath(u.Path) {
+		reqlog.FromContext(ctx).SetQuery(MessageToQuery(msg))
+	}
 	params, err := ParamsFromMessage(msg, s.Geo)
 	if err != nil {
 		return nil, err
@@ -150,6 +158,15 @@ func (s *Service) Render(cal *Calendar) ([]byte, error) {
 // the former (see v2.go), and the classic /hebcal/index.cgi/<name>.pdf?<query>
 // older than both (see cgi.go). From here on all three are the same request.
 //
+// isOpaquePath reports whether a download URL hides its calendar options behind
+// a base64 payload -- the /v4/ protobuf and the /v2/h/ query string both do, so
+// the logged URL is unreadable for either. The classic /hebcal/index.cgi/ form
+// carries its query in the URL already, so its options are visible in the log's
+// "url" without a "qs" field.
+func isOpaquePath(path string) bool {
+	return !strings.HasPrefix(path, cgiPrefix)
+}
+
 // A URL that is none of these is 404, which is what hebcal-web's router answers.
 func decodeRequest(u *url.URL) (*downloadpb.Download, error) {
 	switch path := u.Path; {
