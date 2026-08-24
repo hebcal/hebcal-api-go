@@ -465,7 +465,7 @@ packages and answers HTTP **over a unix domain socket**
 (`-readings-socket`, default `/run/hebcal/readings-svc.sock`):
 
 - `/leyning` — Torah readings, including triennial, for `/shabbat`;
-- `/learning` — the six daily-learning series with no Go schedule, for the PDF
+- `/learning` — the seven daily-learning series with no Go schedule, for the PDF
   calendars.
 
 `internal/repository/readings` is the whole client: the socket transport, the
@@ -542,13 +542,13 @@ feeds; dropping it silently reduces the service to the four hard-wired series.
 away from a consumer that forgets it.)
 
 `learningSchedules` in `params.go` maps each protobuf field to a registry name.
-`unsupportedSeries` lists the six with no schedule at all, and `fallback.go`
+`unsupportedSeries` lists the seven with no schedule at all, and `fallback.go`
 fetches those from readings-svc's `/learning` and merges them.
 `applyV2DailyLearning` in `v2.go` maps the legacy URLs' query codes onto the
 same protobuf fields, mirroring hebcal-web's `dailyLearningConfig.json`. Those
 four lists move together, and a fifth is in a different repository:
 `queryToDailyLearningName` in readings-svc's `learning.js`, which resolves the
-same query codes (`dcc`, `dshl`, `dsm`, `dksa`, `ayd`, `ahsy`) to
+same query codes (`dcc`, `dshl`, `dsm`, `dksa`, `ayd`, `ddh`, `ahsy`) to
 @hebcal/learning schedule names.
 
 The fetch goes over the readings-svc unix domain socket (`-readings-socket`,
@@ -709,7 +709,7 @@ ordering below). www.hebcal.com's `/holidays/` calendars are served too, from
   not fatal: the two PDF routes answer 503 and the JSON APIs keep working.
 - **readings-svc has to be running**, on `/run/hebcal/readings-svc.sock`,
   before this service is deployed: without it `/shabbat` answers 503 and any
-  PDF naming one of the six daily-learning series answers 503. Its systemd
+  PDF naming one of the seven daily-learning series answers 503. Its systemd
   unit is in that repository, and its `RuntimeDirectory=hebcal` is what
   creates the socket directory.
 - **Varnish is not configured** to route PDF URLs here, and the 503 path

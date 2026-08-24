@@ -571,7 +571,7 @@ func applyDailyLearning(msg *downloadpb.Download, o *hebcal.CalOptions) {
 // explicitly selected, so callers hand these requests back to the Node service
 // instead.
 //
-// These six have no schedule in github.com/hebcal/learning. Keep this list and
+// These seven have no schedule in github.com/hebcal/learning. Keep this list and
 // learningSchedules together: anything the learning package gains should move
 // from here to there.
 func unsupportedSeries(msg *downloadpb.Download) []string {
@@ -586,6 +586,7 @@ func unsupportedSeries(msg *downloadpb.Download) []string {
 		{"seferHaMitzvot", msg.GetSeferHaMitzvot()},
 		{"kitzurShulchanAruch", msg.GetKitzurShulchanAruch()},
 		{"dirshuAmudYomi", msg.GetDirshuAmudYomi()},
+		{"dirshuDafHalacha", msg.GetDirshuDafHalacha()},
 	} {
 		if s.on {
 			out = append(out, s.name)

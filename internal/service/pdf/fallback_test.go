@@ -13,12 +13,13 @@ import (
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 )
 
-// The six series with no Go schedule are fetched from readings-svc rather than
+// The series with no Go schedule are fetched from readings-svc rather than
 // refusing the calendar, so every one needs a query parameter.
 func TestEveryUnsupportedSeriesHasAQueryParameter(t *testing.T) {
 	msg := &pb.Download{
 		ChofetzChaim: true, ShemiratHaLashon: true, ArukhHaShulchanYomi: true,
 		SeferHaMitzvot: true, KitzurShulchanAruch: true, DirshuAmudYomi: true,
+		DirshuDafHalacha: true,
 	}
 	for _, s := range unsupportedSeries(msg) {
 		if _, ok := fallbackSeries[s]; !ok {
