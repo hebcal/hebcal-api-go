@@ -78,3 +78,71 @@ func TestLookupPointUnixSocket(t *testing.T) {
 		t.Fatalf("point = %#v, want Mountain View coordinates", pt)
 	}
 }
+
+// serveJSON stands up a one-shot geoip2 server on a unix socket that answers a
+// single request with the given JSON body, and returns a client pointed at it.
+func serveJSON(t *testing.T, body string) *Client {
+	t.Helper()
+	socketPath := shortSocketPath(t)
+	ln, err := net.Listen("unix", socketPath)
+	if err != nil {
+		t.Fatalf("listen unix: %v", err)
+	}
+	t.Cleanup(func() { _ = ln.Close() })
+	go func() {
+		conn, err := ln.Accept()
+		if err != nil {
+			return
+		}
+		defer conn.Close()
+		buf := make([]byte, 1024)
+		_, _ = conn.Read(buf)
+		resp := fmt.Sprintf("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: %d\r\n\r\n%s", len(body), body)
+		_, _ = conn.Write([]byte(resp))
+	}()
+	return New(socketPath)
+}
+
+func TestLookupPointAccuracyRadius(t *testing.T) {
+	tests := []struct {
+		name    string
+		body    string
+		wantErr bool
+	}{
+		{
+			name: "coarse radius is rejected",
+			body: `{"location":{"latitude":38.938,"longitude":-76.557,"accuracy_radius":1000}}`,
+			// 1000 > 500: too imprecise, discard as if no answer.
+			wantErr: true,
+		},
+		{
+			name: "boundary radius is kept",
+			body: `{"location":{"latitude":38.938,"longitude":-76.557,"accuracy_radius":500}}`,
+			// Exactly 500 is not > 500, so it passes.
+			wantErr: false,
+		},
+		{
+			name: "missing radius is kept",
+			body: `{"location":{"latitude":37.3861,"longitude":-122.0839}}`,
+			// Absent field decodes to 0, which is not > 500.
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			pt, err := serveJSON(t, tt.body).LookupPoint(t.Context(), "8.8.8.8")
+			if tt.wantErr {
+				if err == nil {
+					t.Fatalf("LookupPoint = %#v, want error", pt)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("LookupPoint: %v", err)
+			}
+			if pt == nil {
+				t.Fatal("LookupPoint returned nil point without error")
+			}
+		})
+	}
+}

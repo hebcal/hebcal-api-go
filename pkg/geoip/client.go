@@ -25,11 +25,17 @@ type Point struct {
 	Longitude float64
 }
 
+// maxAccuracyRadiusKm is the largest accuracy_radius (in kilometres) we treat
+// as a usable answer. Beyond it the geoip2 result is too imprecise to be a
+// meaningful location hint, so we discard it as if the service had no answer.
+const maxAccuracyRadiusKm = 500
+
 // lookupResponse is the subset of the geoip2 service's JSON we decode.
 type lookupResponse struct {
 	Location struct {
-		Latitude  float64 `json:"latitude"`
-		Longitude float64 `json:"longitude"`
+		Latitude       float64 `json:"latitude"`
+		Longitude      float64 `json:"longitude"`
+		AccuracyRadius int     `json:"accuracy_radius"`
 	} `json:"location"`
 }
 
@@ -98,6 +104,9 @@ func (c *Client) LookupPoint(ctx context.Context, ip string) (*Point, error) {
 	}
 	if out.Location.Latitude == 0 && out.Location.Longitude == 0 {
 		return nil, errors.New("geoip lookup missing coordinates")
+	}
+	if out.Location.AccuracyRadius > maxAccuracyRadiusKm {
+		return nil, errors.New("geoip lookup accuracy_radius too coarse")
 	}
 	return &Point{Latitude: out.Location.Latitude, Longitude: out.Location.Longitude}, nil
 }
