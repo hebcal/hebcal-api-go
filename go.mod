@@ -12,7 +12,7 @@ require (
 	github.com/hebcal/hebcal-go v0.19.1
 	github.com/hebcal/learning v0.5.0
 	github.com/hebcal/locales v1.1.1
-	github.com/mattn/go-sqlite3 v1.14.49
+	github.com/mattn/go-sqlite3 v1.14.50
 	github.com/prometheus/client_golang v1.24.1
 	golang.org/x/image v0.45.0
 	golang.org/x/sync v0.22.0

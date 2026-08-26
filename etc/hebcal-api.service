@@ -13,7 +13,7 @@ ExecStart=/usr/local/bin/hebcal-api \
   -zips-db /var/www/zips.sqlite3 \
   -geonames-db /var/www/geonames.sqlite3 \
   -fonts /var/www/fonts \
-  -pdf-max-concurrency 16
+  -pdf-max-concurrency 8
 # SIGUSR1 (or SIGHUP) reopens the access log after rotation
 ExecReload=/bin/kill -USR1 $MAINPID
 Restart=on-failure

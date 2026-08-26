@@ -32,7 +32,7 @@ const (
 	// while draining a flood at ~320 renders/s. Raise it together with the
 	// GOMEMLIMIT / MemoryMax numbers on a larger box; the rule of thumb is to
 	// keep N * 30 MiB under about half of GOMEMLIMIT.
-	DefaultPDFMaxConcurrency = 16
+	DefaultPDFMaxConcurrency = 8
 	// DefaultPDFQueueTimeout is how long a request waits for a free render slot
 	// before it is shed with 503. A render is ~50ms, so a short wait absorbs
 	// bursts without letting a flood pile up in memory.
