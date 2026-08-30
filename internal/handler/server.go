@@ -49,6 +49,9 @@ type Server struct {
 	// overflow with 503 so a flood cannot grow the heap into swap. Nil (the
 	// zero value) leaves the routes unlimited; main sets it from the config.
 	PDFLimiter *httpx.Limiter
+	// MCP serves the /mcp Model Context Protocol endpoint (www.hebcal.com/mcp).
+	// main sets it from internal/service/mcp; when nil the route answers 404.
+	MCP http.Handler
 }
 
 // New returns a Server with the defaults main and the tests share.
@@ -96,6 +99,9 @@ func (s *Server) Routes() http.Handler {
 	mux.HandleFunc("/complete", mw.Serve(s.complete))
 	mux.HandleFunc("/complete/", mw.Serve(s.complete))
 	mux.HandleFunc("/complete.php", mw.Serve(s.complete))
+	// The Model Context Protocol server, ported from hebcal-mcp. Stateless
+	// streamable-HTTP: the SDK answers non-POST with 405 itself.
+	mux.HandleFunc("/mcp", mw.Serve(s.mcp))
 	// The PDF calendars: download.hebcal.com's /v4/ downloads and
 	// www.hebcal.com's /holidays/ holiday calendars, both routed here by
 	// Varnish. Nothing else under /holidays/ belongs to this service -- the

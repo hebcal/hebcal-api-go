@@ -21,6 +21,9 @@ Currently implemented:
   from `src/pdf.js`) and `www.hebcal.com/holidays/hebcal-<year>.pdf`
   (ported from `src/holidayPdf.js`). These came from the separate
   hebcal-pdf-go service, which this repository replaces.
+- **MCP server** (`/mcp`) — a Model Context Protocol server with seven
+  Hebrew-calendar tools, ported from the separate
+  [hebcal-mcp](https://github.com/hebcal/hebcal-mcp) service.
 
 Date conversions use [hebcal/hdate](https://github.com/hebcal/hdate)
 (`FromProlepticGregorian`, matching JavaScript `Date` behavior); holidays,
@@ -280,6 +283,19 @@ default `fonts`) names a directory holding `Source_Sans_Pro/` and
 request; only the per-document embedded instances are rebuilt. A failure to
 load them is logged and disables the two PDF routes rather than stopping
 the server.
+
+### MCP server
+
+- `POST /mcp` — a stateless [Model Context Protocol](https://modelcontextprotocol.io)
+  server (streamable-HTTP transport), served at `www.hebcal.com/mcp` and ported
+  from [hebcal-mcp](https://github.com/hebcal/hebcal-mcp) using the official
+  [`modelcontextprotocol/go-sdk`](https://github.com/modelcontextprotocol/go-sdk).
+  It exposes seven tools: `convert-gregorian-to-hebrew`,
+  `convert-hebrew-to-gregorian`, `yahrzeit`, `torah-portion`,
+  `jewish-holidays-year`, `daf-yomi`, and `shabbat-times`. All compute
+  in-process; `torah-portion`'s reading summary comes from the readings-svc
+  sidecar's `/shabbatTorahReading` route and is omitted if the sidecar is
+  unreachable. `GET` and `DELETE` return `405`.
 
 ### Operational
 

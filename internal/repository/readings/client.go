@@ -122,10 +122,10 @@ func (c *Client) DialSocket(ctx context.Context) error {
 	return conn.Close()
 }
 
-// get performs one GET against the sidecar and decodes the classic-API
-// envelope. The host in the URL is a placeholder: the transport dials the
-// socket whatever it says.
-func (c *Client) get(ctx context.Context, path string, q url.Values) ([]Item, error) {
+// fetch performs one GET against the sidecar, records the round trip for the
+// access log, and returns the raw response body. The host in the URL is a
+// placeholder: the transport dials the socket whatever it says.
+func (c *Client) fetch(ctx context.Context, path string, q url.Values) ([]byte, error) {
 	if c == nil || c.socketPath == "" {
 		return nil, ErrNoSocket
 	}
@@ -159,6 +159,16 @@ func (c *Client) get(ctx context.Context, path string, q url.Values) ([]Item, er
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("readings: %s returned %s", path, resp.Status)
+	}
+	return data, nil
+}
+
+// get performs one GET against the sidecar and decodes the classic-API
+// envelope.
+func (c *Client) get(ctx context.Context, path string, q url.Values) ([]Item, error) {
+	data, err := c.fetch(ctx, path, q)
+	if err != nil {
+		return nil, err
 	}
 	var body apiResponse
 	if err := json.Unmarshal(data, &body); err != nil {

@@ -530,6 +530,103 @@ and `/shabbat` tests exercise the real transport rather than a TCP substitute.
 classic-API items per `YYYY-MM-DD|<0 or 1 for Israel>` key; regenerate it from a
 running sidecar when a golden needs a new date.
 
+## The MCP server (`/mcp`) — port of hebcal-mcp, in progress
+
+`www.hebcal.com/mcp` is a Model Context Protocol server, ported here from the
+Node.js `../hebcal-mcp` (`@hebcal/mcp`) so it becomes another route on this one
+binary rather than a third service — the same consolidation the PDF calendars
+were. It exposes **seven tools**, all pure calendar computations, over a
+**stateless streamable-HTTP** transport (POST `/mcp`; GET/DELETE → 405). No
+stdio CLI is ported: the deployed remote endpoint is the only target.
+
+Library: the **official `github.com/modelcontextprotocol/go-sdk`** (the Go
+counterpart of the `@modelcontextprotocol/sdk` the Node version uses, so the
+port is 1:1 — `McpServer`/`registerTool` → `mcp.NewServer` + generic
+`mcp.AddTool`, tool input schemas generated from Go structs via `json` +
+`jsonschema:"…description…"` tags). Chosen over the more-starred
+`mark3labs/mcp-go` because it tracks the spec fastest, is Google-co-maintained
+(better bus-factor for a multi-year deployment), and mirrors the TS source.
+
+| file | role |
+|---|---|
+| `internal/service/mcp/` | the seven tools; `Handler()` builds the `*mcpsdk.Server` and wraps it stateless. Package `mcp`; the SDK is aliased `mcpsdk` |
+| `internal/handler/mcp.go` | mounts `s.MCP` at `/mcp` through the shared middleware (access log + metrics) |
+
+**Almost everything is computed in-process** with the same libraries the JSON
+APIs use — `hdate` (conversions, `GetYahrzeit`, leap year), `internal/model`
+(`GematriyaDate`, `HDateString`, `HDMonthNameEn`), `hebcal-go` `sedra` /
+`event` / `hebcal` (parsha, holidays-for-year, candle-lighting + `TimedEvent`
+`LinkedEvent`), and `learning/dafyomi` (Daf Yomi via `dafyomi.New` +
+`NewDafYomiEvent`, whose `Render("en")` is already the brief form the Node
+`renderBrief` produced). hebcal-go's `dafYomiEvent.Render` has **no** "Daf
+Yomi:" prefix, unlike @hebcal/core's `render()`.
+
+**The one thing hebcal-go cannot do is the `torah-portion` reading summary**
+(`getLeyningForParshaHaShavua().summary`, e.g. the merged special-Shabbat form
+`"Leviticus 1:1-5:26; Deuteronomy 25:17-19"`). It is **not** in the classic-API
+`leyning` object and not reconstructable without re-porting
+`makeSummaryFromParts`. So readings-svc gains a dedicated **`/shabbatTorahReading`**
+route (`shabbatTorahReading(url)` in `leyning.js`): takes `date` + `i`, and returns
+the **whole `getLeyningForParshaHaShavua()` object verbatim** (`name`,
+`summary`, `fullkriyah`, `haftara`, …). When a chag displaces the weekly
+parsha, there is no ParshaEvent, so it returns the **holiday's** reading
+instead, via `getLeyningForHoliday(getHolidaysOnDate(date)[0])` — the same
+@hebcal/leyning shape, whose `name.en` is the chag reading label ("Pesach
+Shabbat Chol ha-Moed"). It is separate from `/leyning`, whose classic-API shape
+(built for `/shabbat`) omits `summary` and carries the triennial cycle this
+does not. The Go side,
+`readings.Client.ShabbatTorahReading(ctx, dateISO, il)`, decodes `name.en` and
+`summary` out of that object (keyed on the Shabbat date, so the chag lookup
+lands on the Saturday); it is its own request, **not** the `(date,il)`-keyed
+`Leyning()` LRU, which `/shabbat` needs summary-free (adding `summary` there
+would diverge `/shabbat` from production, which carries no such key). `/shabbat`
+output is therefore untouched. torah-portion soft-depends on the sidecar the way
+PDF daily-learning does: without it (nil client, or an error) the `Reading:`
+line is omitted and the chag portion name falls back to hebcal-go's coarser
+label (`chagReadingName`), rather than the tool failing.
+
+The seven tools and their exact Node output strings (markdown tables / labelled
+lines) are the parity target, compared as deterministic strings against a local
+`../hebcal-mcp` (`npm run start`, port 8080) or live `www.hebcal.com/mcp` — the
+MCP analogue of `compare-pdfs.py` (harness in the scratchpad during the port).
+Go tests in `internal/service/mcp` pin the tool outputs and exercise the real
+stateless streamable-HTTP transport (`tools/list` returns 7; a GET is 405).
+
+**Measured parity (2026-08-30, all seven tools).** Every content line matches
+hebcal-mcp except three accepted divergences, each already known from the PDF
+port or approved above:
+1. the gematriya ב-prefix on "Date in Hebrew letters" (convert-gregorian and
+   the yahrzeit table), described below;
+2. **same-day holiday ordering** in `jewish-holidays-year` — the identical
+   hebcal-go `byDate`-alphabetical vs @hebcal/core emission-order tie-break the
+   PDF section documents (e.g. Erev Purim / Shabbat Zachor on 13 Adar II);
+3. a **~2-minute candle-lighting** difference in `shabbat-times` for Jerusalem —
+   the noaa-go vs @hebcal/core sunset divergence (Chicago matches to the
+   minute, so it is the zmanim lib, not the tool).
+
+The **chag `torah-portion` label is no longer a divergence**: it reads
+`name.en` from `/shabbatTorahReading` (e.g. "Pesach Shabbat Chol ha-Moed"),
+matching @hebcal/core, and only falls back to hebcal-go's coarser
+`chagReadingName` ("Pesach V (CH''M)") when the sidecar is unavailable.
+
+Wiring: `main.go` sets `app.MCP = mcp.Handler(app.Readings)`; `server.go`'s
+`Routes()` mounts `mux.HandleFunc("/mcp", mw.Serve(s.mcp))`. Tool names:
+`convert-gregorian-to-hebrew`, `convert-hebrew-to-gregorian`, `yahrzeit`,
+`torah-portion`, `jewish-holidays-year`, `daf-yomi`, `shabbat-times`. Parse and
+range errors are returned as normal (non-`IsError`) text content, matching the
+Node `errorCard`, so the model sees them. `shabbat-times` validates
+lat/long range before `zmanim.NewLocation`, which **panics** out of range.
+
+**Accepted divergence — the "Date in Hebrew letters" gematriya prefix.**
+hebcal-mcp uses `@hebcal/hdate`'s `renderGematriya()`, which writes the month
+with no ב preposition (`"י״ד תַּמּוּז תשפ״ד"`). `model.GematriyaDate` (shared with
+`/converter`, which matches hebcal-web) writes the prefixed form
+(`"י״ד בְּתַמּוּז תשפ״ד"`). We reuse `model.GematriyaDate` and accept the one-word
+difference rather than carry a second gematriya formatter. Month **transliteration**
+matches, because `@hebcal/hdate` and `model` both spell Tamuz with one m and
+`Sh'vat` with a typewriter apostrophe (`render()`'s smartened `Sh’vat` is
+reproduced with `jsutil.SmartApostrophe` in the yahrzeit day-and-month column).
+
 ## Daily learning
 
 Schedules are not selected through the four dedicated `CalOptions` booleans but

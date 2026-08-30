@@ -26,6 +26,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/logger"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
+	mcpsvc "github.com/hebcal/hebcal-api-go/internal/service/mcp"
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 	"github.com/hebcal/hebcal-api-go/pkg/geoip"
@@ -50,6 +51,11 @@ func main() {
 	app.PingFile = cfg.PingFile
 	app.GeoIP = geoip.New(cfg.GeoIPSocket)
 	app.Readings = readings.New(cfg.ReadingsSocket)
+
+	// The MCP server (www.hebcal.com/mcp). Its tools compute in-process; only
+	// torah-portion's reading summary touches readings-svc, and it degrades
+	// gracefully without it.
+	app.MCP = mcpsvc.Handler(app.Readings)
 
 	// Probe the GeoIP unix domain socket at startup so operators see whether
 	// the geoip2 service is reachable. A failure is not fatal: /complete still
