@@ -3,6 +3,7 @@ package httpx
 import (
 	"bytes"
 	"compress/gzip"
+	"encoding/json"
 	"io"
 	"net/http"
 	"strconv"
@@ -168,6 +169,11 @@ func (m *Middleware) logAccess(r *http.Request, bw *bufWriter, length int, start
 	if qs := calls.Query(); qs != "" {
 		fields = append(fields, logger.KV{K: "qs", V: logger.String(qs)})
 	}
+	// The JSON-RPC body of a `POST /mcp` request, recorded by the mcp handler,
+	// so the log shows which tool was called with what arguments.
+	if pb := encodePostBody(calls.PostBody()); pb != nil {
+		fields = append(fields, logger.KV{K: "postBody", V: pb})
+	}
 	if inm := r.Header.Get("If-None-Match"); inm != "" {
 		fields = append(fields, logger.KV{K: "inm", V: logger.String(inm)})
 	}
@@ -195,6 +201,32 @@ func (m *Middleware) logAccess(r *http.Request, bw *bufWriter, length int, start
 		level = logger.LevelWarn
 	}
 	m.Logger.Write(level, fields)
+}
+
+// maxLoggedPostBody caps the postBody log field. JSON-RPC calls to /mcp are
+// small (a method name plus a handful of arguments); the cap only guards
+// against an oversized or pathological body bloating the log line.
+const maxLoggedPostBody = 8192
+
+// encodePostBody renders the recorded request body as the "postBody" log value.
+// Valid JSON (the normal JSON-RPC case) is compacted so it embeds as a nested
+// object on the single log line, exactly as the client sent it; anything else,
+// or an over-cap body, is emitted as a bounded JSON string so the log line
+// stays valid JSON either way. nil raw (no body recorded) omits the field.
+func encodePostBody(raw []byte) []byte {
+	if len(raw) == 0 {
+		return nil
+	}
+	if json.Valid(raw) {
+		var compact bytes.Buffer
+		if json.Compact(&compact, raw) == nil && compact.Len() <= maxLoggedPostBody {
+			return compact.Bytes()
+		}
+	}
+	if len(raw) > maxLoggedPostBody {
+		raw = raw[:maxLoggedPostBody]
+	}
+	return logger.String(string(raw))
 }
 
 // encodeSubrequests renders the backend sub-requests as the log field value: a

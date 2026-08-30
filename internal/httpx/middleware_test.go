@@ -210,6 +210,64 @@ func TestAccessLogQueryString(t *testing.T) {
 	}
 }
 
+// A POST /mcp request records its JSON-RPC body, which the log emits under
+// "postBody" as a nested object (compacted from whatever whitespace the client
+// sent), so the log shows which tool was called with what arguments. A request
+// that records none has no such field.
+func TestAccessLogPostBody(t *testing.T) {
+	m := serveAndReadLog(t, func(w http.ResponseWriter, r *http.Request) {
+		reqlog.FromContext(r.Context()).SetPostBody([]byte(
+			"{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"tools/call\",\n" +
+				"  \"params\": {\"name\": \"torah-portion\"}\n}"))
+		w.Write([]byte("ok"))
+	}, httptest.NewRequest(http.MethodPost, "/mcp", nil))
+
+	pb, ok := m["postBody"].(map[string]any)
+	if !ok {
+		t.Fatalf("postBody = %v (%T), want a nested object", m["postBody"], m["postBody"])
+	}
+	if pb["method"] != "tools/call" || pb["id"] != float64(1) {
+		t.Errorf("postBody = %#v", pb)
+	}
+
+	m = serveAndReadLog(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("ok"))
+	}, httptest.NewRequest(http.MethodGet, "/x", nil))
+	if _, ok := m["postBody"]; ok {
+		t.Errorf("postBody present on a request that recorded none")
+	}
+}
+
+// A non-JSON or over-cap body is logged as a bounded JSON string, so the log
+// line stays valid JSON regardless of what the client posted.
+func TestEncodePostBody(t *testing.T) {
+	// Valid JSON is compacted to a nested value.
+	if got := encodePostBody([]byte(`{"a": 1,  "b": [2, 3]}`)); string(got) != `{"a":1,"b":[2,3]}` {
+		t.Errorf("valid JSON: got %s", got)
+	}
+	// Non-JSON becomes a quoted string, keeping the log line valid.
+	if got := encodePostBody([]byte("not json")); string(got) != `"not json"` {
+		t.Errorf("non-JSON: got %s", got)
+	}
+	// No body recorded: field omitted.
+	if got := encodePostBody(nil); got != nil {
+		t.Errorf("nil body: got %s, want nil", got)
+	}
+	// An over-cap body is truncated and emitted as a string (still valid JSON).
+	big := make([]byte, maxLoggedPostBody+100)
+	for i := range big {
+		big[i] = 'x'
+	}
+	got := encodePostBody(big)
+	if !json.Valid(got) {
+		t.Errorf("over-cap body did not produce valid JSON: %s", got[:32])
+	}
+	var s string
+	if err := json.Unmarshal(got, &s); err != nil || len(s) != maxLoggedPostBody {
+		t.Errorf("over-cap body: len=%d err=%v, want a %d-char string", len(s), err, maxLoggedPostBody)
+	}
+}
+
 // A PDF request answered with the daily-learning fallback header records which
 // series were involved, so those requests can be found in the log.
 func TestAccessLogRecordsUnsupportedSeries(t *testing.T) {
