@@ -23,10 +23,11 @@ type Call struct {
 // Collector accumulates the calls made while serving one request. It is
 // safe for concurrent use, since a handler may fan out.
 type Collector struct {
-	mu    sync.Mutex
-	calls []Call
-	err   error
-	query string
+	mu       sync.Mutex
+	calls    []Call
+	err      error
+	query    string
+	postBody []byte
 }
 
 // Add records one backend call.
@@ -73,6 +74,29 @@ func (c *Collector) Query() string {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return c.query
+}
+
+// SetPostBody records the raw request body, so the access-log middleware can
+// emit it under "postBody". The /mcp handler uses it to log the JSON-RPC call
+// (method + params) that an opaque `POST /mcp` would otherwise hide. The bytes
+// are retained as-is; the middleware compacts and size-caps them at emit time.
+func (c *Collector) SetPostBody(body []byte) {
+	if c == nil {
+		return
+	}
+	c.mu.Lock()
+	c.postBody = body
+	c.mu.Unlock()
+}
+
+// PostBody returns the bytes recorded by SetPostBody, or nil.
+func (c *Collector) PostBody() []byte {
+	if c == nil {
+		return nil
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.postBody
 }
 
 // Err returns the error recorded by SetError, or nil.
