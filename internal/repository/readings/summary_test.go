@@ -45,12 +45,13 @@ func TestShabbatTorahReading(t *testing.T) {
 	}
 }
 
-// TestShabbatTorahReadingChag reads the holiday reading label from name.en, the
-// shape /shabbatTorahReading returns when a chag displaces the parsha.
+// TestShabbatTorahReadingChag reads the holiday reading label from name.en, its
+// Hebrew from name.he, and the merged summary -- the shape /shabbatTorahReading
+// returns when a chag displaces the parsha.
 func TestShabbatTorahReadingChag(t *testing.T) {
 	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"name":{"en":"Pesach Shabbat Chol ha-Moed"},"summary":"Exodus 33:12-34:26; Numbers 28:19-25; Song of Songs 1:1-8:14"}`))
+		w.Write([]byte(`{"name":{"en":"Pesach Shabbat Chol ha-Moed","he":"פֶּסַח שַׁבָּת חוֹל הַמּוֹעֵד"},"summary":"Exodus 33:12-34:26; Numbers 28:19-25; Song of Songs 1:1-8:14"}`))
 	})
 	client := readingstest.Serve(t, h)
 
@@ -60,6 +61,12 @@ func TestShabbatTorahReadingChag(t *testing.T) {
 	}
 	if got.Name != "Pesach Shabbat Chol ha-Moed" {
 		t.Errorf("name = %q, want the chag reading label", got.Name)
+	}
+	if got.NameHe != "פֶּסַח שַׁבָּת חוֹל הַמּוֹעֵד" {
+		t.Errorf("nameHe = %q, want the chag reading label in Hebrew", got.NameHe)
+	}
+	if got.Summary == "" {
+		t.Errorf("summary should be carried through for a chag reading")
 	}
 }
 

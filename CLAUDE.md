@@ -571,19 +571,29 @@ the **whole `getLeyningForParshaHaShavua()` object verbatim** (`name`,
 `summary`, `fullkriyah`, `haftara`, …). When a chag displaces the weekly
 parsha, there is no ParshaEvent, so it returns the **holiday's** reading
 instead, via `getLeyningForHoliday(getHolidaysOnDate(date)[0])` — the same
-@hebcal/leyning shape, whose `name.en` is the chag reading label ("Pesach
-Shabbat Chol ha-Moed"). It is separate from `/leyning`, whose classic-API shape
+@hebcal/leyning shape, whose `name.en` is the chag reading label ("Shmini
+Atzeret (on Shabbat)"). It is separate from `/leyning`, whose classic-API shape
 (built for `/shabbat`) omits `summary` and carries the triennial cycle this
 does not. The Go side,
-`readings.Client.ShabbatTorahReading(ctx, dateISO, il)`, decodes `name.en` and
-`summary` out of that object (keyed on the Shabbat date, so the chag lookup
-lands on the Saturday); it is its own request, **not** the `(date,il)`-keyed
-`Leyning()` LRU, which `/shabbat` needs summary-free (adding `summary` there
-would diverge `/shabbat` from production, which carries no such key). `/shabbat`
-output is therefore untouched. torah-portion soft-depends on the sidecar the way
-PDF daily-learning does: without it (nil client, or an error) the `Reading:`
-line is omitted and the chag portion name falls back to hebcal-go's coarser
-label (`chagReadingName`), rather than the tool failing.
+`readings.Client.ShabbatTorahReading(ctx, dateISO, il)`, decodes `name.en`,
+`name.he` and `summary` out of that object (keyed on the Shabbat date, so the
+chag lookup lands on the Saturday); it is its own request, **not** the
+`(date,il)`-keyed `Leyning()` LRU, which `/shabbat` needs summary-free (adding
+`summary` there would diverge `/shabbat` from production, which carries no such
+key). `/shabbat` output is therefore untouched. torah-portion soft-depends on
+the sidecar the way PDF daily-learning does: without it (nil client, or an
+error) the chag branch falls back to hebcal-go's coarser label
+(`chagReadingName`) with no Hebrew-name or `Reading:` line, rather than the tool
+failing.
+
+**On a chag the Go tool deliberately says more than the original hebcal-mcp.**
+`hebcal-mcp`'s `torahPortion` guards `Name in Hebrew:` and `Reading:` behind
+`if (!parsha.chag)` -- it has a `ParshaEvent` only for a weekly parsha, so on a
+chag it prints just the portion and the date read. The Go tool has the same
+gap in hebcal-go, but the sidecar's `getLeyningForHoliday()` object already
+carries `name.he` and `summary`, so the chag branch emits `Name in Hebrew:`
+(from `name.he`) and `Reading:` (from `summary`) whenever the sidecar supplied
+them. This is an intentional improvement, not a parity target.
 
 The seven tools and their exact Node output strings (markdown tables / labelled
 lines) are the parity target, compared as deterministic strings against a local
@@ -604,10 +614,13 @@ port or approved above:
    the noaa-go vs @hebcal/core sunset divergence (Chicago matches to the
    minute, so it is the zmanim lib, not the tool).
 
-The **chag `torah-portion` label is no longer a divergence**: it reads
-`name.en` from `/shabbatTorahReading` (e.g. "Pesach Shabbat Chol ha-Moed"),
-matching @hebcal/core, and only falls back to hebcal-go's coarser
-`chagReadingName` ("Pesach V (CH''M)") when the sidecar is unavailable.
+The **chag `torah-portion` output is no longer a divergence, and is now richer
+than hebcal-mcp's**: the label reads `name.en` from `/shabbatTorahReading`
+("Shmini Atzeret (on Shabbat)"), and the branch also emits `Name in Hebrew:`
+(`name.he`) and `Reading:` (`summary`) -- lines the Node original omits on a
+chag. It falls back to hebcal-go's coarser `chagReadingName` ("Pesach V
+(CH''M)"), label only, when the sidecar is unavailable. Whatever
+`/shabbatTorahReading` returns is taken as correct.
 
 Wiring: `main.go` sets `app.MCP = mcp.Handler(app.Readings)`; `server.go`'s
 `Routes()` mounts `mux.HandleFunc("/mcp", mw.Serve(s.mcp))`. Tool names:

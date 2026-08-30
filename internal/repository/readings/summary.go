@@ -13,13 +13,18 @@ import (
 const readingTimeout = 3 * time.Second
 
 // ShabbatReading is the part of readings-svc's /shabbatTorahReading response
-// the MCP torah-portion tool uses: the reading's English name and its summary.
+// the MCP torah-portion tool uses: the reading's name and its summary.
 type ShabbatReading struct {
 	// Name is name.en -- the parsha ("Shemot") or, on a chag, the holiday
-	// reading label ("Pesach Shabbat Chol ha-Moed").
+	// reading label ("Shmini Atzeret (on Shabbat)").
 	Name string
-	// Summary is the merged Torah-reading range, e.g. "Exodus 1:1-6:1" or the
-	// special-Shabbat form "Leviticus 1:1-5:26; Deuteronomy 25:17-19".
+	// NameHe is name.he -- the same label in Hebrew with nikud
+	// ("שְׁמִינִי עֲצֶרֶת (בְּשַׁבָּת)"). On a chag the torah-portion tool has no
+	// ParshaEvent to render, so this is the only Hebrew name it can show.
+	NameHe string
+	// Summary is the merged Torah-reading range, e.g. "Exodus 1:1-6:1", the
+	// special-Shabbat form "Leviticus 1:1-5:26; Deuteronomy 25:17-19", or the
+	// chag form "Deuteronomy 14:22-16:17; Numbers 29:35-30:1; Ecclesiastes 1:1-12:14".
 	Summary string
 }
 
@@ -29,6 +34,7 @@ type ShabbatReading struct {
 type readingResponse struct {
 	Name struct {
 		En string `json:"en"`
+		He string `json:"he"`
 	} `json:"name"`
 	Summary string `json:"summary"`
 }
@@ -58,5 +64,5 @@ func (c *Client) ShabbatTorahReading(ctx context.Context, dateISO string, il boo
 	if err := json.Unmarshal(data, &body); err != nil {
 		return ShabbatReading{}, fmt.Errorf("readings: decoding /shabbatTorahReading: %w", err)
 	}
-	return ShabbatReading{Name: body.Name.En, Summary: body.Summary}, nil
+	return ShabbatReading{Name: body.Name.En, NameHe: body.Name.He, Summary: body.Summary}, nil
 }

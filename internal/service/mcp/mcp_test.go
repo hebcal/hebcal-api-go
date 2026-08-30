@@ -125,14 +125,37 @@ func TestTorahPortion(t *testing.T) {
 	}
 }
 
-// TestTorahPortionChag uses the holiday reading name the sidecar returns when a
-// chag displaces the parsha (divergence #4): "Pesach Shabbat Chol ha-Moed",
-// not hebcal-go's coarser "Pesach V (CH”M)". The chag branch prints only the
-// portion and the date read.
+// TestTorahPortionChag uses the holiday reading the sidecar returns when a chag
+// displaces the parsha: the name ("Pesach Shabbat Chol ha-Moed"), that name in
+// Hebrew, and the merged verse summary. Unlike the original hebcal-mcp, which
+// printed only the portion and the date on a chag, the Go tool shows the Hebrew
+// name and reading whenever the sidecar supplies them.
 func TestTorahPortionChag(t *testing.T) {
 	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"name":{"en":"Pesach Shabbat Chol ha-Moed"},"summary":"Exodus 33:12-34:26; Numbers 28:19-25; Song of Songs 1:1-8:14"}`))
+		w.Write([]byte(`{"name":{"en":"Pesach Shabbat Chol ha-Moed","he":"פֶּסַח שַׁבָּת חוֹל הַמּוֹעֵד"},"summary":"Exodus 33:12-34:26; Numbers 28:19-25; Song of Songs 1:1-8:14"}`))
+	})
+	tl := &tools{rd: readingstest.Serve(t, h)}
+	got := tt{t}.text(tl.torahPortion(context.Background(), nil,
+		torahPortionArgs{Date: "2024-04-27", IL: false}))
+	for _, want := range []string{
+		"Torah portion: Pesach Shabbat Chol ha-Moed",
+		"Name in Hebrew: פֶּסַח שַׁבָּת חוֹל הַמּוֹעֵד",
+		"Reading: Exodus 33:12-34:26; Numbers 28:19-25; Song of Songs 1:1-8:14",
+		"Date read: 2024-04-27",
+	} {
+		if !strings.Contains(got, want) {
+			t.Errorf("output missing %q\ngot:\n%s", want, got)
+		}
+	}
+}
+
+// TestTorahPortionChagNameOnly drops the Hebrew name and Reading lines when the
+// sidecar returns a bare name (no he, no summary), rather than printing empties.
+func TestTorahPortionChagNameOnly(t *testing.T) {
+	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"name":{"en":"Pesach Shabbat Chol ha-Moed"}}`))
 	})
 	tl := &tools{rd: readingstest.Serve(t, h)}
 	got := tt{t}.text(tl.torahPortion(context.Background(), nil,
@@ -141,10 +164,7 @@ func TestTorahPortionChag(t *testing.T) {
 		t.Errorf("chag portion should use the sidecar's name:\n%s", got)
 	}
 	if strings.Contains(got, "Name in Hebrew:") || strings.Contains(got, "Reading:") {
-		t.Errorf("chag output should be portion + date read only:\n%s", got)
-	}
-	if !strings.Contains(got, "Date read: 2024-04-27") {
-		t.Errorf("missing date read:\n%s", got)
+		t.Errorf("no Hebrew name or summary from the sidecar -> those lines omitted:\n%s", got)
 	}
 }
 

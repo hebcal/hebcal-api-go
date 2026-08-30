@@ -156,10 +156,11 @@ func (t *tools) torahPortion(ctx context.Context, _ *mcpsdk.CallToolRequest, in 
 	// getHolidaysOnDate, "Date read" and the readings-svc lookup all key on.
 	shabbat := hd.OnOrAfter(time.Saturday)
 
-	// The name and reading summary are the parts hebcal-go cannot produce, so
-	// they come from readings-svc's /shabbatTorahReading. On a chag it returns
-	// the holiday's reading, whose name is the label @hebcal/core's sedra gives
-	// (e.g. "Pesach Shabbat Chol ha-Moed"). A nil client or an error leaves the
+	// The name, Hebrew name and reading summary are the parts hebcal-go cannot
+	// produce, so they come from readings-svc's /shabbatTorahReading. On a chag
+	// it returns the holiday's own reading (getLeyningForHoliday): the label
+	// @hebcal/leyning gives ("Shmini Atzeret (on Shabbat)"), that label in
+	// Hebrew, and the merged verse summary. A nil client or an error leaves the
 	// reading empty and the tool falls back to what hebcal-go can render.
 	var reading readings.ShabbatReading
 	if t.rd != nil {
@@ -168,13 +169,23 @@ func (t *tools) torahPortion(ctx context.Context, _ *mcpsdk.CallToolRequest, in 
 
 	var out []string
 	if parsha.Chag {
-		name := reading.Name
-		if name == "" {
+		// hebcal-go has no ParshaEvent for a chag week, so unlike the original
+		// hebcal-mcp -- which prints only the portion and the date on a chag --
+		// the Hebrew name and reading come straight from the sidecar's holiday
+		// reading when it is available.
+		if reading.Name != "" {
+			out = append(out, "Torah portion: "+reading.Name)
+			if reading.NameHe != "" {
+				out = append(out, "Name in Hebrew: "+reading.NameHe)
+			}
+			if reading.Summary != "" {
+				out = append(out, "Reading: "+reading.Summary)
+			}
+		} else {
 			// Sidecar unavailable: hebcal-go's sedra has no chag reading name,
-			// so fall back to the holiday on that Saturday.
-			name = chagReadingName(shabbat, il)
+			// so fall back to the holiday on that Saturday, name only.
+			out = append(out, "Torah portion: "+chagReadingName(shabbat, il))
 		}
-		out = append(out, "Torah portion: "+name)
 	} else {
 		out = append(out, "Torah portion: Parashat "+strings.Join(parsha.Name, "-"))
 		pe := event.NewParshaEvent(shabbat, parsha, il)

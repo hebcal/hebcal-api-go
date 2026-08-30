@@ -3,7 +3,7 @@ module github.com/hebcal/hebcal-api-go
 go 1.25.0
 
 require (
-	github.com/andybalholm/brotli v1.2.2
+	github.com/andybalholm/brotli v1.2.3
 	github.com/dustin/go-humanize v1.0.1
 	github.com/go-text/typesetting v0.3.4
 	github.com/hashicorp/golang-lru/v2 v2.0.7
@@ -32,8 +32,8 @@ require (
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.70.1 // indirect
-	github.com/prometheus/procfs v0.21.1 // indirect
-	github.com/segmentio/asm v1.1.3 // indirect
+	github.com/prometheus/procfs v0.22.0 // indirect
+	github.com/segmentio/asm v1.2.1 // indirect
 	github.com/segmentio/encoding v0.5.4 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
