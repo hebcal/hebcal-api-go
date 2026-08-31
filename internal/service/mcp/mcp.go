@@ -23,11 +23,13 @@ import (
 
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 
+	"github.com/hebcal/hebcal-api-go/internal/config"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
 )
 
-// serverVersion mirrors the version the Node McpServer advertises.
-const serverVersion = "1.0.1"
+// serverVersion is the application's own build version, without the
+// leading "v" the module version carries.
+var serverVersion = strings.TrimPrefix(config.APIVersion, "v")
 
 // tools holds the dependencies the tool handlers share. Only torah-portion
 // uses rd, and it tolerates a nil client.
