@@ -40,8 +40,17 @@ type tools struct {
 // line.
 func NewServer(rd *readings.Client) *mcpsdk.Server {
 	t := &tools{rd: rd}
-	srv := mcpsdk.NewServer(&mcpsdk.Implementation{Name: "hebcal", Version: serverVersion}, nil)
-
+	srv := mcpsdk.NewServer(
+		&mcpsdk.Implementation{Name: "hebcal", Version: serverVersion},
+		&mcpsdk.ServerOptions{
+			// hebcal's tool set is static; advertising listChanged makes clients
+			// hold a subscriptions/listen stream open (SEP-2575) that Varnish's
+			// 10s first_byte_timeout then kills every 10s. Pin it off.
+			Capabilities: &mcpsdk.ServerCapabilities{
+				Tools: &mcpsdk.ToolCapabilities{}, // ListChanged: false
+			},
+		},
+	)
 	mcpsdk.AddTool(srv, &mcpsdk.Tool{
 		Name:        "convert-gregorian-to-hebrew",
 		Description: "Converts a Gregorian (civil) date to a Hebrew date (Jewish calendar)",
