@@ -710,7 +710,7 @@ func (r *Renderer) drawHebMonthTitle(page *document.Page, inst *Instances, p *Pa
 	if p.RTL {
 		titleFont, subFont = FontHebrew, FontHebrew
 	}
-	title := hebMonthName(first, p.Locale) + " " + hebTitleYear(p, hp.Year)
+	title := jsutil.SmartApostrophe(hebMonthName(first, p.Locale)) + " " + hebTitleYear(p, hp.Year)
 	r.drawCentered(page, inst, titleFont, 26, colorBlack, pdfTMargin-24, title)
 
 	last := hdate.New(hp.Year, hp.Month, daysInMonth)
