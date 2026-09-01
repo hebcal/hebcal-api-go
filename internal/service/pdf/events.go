@@ -98,9 +98,18 @@ func Generate(p *Params) ([]Event, error) {
 		}
 		// appendHebrewToSubject draws the Hebrew name after the transliteration.
 		// It is the brief Hebrew rendering, computed here because the renderer
-		// only sees the flattened Event, not the source CalEvent.
+		// only sees the flattened Event, not the source CalEvent. Timed events
+		// need the same clock-time trim as the English subject above, or the
+		// time is drawn twice -- once in bold by the renderer, once baked into
+		// the Hebrew text.
 		if p.AppendHebrew && !e.AltDate {
-			e.HebrewBrief = model.FixMonthSpelling(renderSubject(ev, flags, "he"))
+			hebrewBrief := model.FixMonthSpelling(renderSubject(ev, flags, "he"))
+			if timeStr != "" {
+				if i := strings.LastIndex(hebrewBrief, ": "); i >= 0 {
+					hebrewBrief = hebrewBrief[:i]
+				}
+			}
+			e.HebrewBrief = hebrewBrief
 		}
 		out = append(out, e)
 	}
