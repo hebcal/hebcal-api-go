@@ -202,6 +202,33 @@ func TestTimedReportsAClockTime(t *testing.T) {
 	}
 }
 
+// AppendHebrew (lg=ah/sh) draws the Hebrew name on its own, next to a bold
+// clock time the renderer already draws separately. ev.Render("he") for a
+// timed event comes back as "הדלקת נרות: 19:22", and without the same trim
+// applied to the English subject above, that time was baked into
+// HebrewBrief and drawn a second time.
+func TestAppendHebrewBriefOmitsTimeForTimedEvents(t *testing.T) {
+	p := gregorianParams()
+	p.AppendHebrew = true
+	events, err := Generate(p)
+	if err != nil {
+		t.Fatalf("Generate: %v", err)
+	}
+	found := false
+	for _, e := range events {
+		if !e.Timed() || e.Subject != "Candle lighting" {
+			continue
+		}
+		found = true
+		if strings.HasSuffix(e.HebrewBrief, e.TimeStr) || strings.ContainsAny(e.HebrewBrief, "0123456789") {
+			t.Errorf("HebrewBrief for timed event %q = %q, want no clock time", e.Subject, e.HebrewBrief)
+		}
+	}
+	if !found {
+		t.Fatal("no timed events generated")
+	}
+}
+
 // A quiet month still gets a page, so a gap in the events does not silently
 // drop a month from the calendar.
 func TestSplitByGregorianMonthFillsEmptyMonths(t *testing.T) {
