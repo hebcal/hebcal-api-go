@@ -158,6 +158,22 @@ func (r *Renderer) baseline(fontName string, size, yTopDown float64) float64 {
 // involved.
 func yLine(yTopDown float64) float64 { return pdfHeight - yTopDown }
 
+// shape shapes s, reusing the document's cached result when one exists. The
+// runs it returns are shared with any earlier or later caller for the same key,
+// so callers must treat them as read-only (draw and width both do).
+func (r *Renderer) shape(inst *Instances, fontName string, size float64, s string) []ShapedRun {
+	if inst.shapes != nil {
+		k := shapeKey{fontName, size, s}
+		if runs, ok := inst.shapes[k]; ok {
+			return runs
+		}
+		runs := r.shaper.Shape(fontName, size, s)
+		inst.shapes[k] = runs
+		return runs
+	}
+	return r.shaper.Shape(fontName, size, s)
+}
+
 // draw writes one shaped string. x and yTopDown are pdfkit coordinates.
 func (r *Renderer) draw(page *document.Page, inst *Instances, fontName string, size float64, col color.Color, x, yTopDown float64, s string) {
 	f := inst.Get(fontName)
@@ -168,26 +184,32 @@ func (r *Renderer) draw(page *document.Page, inst *Instances, fontName string, s
 	page.TextSetFont(f, size)
 	page.SetFillColor(col)
 	page.TextFirstLine(x, r.baseline(fontName, size, yTopDown))
-	for _, run := range r.shaper.Shape(fontName, size, s) {
+	for _, run := range r.shape(inst, fontName, size, s) {
 		page.TextShowGlyphs(&pdffont.GlyphSeq{Skip: run.Skip, Seq: run.Glyphs})
 	}
 	page.TextEnd()
 }
 
-// width is the equivalent of pdfkit's doc.widthOfString().
-func (r *Renderer) width(fontName string, size float64, s string) float64 {
-	return r.shaper.Width(fontName, size, s)
+// width is the equivalent of pdfkit's doc.widthOfString(). It shares the
+// document's shaping cache with draw, so the measuring pass a caller makes
+// before drawing the same string costs a single shape.
+func (r *Renderer) width(inst *Instances, fontName string, size float64, s string) float64 {
+	var w float64
+	for _, run := range r.shape(inst, fontName, size, s) {
+		w += run.Width
+	}
+	return w
 }
 
 // drawCentered centres s horizontally on the page.
 func (r *Renderer) drawCentered(page *document.Page, inst *Instances, fontName string, size float64, col color.Color, yTopDown float64, s string) {
-	w := r.width(fontName, size, s)
+	w := r.width(inst, fontName, size, s)
 	r.draw(page, inst, fontName, size, col, (pdfWidth-w)/2, yTopDown, s)
 }
 
 // drawRightAligned draws s so that it ends at x.
 func (r *Renderer) drawRightAligned(page *document.Page, inst *Instances, fontName string, size float64, col color.Color, x, yTopDown float64, s string) {
-	r.draw(page, inst, fontName, size, col, x-r.width(fontName, size, s), yTopDown, s)
+	r.draw(page, inst, fontName, size, col, x-r.width(inst, fontName, size, s), yTopDown, s)
 }
 
 // rowsFor returns 5 or 6 week rows. This is the rule from src/pdf.js rather
@@ -266,7 +288,7 @@ func (r *Renderer) drawGrid(page *document.Page, inst *Instances, p *Params, row
 		if p.RTL {
 			cx = pdfWidth - pdfRMargin - edge
 		}
-		w := r.width(dowFont, 10, name)
+		w := r.width(inst, dowFont, 10, name)
 		r.draw(page, inst, dowFont, 10, colorDow, cx-w/2, pdfTMargin+24, name)
 	}
 }
@@ -349,7 +371,7 @@ func (r *Renderer) renderEventColored(page *document.Page, inst *Instances, p *P
 
 	var timedWidth float64
 	if ev.Timed() {
-		timedWidth = r.width(FontBold, timeFontSize, ev.TimeStr+" ")
+		timedWidth = r.width(inst, FontBold, timeFontSize, ev.TimeStr+" ")
 	}
 
 	fontName := FontPlain
@@ -367,11 +389,11 @@ func (r *Renderer) renderEventColored(page *document.Page, inst *Instances, p *P
 	}
 
 	subject := ev.Subject
-	width := r.width(fontName, fontSize, subject)
+	width := r.width(inst, fontName, fontSize, subject)
 	available := pdfColWidth - 2*pdfCellMargin
 	for i := 0; i < 4 && timedWidth+width > available; i++ {
 		fontSize -= 0.5
-		width = r.width(fontName, fontSize, subject)
+		width = r.width(inst, fontName, fontSize, subject)
 	}
 	lines := []string{subject}
 	numLines := 1
@@ -430,8 +452,8 @@ func (r *Renderer) appendHebrew(page *document.Page, inst *Instances, ev *Event,
 		heSize = 11.0
 	)
 	available := pdfColWidth - 2*pdfCellMargin
-	widthSlash := r.width(subjFont, subjSize, slash)
-	hebrewWidth := r.width(FontHebrew, heSize, ev.HebrewBrief)
+	widthSlash := r.width(inst, subjFont, subjSize, slash)
+	hebrewWidth := r.width(inst, FontHebrew, heSize, ev.HebrewBrief)
 	if timedWidth+width+widthSlash+hebrewWidth > available {
 		yy := y + float64(numLines)*subjSize*1.35
 		r.draw(page, inst, FontHebrew, heSize, col, textX, yy, ev.HebrewBrief)

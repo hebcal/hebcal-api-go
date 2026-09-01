@@ -98,11 +98,32 @@ func LoadFonts(dir string) (*FontSet, error) {
 // of glyphs actually used, and that subset belongs to one document's content.
 type Instances struct {
 	byName map[string]font.Layouter
+	// shapes memoises shaping results for the life of one document. A calendar
+	// shapes the same (font, size, string) many times over -- the day numbers,
+	// the weekday headings, a repeated "Candle lighting" subject, and, within a
+	// single event, the measuring pass and the drawing pass -- so ~83% of the
+	// Shape calls in a typical render repeat one of a few hundred distinct keys.
+	// Caching here rather than on the shared Renderer keeps it per-document:
+	// bounded by one calendar's content, freed when the document is, and free of
+	// the cross-goroutine locking a process-wide cache on the hot path would
+	// need. The cached runs are only ever read (widths summed, glyphs shown),
+	// never mutated, so sharing one slice between draws is safe.
+	shapes map[shapeKey][]ShapedRun
+}
+
+// shapeKey identifies a shaping request within one document.
+type shapeKey struct {
+	font string
+	size float64
+	str  string
 }
 
 // Embed builds a fresh set of embedded instances for one document.
 func (fs *FontSet) Embed() (*Instances, error) {
-	in := &Instances{byName: make(map[string]font.Layouter, len(fs.parsed))}
+	in := &Instances{
+		byName: make(map[string]font.Layouter, len(fs.parsed)),
+		shapes: make(map[shapeKey][]ShapedRun),
+	}
 	for name, parsed := range fs.parsed {
 		var (
 			l   font.Layouter
@@ -115,9 +136,9 @@ func (fs *FontSet) Embed() (*Instances, error) {
 		// noticeably heavier than macOS Preview did from the same file.
 		// Composite fonts sidestep that and lift the 256-glyph ceiling.
 		if parsed.Outlines != nil && parsed.AsCFF() != nil {
-			l, err = cff.NewComposite(parsed, nil)
+			l, err = cff.NewComposite(parsed, &cff.OptionsComposite{MakeEncoder: makeIdentityEncoder})
 		} else {
-			l, err = truetype.NewComposite(parsed, nil)
+			l, err = truetype.NewComposite(parsed, &truetype.OptionsComposite{MakeEncoder: makeIdentityEncoder})
 		}
 		if err != nil {
 			return nil, fmt.Errorf("embedding font %s: %w", name, err)
