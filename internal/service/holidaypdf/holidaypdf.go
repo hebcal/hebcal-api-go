@@ -100,7 +100,7 @@ func Parse(rpath string, query url.Values) (*pdf.Params, error) {
 		calendarYear = yearNum + hebrewYearOffset
 	}
 	if !pdf.YearIsSupported(calendarYear, isHebrewYear) {
-		return nil, &pdf.OutOfRangeError{Year: calendarYear}
+		return nil, &pdf.OutOfRangeError{Year: calendarYear, IsHebrewYear: isHebrewYear}
 	}
 
 	p := &pdf.Params{

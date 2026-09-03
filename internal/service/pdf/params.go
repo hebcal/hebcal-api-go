@@ -257,7 +257,7 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 	// A single-year request outside the supported range is 410, matching
 	// hebcal-download.js. A start/end range leaves Year zero and is not checked.
 	if o.Year != 0 && !YearIsSupported(o.Year, o.IsHebrewYear) {
-		return nil, &OutOfRangeError{Year: o.Year}
+		return nil, &OutOfRangeError{Year: o.Year, IsHebrewYear: o.IsHebrewYear}
 	}
 	if err := applyLocation(msg, p, db); err != nil {
 		return nil, err
@@ -407,10 +407,16 @@ func parseISODate(s string) (hdate.HDate, error) {
 // OutOfRangeError marks a year hebcal-web has no calendar for. hebcal-web's
 // hebcal-download.js answers these with HTTP 410 Gone, which also keeps a
 // far-future request from ever reaching the generator.
-type OutOfRangeError struct{ Year int }
+type OutOfRangeError struct {
+	Year         int
+	IsHebrewYear bool
+}
 
 func (e *OutOfRangeError) Error() string {
-	return fmt.Sprintf("No calendar for year %d", e.Year)
+	if e.IsHebrewYear {
+		return fmt.Sprintf("No calendar for Hebrew year %d", e.Year)
+	}
+	return fmt.Sprintf("No calendar for Gregorian year %d", e.Year)
 }
 
 // YearIsSupported mirrors yearIsOutsideGregRange / yearIsOutsideHebRange in
