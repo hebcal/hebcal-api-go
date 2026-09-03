@@ -187,9 +187,28 @@ func decodeRequest(u *url.URL) (*downloadpb.Download, error) {
 		if err != nil {
 			return nil, NotFoundf("%s", err.Error())
 		}
-		return DecodeMessage(payload)
+		msg, err := DecodeMessage(payload)
+		if err != nil {
+			return nil, &DecodeError{Err: err}
+		}
+		return msg, nil
 	}
 }
+
+// DecodeError wraps a failure to base64-decode or protobuf-unmarshal a /v4/
+// URL's payload. It is otherwise just a 400 (writeCommonPDFError's default),
+// but the handler special-cases it for bingbot: bingbot crawls /v4/ URLs with
+// the path lowercased, which breaks both the base64 alphabet (mixed-case) and
+// the protobuf it decodes to, so every one of its requests hit this branch.
+// hebcal-web's app-download.js caught exactly this error and answered such
+// requests 404 rather than 400 for that one user agent (`isBingBot`), on the
+// theory that a crawler told "not found" backs off where one told "bad
+// request" does not -- ported here rather than left behind with the rest of
+// fixup2's /v4/ handling.
+type DecodeError struct{ Err error }
+
+func (e *DecodeError) Error() string { return e.Err.Error() }
+func (e *DecodeError) Unwrap() error { return e.Err }
 
 // CalendarTitle builds the document title, e.g. "Hebcal Palo Alto 2028",
 // "Hebcal Diaspora August 2026" or "Hebcal Palo Alto 2026-2027".
