@@ -84,7 +84,7 @@ func MakeHebDate(hyStr, hmStr, hdStr string) (hdate.HDate, error) {
 	maxDay := hdate.DaysInMonth(hm, hy)
 	if hd < 1 || hd > maxDay {
 		monthName := MonthNameEn(hm, hy)
-		return hdate.HDate{}, BadRequest("Hebrew day out of valid range 1-%d for %s %d", maxDay, monthName, hy)
+		return hdate.HDate{}, BadRequest("Hebrew day %d out of valid range 1-%d for %s %d", hd, maxDay, monthName, hy)
 	}
 	return hdate.New(hy, hm, hd), nil
 }
