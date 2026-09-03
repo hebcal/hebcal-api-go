@@ -38,6 +38,16 @@ func TestShabbatOptions(t *testing.T) {
 	}
 }
 
+// Trailing whitespace on a query value is tolerated rather than rejected.
+func TestShabbatLatLongTrailingWhitespace(t *testing.T) {
+	srv := testServerWithDB(t)
+	resp, body := get(t, srv,
+		"/shabbat?cfg=json&latitude=40.71427&longitude=-74.00597+&tzid=America/New_York&dt=2026-06-12&leyning=off")
+	if resp.StatusCode != 200 {
+		t.Fatalf("status = %d body=%s", resp.StatusCode, body)
+	}
+}
+
 func TestShabbatBasic(t *testing.T) {
 	srv := testServerWithDB(t)
 	resp, body := get(t, srv, "/shabbat?cfg=json&geonameid=5128581&dt=2026-06-12&leyning=off")

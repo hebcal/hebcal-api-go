@@ -19,6 +19,7 @@ import (
 // shabbat implements GET /shabbat (cfg=json only).
 func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
+	jsutil.TrimTrailingWhitespace(q)
 	httpx.SetCORS(w)
 	switch r.Method {
 	case http.MethodOptions:

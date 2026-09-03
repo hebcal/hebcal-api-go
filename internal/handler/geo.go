@@ -24,6 +24,7 @@ import (
 // ctx.body = null), or a JSON error for malformed/unresolvable input.
 func (s *Server) geo(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
+	jsutil.TrimTrailingWhitespace(q)
 	if r.Method == http.MethodOptions {
 		httpx.CORSPreflight(w, "GET")
 		return

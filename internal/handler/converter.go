@@ -24,6 +24,12 @@ func (s *Server) converter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	q := r.URL.Query()
+	// strict=1 keeps the historical behavior of rejecting a value with
+	// trailing whitespace outright; every other request tolerates it,
+	// matching the rest of the API surfaces.
+	if q.Get("strict") != "1" {
+		jsutil.TrimTrailingWhitespace(q)
+	}
 	cfg := q.Get("cfg")
 	if cfg != "" {
 		httpx.SetCORS(w)
@@ -153,6 +159,9 @@ func (s *Server) converterCSV(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	q := r.URL.Query()
+	if q.Get("strict") != "1" {
+		jsutil.TrimTrailingWhitespace(q)
+	}
 	if q.Get("cfg") != "" {
 		httpx.SetCORS(w)
 	}

@@ -23,6 +23,7 @@ func (s *Server) complete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	q := r.URL.Query()
+	jsutil.TrimTrailingWhitespace(q)
 	qraw := strings.TrimSpace(q.Get("q"))
 	if qraw == "" {
 		// hebcal-web returns 404 {"error":"Not Found"} with no Cache-Control
