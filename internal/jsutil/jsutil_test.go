@@ -2,6 +2,7 @@ package jsutil
 
 import (
 	"math"
+	"net/url"
 	"testing"
 	"time"
 )
@@ -110,5 +111,27 @@ func TestMakeAnchor(t *testing.T) {
 func TestSmartApostrophe(t *testing.T) {
 	if got := SmartApostrophe("Sh'vat (CH''M)"); got != "Sh’vat (CH’’M)" {
 		t.Errorf("got %q", got)
+	}
+}
+
+func TestTrimTrailingWhitespace(t *testing.T) {
+	q := url.Values{
+		"longitude": {"-74.19131 "},
+		"tzid":      {"America/New_York"},
+		"multi":     {"a ", " b"}, // leading whitespace on "b" is untouched
+		"spacey":    {"5\t\n"},
+	}
+	TrimTrailingWhitespace(q)
+	if got := q.Get("longitude"); got != "-74.19131" {
+		t.Errorf("longitude = %q", got)
+	}
+	if got := q.Get("tzid"); got != "America/New_York" {
+		t.Errorf("tzid = %q", got)
+	}
+	if got := q["multi"]; got[0] != "a" || got[1] != " b" {
+		t.Errorf("multi = %q, want [\"a\", \" b\"]", got)
+	}
+	if got := q.Get("spacey"); got != "5" {
+		t.Errorf("spacey = %q", got)
 	}
 }

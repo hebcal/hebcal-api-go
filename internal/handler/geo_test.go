@@ -78,6 +78,23 @@ func TestGeoPos(t *testing.T) {
 	}
 }
 
+// Trailing whitespace on a query value (URL-encoded as "+" or "%20") is
+// tolerated rather than rejected; leading whitespace still is not.
+func TestGeoPosTrailingWhitespace(t *testing.T) {
+	srv := testServerWithDB(t)
+	resp, body := get(t, srv, "/geo?latitude=37.5&longitude=-122.3+&tzid=America/Los_Angeles")
+	if resp.StatusCode != 200 {
+		t.Fatalf("status = %d body=%s", resp.StatusCode, body)
+	}
+	if !strings.Contains(body, `"longitude":-122.3`) {
+		t.Errorf("expected trimmed longitude: %s", body)
+	}
+	resp, body = get(t, srv, "/geo?latitude=37.5&longitude=+-122.3&tzid=America/Los_Angeles")
+	if resp.StatusCode != 400 {
+		t.Errorf("leading whitespace: status = %d, want 400: %s", resp.StatusCode, body)
+	}
+}
+
 func TestGeoPosIsrael(t *testing.T) {
 	srv := testServerWithDB(t)
 	resp, body := get(t, srv, "/geo?latitude=31.5&longitude=34.9&tzid=Asia/Jerusalem")

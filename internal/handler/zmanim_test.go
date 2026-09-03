@@ -144,6 +144,26 @@ func TestZmanimLatLong(t *testing.T) {
 	}
 }
 
+// Trailing whitespace on a query value (a client quirk seen in production,
+// e.g. HomeAssistant's zmanim integration) is tolerated rather than rejected.
+func TestZmanimLatLongTrailingWhitespace(t *testing.T) {
+	srv := testServerWithDB(t)
+	resp, body := get(t, srv,
+		"/zmanim?cfg=json&latitude=40.06904&longitude=-74.19131+&tzid=America/New_York&date=2026-09-04")
+	if resp.StatusCode != 200 {
+		t.Fatalf("status = %d body=%s", resp.StatusCode, body)
+	}
+	if !strings.Contains(body, `"geo":"pos"`) {
+		t.Errorf("expected geo=pos: %s", body)
+	}
+	// leading whitespace is a different failure mode and stays rejected
+	resp, body = get(t, srv,
+		"/zmanim?cfg=json&latitude=40.06904&longitude=+-74.19131&tzid=America/New_York&date=2026-09-04")
+	if resp.StatusCode != 400 {
+		t.Errorf("leading whitespace: status = %d, want 400: %s", resp.StatusCode, body)
+	}
+}
+
 func TestZmanimLegacyCity(t *testing.T) {
 	srv := testServerWithDB(t)
 	resp, body := get(t, srv, "/zmanim?cfg=json&city=Jerusalem&date=2026-07-07")

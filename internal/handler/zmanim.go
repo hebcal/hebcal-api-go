@@ -20,6 +20,7 @@ import (
 // zmanim implements GET /zmanim (cfg=json only).
 func (s *Server) zmanim(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
+	jsutil.TrimTrailingWhitespace(q)
 	httpx.SetCORS(w)
 	switch r.Method {
 	case http.MethodOptions:
