@@ -57,6 +57,13 @@ func leadingInt(s string) (n int, ok bool) {
 // for a URL that is not a holiday calendar (404), BadRequestError for a year
 // outside 1..32000 (400), and pdf.OutOfRangeError for a year with no calendar
 // (410).
+//
+// hebcal-web now links the Israel schedule as a "-il" filename suffix
+// (hebcal-2999-il.pdf) rather than a "?i=on" query parameter, so a browser
+// bookmark or a shared link names the schedule in the path instead of a query
+// string that a download manager or link-preview tool tends to drop. The
+// "?i=on" spelling still reaches this handler from links published before
+// that change, so it keeps setting IL too -- either one is enough.
 func Parse(rpath string, query url.Values) (*pdf.Params, error) {
 	base := path.Base(rpath)
 	if !strings.HasPrefix(base, "hebcal-") {
@@ -66,6 +73,17 @@ func Parse(rpath string, query url.Values) (*pdf.Params, error) {
 	// year is read with parseInt, which stops at the dot, and the hyphen test
 	// below is unaffected by the suffix.
 	year := base[len("hebcal-"):]
+	// A "-il" suffix just ahead of ".pdf" (hebcal-2999-il.pdf) is hebcal-web's
+	// newer spelling of the Israel schedule, replacing the "?i=on" query
+	// parameter it used to append -- see applyIsraelSuffix below. It is
+	// stripped before the year is parsed so it never confuses leadingInt or
+	// the Hebrew-year hyphen test, and before il is known so the query
+	// parameter -- which legacy links still carry -- is still honored.
+	pathIL := false
+	if trimmed, ok := strings.CutSuffix(year, "-il.pdf"); ok {
+		pathIL = true
+		year = trimmed + ".pdf"
+	}
 	yearNum, ok := leadingInt(year)
 	if !ok {
 		return nil, pdf.NotFoundf("Invalid holiday year: %s", year)
@@ -105,7 +123,7 @@ func Parse(rpath string, query url.Values) (*pdf.Params, error) {
 	}
 	p.Opts.Year = calendarYear
 	p.Opts.IsHebrewYear = isHebrewYear
-	p.Opts.IL = query.Get("i") == "on"
+	p.Opts.IL = pathIL || query.Get("i") == "on"
 	p.Opts.AddHebrewDates = true
 	return p, nil
 }

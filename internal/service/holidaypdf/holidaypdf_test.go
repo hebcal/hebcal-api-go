@@ -27,6 +27,10 @@ func TestParseHolidayPDF(t *testing.T) {
 			wantYear: 5787, wantHebrew: true},
 		{name: "earliest gregorian", path: "/holidays/hebcal-100.pdf", wantYear: 100},
 		{name: "latest hebrew", path: "/holidays/hebcal-6759.pdf", wantYear: 6759, wantHebrew: true},
+		{name: "gregorian il suffix", path: "/holidays/hebcal-2999-il.pdf", wantYear: 2999},
+		{name: "hebrew il suffix", path: "/holidays/hebcal-5787-il.pdf", wantYear: 5787, wantHebrew: true},
+		{name: "gregorian span il suffix is a hebrew year",
+			path: "/holidays/hebcal-2026-2027-il.pdf", wantYear: 5787, wantHebrew: true},
 
 		{name: "not a hebcal calendar", path: "/holidays/sukkot-2026.pdf",
 			wantErrIs: isNotFound, wantErrLabel: "404"},
@@ -115,6 +119,37 @@ func TestHolidayQueryParams(t *testing.T) {
 			}
 			if p.Locale != "en" || p.RTL {
 				t.Errorf("locale = %q (rtl %v), want \"en\" (rtl false)", p.Locale, p.RTL)
+			}
+		})
+	}
+}
+
+// The "-il" filename suffix is hebcal-web's newer spelling of the Israel
+// schedule, and it must combine with "?i=on" rather than override it: a
+// legacy "?i=on" link to the plain filename still has to work.
+func TestHolidayPathILSuffix(t *testing.T) {
+	tests := []struct {
+		path   string
+		query  string
+		wantIL bool
+	}{
+		{"/holidays/hebcal-2026.pdf", "", false},
+		{"/holidays/hebcal-2026-il.pdf", "", true},
+		{"/holidays/hebcal-2026-il.pdf", "i=off", true},
+		{"/holidays/hebcal-2026.pdf", "i=on", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.path+"?"+tt.query, func(t *testing.T) {
+			q, err := url.ParseQuery(tt.query)
+			if err != nil {
+				t.Fatal(err)
+			}
+			p, err := Parse(tt.path, q)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if p.Opts.IL != tt.wantIL {
+				t.Errorf("IL = %v, want %v", p.Opts.IL, tt.wantIL)
 			}
 		})
 	}
