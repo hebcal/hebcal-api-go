@@ -21,6 +21,7 @@ import (
 
 var reTrailingZip = regexp.MustCompile(` \d\d\d\d\d$`)
 var reGmtOffset = regexp.MustCompile(`^([ +-])(\d\d):00$`)
+var reGmtSpace = regexp.MustCompile(`^Etc/GMT (\d{1,2})$`)
 
 // FromQuery resolves an HTTP request's query parameters to a geodb.Location,
 // supporting the four documented ways to specify a location for the Hebcal
@@ -237,6 +238,9 @@ func fromLatLong(q url.Values, cityTypeahead string) (*geodb.Location, error) {
 			n, _ := jsutil.ParseInt(m[2])
 			tzid = fmt.Sprintf("Etc/GMT%s%d", dir, n)
 		}
+	} else if m := reGmtSpace.FindStringSubmatch(tzid); m != nil {
+		// hack for clients who pass tzid=Etc/GMT+5 ("+" url-decodes to " ")
+		tzid = "Etc/GMT+" + m[1]
 	}
 	if _, err := zmanim.LoadLocation(tzid); err != nil {
 		return nil, model.BadRequest("Invalid time zone specified: %s", q.Get("tzid"))
