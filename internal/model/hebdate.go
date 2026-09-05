@@ -74,9 +74,19 @@ func MakeHebDate(hyStr, hmStr, hdStr string) (hdate.HDate, error) {
 	if hmStr == "" {
 		return hdate.HDate{}, BadRequest("Hebrew month is required")
 	}
-	hm, err := hdate.MonthFromName(hmStr)
-	if err != nil {
-		return hdate.HDate{}, BadRequest("bad monthName: %s", hmStr)
+	// Accept a bare month number (1=Nisan .. 7=Tishrei .. 13=Adar II), matching
+	// hdate.HMonth's own numbering, alongside the documented month name. Real
+	// clients send this (production logs show hm=7, hm=8, hm=10) even though
+	// it was never accepted; MonthFromName only recognizes names.
+	var hm hdate.HMonth
+	if n, ok := jsutil.ParseInt(hmStr); ok && n >= 1 && n <= 13 {
+		hm = hdate.HMonth(n)
+	} else {
+		m, err := hdate.MonthFromName(hmStr)
+		if err != nil {
+			return hdate.HDate{}, BadRequest("bad monthName: %s", hmStr)
+		}
+		hm = m
 	}
 	if hm == hdate.Adar2 && !hdate.IsLeapYear(hy) {
 		hm = hdate.Adar1
