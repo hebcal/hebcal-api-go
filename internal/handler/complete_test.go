@@ -37,7 +37,7 @@ func TestCompleteGeonameLatLong(t *testing.T) {
 	if resp.StatusCode != 200 {
 		t.Fatalf("status = %d body=%s", resp.StatusCode, body)
 	}
-	want := `[{"id":281184,"value":"Jerusalem, Israel","admin1":"Jerusalem District","country":"Israel","cc":"IL","latitude":31.76904,"longitude":35.21633,"timezone":"Asia/Jerusalem","geo":"geoname","population":801000,"asciiname":"Jerusalem","flag":"🇮🇱"}]`
+	want := `[{"id":281184,"value":"Jerusalem, Israel","admin1":"Jerusalem District","country":"Israel","cc":"IL","latitude":31.76904,"longitude":35.21633,"timezone":"Asia/Jerusalem","elevation":786,"geo":"geoname","population":801000,"asciiname":"Jerusalem","flag":"🇮🇱"}]`
 	if body != want {
 		t.Errorf("body mismatch\n got: %s\nwant: %s", body, want)
 	}
@@ -140,13 +140,29 @@ func TestCompleteZipText(t *testing.T) {
 
 func TestCompleteZipPrefix(t *testing.T) {
 	srv := testServerWithDB(t)
-	// Numeric prefix keeps latitude/longitude/timezone even without g=on,
-	// but the handler still strips population.
+	// Without g=on, latitude/longitude/timezone/elevation/population are
+	// dropped, matching a geoname text-search result's default shape rather
+	// than @hebcal/geo-sqlite's numeric-ZIP special case (which always kept
+	// coordinates).
 	resp, body := get(t, srv, "/complete?q=902")
 	if resp.StatusCode != 200 {
 		t.Fatalf("status = %d body=%s", resp.StatusCode, body)
 	}
-	want := `[{"id":"90210","value":"Beverly Hills, CA 90210","admin1":"CA","asciiname":"Beverly Hills","country":"United States","cc":"US","latitude":34.103131,"longitude":-118.416253,"timezone":"America/Los_Angeles","geo":"zip","flag":"🇺🇸"}]`
+	want := `[{"id":"90210","value":"Beverly Hills, CA 90210","admin1":"CA","asciiname":"Beverly Hills","country":"United States","cc":"US","geo":"zip","flag":"🇺🇸"}]`
+	if body != want {
+		t.Errorf("body mismatch\n got: %s\nwant: %s", body, want)
+	}
+}
+
+func TestCompleteZipPrefixLatLong(t *testing.T) {
+	srv := testServerWithDB(t)
+	// g=on restores latitude/longitude/timezone/elevation/population, same as
+	// any other result shape.
+	resp, body := get(t, srv, "/complete?q=902&g=on")
+	if resp.StatusCode != 200 {
+		t.Fatalf("status = %d body=%s", resp.StatusCode, body)
+	}
+	want := `[{"id":"90210","value":"Beverly Hills, CA 90210","admin1":"CA","asciiname":"Beverly Hills","country":"United States","cc":"US","latitude":34.103131,"longitude":-118.416253,"timezone":"America/Los_Angeles","elevation":719,"population":21134,"geo":"zip","flag":"🇺🇸"}]`
 	if body != want {
 		t.Errorf("body mismatch\n got: %s\nwant: %s", body, want)
 	}
@@ -158,7 +174,7 @@ func TestCompleteZipExact(t *testing.T) {
 	if resp.StatusCode != 200 {
 		t.Fatalf("status = %d body=%s", resp.StatusCode, body)
 	}
-	want := `[{"id":"90210","value":"Beverly Hills, CA 90210","admin1":"CA","asciiname":"Beverly Hills","country":"United States","cc":"US","latitude":34.103131,"longitude":-118.416253,"timezone":"America/Los_Angeles","geo":"zip","flag":"🇺🇸"}]`
+	want := `[{"id":"90210","value":"Beverly Hills, CA 90210","admin1":"CA","asciiname":"Beverly Hills","country":"United States","cc":"US","geo":"zip","flag":"🇺🇸"}]`
 	if body != want {
 		t.Errorf("body mismatch\n got: %s\nwant: %s", body, want)
 	}

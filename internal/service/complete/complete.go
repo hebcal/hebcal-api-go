@@ -15,11 +15,11 @@ import (
 // ItemToObj serializes an autocomplete result to JSON, reproducing the field
 // order and visibility of @hebcal/geo-sqlite's zip/geoname autocomplete objects
 // plus the country flag appended by hebcal-web's /complete handler. When
-// latlong is false, latitude/longitude/timezone/population are dropped from
-// text-search results; numeric ZIP results keep their coordinates but still
-// drop population.
+// latlong is false, latitude/longitude/timezone/elevation/population are
+// dropped from every result, ZIP and geoname alike, for consistency between
+// the two shapes; this is a deliberate divergence from @hebcal/geo-sqlite,
+// which always kept coordinates on a numeric ZIP match regardless of g=on.
 func ItemToObj(it geodb.Item, latlong bool) jsutil.OrderedObj {
-	includeLatLong := latlong || it.Numeric
 	o := jsutil.OrderedObj{
 		{Key: "id", Val: it.ID},
 		{Key: "value", Val: it.Value},
@@ -31,12 +31,15 @@ func ItemToObj(it geodb.Item, latlong bool) jsutil.OrderedObj {
 			jsutil.KV{Key: "country", Val: it.Country},
 			jsutil.KV{Key: "cc", Val: it.CC},
 		)
-		if includeLatLong {
+		if latlong {
 			o = append(o,
 				jsutil.KV{Key: "latitude", Val: it.Latitude},
 				jsutil.KV{Key: "longitude", Val: it.Longitude},
 				jsutil.KV{Key: "timezone", Val: it.Timezone},
 			)
+			if it.Elevation > 0 {
+				o = append(o, jsutil.KV{Key: "elevation", Val: it.Elevation})
+			}
 		}
 		if latlong {
 			o = append(o, jsutil.KV{Key: "population", Val: it.Population})
@@ -48,12 +51,15 @@ func ItemToObj(it geodb.Item, latlong bool) jsutil.OrderedObj {
 			jsutil.KV{Key: "country", Val: it.Country},
 			jsutil.KV{Key: "cc", Val: it.CC},
 		)
-		if includeLatLong {
+		if latlong {
 			o = append(o,
 				jsutil.KV{Key: "latitude", Val: it.Latitude},
 				jsutil.KV{Key: "longitude", Val: it.Longitude},
 				jsutil.KV{Key: "timezone", Val: it.Timezone},
 			)
+			if it.Elevation > 0 {
+				o = append(o, jsutil.KV{Key: "elevation", Val: it.Elevation})
+			}
 		}
 		o = append(o, jsutil.KV{Key: "geo", Val: it.Geo})
 		if latlong && it.Population != 0 {
