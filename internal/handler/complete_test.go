@@ -8,9 +8,10 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
 )
 
-// Expected bodies were captured from @hebcal/geo-sqlite GeoDb.autoComplete run
-// against the testdata databases, with the country flag appended by the
-// hebcal-web /complete handler, giving byte-for-byte parity with Node.
+// These tests pin the exact JSON body /complete returns for a variety of
+// queries against the testdata databases: geoname and ZIP text search,
+// numeric ZIP lookups (exact and prefix), the g=on latitude/longitude/
+// timezone/elevation/population fields, UTF-8 handling, and error responses.
 
 func TestCompleteGeoname(t *testing.T) {
 	srv := testServerWithDB(t)
@@ -140,10 +141,9 @@ func TestCompleteZipText(t *testing.T) {
 
 func TestCompleteZipPrefix(t *testing.T) {
 	srv := testServerWithDB(t)
-	// Without g=on, latitude/longitude/timezone/elevation/population are
-	// dropped, matching a geoname text-search result's default shape rather
-	// than @hebcal/geo-sqlite's numeric-ZIP special case (which always kept
-	// coordinates).
+	// A numeric ZIP prefix without g=on still drops
+	// latitude/longitude/timezone/elevation/population, the same as any other
+	// result without g=on.
 	resp, body := get(t, srv, "/complete?q=902")
 	if resp.StatusCode != 200 {
 		t.Fatalf("status = %d body=%s", resp.StatusCode, body)
@@ -200,7 +200,7 @@ func TestCompleteNoResults(t *testing.T) {
 	if body != `{"error":"Not Found"}` {
 		t.Errorf("body = %s, want Not Found error", body)
 	}
-	// hebcal-web drops the ETag on the no-results 404 but keeps Cache-Control.
+	// The no-results 404 drops the ETag but keeps Cache-Control.
 	if etag := resp.Header.Get("ETag"); etag != "" {
 		t.Errorf("expected no ETag on no-results 404, got %q", etag)
 	}

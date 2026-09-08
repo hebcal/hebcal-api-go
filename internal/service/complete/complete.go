@@ -1,8 +1,7 @@
 // Package complete renders the results of the geographic typeahead behind the
-// /complete endpoint (also reachable as /complete.php), a Go port of the
-// serialization in hebcal-web src/complete.js. The search itself lives in
-// pkg/geodb; this package turns its results into the JSON the endpoint
-// returns, with an emoji country flag appended to each one.
+// /complete endpoint (also reachable as /complete.php). The search itself
+// lives in pkg/geodb; this package turns its results into the JSON the
+// endpoint returns, with an emoji country flag appended to each one.
 package complete
 
 import (
@@ -12,13 +11,14 @@ import (
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 )
 
-// ItemToObj serializes an autocomplete result to JSON, reproducing the field
-// order and visibility of @hebcal/geo-sqlite's zip/geoname autocomplete objects
-// plus the country flag appended by hebcal-web's /complete handler. When
-// latlong is false, latitude/longitude/timezone/elevation/population are
-// dropped from every result, ZIP and geoname alike, for consistency between
-// the two shapes; this is a deliberate divergence from @hebcal/geo-sqlite,
-// which always kept coordinates on a numeric ZIP match regardless of g=on.
+// ItemToObj serializes an autocomplete result to JSON in the field order and
+// shape the /complete endpoint returns, appending a country flag. ZIP and
+// geoname results carry different fields (a ZIP result has no "name", for
+// instance) but share the same rule for the optional ones: when latlong is
+// false, latitude/longitude/timezone/elevation/population are all dropped;
+// when it is true, they're included, with elevation appearing only when it
+// is positive and population only when it is non-zero (geoname results) or
+// unconditionally (ZIP results).
 func ItemToObj(it geodb.Item, latlong bool) jsutil.OrderedObj {
 	o := jsutil.OrderedObj{
 		{Key: "id", Val: it.ID},
@@ -79,7 +79,8 @@ func ItemToObj(it geodb.Item, latlong bool) jsutil.OrderedObj {
 }
 
 // FlagEmoji converts a 2-letter ISO country code to its regional-indicator
-// emoji flag, matching hebcal-web src/emoji-flag.js.
+// emoji flag (e.g. "IL" -> 🇮🇱), by offsetting each letter into the Unicode
+// regional-indicator-symbol block.
 func FlagEmoji(cc string) string {
 	cc = strings.ToUpper(cc)
 	var b strings.Builder
