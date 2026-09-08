@@ -1,11 +1,10 @@
 package handler
 
-// The /complete endpoint is a Go port of the hebcal-web src/complete.js
-// geographic typeahead (also reachable as /complete.php). It returns a JSON
-// array of location suggestions for the ?q= query, with an emoji country flag
-// appended to each result. ?g=on (or ?g=1) additionally returns
-// latitude/longitude/timezone/population, plus elevation when it is positive
-// (both ZIP and geoname results — @hebcal/geo-sqlite never returned this).
+// The /complete endpoint implements a geographic typeahead (also reachable
+// as /complete.php). It returns a JSON array of location suggestions for the
+// ?q= query, with an emoji country flag appended to each result. ?g=on (or
+// ?g=1) additionally returns latitude/longitude/timezone/population, plus
+// elevation when it is positive, for both ZIP and geoname results.
 
 import (
 	"net/http"
@@ -27,8 +26,7 @@ func (s *Server) complete(w http.ResponseWriter, r *http.Request) {
 	jsutil.TrimTrailingWhitespace(q)
 	qraw := strings.TrimSpace(q.Get("q"))
 	if qraw == "" {
-		// hebcal-web returns 404 {"error":"Not Found"} with no Cache-Control
-		// for an empty query.
+		// An empty query gets no Cache-Control header at all.
 		writeNotFoundJSON(w)
 		return
 	}
@@ -53,8 +51,8 @@ func (s *Server) complete(w http.ResponseWriter, r *http.Request) {
 	}
 	items := s.DB.AutoComplete(qraw, near)
 	if len(items) == 0 {
-		// No matches: drop the ETag (matching hebcal-web) and return 404. The
-		// Cache-Control set above is retained, as in hebcal-web.
+		// No matches: drop the ETag and return 404, but keep the
+		// Cache-Control header set above.
 		w.Header().Del("ETag")
 		writeNotFoundJSON(w)
 		return

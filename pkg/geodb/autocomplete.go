@@ -1,12 +1,11 @@
 package geodb
 
-// AutoComplete is a Go port of @hebcal/geo-sqlite GeoDb.autoComplete, backing
-// the /complete geographic typeahead. A leading digit routes to a ZIP-code
-// lookup (exact 5-digit or numeric prefix); anything else runs a full-text
-// search against both the geonames and US-ZIP FTS5 tables, merges and
-// de-duplicates the two result sets, ranks them by a combined FTS5 bm25
-// relevance + population score (optionally biased toward a nearby GeoIP
-// location), and keeps the top 12.
+// This file implements the geographic typeahead behind /complete. A leading
+// digit routes to a ZIP-code lookup (exact 5-digit or numeric prefix);
+// anything else runs a full-text search against both the geonames and
+// US-ZIP FTS5 tables, merges and de-duplicates the two result sets, ranks
+// them by a combined FTS5 bm25 relevance + population score (optionally
+// biased toward a nearby GeoIP location), and keeps the top 12.
 //
 // The FTS5 queries require the mattn/go-sqlite3 driver to be built with the
 // sqlite_fts5 tag; the scoring SQL also calls ln(), which needs the
@@ -21,12 +20,12 @@ import (
 	"strings"
 )
 
-// FTS5 bm25 column weights used to rank autocomplete matches, mirroring
-// @hebcal/geo-sqlite. A match on the city name is weighted most heavily so that
-// e.g. "Washington, D.C." outranks Seattle (whose admin1 is "Washington"). The
-// country name gets a modest weight and admin1 the lowest, so region-name
-// matches don't float to the top. The combined longname column keeps multi-word
-// queries (e.g. "san fr") working across the city/admin1/country boundary.
+// FTS5 bm25 column weights used to rank autocomplete matches. A match on the
+// city name is weighted most heavily so that e.g. "Washington, D.C." outranks
+// Seattle (whose admin1 is "Washington"). The country name gets a modest
+// weight and admin1 the lowest, so region-name matches don't float to the
+// top. The combined longname column keeps multi-word queries (e.g. "san fr")
+// working across the city/admin1/country boundary.
 const (
 	ftsWeightCity     = 8.0
 	ftsWeightCountry  = 2.0
@@ -49,9 +48,8 @@ const geonameMatchExpr = `({city admin1 country} : "%s" * OR {longname} : "%s" *
 // is sufficient.
 const zipMatchExpr = `{longname} : "%s" *`
 
-// zipCompleteSQL matches ZIP_COMPLETE_SQL (numeric prefix search), plus the
-// Elevation column so a positive elevation can be surfaced on these results
-// (see zipPrefixComplete) — something @hebcal/geo-sqlite never did.
+// zipCompleteSQL is the numeric ZIP-prefix search behind zipPrefixComplete,
+// returning up to the 12 most populous ZIP codes in the requested range.
 const zipCompleteSQL = `SELECT ZipCode,CityMixedCase,State,Latitude,Longitude,Elevation,TimeZone,DayLightSaving,Population
 FROM ZIPCodes_Primary
 WHERE ZipCode >= ? AND ZipCode < ?
@@ -59,8 +57,9 @@ ORDER BY Population DESC
 LIMIT 12`
 
 var (
-	// geonameCompleteSQL matches @hebcal/geo-sqlite GEONAME_COMPLETE_SQL. The
-	// bm25 weight arguments are positional over the geoname_fulltext columns:
+	// geonameCompleteSQL is the full-text search behind geoname autocomplete
+	// matches. The bm25 weight arguments are positional over the
+	// geoname_fulltext columns:
 	//   geonameid(0), longname(1), population(2), city(3), admin1(4), country(5)
 	// bm25 returns smaller numbers for better matches, so it is negated and
 	// added to the population term to form a "higher is better" score.
@@ -72,8 +71,9 @@ WHERE geoname_fulltext MATCH ?
 ORDER BY score DESC
 LIMIT 100`, ftsWeightLongname, ftsWeightCity, ftsWeightAdmin1, ftsWeightCountry, populationWeight)
 
-	// zipFulltextCompleteSQL matches ZIP_FULLTEXT_COMPLETE_SQL. bm25 is
-	// deliberately not used here: its scores are corpus-relative and therefore
+	// zipFulltextCompleteSQL is the full-text search behind ZIP-city
+	// autocomplete matches. bm25 is deliberately not used here: its scores
+	// are corpus-relative and therefore
 	// not comparable to the geonames bm25 scores when the two result sets are
 	// merged. Ranking ZIPs on a population-only score (on the same ln scale as
 	// the geoname population term) preserves the "geonames take priority"
@@ -254,9 +254,10 @@ func (db *DB) geonameFulltextComplete(match string) []Item {
 	return out
 }
 
-// geonameLocToAutocomplete matches @hebcal/geo-sqlite geonameLocToAutocomplete.
-// The FTS row supplies the id, the "city" used for the optional name override,
-// and the country fallback; everything else comes from the resolved location.
+// geonameLocToAutocomplete builds an autocomplete Item for one geoname FTS
+// match. The FTS row supplies the id, the "city" used for the optional name
+// override, and the country fallback; everything else comes from the
+// resolved location.
 func (db *DB) geonameLocToAutocomplete(geonameid int, loc *Location, resCity, resCountry string) Item {
 	country := resCountry
 	if country == "" {
@@ -307,8 +308,9 @@ func (db *DB) zipFulltextComplete(match string) []Item {
 	return out
 }
 
-// zipLocToAutocomplete matches @hebcal/geo-sqlite zipLocToAutocomplete, plus a
-// positive elevation, which the original never surfaced.
+// zipLocToAutocomplete builds an autocomplete Item for a resolved ZIP-code
+// location, used for both an exact 5-digit match and a ZIP-city full-text
+// match.
 func zipLocToAutocomplete(loc *Location) Item {
 	return Item{
 		ID:         loc.Zip,
@@ -327,10 +329,8 @@ func zipLocToAutocomplete(loc *Location) Item {
 	}
 }
 
-// zipPrefixComplete runs the numeric ZIP-prefix query and builds a result per
-// row, matching @hebcal/geo-sqlite zipResultToObj plus a positive elevation,
-// which the original never surfaced (ZIP_COMPLETE_SQL didn't even select the
-// column).
+// zipPrefixComplete runs the numeric ZIP-prefix query over the half-open
+// range [zipA, zipB) and builds a result Item per row.
 func (db *DB) zipPrefixComplete(zipA, zipB string) []Item {
 	rows, err := db.zipCompStmt.Query(zipA, zipB)
 	if err != nil {
@@ -370,9 +370,9 @@ func (db *DB) zipPrefixComplete(zipA, zipB string) []Item {
 	return out
 }
 
-// mergeZipGeo merges ZIP and geoname matches, matching @hebcal/geo-sqlite
-// mergeZipGeo: GeoNames matches take priority over US ZIP matches for the same
-// city, and insertion order is preserved (a geoname overwrites a ZIP in place).
+// mergeZipGeo merges ZIP and geoname matches for the same query: geoname
+// matches take priority over ZIP matches for the same city, and insertion
+// order is preserved (a geoname overwrites a ZIP in place).
 func mergeZipGeo(zipMatches, geoMatches []Item) []Item {
 	if len(zipMatches) > 0 && len(geoMatches) == 0 {
 		return zipMatches
