@@ -183,7 +183,9 @@ altogether.
   otherwise both the geonames and US-ZIP full-text indexes are searched,
   merged (GeoNames winning ties), and sorted by population.
   - `g=on` (or `g=1`) additionally returns
-    `latitude`/`longitude`/`timezone`/`population`.
+    `latitude`/`longitude`/`timezone`/`population`, plus `elevation` when it
+    is positive (both ZIP and geoname results; this is not something
+    @hebcal/geo-sqlite ever returned).
   - An empty `q` or no matches returns `404 {"error":"Not Found"}`.
   - Responses are cached for 3 days with a weak `ETag`.
 

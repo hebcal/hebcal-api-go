@@ -49,8 +49,10 @@ const geonameMatchExpr = `({city admin1 country} : "%s" * OR {longname} : "%s" *
 // is sufficient.
 const zipMatchExpr = `{longname} : "%s" *`
 
-// zipCompleteSQL matches ZIP_COMPLETE_SQL (numeric prefix search).
-const zipCompleteSQL = `SELECT ZipCode,CityMixedCase,State,Latitude,Longitude,TimeZone,DayLightSaving,Population
+// zipCompleteSQL matches ZIP_COMPLETE_SQL (numeric prefix search), plus the
+// Elevation column so a positive elevation can be surfaced on these results
+// (see zipPrefixComplete) — something @hebcal/geo-sqlite never did.
+const zipCompleteSQL = `SELECT ZipCode,CityMixedCase,State,Latitude,Longitude,Elevation,TimeZone,DayLightSaving,Population
 FROM ZIPCodes_Primary
 WHERE ZipCode >= ? AND ZipCode < ?
 ORDER BY Population DESC
@@ -94,9 +96,8 @@ type Point struct {
 
 // Item is one autocomplete result before JSON serialization. The population
 // is kept as the sort tiebreaker (and the sole ordering for the numeric ZIP
-// paths) even when it is not emitted, and the IsZip/Numeric flags drive the
-// field ordering and lat/long visibility rules the caller applies when
-// rendering.
+// paths) even when it is not emitted, and IsZip drives the field ordering the
+// caller applies when rendering.
 type Item struct {
 	ID         interface{} // int GeoNames id, or ZIP string
 	Value      string
@@ -106,12 +107,12 @@ type Item struct {
 	CC         string
 	Latitude   float64
 	Longitude  float64
+	Elevation  int // positive values are surfaced in the response
 	Timezone   string
 	Population int
 	Geo        string // "geoname" or "zip"
 	Name       string // geoname only: the FTS "city" when it differs from Asciiname
 	IsZip      bool   // controls field order (zip layout vs geoname layout)
-	Numeric    bool   // numeric ZIP path: latitude/longitude/timezone are always kept
 	// Score is the combined FTS5 bm25 relevance + population term computed by
 	// the fulltext SQL, used to rank merged results. Callers do not serialize
 	// it.
@@ -136,7 +137,7 @@ func (db *DB) AutoComplete(qraw string, near *Point) []Item {
 			if loc == nil {
 				return nil
 			}
-			return []Item{zipLocToAutocomplete(loc, true)}
+			return []Item{zipLocToAutocomplete(loc)}
 		}
 		// 1-4 digit ZIP prefix: search the half-open range [zipA, zipB).
 		zipA := qraw
@@ -269,6 +270,7 @@ func (db *DB) geonameLocToAutocomplete(geonameid int, loc *Location, resCity, re
 		CC:         loc.CC,
 		Latitude:   loc.Latitude,
 		Longitude:  loc.Longitude,
+		Elevation:  loc.Elevation,
 		Timezone:   loc.TimeZoneID,
 		Population: loc.Population,
 		Geo:        "geoname",
@@ -298,15 +300,16 @@ func (db *DB) zipFulltextComplete(match string) []Item {
 		if loc == nil {
 			continue
 		}
-		item := zipLocToAutocomplete(loc, false)
+		item := zipLocToAutocomplete(loc)
 		item.Score = score
 		out = append(out, item)
 	}
 	return out
 }
 
-// zipLocToAutocomplete matches @hebcal/geo-sqlite zipLocToAutocomplete.
-func zipLocToAutocomplete(loc *Location, numeric bool) Item {
+// zipLocToAutocomplete matches @hebcal/geo-sqlite zipLocToAutocomplete, plus a
+// positive elevation, which the original never surfaced.
+func zipLocToAutocomplete(loc *Location) Item {
 	return Item{
 		ID:         loc.Zip,
 		Value:      loc.Name,
@@ -316,17 +319,18 @@ func zipLocToAutocomplete(loc *Location, numeric bool) Item {
 		CC:         "US",
 		Latitude:   loc.Latitude,
 		Longitude:  loc.Longitude,
+		Elevation:  loc.Elevation,
 		Timezone:   loc.TimeZoneID,
 		Population: loc.Population,
 		Geo:        "zip",
 		IsZip:      true,
-		Numeric:    numeric,
 	}
 }
 
 // zipPrefixComplete runs the numeric ZIP-prefix query and builds a result per
-// row, matching @hebcal/geo-sqlite zipResultToObj. ZIP_COMPLETE_SQL does not
-// select the Elevation column, so (like the JS) no elevation field is emitted.
+// row, matching @hebcal/geo-sqlite zipResultToObj plus a positive elevation,
+// which the original never surfaced (ZIP_COMPLETE_SQL didn't even select the
+// column).
 func (db *DB) zipPrefixComplete(zipA, zipB string) []Item {
 	rows, err := db.zipCompStmt.Query(zipA, zipB)
 	if err != nil {
@@ -337,8 +341,8 @@ func (db *DB) zipPrefixComplete(zipA, zipB string) []Item {
 	for rows.Next() {
 		var zip, city, state, tz, dst string
 		var latitude, longitude float64
-		var population sql.NullInt64
-		if err := rows.Scan(&zip, &city, &state, &latitude, &longitude, &tz, &dst, &population); err != nil {
+		var elevation, population sql.NullInt64
+		if err := rows.Scan(&zip, &city, &state, &latitude, &longitude, &elevation, &tz, &dst, &population); err != nil {
 			continue
 		}
 		tzNum, _ := parseInt(tz)
@@ -354,7 +358,9 @@ func (db *DB) zipPrefixComplete(zipA, zipB string) []Item {
 			Timezone:  UsaTzid(state, tzNum, dst),
 			Geo:       "zip",
 			IsZip:     true,
-			Numeric:   true,
+		}
+		if elevation.Valid && elevation.Int64 > 0 {
+			it.Elevation = int(elevation.Int64)
 		}
 		if population.Valid {
 			it.Population = int(population.Int64)

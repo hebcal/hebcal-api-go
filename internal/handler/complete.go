@@ -4,7 +4,8 @@ package handler
 // geographic typeahead (also reachable as /complete.php). It returns a JSON
 // array of location suggestions for the ?q= query, with an emoji country flag
 // appended to each result. ?g=on (or ?g=1) additionally returns
-// latitude/longitude/timezone/population.
+// latitude/longitude/timezone/population, plus elevation when it is positive
+// (both ZIP and geoname results — @hebcal/geo-sqlite never returned this).
 
 import (
 	"net/http"
