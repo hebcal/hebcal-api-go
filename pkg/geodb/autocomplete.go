@@ -73,11 +73,10 @@ LIMIT 100`, ftsWeightLongname, ftsWeightCity, ftsWeightAdmin1, ftsWeightCountry,
 
 	// zipFulltextCompleteSQL is the full-text search behind ZIP-city
 	// autocomplete matches. bm25 is deliberately not used here: its scores
-	// are corpus-relative and therefore
-	// not comparable to the geonames bm25 scores when the two result sets are
-	// merged. Ranking ZIPs on a population-only score (on the same ln scale as
-	// the geoname population term) preserves the "geonames take priority"
-	// behavior.
+	// are corpus-relative and therefore not comparable to the geonames bm25
+	// scores when the two result sets are merged. Ranking ZIPs on a
+	// population-only score (on the same ln scale as the geoname population
+	// term) preserves the "geonames take priority" behavior.
 	zipFulltextCompleteSQL = fmt.Sprintf(`SELECT ZipCode,
   %[1]g * ln(CAST(Population AS REAL) + 10) AS score
 FROM ZIPCodes_CityFullText5

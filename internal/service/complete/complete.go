@@ -16,9 +16,8 @@ import (
 // geoname results carry different fields (a ZIP result has no "name", for
 // instance) but share the same rule for the optional ones: when latlong is
 // false, latitude/longitude/timezone/elevation/population are all dropped;
-// when it is true, they're included, with elevation appearing only when it
-// is positive and population only when it is non-zero (geoname results) or
-// unconditionally (ZIP results).
+// when it is true, they're all included, except that elevation is omitted
+// when it is not positive.
 func ItemToObj(it geodb.Item, latlong bool) jsutil.OrderedObj {
 	o := jsutil.OrderedObj{
 		{Key: "id", Val: it.ID},
@@ -62,7 +61,7 @@ func ItemToObj(it geodb.Item, latlong bool) jsutil.OrderedObj {
 			}
 		}
 		o = append(o, jsutil.KV{Key: "geo", Val: it.Geo})
-		if latlong && it.Population != 0 {
+		if latlong {
 			o = append(o, jsutil.KV{Key: "population", Val: it.Population})
 		}
 		if it.Name != "" {

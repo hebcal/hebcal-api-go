@@ -44,6 +44,21 @@ func TestCompleteGeonameLatLong(t *testing.T) {
 	}
 }
 
+// TestCompleteGeonameLatLongZeroPopulation pins that population is still
+// emitted under g=on even when it is zero, the same as a ZIP result: a
+// geoname with a real population of 0 must not look indistinguishable from
+// one where population was merely omitted.
+func TestCompleteGeonameLatLongZeroPopulation(t *testing.T) {
+	srv := testServerWithDB(t)
+	resp, body := get(t, srv, "/complete?q=Mitzpe+Ramon&g=on")
+	if resp.StatusCode != 200 {
+		t.Fatalf("status = %d body=%s", resp.StatusCode, body)
+	}
+	if !strings.Contains(body, `"population":0`) {
+		t.Errorf("body = %s, want a population:0 field", body)
+	}
+}
+
 // TestCompleteUTF8Latin exercises a query carrying non-ASCII Latin bytes (the
 // "Völ" prefix of Völkermarkt, Austria). The FTS "city" column keeps the
 // accented spelling while the geoname asciiname is "Voelkermarkt", so the
