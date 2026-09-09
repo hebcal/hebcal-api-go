@@ -31,3 +31,22 @@ func TestAutocompleteSortFallsBackToPopulation(t *testing.T) {
 		t.Fatalf("first = %q, want Santiago population fallback", items[0].Value)
 	}
 }
+
+// TestZipShortName pins that zipShortName -- shared by every ZIP autocomplete
+// path (exact 5-digit match, ZIP-text search, and numeric ZIP prefix) --
+// keeps the ", DC" suffix for Washington, D.C., the one case where the short
+// name is not simply the text before the first comma. Before zipPrefixComplete
+// was changed to call this helper, the numeric-prefix path read the raw city
+// column directly and returned "Washington" instead of "Washington, DC" for
+// the same ZIP code that the other two paths resolve correctly.
+func TestZipShortName(t *testing.T) {
+	tests := []struct{ value, want string }{
+		{"Washington, DC 20001", "Washington, DC"},
+		{"Beverly Hills, CA 90210", "Beverly Hills"},
+	}
+	for _, tc := range tests {
+		if got := zipShortName(tc.value); got != tc.want {
+			t.Errorf("zipShortName(%q) = %q, want %q", tc.value, got, tc.want)
+		}
+	}
+}

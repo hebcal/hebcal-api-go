@@ -315,7 +315,7 @@ func zipLocToAutocomplete(loc *Location) Item {
 		ID:         loc.Zip,
 		Value:      loc.Name,
 		Admin1:     loc.Admin1,
-		Asciiname:  loc.ShortName(),
+		Asciiname:  zipShortName(loc.Name),
 		Country:    "United States",
 		CC:         "US",
 		Latitude:   loc.Latitude,
@@ -326,6 +326,17 @@ func zipLocToAutocomplete(loc *Location) Item {
 		Geo:        "zip",
 		IsZip:      true,
 	}
+}
+
+// zipShortName returns the city portion of a "City, ST ZIP" ZIP-result value
+// (e.g. "Beverly Hills, CA 90210" -> "Beverly Hills"), by delegating to
+// Location.ShortName so every ZIP autocomplete path -- an exact 5-digit
+// match, a ZIP-text search, and a numeric ZIP prefix -- derives asciiname the
+// same way. That matters for a city like Washington, D.C.: ShortName keeps
+// the ", DC" suffix, and every caller needs to agree on that regardless of
+// how the ZIP was found.
+func zipShortName(value string) string {
+	return (&Location{Name: value, CC: "US"}).ShortName()
 }
 
 // zipPrefixComplete runs the numeric ZIP-prefix query over the half-open
@@ -345,11 +356,12 @@ func (db *DB) zipPrefixComplete(zipA, zipB string) []Item {
 			continue
 		}
 		tzNum, _ := parseInt(tz)
+		value := fmt.Sprintf("%s, %s %s", city, state, zip)
 		it := Item{
 			ID:        zip,
-			Value:     fmt.Sprintf("%s, %s %s", city, state, zip),
+			Value:     value,
 			Admin1:    state,
-			Asciiname: city,
+			Asciiname: zipShortName(value),
 			Country:   "United States",
 			CC:        "US",
 			Latitude:  latitude,
