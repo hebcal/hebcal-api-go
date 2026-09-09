@@ -16,7 +16,7 @@ type HebMonthPage struct {
 }
 
 // SplitByHebrewMonth groups events into one page per Hebrew month, in
-// chronological order. Port of eventsToCellsHeb() in hebcal-web's src/pdf.js.
+// chronological order.
 //
 // The one subtlety is the leading Elul: a calendar that starts a day or two
 // before Rosh Hashana would otherwise spend a whole page on Erev Rosh Hashana

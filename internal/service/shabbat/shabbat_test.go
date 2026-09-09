@@ -7,9 +7,9 @@ import (
 	"github.com/hebcal/hebcal-go/molad"
 )
 
-// TestMoladInstant checks the conjunction timestamp against values captured
-// from hebcal-web, including a millisecond ending in a zero: JavaScript's
-// Temporal.Instant.toJSON() trims it, so ".170" prints as ".17".
+// TestMoladInstant checks the conjunction timestamp against captured reference
+// values, including a millisecond ending in a zero: trailing zeros are
+// trimmed, so ".170" prints as ".17".
 func TestMoladInstant(t *testing.T) {
 	tests := []struct {
 		year  int
@@ -27,10 +27,10 @@ func TestMoladInstant(t *testing.T) {
 	}
 }
 
-// TestNormMonth pins the "Tammuz" spellings: @hebcal/core writes the month
-// as "Tamuz" but keeps "Tzom Tammuz" for the 17th-of-Tammuz fast, and that
-// description is what title_orig, the MEMO key, the event URL and the
-// /leyning lookup are all built from.
+// TestNormMonth pins the "Tammuz" spellings: the month is written as "Tamuz"
+// but "Tzom Tammuz" is kept for the 17th-of-Tammuz fast, and that description
+// is what title_orig, the MEMO key, the event URL and the /leyning lookup are
+// all built from.
 func TestNormMonth(t *testing.T) {
 	cases := map[string]string{
 		"Rosh Chodesh Tammuz":              "Rosh Chodesh Tamuz",

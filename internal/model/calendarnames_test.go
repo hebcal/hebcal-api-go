@@ -6,7 +6,7 @@ import "testing"
 // weekday tables and the Tamuz spelling are for; they live here because that is
 // where the locale vocabulary now lives.
 
-// AliasLocale mirrors lgToLocale in hebcal-web's src/lang.js.
+// AliasLocale maps the short `lg` codes onto resolved locale names.
 func TestAliasLocale(t *testing.T) {
 	tests := []struct{ lg, want string }{
 		{"h", "he"},
@@ -40,8 +40,8 @@ func TestFixMonthSpelling(t *testing.T) {
 	}
 }
 
-// Every locale hebcal-web can render needs a full set of names, or a calendar
-// in that language would fall back to English mid-page.
+// Every locale a calendar can render in needs a full set of names, or a
+// calendar in that language would fall back to English mid-page.
 func TestLocaleTablesAreComplete(t *testing.T) {
 	for _, lc := range []string{"en", "de", "es", "fi", "fr", "he", "hu", "nl", "pl", "pt", "ru", "ro", "uk"} {
 		n, ok := namesByLocale[lc]

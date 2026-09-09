@@ -48,8 +48,7 @@ func TestParsePath(t *testing.T) {
 	}
 }
 
-// hebcal-web writes these with Node's Buffer.from(s, 'base64'), which accepts
-// both alphabets with or without padding.
+// The payload is decoded permissively: both alphabets, with or without padding.
 func TestDecodeBase64AcceptsBothAlphabets(t *testing.T) {
 	// "hello world" in standard base64 is aGVsbG8gd29ybGQ= .
 	for _, in := range []string{"aGVsbG8gd29ybGQ=", "aGVsbG8gd29ybGQ"} {
@@ -191,9 +190,9 @@ func TestNumYearsIsBounded(t *testing.T) {
 	}
 }
 
-// Candle-lighting without a location is dropped, not rejected: src/calendar.js
-// deletes options.candlelighting when getLocationFromQuery returns nothing, so
-// the request still renders -- just with no times -- rather than erroring.
+// Candle-lighting without a location is dropped, not rejected: with no location
+// to compute times for, candle-lighting is switched off and the request still
+// renders -- just with no times -- rather than erroring.
 func TestCandleLightingWithoutLocationIsDropped(t *testing.T) {
 	msg := &pb.Download{Candlelighting: true, Year: 2026}
 	p, err := DecodeParams(encode(t, msg), nil)
@@ -290,10 +289,8 @@ func TestHavdalahModes(t *testing.T) {
 }
 
 // Asking for Rosh Chodesh, the special Shabbatot and the weekly Torah reading
-// together implies Shabbat Mevarchim. hebcal-web does this by setting the
-// SHABBAT_MEVARCHIM bit in its query mask, which @hebcal/core turns back into
-// options.shabbatMevarchim; without it a Hebrew calendar is missing the
-// "Mevarchim Chodesh" line the Node service prints.
+// together implies Shabbat Mevarchim; without it a Hebrew calendar is missing
+// the "Mevarchim Chodesh" line production prints.
 func TestShabbatMevarchimIsImplied(t *testing.T) {
 	tests := []struct {
 		name                 string
@@ -337,8 +334,7 @@ func TestShabbatMevarchimDoesNotEnableMolad(t *testing.T) {
 	}
 }
 
-// A location implies candle-lighting, even when the request did not ask for it:
-// src/calendar.js sets options.candlelighting = true for any resolved location.
+// A location implies candle-lighting, even when the request did not ask for it.
 // This is the hebcal_2008_prestea bug -- a calendar with a location but no c=on
 // came out with 133 times in production and none here. Ghana is after 1900, so
 // the early-year cutoff does not apply.

@@ -28,12 +28,12 @@ func (c *Client) Learning(ctx context.Context, codes []string, lg string, start,
 	return c.get(ctx, "/learning", q)
 }
 
-// learningLocale maps a download URL's lg to one @hebcal/locales knows, since
+// learningLocale maps a download URL's lg to one the sidecar can load, since
 // readings-svc 400s on any it cannot import. The "ah"/"sh" transliteration
-// variants are hebcal-web's own "show the Hebrew name too" spellings, not real
-// locale names -- their base locales are "a" and "s" -- and the appended Hebrew
-// is drawn here in the renderer, not by the sidecar. Every other lg is passed
-// through: readings-svc rejecting an unknown one is preferable to hiding it.
+// variants are "show the Hebrew name too" spellings, not real locale names --
+// their base locales are "a" and "s" -- and the appended Hebrew is drawn here
+// in the renderer, not by the sidecar. Every other lg is passed through:
+// readings-svc rejecting an unknown one is preferable to hiding it.
 func learningLocale(lg string) string {
 	switch lg {
 	case "ah":

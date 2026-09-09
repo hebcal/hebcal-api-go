@@ -5,10 +5,10 @@ import (
 	"testing"
 )
 
-// Ascent must come from the hhea table, which is what fontkit reports and
-// therefore what pdfkit uses to place a baseline. sfnt.Font.Ascent exposes the
-// OS/2 typographic ascender instead, and for Source Sans Pro the two disagree
-// by 234 units -- enough to sit every day number about 3.3pt high in its cell.
+// Ascent must come from the hhea table, which is what the layout code uses to
+// place a baseline. sfnt.Font.Ascent exposes the OS/2 typographic ascender
+// instead, and for Source Sans Pro the two disagree by 234 units -- enough to
+// sit every day number about 3.3pt high in its cell.
 func TestAscentComesFromHhea(t *testing.T) {
 	fs := testFonts(t)
 	tests := []struct {
@@ -85,8 +85,7 @@ func TestBothFontFormatsLoadAndEmbed(t *testing.T) {
 }
 
 // Embedded instances accumulate the glyph subset used by one document, so each
-// render needs its own. Sharing them across documents is what OOM-killed the
-// Node service; see the PDF section of hebcal-web's CLAUDE.md.
+// render needs its own; they cannot be shared across documents.
 func TestEmbedReturnsIndependentInstances(t *testing.T) {
 	fs := testFonts(t)
 	a, err := fs.Embed()

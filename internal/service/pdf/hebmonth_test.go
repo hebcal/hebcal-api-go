@@ -108,9 +108,9 @@ func TestLeapYearHasBothAdars(t *testing.T) {
 // Each page's events are ordered the same way the Gregorian pages order theirs.
 //
 // The flags matter: eventOrder reserves the flagless-timed slot for the Erev
-// Pesach chametz deadlines, which are the only timed events @hebcal/core emits
-// without any, so a candle-lighting event built without LIGHT_CANDLES would be
-// sorted as one of those.
+// Pesach chametz deadlines, which are the only timed events with no flags, so a
+// candle-lighting event built without LIGHT_CANDLES would be sorted as one of
+// those.
 func TestHebrewPagesSortTheirDays(t *testing.T) {
 	d := hdate.New(5787, hdate.Tishrei, 15)
 	timed := Event{HD: d, Greg: d.Gregorian(), Subject: "Candle lighting",

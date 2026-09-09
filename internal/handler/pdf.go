@@ -22,11 +22,9 @@ import (
 // the same request: /v2/h/ (see internal/service/pdf/v2.go) and the classic
 // /hebcal/index.cgi/<name>.pdf?<query> (see internal/service/pdf/cgi.go).
 //
-// The response headers follow hebcal-web: its download dispatcher
-// (src/app-download.js) sets a 14-day Cache-Control before rendering and the
-// .pdf branch of src/hebcal-download.js leaves it in place -- removing it only
-// on the empty-events 400 -- then adds CORS and nosniff. Without these Varnish
-// and browsers do not cache the PDF.
+// The response carries a 14-day Cache-Control (dropped only on the empty-events
+// 400), CORS and nosniff. Without these Varnish and browsers do not cache the
+// PDF.
 func (s *Server) pdfDownload(w http.ResponseWriter, r *http.Request) {
 	if !pdfMethodAllowed(w, r) || !s.pdfAvailable(w) {
 		return
@@ -54,19 +52,18 @@ func (s *Server) pdfDownload(w http.ResponseWriter, r *http.Request) {
 
 // pdfHoliday renders /holidays/hebcal-<year>.pdf.
 //
-// The response headers follow holidayPdf.js rather than the /v4/ handler: a
-// 60-day Cache-Control, no CORS header (www.hebcal.com sets that only for the
-// cfg= API responses), and nosniff, which www sets on every response. As in
-// holidayPdf.js the Cache-Control goes on after the URL has been accepted, so
-// the 404, 400 and 410 are not cached.
+// The response headers differ from the /v4/ handler: a 60-day Cache-Control, no
+// CORS header (www.hebcal.com sets that only for the cfg= API responses), and
+// nosniff, which www sets on every response. The Cache-Control goes on after
+// the URL has been accepted, so the 404, 400 and 410 are not cached.
 func (s *Server) pdfHoliday(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	if !pdfMethodAllowed(w, r) {
 		return
 	}
-	// Varnish routes only the PDFs here; the HTML pages under /holidays/ are
-	// still served by hebcal-web, so anything else is a 404 rather than a
-	// half-rendered calendar.
+	// Only the PDFs are routed here; the HTML pages under /holidays/ are served
+	// elsewhere, so anything else is a 404 rather than a half-rendered
+	// calendar.
 	if !strings.HasSuffix(r.URL.Path, ".pdf") {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
@@ -100,14 +97,12 @@ func (s *Server) pdfHoliday(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// bingUA is the substring app-download.js's fixup2 checks the User-Agent
-// header for (`compatible; bingbot/2.`), ported verbatim rather than matching
-// the whole "bingbot" token so it can't also catch some future unrelated
-// crawler that merely mentions bing.
+// bingUA is the substring the User-Agent header is checked for
+// (`compatible; bingbot/2.`), rather than the whole "bingbot" token, so it
+// can't also catch some future unrelated crawler that merely mentions bing.
 const bingUA = "compatible; bingbot/2."
 
-// isBingBot reports whether the request's User-Agent identifies bingbot,
-// mirroring hebcal-web's isBingBot.
+// isBingBot reports whether the request's User-Agent identifies bingbot.
 func isBingBot(r *http.Request) bool {
 	return strings.Contains(r.Header.Get("User-Agent"), bingUA)
 }
@@ -156,18 +151,15 @@ func (s *Server) writePDF(w http.ResponseWriter, cal *pdf.Calendar) {
 	w.Write(body)
 }
 
-// writeDownloadError maps a /v4/ service error onto the status hebcal-web
-// answers with.
+// writeDownloadError maps a /v4/ service error onto its HTTP status.
 //
-// Which responses keep the Cache-Control is the interesting part. The
-// dispatcher in src/app-download.js sets it before the handler runs, so it
-// survives onto everything the handler does not remove: the 410 keeps it (that
-// year never comes into range) and the empty-calendar 400 drops it. The
-// unknown-location 404 is a deliberate divergence -- hebcal-web keeps it there
-// too, but a location missing today may be added later, so pinning the 404 in
-// Varnish for two weeks is worse than a cache miss. pdfDownload sets the header
-// only after this function has returned without writing, so a 410 sets its own
-// and nothing else carries one.
+// Which responses keep the Cache-Control is the interesting part: the 410 keeps
+// it (that year never comes into range) and the empty-calendar 400 drops it.
+// The unknown-location 404 also drops it -- a deliberate divergence from
+// production, which keeps it there -- because a location missing today may be
+// added later, so pinning the 404 in Varnish for two weeks is worse than a
+// cache miss. pdfDownload sets the header only after this function has returned
+// without writing, so a 410 sets its own and nothing else carries one.
 func writeDownloadError(w http.ResponseWriter, err error, r *http.Request) {
 	// Record the underlying error (not the possibly-terser body some cases
 	// write) for the access log's "msg" field.
@@ -181,22 +173,22 @@ func writeDownloadError(w http.ResponseWriter, err error, r *http.Request) {
 		http.Error(w, oor.Error(), http.StatusGone)
 	case errors.As(err, &decErr) && isBingBot(r):
 		// bingbot fetches /v4/ URLs with the path lowercased, which fails
-		// base64-decode or protobuf-unmarshal every time; app-download.js's
-		// fixup2 answered exactly this case 404 rather than 400 (see
-		// pdf.DecodeError). Every other malformed /v4/ request -- from any
-		// other user agent -- keeps falling through to writeCommonPDFError's
-		// 400 below.
+		// base64-decode or protobuf-unmarshal every time; this case is answered
+		// 404 rather than 400 (see pdf.DecodeError). Every other malformed /v4/
+		// request -- from any other user agent -- keeps falling through to
+		// writeCommonPDFError's 400 below.
 		http.Error(w, "Not Found", http.StatusNotFound)
 	case errors.As(err, &unsup):
-		// Six daily-learning series have no Go schedule, and their rows come
-		// from hebcal-web rather than the calendar being served without them.
-		// Either way the user never gets a calendar missing rows they asked
-		// for, but the two failure modes are different and the codes say so:
+		// Several daily-learning series have no Go schedule, and their rows
+		// come from the readings-svc sidecar rather than the calendar being
+		// served without them. Either way the user never gets a calendar
+		// missing rows they asked for, but the two failure modes are different
+		// and the codes say so:
 		//
-		//   501  this build cannot render it at all, because no hebcal-web URL
-		//        is configured. Retrying will not help.
-		//   503  hebcal-web is configured but did not answer. Transient, and
-		//        worth retrying or falling back to the Node service.
+		//   501  this build cannot render it at all, because no readings-svc is
+		//        configured. Retrying will not help.
+		//   503  readings-svc is configured but did not answer. Transient, and
+		//        worth retrying or letting Varnish fall back.
 		w.Header().Set("X-Unsupported-Series", unsup.Header())
 		if unsup.Retryable {
 			w.Header().Set("Retry-After", "5")
@@ -209,10 +201,10 @@ func writeDownloadError(w http.ResponseWriter, err error, r *http.Request) {
 	}
 }
 
-// writeHolidayError maps a /holidays/ parse error onto the status
-// holidayPdf.js answers with. Its three throws all happen before it sets
-// Cache-Control, so none of these responses is cacheable -- and its 410 says
-// only "Gone", where the download path names the year.
+// writeHolidayError maps a /holidays/ parse error onto its HTTP status. The
+// parse errors all happen before Cache-Control is set, so none of these
+// responses is cacheable -- and the 410 says only "Gone", where the download
+// path names the year.
 func writeHolidayError(w http.ResponseWriter, err error) {
 	// The holiday 410 body is only "Gone"; log the richer error naming the year.
 	httpx.RecordError(w, err)
@@ -225,10 +217,9 @@ func writeHolidayError(w http.ResponseWriter, err error) {
 }
 
 // writeCommonPDFError handles the errors both PDF routes answer identically:
-// an unresolvable location or URL is 404 (getLocationFromQuery reports these
-// with 404, reserving 400 for malformed input), a year outside 1..32000 is 400,
-// an error that carries its own status keeps it, and anything else is a
-// malformed request.
+// an unresolvable location or URL is 404 (reserving 400 for malformed input),
+// a year outside 1..32000 is 400, an error that carries its own status keeps
+// it, and anything else is a malformed request.
 func writeCommonPDFError(w http.ResponseWriter, err error) {
 	var nf *pdf.NotFoundError
 	var bad *holidaypdf.BadRequestError

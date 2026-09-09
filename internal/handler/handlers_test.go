@@ -85,10 +85,10 @@ func TestSingleG2H(t *testing.T) {
 	}
 }
 
-// TestConverterLang checks the `lg` short codes against hebcal-web's
-// lgToLocale map. "ah" and "sh" ask for the Hebrew name to be appended to
-// email subject lines on top of Ashkenazi or Sephardic transliteration; no
-// API route renders that part, so they read as plain "a" and "s".
+// TestConverterLang checks the `lg` short codes. "ah" and "sh" ask for the
+// Hebrew name to be appended to email subject lines on top of Ashkenazi or
+// Sephardic transliteration; no API route renders that part, so they read as
+// plain "a" and "s".
 func TestConverterLang(t *testing.T) {
 	_, srv := testServer(t)
 	tests := map[string]string{
@@ -384,7 +384,7 @@ func TestBareConverterRedirects(t *testing.T) {
 // redirect. RFC 9110 §9.3.2 makes HEAD identical to GET but for the content,
 // so a HEAD probe must see the same 302 and Location a GET would -- it
 // previously answered 200 and dropped the Location entirely. POST is
-// deliberately excluded and still renders "today" directly, as hebcal-web does.
+// deliberately excluded and still renders "today" directly.
 func TestBareConverterRedirectMethods(t *testing.T) {
 	_, srv := testServer(t)
 	const path = "/converter?cfg=json"
@@ -426,7 +426,7 @@ func TestBareConverterRedirectMethods(t *testing.T) {
 		t.Errorf("HEAD Location = %q, want %q", got, wantLocation)
 	}
 
-	// POST keeps the JS behavior: no redirect, today's conversion rendered.
+	// POST is not redirected: today's conversion is rendered directly.
 	postResp := do(http.MethodPost)
 	if postResp.StatusCode != http.StatusOK {
 		t.Errorf("POST status = %d, want 200 (no redirect)", postResp.StatusCode)
@@ -504,7 +504,7 @@ func TestEpochBoundary(t *testing.T) {
 
 func TestDateRollover(t *testing.T) {
 	_, srv := testServer(t)
-	// like JavaScript new Date(), out-of-range month/day roll over
+	// out-of-range month/day roll over (2011-13-45 becomes 2012-02-14)
 	_, body := get(t, srv, "/converter?cfg=json&date=2011-13-45&g2h=1")
 	if !strings.Contains(body, `"gy":2012,"gm":2,"gd":14`) {
 		t.Errorf("expected rollover to 2012-02-14: %s", body)

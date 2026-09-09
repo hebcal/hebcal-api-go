@@ -8,10 +8,10 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 )
 
-// The URL shapes holidayPdf.js accepts, and the three ways it refuses one. Note
-// that hebcal-2026-2027.pdf is a *Hebrew* year: the year-index pages name a
-// Hebrew year by the two Gregorian years it spans, and holidayPdf.js keys on
-// the hyphen -- which it still sees because it never strips the extension.
+// The URL shapes Parse accepts, and the three ways it refuses one. Note that
+// hebcal-2026-2027.pdf is a *Hebrew* year: the year-index pages name a Hebrew
+// year by the two Gregorian years it spans, and Parse keys on the hyphen --
+// which it still sees because it never strips the extension.
 func TestParseHolidayPDF(t *testing.T) {
 	tests := []struct {
 		name         string
@@ -90,9 +90,9 @@ func isOutOfRange(err error) bool {
 	return errors.As(err, &e)
 }
 
-// i=on is the only query parameter these calendars take. holidayPdf.js also
-// resolves `lg`, but nothing on the website links a localized holiday PDF, so
-// it is ignored and every calendar renders in English.
+// i=on is the only query parameter these calendars take. A `lg` is accepted
+// but ignored -- nothing on the website links a localized holiday PDF -- so
+// every calendar renders in English.
 func TestHolidayQueryParams(t *testing.T) {
 	tests := []struct {
 		query  string
@@ -124,9 +124,9 @@ func TestHolidayQueryParams(t *testing.T) {
 	}
 }
 
-// The "-il" filename suffix is hebcal-web's newer spelling of the Israel
-// schedule, and it must combine with "?i=on" rather than override it: a
-// legacy "?i=on" link to the plain filename still has to work.
+// The "-il" filename suffix is the newer spelling of the Israel schedule, and
+// it must combine with "?i=on" rather than override it: a legacy "?i=on" link
+// to the plain filename still has to work.
 func TestHolidayPathILSuffix(t *testing.T) {
 	tests := []struct {
 		path   string
@@ -155,8 +155,8 @@ func TestHolidayPathILSuffix(t *testing.T) {
 	}
 }
 
-// The leading-digits parse is load-bearing: holidayPdf.js hands parseInt the
-// filename with the extension still attached.
+// The leading-digits parse is load-bearing: it is handed the filename with the
+// extension still attached.
 func TestLeadingInt(t *testing.T) {
 	tests := []struct {
 		in   string

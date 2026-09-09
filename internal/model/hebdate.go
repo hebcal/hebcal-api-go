@@ -11,9 +11,9 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 )
 
-// IsoDateStringToDate parses a YYYY-MM-DD string like the JS
-// isoDateStringToDate: only the prefix is validated, and out-of-range
-// month/day values roll over the way a JavaScript Date does.
+// IsoDateStringToDate parses a YYYY-MM-DD string: only the format is
+// validated, and out-of-range month/day values roll over (2026-13-01 becomes
+// 2027-01-01).
 func IsoDateStringToDate(s string) (GregDate, error) {
 	if !ReIsoDate.MatchString(s) {
 		return GregDate{}, BadRequest("Date does not match format YYYY-MM-DD: %s", s)
@@ -28,7 +28,7 @@ func IsoDateStringToDate(s string) (GregDate, error) {
 }
 
 // MakeGregDate validates a Gregorian yy/mm/dd from query-string values and
-// returns the date. Ported from hebcal-web src/dateUtil.js makeGregDate().
+// returns the date.
 func MakeGregDate(gy, gm, gd string) (GregDate, error) {
 	yy, okY := jsutil.ParseInt(gy)
 	mm, okM := jsutil.ParseInt(gm)
@@ -49,8 +49,8 @@ func MakeGregDate(gy, gm, gd string) (GregDate, error) {
 		return GregDate{}, BadRequest("Gregorian day %d out of valid range for %d/%d", dd, mm, yy)
 	}
 	dt := GregDate{Year: yy, Month: time.Month(mm), Day: dd}
-	// Hebrew date 1 Tishrei 1 == Gregorian -003760-09-07. The JS epoch
-	// comparison rejects 1 Tishrei 1 itself, so <= rather than <.
+	// Hebrew date 1 Tishrei 1 == Gregorian -003760-09-07. The epoch comparison
+	// rejects 1 Tishrei 1 itself, so <= rather than <.
 	if dt.RD() <= rdEpochHebrew {
 		return GregDate{}, BadRequest("Gregorian date before Hebrew year 1: %s", dt.String())
 	}
@@ -58,7 +58,6 @@ func MakeGregDate(gy, gm, gd string) (GregDate, error) {
 }
 
 // MakeHebDate validates a Hebrew yy/mm/dd from query-string values.
-// Ported from hebcal-web src/dateUtil.js makeHebDate().
 func MakeHebDate(hyStr, hmStr, hdStr string) (hdate.HDate, error) {
 	hy, okY := jsutil.ParseInt(hyStr)
 	hd, okD := jsutil.ParseInt(hdStr)
@@ -104,8 +103,7 @@ func HDateFromRD(rd int64) hdate.HDate {
 	return hdate.FromRD(rd)
 }
 
-// NewHDateLenient behaves like the JavaScript `new HDate(day, month, year)`,
-// which rolls an out-of-range day over into the following month
+// NewHDateLenient rolls an out-of-range day over into the following month
 // (e.g. 30 Cheshvan in a year when Cheshvan has 29 days becomes 1 Kislev).
 func NewHDateLenient(year int, month hdate.HMonth, day int) hdate.HDate {
 	if month == hdate.Adar2 && !hdate.IsLeapYear(year) {
@@ -134,15 +132,15 @@ func IsoGreg(hd hdate.HDate) string {
 	return jsutil.IsoDateString(y, m, d)
 }
 
-// enMonthNames are the transliterated month names used by @hebcal/hdate
-// (JavaScript). Note "Tamuz" with a single m; the Go hdate package spells it
-// "Tammuz", but this service matches the JS API output ("hm":"Tamuz").
+// enMonthNames are the transliterated month names this service uses. Note
+// "Tamuz" with a single m; the hdate package spells it "Tammuz", but the API
+// output is "hm":"Tamuz".
 var enMonthNames = []string{
 	"", "Nisan", "Iyyar", "Sivan", "Tamuz", "Av", "Elul",
 	"Tishrei", "Cheshvan", "Kislev", "Tevet", "Sh'vat", "Adar", "Adar II",
 }
 
-// MonthNameEn returns the JS-compatible English month name.
+// MonthNameEn returns the English month name used in API responses.
 func MonthNameEn(m hdate.HMonth, year int) string {
 	if m == hdate.Adar1 && hdate.IsLeapYear(year) {
 		return "Adar I"
@@ -150,12 +148,12 @@ func MonthNameEn(m hdate.HMonth, year int) string {
 	return enMonthNames[m]
 }
 
-// HDMonthNameEn returns the JS-compatible English name of a date's month.
+// HDMonthNameEn returns the English name of a date's month.
 func HDMonthNameEn(hd hdate.HDate) string {
 	return MonthNameEn(hd.Month(), hd.Year())
 }
 
-// HDateString formats like the JS HDate.toString(), e.g. "20 Tamuz 5786".
+// HDateString formats a Hebrew date as e.g. "20 Tamuz 5786".
 func HDateString(hd hdate.HDate) string {
 	return fmt.Sprintf("%d %s %d", hd.Day(), HDMonthNameEn(hd), hd.Year())
 }
@@ -177,8 +175,7 @@ func MakeHeDateParts(hd hdate.HDate) HeDateParts {
 }
 
 // gematriyaMonthNames are Hebrew month names with the ב prefix, indexed by
-// hdate.HMonth (Nisan=1 .. Adar2=13). Ported from hebcal-web
-// src/gematriyaDate.js.
+// hdate.HMonth (Nisan=1 .. Adar2=13).
 var gematriyaMonthNames = []string{
 	"",
 	"בְּנִיסָן",

@@ -15,42 +15,37 @@ import (
 // The legacy /v2/h/<base64-querystring>/<filename>.pdf download URLs, still
 // linked from a decade of pages and still crawled.
 //
-// hebcal-web answers these with a 301 to the /v4/ form: src/app-download.js's
-// redirV2 middleware decodes the path with parseV2Path(), parses the query
-// string, and re-encodes it as a protobuf with downloadHref2()
-// (src/makeDownloadProps.js). This service serves them directly with a 200
-// instead, which is the same calendar without the round trip -- so the code
-// below is that same query-string-to-protobuf conversion, after which a /v2/
-// request is indistinguishable from a /v4/ one and takes the identical path
-// through ParamsFromMessage, Generate and the renderer.
+// The code below decodes the base64 path, parses the query string it carries,
+// and converts it into the Download protobuf the equivalent /v4/ URL would
+// carry. After that a /v2/ request is indistinguishable from a /v4/ one and
+// takes the identical path through ParamsFromMessage, Generate and the
+// renderer. (Production answers these with a 301 to the /v4/ form; this
+// service renders them directly with a 200.)
 
-// v2Prefix is the only /v2/ family this service serves. hebcal-web's
-// parseV2Path() splits at the first slash after this prefix for every /v2/
-// path; the others are yahrzeit calendars (/v3/, and /v2/ URLs whose v= is a
-// "y..." value), which this service does not render.
+// v2Prefix is the only /v2/ family this service serves. Other /v2/ paths are
+// yahrzeit calendars (/v3/, and /v2/ URLs whose v= is a "y..." value), which
+// this service does not render.
 const v2Prefix = "/v2/h/"
 
 // v2Query is a legacy download URL's decoded query string.
 //
-// It is a plain map rather than url.Values because that is the shape
-// downloadHref2() sees: redirV2 builds it with
-// Object.fromEntries(new URLSearchParams(qs).entries()), where a repeated
-// parameter keeps its *last* value, while url.Values.Get keeps the first.
+// It is a plain map rather than url.Values because a repeated parameter in
+// these URLs keeps its *last* value, while url.Values.Get keeps the first.
 type v2Query map[string]string
 
-// on is makeDownloadProps.js's on(): the two spellings a checkbox arrives in.
+// on reports whether a checkbox parameter is set, in either of its two spellings.
 func (q v2Query) on(key string) bool {
 	return jsutil.IsOn(q[key])
 }
 
-// off is urlArgs.js's off(). Note that a missing parameter is "off", which is
-// not the negation of on() -- "yes" is neither.
+// off reports whether a parameter is explicitly off. A missing parameter is
+// "off", which is not the negation of on() -- "yes" is neither.
 func (q v2Query) off(key string) bool {
 	v, ok := q[key]
 	return !ok || v == "off" || v == "0"
 }
 
-// empty is empty.js's empty(): absent or the empty string.
+// empty reports whether a parameter is absent or the empty string.
 func (q v2Query) empty(key string) bool { return q[key] == "" }
 
 // values re-inflates the query for internal/service/location, which reads the
@@ -63,14 +58,13 @@ func (q v2Query) values() url.Values {
 	return out
 }
 
-// truthy is a bare `if (q.x)` in makeDownloadProps.js, which is not on(): the
-// string "0" is truthy in JavaScript, so `euro=0` sets euro. Faithful to the
-// 301 hebcal-web issues today.
+// truthy reports whether a parameter has any non-empty value. Unlike on(), it
+// accepts "0": a `euro=0` in a legacy URL still sets euro.
 func (q v2Query) truthy(key string) bool { return q[key] != "" }
 
-// getInt is makeDownloadProps.js's getInt(): Number.parseInt(s, 10) with the
-// int32 range check that keeps an oversized value from throwing deep inside
-// the protobuf serializer. ok is false where JavaScript would produce NaN.
+// getInt parses a base-10 integer parameter, with an int32 range check that
+// keeps an oversized value from failing deep inside the protobuf serializer.
+// ok is false when the value is not a number.
 func (q v2Query) getInt(key string) (n int32, ok bool, err error) {
 	i, ok := jsutil.ParseInt(q[key])
 	if !ok {
@@ -82,13 +76,13 @@ func (q v2Query) getInt(key string) (n int32, ok bool, err error) {
 	return int32(i), true, nil
 }
 
-// getFloat is Number.parseFloat(): ok is false where JavaScript gives NaN.
+// getFloat parses a floating-point parameter. ok is false when it is not a number.
 func (q v2Query) getFloat(key string) (float64, bool) {
 	f, err := jsutil.ParseFloat(q[key])
 	return f, err == nil
 }
 
-// primaryGeoKeys and allGeoKeys are urlArgs.js's lists, including the
+// primaryGeoKeys and allGeoKeys are the location-parameter names, including the
 // long-retired degrees/minutes location form.
 var (
 	primaryGeoKeys = []string{"geonameid", "zip", "city"}
@@ -98,8 +92,8 @@ var (
 	}
 )
 
-// geoKeysToRemove is urlArgs.js's getGeoKeysToRemove(): `geo` names which one
-// of several location forms in the query is the live one, and the rest are
+// geoKeysToRemove reports which location parameters to drop: `geo` names which
+// one of several location forms in the query is the live one, and the rest are
 // dropped before anything reads them.
 func geoKeysToRemove(geo string) []string {
 	switch geo {
@@ -126,12 +120,10 @@ func allGeoKeysExcept(keep string) []string {
 	return out
 }
 
-// normalize is urlArgs.js's urlArgsObj(), the pass downloadHref2() runs its
-// argument through before reading a single field.
-//
-// Its fourth loop, which rewrites a falsy maj/min/nx/mod/mf/ss to the string
-// "off", is omitted: on() already reads "0" and "off" alike as false, so it
-// changes nothing the protobuf sees.
+// normalize is the cleanup pass run over the query before any field is read:
+// it drops the geo forms `geo` did not select and collapses the Havdalah
+// spellings. (A rewrite of falsy maj/min/nx/mod/mf/ss to "off" is not needed
+// here: on() already reads "0" and "off" alike as false.)
 func (q v2Query) normalize() {
 	for _, key := range geoKeysToRemove(q["geo"]) {
 		delete(q, key)
@@ -148,14 +140,14 @@ func (q v2Query) normalize() {
 }
 
 // ParseV2Path decodes a legacy /v2/h/<base64>/<filename>.pdf path into the
-// query string it carries. Port of parseV2Path() in src/app-download.js.
+// query string it carries.
 func ParseV2Path(path string) (v2Query, error) {
 	if !strings.HasPrefix(path, v2Prefix) {
 		return nil, fmt.Errorf("expected /v2/h/<data>/<filename>.pdf, got %q", path)
 	}
 	data, filename, ok := strings.Cut(path[len(v2Prefix):], "/")
-	// parseV2Path() defaults a path with no filename to hebcal.ics, which is
-	// not a PDF request at all.
+	// A path with no filename defaults to hebcal.ics, which is not a PDF
+	// request at all.
 	if !ok || !strings.HasSuffix(filename, ".pdf") {
 		return nil, errors.New("not a .pdf request")
 	}
@@ -166,10 +158,9 @@ func ParseV2Path(path string) (v2Query, error) {
 	if err != nil {
 		return nil, fmt.Errorf("base64: %w", err)
 	}
-	// The error is deliberately ignored: URLSearchParams never rejects a query
-	// string, so a stray percent sign has to leave the other parameters intact
-	// rather than fail the request. url.ParseQuery returns what it could parse
-	// alongside the error.
+	// The error is deliberately ignored: a stray percent sign has to leave the
+	// other parameters intact rather than fail the request, and url.ParseQuery
+	// returns what it could parse alongside the error.
 	values, _ := url.ParseQuery(string(raw))
 	q := make(v2Query, len(values))
 	for key, vals := range values {
@@ -179,16 +170,14 @@ func ParseV2Path(path string) (v2Query, error) {
 }
 
 // DecodeV2 turns a legacy download query string into the Download message the
-// equivalent /v4/ URL would carry. Port of downloadHref2() in
-// src/makeDownloadProps.js, minus the base64 encoding it exists to produce.
+// equivalent /v4/ URL would carry.
 //
-// Two of downloadHref2()'s location forms are deliberately not handled here,
-// because it does not handle them either: a legacy `city=` name and the
-// degrees/minutes `ladeg`/`lamin` pair both leave the message with no
-// location, exactly as they do in the 301 production issues today.
+// applyV2Location handles two location forms (a legacy `city=` name and the
+// degrees/minutes `ladeg`/`lamin` pair) that production's 301 drops; see its
+// comment.
 func DecodeV2(q v2Query) (*downloadpb.Download, error) {
-	// redirV2 only rewrites a URL whose v=1; anything else falls through to
-	// the yahrzeit branch or to hebcal-download.js's own rejection.
+	// Only a URL whose v=1 is a download; anything else is a yahrzeit calendar
+	// or an invalid URL.
 	switch q["v"] {
 	case "1":
 	case "":
@@ -216,7 +205,7 @@ func DecodeV2(q v2Query) (*downloadpb.Download, error) {
 	}
 
 	// A year, "now", or neither. Either of the first two makes an explicit
-	// start/end range moot, and downloadHref2 drops it.
+	// start/end range moot, so drop it.
 	year, hasYear, err := q.getInt("year")
 	if err != nil {
 		return nil, err
@@ -311,9 +300,9 @@ func DecodeV2(q v2Query) (*downloadpb.Download, error) {
 		}
 	}
 
-	// downloadHref2 converts these to epoch seconds; the message can carry the
-	// ISO string instead, which applyDateRange prefers and which cannot pick
-	// up a timezone on the way through.
+	// These travel as the ISO string the message can also carry rather than as
+	// epoch seconds, which applyDateRange prefers and which cannot pick up a
+	// timezone on the way through.
 	if !q.empty("start") {
 		if err := checkISODate(q["start"]); err != nil {
 			return nil, err
@@ -335,20 +324,17 @@ func DecodeV2(q v2Query) (*downloadpb.Download, error) {
 
 // applyV2Location writes the request's location into the message.
 //
-// The first branch is downloadHref2's, verbatim. The other two are the
-// locations it has no branch for, so its 301 hands /v4/ a calendar with no
-// location at all -- and, since a location implies candle-lighting, no times
-// and a "Hebcal Diaspora" title. That is a regression the redirect introduced:
-// before redirV2 existed these URLs were rewritten to /export/ and rendered by
-// hebcalDownload, whose makeHebcalOptions calls getLocationFromQuery, and that
-// function resolves both. So this is a deliberate divergence from the 301 and a
-// return to what the URLs used to draw.
+// The first branch (geo=pos, a decimal lat/long) is what production's 301
+// handles. The other two -- a legacy `city=` name and the degrees/minutes
+// `ladeg`/`lamin` pair -- are location forms the 301 drops, leaving /v4/ a
+// calendar with no location, no times and a "Hebcal Diaspora" title. This is a
+// deliberate divergence from the 301, restoring what those URLs used to draw.
 //
 // Neither costs anything to support here: the legacy city name is resolved by
 // the same LookupLegacyCity branch of applyLocation a /geo request uses, and
-// the degrees/minutes form by internal/service/location, which already ports
-// that whole branch of getLocationFromQuery -- range checks, the legacy
-// numeric-timezone mapping and the "40°42′N 74°0′W" city name included.
+// the degrees/minutes form by internal/service/location, which handles the
+// range checks, the legacy numeric-timezone mapping and the "40°42′N 74°0′W"
+// city name.
 func applyV2Location(q v2Query, msg *downloadpb.Download) error {
 	switch {
 	case q["geo"] == "pos":
@@ -371,13 +357,13 @@ func applyV2Location(q v2Query, msg *downloadpb.Download) error {
 
 	case !q.empty("city"):
 		// A legacy Hebcal city identifier ("GB-London"). The protobuf has no
-		// field of its own for it, but cityName is free here -- downloadHref2
-		// only ever sets that alongside geoPos -- and applyLocation already
-		// resolves a cityName without a geoPos through LookupLegacyCity.
+		// field of its own for it, but cityName is free here (it is only ever
+		// set alongside geoPos), and applyLocation already resolves a cityName
+		// without a geoPos through LookupLegacyCity.
 		msg.CityName = strings.TrimSpace(q["city"])
 
 	default:
-		// getLocationFromQuery reaches its legacy branch only after the named
+		// The legacy degrees/minutes form is resolved only after the named
 		// forms and the decimal lat/long, which is why this is last.
 		loc, err := location.FromLegacyLatLong(q.values())
 		if err != nil {
@@ -391,19 +377,19 @@ func applyV2Location(q v2Query, msg *downloadpb.Download) error {
 		msg.LongOneof = &downloadpb.Download_Longitude{Longitude: float32(loc.Longitude)}
 		msg.Tzid = loc.TimeZoneID
 		// Either the city-typeahead label or the degrees/minutes rendering of
-		// the coordinates that fromLatLongLegacy built from them.
+		// the coordinates built from them.
 		msg.CityName = loc.Name
 	}
 	return nil
 }
 
-// applyV2DailyLearning is downloadHref2's dailyLearningConfig loop. The list is
-// src/dailyLearningConfig.json, whose last entry maps `s` to sedrot -- which is
-// why downloadHref2 has no separate line setting it.
+// applyV2DailyLearning maps the legacy daily-learning query codes onto the
+// protobuf fields. The last entry maps `s` to sedrot, which is why there is no
+// separate line setting it.
 //
-// This is a fourth copy of the mapping named in CLAUDE.md's daily-learning
-// section (alongside learningSchedules, unsupportedSeries and readings-svc's
-// queryToDailyLearningName); they move together.
+// This is one copy of the daily-learning mapping described in CLAUDE.md's
+// daily-learning section (alongside learningSchedules, unsupportedSeries and
+// readings-svc's queryToDailyLearningName); they move together.
 func applyV2DailyLearning(q v2Query, msg *downloadpb.Download) {
 	for _, s := range []struct {
 		param string
@@ -437,7 +423,7 @@ func applyV2DailyLearning(q v2Query, msg *downloadpb.Download) {
 	}
 }
 
-// checkISODate is the YYYY-MM-DD guard isoDateStringToDate() throws 400 from.
+// checkISODate is the YYYY-MM-DD guard that answers 400 for a malformed date.
 // The value itself is parsed later, by applyDateRange.
 func checkISODate(s string) error {
 	if _, err := parseISODate(s); err != nil {

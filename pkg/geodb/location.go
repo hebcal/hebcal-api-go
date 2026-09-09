@@ -70,7 +70,7 @@ func (g *Location) ZmanimLocation() zmanim.Location {
 }
 
 // Is5DigitZip reports whether the (trimmed) string begins with five ASCII
-// digits, matching @hebcal/geo-sqlite GeoDb.is5DigitZip.
+// digits.
 func Is5DigitZip(s string) bool {
 	s = strings.TrimSpace(s)
 	if len(s) < 5 {

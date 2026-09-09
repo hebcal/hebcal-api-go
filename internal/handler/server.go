@@ -99,15 +99,15 @@ func (s *Server) Routes() http.Handler {
 	mux.HandleFunc("/complete", mw.Serve(s.complete))
 	mux.HandleFunc("/complete/", mw.Serve(s.complete))
 	mux.HandleFunc("/complete.php", mw.Serve(s.complete))
-	// The Model Context Protocol server, ported from hebcal-mcp. Stateless
-	// streamable-HTTP: the SDK answers non-POST with 405 itself.
+	// The Model Context Protocol server. Stateless streamable-HTTP: the SDK
+	// answers non-POST with 405 itself.
 	mux.HandleFunc("/mcp", mw.Serve(s.mcp))
 	// The PDF calendars: download.hebcal.com's /v4/ downloads and
 	// www.hebcal.com's /holidays/ holiday calendars, both routed here by
 	// Varnish. Nothing else under /holidays/ belongs to this service -- the
-	// HTML pages there are hebcal-web's, and pdfHoliday answers them 404.
+	// HTML pages there are served elsewhere, and pdfHoliday answers them 404.
 	//
-	// /v2/ is the legacy download URL, which hebcal-web answers with a 301 to
+	// /v2/ is the legacy download URL, which production answers with a 301 to
 	// the /v4/ form; this service renders it instead. Only /v2/h/<...>.pdf is
 	// ours -- the other /v2/ families are .ics feeds and yahrzeit calendars,
 	// and pdfDownload answers them 404.
@@ -119,17 +119,16 @@ func (s *Server) Routes() http.Handler {
 	mux.HandleFunc("/v4/", mw.Serve(s.PDFLimiter.Wrap(s.pdfDownload)))
 	// The classic /hebcal/index.cgi/<name>.pdf?<query> download URL, older than
 	// both /v2/ and /v4/ and still crawled. Only its .pdf is ours (the .ics and
-	// yahrzeit calendars this path also serves are hebcal-web's), so pdfDownload
-	// answers everything else 404.
+	// yahrzeit calendars this path also serves are handled elsewhere), so
+	// pdfDownload answers everything else 404.
 	mux.HandleFunc("/hebcal/index.cgi/", mw.Serve(s.PDFLimiter.Wrap(s.pdfDownload)))
 	mux.HandleFunc("/holidays/", mw.Serve(s.PDFLimiter.Wrap(s.pdfHoliday)))
 	mux.HandleFunc("/", mw.Serve(s.notFound))
 	return s.withBackend(mux)
 }
 
-// ping serves the contents of the ping file (like hebcal-web, which serves
-// /var/www/html/ping via koa-send). The file is read on every request so
-// operators can create or remove it to move the host in or out of
+// ping serves the contents of the ping file. The file is read on every request
+// so operators can create or remove it to move the host in or out of
 // load-balancer rotation; a missing file yields a 404.
 func (s *Server) ping(w http.ResponseWriter, r *http.Request) {
 	body, err := os.ReadFile(s.PingFile)

@@ -20,8 +20,7 @@ import (
 // their rows are fetched from the readings-svc sidecar and merged into the
 // locally generated events. Keep this in step with unsupportedSeries in
 // params.go: a series gaining a Go schedule moves to learningSchedules and
-// leaves both lists. The codes are the ones readings-svc documents, which are
-// also hebcal-web's own /hebcal query parameters.
+// leaves both lists. The codes are the ones readings-svc documents.
 var fallbackSeries = map[string]string{
 	"chofetzChaim":        "dcc",
 	"shemiratHaLashon":    "dshl",
@@ -95,8 +94,8 @@ func (f *LearningFetcher) Fetch(ctx context.Context, series []string, lg string,
 	return out, nil
 }
 
-// canonicalLearningURL strips the tracking @hebcal/rest-api already added,
-// since the renderer applies its own campaign. A Sefaria link is left
+// canonicalLearningURL strips the tracking parameters the sidecar already
+// added, since the renderer applies its own campaign. A Sefaria link is left
 // otherwise intact.
 func canonicalLearningURL(link string) string {
 	if link == "" {
@@ -116,7 +115,7 @@ func canonicalLearningURL(link string) string {
 
 // mergeLearning inserts fetched rows into a generated calendar and restores the
 // per-day ordering. Events outside the generated range are dropped: the fetch
-// is bounded by the same dates, but hebcal-web resolves them independently.
+// is bounded by the same dates, but the sidecar resolves them independently.
 func mergeLearning(events, learning []Event) []Event {
 	if len(learning) == 0 {
 		return events

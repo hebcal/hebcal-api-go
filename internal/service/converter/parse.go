@@ -40,7 +40,6 @@ func G2H(dt model.GregDate, gs, noCache bool) Props {
 }
 
 // ParseQuery parses the /converter query string.
-// Ported from hebcal-web src/converter.js parseConverterQuery().
 func ParseQuery(q url.Values, now model.GregDate) (Props, error) {
 	if !jsutil.QueryEmpty(q, "start") && !jsutil.QueryEmpty(q, "end") {
 		return parseStartAndEnd(q)
@@ -112,7 +111,6 @@ func ParseQuery(q url.Values, now model.GregDate) (Props, error) {
 }
 
 // parseStartAndEnd handles the start/end date-range parameters.
-// Ported from hebcal-web src/dateUtil.js getStartAndEnd().
 func parseStartAndEnd(q url.Values) (Props, error) {
 	start := q.Get("start")
 	end := q.Get("end")

@@ -27,10 +27,9 @@ func TestLegacyTzToTzid(t *testing.T) {
 }
 
 // TestFromLatLongTzidLeniency pins the two url-decoding hacks for a
-// latitude/longitude request's tzid, ported from the "hack for client who
-// passes" comments in hebcal-web src/location.js: a raw UTC offset like
-// "+03:00" (whose "+" url-decodes to " "), and "Etc/GMT+5" (whose "+"
-// likewise url-decodes to " ", landing as "Etc/GMT 5").
+// latitude/longitude request's tzid: a raw UTC offset like "+03:00" (whose "+"
+// url-decodes to " "), and "Etc/GMT+5" (whose "+" likewise url-decodes to " ",
+// landing as "Etc/GMT 5").
 func TestFromLatLongTzidLeniency(t *testing.T) {
 	cases := []struct{ tzid, want string }{
 		{"Etc/GMT+5", "Etc/GMT+5"},   // untouched, already valid

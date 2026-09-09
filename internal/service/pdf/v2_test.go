@@ -14,8 +14,8 @@ import (
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 )
 
-// isNotFound and isBadRequest name the two statuses hebcal-web's download
-// dispatcher answers a legacy URL it will not rewrite with.
+// isNotFound and isBadRequest name the two statuses a legacy URL that will not
+// decode is answered with.
 func isNotFound(err error) bool {
 	var nf *NotFoundError
 	return errors.As(err, &nf)
@@ -47,15 +47,14 @@ func decodeV2(t *testing.T, qs string) *pb.Download {
 }
 
 // The three URLs below are real requests taken from a download.hebcal.com
-// access log, and the payloads they are checked against are what hebcal-web's
-// downloadHref2() produces for them today -- the /v4/ URL its 301 points at.
-// Rendering the same protobuf is what makes serving these with a 200 the same
-// calendar rather than merely a similar one.
+// access log, and the payloads they are checked against are the /v4/ URL
+// production's 301 points each at. Rendering the same protobuf is what makes
+// serving these with a 200 the same calendar rather than merely a similar one.
 func TestDecodeV2MatchesProductionRedirect(t *testing.T) {
 	tests := []struct {
 		name string
 		path string
-		want string // the /v4/ payload hebcal-web redirects to
+		want string // the /v4/ payload production redirects to
 	}{
 		{
 			"geonameid with a havdalah offset",
@@ -132,8 +131,8 @@ func TestParseV2Path(t *testing.T) {
 	}
 }
 
-// redirV2 only rewrites a URL whose v=1; everything else reaches the download
-// dispatcher, which answers a missing v with 404 and any other value with 400.
+// Only a URL whose v=1 is a download; a missing v is 404 and any other value
+// is 400.
 func TestDecodeV2RequiresV1(t *testing.T) {
 	tests := []struct {
 		name string
@@ -177,8 +176,8 @@ func TestDecodeV2BooleanSpellings(t *testing.T) {
 	}
 }
 
-// Sedrot has no line of its own in downloadHref2(): it rides in on the
-// dailyLearningConfig loop, whose last entry maps `s` to it.
+// Sedrot has no line of its own: it rides in on the daily-learning loop, whose
+// last entry maps `s` to it.
 func TestDecodeV2Sedrot(t *testing.T) {
 	if !decodeV2(t, "v=1&s=on").GetSedrot() {
 		t.Error("s=on did not set sedrot")
@@ -245,7 +244,7 @@ func TestDecodeV2Havdalah(t *testing.T) {
 }
 
 // `geo` names which of several location forms in the query is live, and
-// getGeoKeysToRemove() drops the rest before downloadHref2 reads any of them.
+// geoKeysToRemove drops the rest before anything reads them.
 func TestDecodeV2GeoKeysToRemove(t *testing.T) {
 	tests := []struct {
 		name         string
@@ -304,11 +303,9 @@ func TestDecodeV2GeoNoneDropsTimes(t *testing.T) {
 	}
 }
 
-// downloadHref2 has no branch for either of these, so hebcal-web's 301 hands
-// /v4/ a calendar with no location -- and, since a location implies
-// candle-lighting, no times. getLocationFromQuery does resolve both, and did so
-// for these URLs before redirV2 existed, so both are supported here. See
-// applyV2Location.
+// Production's 301 has no branch for either of these, so it hands /v4/ a
+// calendar with no location -- and, since a location implies candle-lighting,
+// no times. Both are resolved here instead. See applyV2Location.
 func TestDecodeV2LocationFormsTheRedirectDrops(t *testing.T) {
 	t.Run("a legacy city identifier", func(t *testing.T) {
 		// The name travels in cityName, which is free when geoPos is unset;
@@ -377,7 +374,7 @@ func TestDecodeV2LocationFormsTheRedirectDrops(t *testing.T) {
 	})
 
 	// hasLatLongLegacy needs all six; anything less is not the legacy form and
-	// leaves the calendar without a location, exactly as it does in hebcal-web.
+	// leaves the calendar without a location.
 	t.Run("an incomplete legacy form is not a location", func(t *testing.T) {
 		msg := decodeV2(t, "v=1&ladeg=40&lamin=45&lodeg=73&lomin=59&year=2026&c=on")
 		if msg.GetGeoPos() || msg.GetCityName() != "" {
@@ -400,7 +397,7 @@ func TestDecodeV2GeoWinsOverTheLegacyForms(t *testing.T) {
 }
 
 // A year, or "now", or a start/end range -- and either of the first two makes
-// the range moot, which downloadHref2 handles by deleting it.
+// the range moot, so it is deleted.
 func TestDecodeV2YearBeatsRange(t *testing.T) {
 	msg := decodeV2(t, "v=1&year=2026&start=2026-03-01&end=2026-05-31&maj=on")
 	if msg.GetYear() != 2026 {
@@ -487,14 +484,13 @@ func TestDecodeV2MonthMode(t *testing.T) {
 	}
 }
 
-// This looks like a bug and is not. downloadHref2 tests `euro` and `subscribe`
-// with a bare `if (q.x)`, and every non-empty string is truthy in JavaScript,
-// so euro=0 sets euro. h12 next to them uses off(), where "0" is false --
+// This looks like a bug and is not. `euro` and `subscribe` are set by any
+// non-empty value, so euro=0 sets euro. h12 next to them treats "0" as false --
 // which is why the three cannot share one helper.
-func TestDecodeV2JavaScriptTruthiness(t *testing.T) {
+func TestDecodeV2StringTruthiness(t *testing.T) {
 	msg := decodeV2(t, "v=1&euro=0&subscribe=0&h12=0")
 	if !msg.GetEuro() {
-		t.Error(`euro=0 did not set euro; downloadHref2's bare if() treats "0" as true`)
+		t.Error(`euro=0 did not set euro; any non-empty value counts as true`)
 	}
 	if !msg.GetSubscribe() {
 		t.Error("subscribe=0 did not set subscribe")
@@ -511,9 +507,8 @@ func TestDecodeV2JavaScriptTruthiness(t *testing.T) {
 	}
 }
 
-// A repeated parameter keeps its last value, because redirV2 builds its query
-// object with Object.fromEntries(), where later entries overwrite earlier
-// ones. url.Values.Get would keep the first.
+// A repeated parameter keeps its last value in these legacy URLs, where a
+// later entry overwrites an earlier one. url.Values.Get would keep the first.
 func TestParseV2PathLastValueWins(t *testing.T) {
 	q, err := ParseV2Path(v2Path("v=1&year=2020&year=2026", "hebcal.pdf"))
 	if err != nil {

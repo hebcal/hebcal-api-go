@@ -29,7 +29,7 @@ type CalEv interface {
 }
 
 // RenderEvent renders an event description, renaming "Chanukah: N Candles"
-// events to "Chanukah Day N" style. Ported from converter.js renameChanukah().
+// events to "Chanukah Day N" style.
 func RenderEvent(ev CalEv, lg string) string {
 	if day := ev.ChanukahDay(); day > 0 {
 		locale := AliasLocale(lg)
@@ -56,13 +56,13 @@ func (h HolidayEv) ChanukahDay() int { return h.Ev.ChanukahDay }
 func (h HolidayEv) Render(lg string) string {
 	locale := strings.ToLower(AliasLocale(lg))
 	if h.Ev.Flags&event.ROSH_CHODESH != 0 {
-		// look up the month translation with the JS spelling ("Tamuz"),
-		// which is what the locale catalogues use
+		// look up the month translation with the "Tamuz" spelling, which is
+		// what the locale catalogues use
 		month := strings.ReplaceAll(strings.TrimPrefix(h.Ev.Desc, "Rosh Chodesh "), "Tammuz", "Tamuz")
 		return jsutil.SmartApostrophe(Gettext("Rosh Chodesh", locale) + " " + Gettext(month, locale))
 	}
 	if h.Ev.Date.Month() == hdate.Tishrei && h.Ev.Date.Day() == 1 {
-		// Rosh Hashana: the JS API renders the year as a number in all locales
+		// Rosh Hashana: the year renders as a number in all locales
 		return Gettext("Rosh Hashana", locale) + " " + strconv.Itoa(h.Ev.Date.Year())
 	}
 	return jsutil.SmartApostrophe(h.Ev.Render(locale))

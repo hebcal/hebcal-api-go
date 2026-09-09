@@ -7,8 +7,8 @@ import (
 )
 
 // QueryGet returns the query param value, or "undefined" when the parameter is
-// absent, mimicking how the JS code interpolates missing values into error
-// messages (parseInt(undefined) => "must be numeric: undefined").
+// absent, so a missing value interpolates into an error message the way the
+// reference API's does ("must be numeric: undefined").
 func QueryGet(q url.Values, key string) string {
 	if !q.Has(key) {
 		return "undefined"
@@ -16,14 +16,12 @@ func QueryGet(q url.Values, key string) string {
 	return q.Get(key)
 }
 
-// QueryEmpty reports whether a parameter is absent or empty, i.e. falsy in the
-// JS routes this service is ported from.
+// QueryEmpty reports whether a parameter is absent or empty (falsy).
 func QueryEmpty(q url.Values, key string) bool {
 	return q.Get(key) == ""
 }
 
-// IsOn reports whether a boolean query parameter is set, matching the
-// booleanOpts loop in hebcal-web src/calendar.js.
+// IsOn reports whether a boolean query parameter is set ("on" or "1").
 func IsOn(v string) bool {
 	return v == "on" || v == "1"
 }

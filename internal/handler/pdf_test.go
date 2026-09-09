@@ -29,9 +29,8 @@ import (
 // calendar draws is internal/service/pdf's business, not this file's.
 
 // fontDir is where the Source Sans Pro and Adobe Hebrew families live: $FONT_DIR
-// if it is set, otherwise the repo root's fonts/, which is a symlink to
-// hebcal-web's copy. Tests that render skip when it is absent rather than
-// failing on a fresh checkout.
+// if it is set, otherwise the repo root's fonts/. Tests that render skip when it
+// is absent rather than failing on a fresh checkout.
 var fontDir = func() string {
 	if dir := os.Getenv("FONT_DIR"); dir != "" {
 		return dir
@@ -116,11 +115,11 @@ func inflateAll(doc []byte) []byte {
 	return out.Bytes()
 }
 
-// The PDF response matches hebcal-web's cache headers: a 14-day Cache-Control,
-// CORS and nosniff on a rendered calendar, and a weak ETag that answers a
-// conditional request with 304 before the render runs. The out-of-range 410 is
-// cacheable too (that year never comes into range); the unknown-location 404 is
-// deliberately not (a location may be added later).
+// The PDF response carries a 14-day Cache-Control, CORS and nosniff on a
+// rendered calendar, and a weak ETag that answers a conditional request with
+// 304 before the render runs. The out-of-range 410 is cacheable too (that year
+// never comes into range); the unknown-location 404 is deliberately not (a
+// location may be added later).
 func TestPDFCacheHeaders(t *testing.T) {
 	// 410 is decided while decoding the request, before any rendering, so this
 	// needs no fonts.
@@ -260,7 +259,7 @@ func TestFallbackStatusCodes(t *testing.T) {
 // The holiday calendars are cached for 60 days rather than the download path's
 // 14, carry nosniff but no CORS header (www.hebcal.com sets that only on the
 // cfg= API responses), and answer a conditional request before rendering. The
-// refusals are not cached: holidayPdf.js throws before it sets Cache-Control.
+// refusals are not cached: Cache-Control is set only after the URL is accepted.
 func TestHolidayPDFResponse(t *testing.T) {
 	_, srv := pdfServer(t)
 	const path = "/holidays/hebcal-2026.pdf"
@@ -329,8 +328,8 @@ func TestHolidayPDFErrors(t *testing.T) {
 }
 
 // Links on a holiday calendar are tagged with the event's own Hebrew year,
-// because holidayPdf.js sets no utmCampaign for renderPdfEvent to use. A
-// Gregorian year spans two Hebrew years, so both appear.
+// because these calendars set no document-level campaign. A Gregorian year
+// spans two Hebrew years, so both appear.
 func TestHolidayPDFPerEventCampaign(t *testing.T) {
 	_, srv := pdfServer(t)
 	_, body := get(t, srv, "/holidays/hebcal-2026.pdf")
@@ -404,15 +403,15 @@ func TestPDFV4BingBotLowercased(t *testing.T) {
 	})
 }
 
-// The legacy /v2/h/<base64-querystring>/<name>.pdf URLs, which hebcal-web
+// The legacy /v2/h/<base64-querystring>/<name>.pdf URLs, which production
 // answers with a 301 to the /v4/ form. This service renders them directly, so
 // the test that matters is that the two spellings of one request draw the same
-// calendar; that they decode to the same protobuf as hebcal-web's redirect is
+// calendar; that they decode to the same protobuf as production's redirect is
 // internal/service/pdf/v2_test.go's business.
 func TestPDFLegacyV2(t *testing.T) {
 	// The shape of a real request from a download.hebcal.com access log, moved
 	// onto a city the trimmed test database has, and the /v4/ payload
-	// hebcal-web's 301 points at for it.
+	// production's 301 points at for it.
 	const (
 		legacy = "/v2/h/dj0xJmdlb25hbWVpZD00OTMwOTU2Jm09NTAmeWVhcj0yMDIxJmM9MSZzPTEm" +
 			"bWFqPTEmbWluPTEmbW9kPTEmbWY9MSZzcz0xJm54PTE/hebcal_2021_boston.pdf"
@@ -466,9 +465,8 @@ func firstDiff(a, b []string) int {
 }
 
 // Only /v2/h/<...>.pdf belongs to this service. Everything else Varnish might
-// send here is refused with the status hebcal-web's download dispatcher gives
-// it: a URL that is not a PDF download at all is 404, and one whose v= names
-// another kind of calendar is 400.
+// send here is refused: a URL that is not a PDF download at all is 404, and one
+// whose v= names another kind of calendar is 400.
 func TestPDFLegacyV2Errors(t *testing.T) {
 	enc := func(qs string) string {
 		return strings.TrimRight(base64.StdEncoding.EncodeToString([]byte(qs)), "=")
@@ -496,10 +494,9 @@ func TestPDFLegacyV2Errors(t *testing.T) {
 	}
 }
 
-// The two location forms downloadHref2() has no branch for, so hebcal-web's
-// 301 loses them. They are resolved here (see applyV2Location), which is what
-// these URLs drew before redirV2 was added, and the check that matters at this
-// level is that the location actually reaches the rendered document: a
+// The two location forms production's 301 has no branch for, so it loses them.
+// They are resolved here (see applyV2Location), and the check that matters at
+// this level is that the location actually reaches the rendered document: a
 // calendar with no location is titled "Hebcal Diaspora" and carries no times.
 func TestPDFLegacyV2LocationForms(t *testing.T) {
 	enc := func(qs string) string {
@@ -612,9 +609,8 @@ func TestPDFLegacyCGI(t *testing.T) {
 }
 
 // A CGI URL that is not a PDF download, or that names no download version, is
-// refused with the status hebcal-web's router gives it: 404 for a request that
-// is not a download at all (v=undefined, or a non-.pdf), 400 for a v= naming
-// another kind of calendar.
+// refused: 404 for a request that is not a download at all (v=undefined, or a
+// non-.pdf), 400 for a v= naming another kind of calendar.
 func TestPDFLegacyCGIErrors(t *testing.T) {
 	_, srv := pdfServerNoFonts(t)
 	tests := []struct {

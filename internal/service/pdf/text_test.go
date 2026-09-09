@@ -8,9 +8,8 @@ import (
 )
 
 // fontDir is where the Source Sans Pro and Adobe Hebrew families live: $FONT_DIR
-// if it is set, otherwise the repo root's fonts/, which is a symlink to
-// hebcal-web's copy. Tests that need real glyph metrics skip when it is absent
-// rather than failing on a fresh checkout.
+// if it is set, otherwise the repo root's fonts/. Tests that need real glyph
+// metrics skip when it is absent rather than failing on a fresh checkout.
 var fontDir = func() string {
 	if dir := os.Getenv("FONT_DIR"); dir != "" {
 		return dir
@@ -148,8 +147,8 @@ func TestWidthEqualsSumOfAdvances(t *testing.T) {
 }
 
 // Widening the space advance in right-to-left runs reproduces the two-space
-// word gaps that hebcal-web's reverseHebrewWords() leaves in published
-// calendars, without putting a second space in the text.
+// word gaps the published calendars carry, without putting a second space in
+// the text.
 func TestRTLWordGapsAreWidened(t *testing.T) {
 	sh := testShaper(t)
 	ltr := sh.Width(FontPlain, 12, "a a") - sh.Width(FontPlain, 12, "aa")

@@ -1,6 +1,6 @@
-// Package zmanim computes the halachic times behind the /zmanim API, a Go port
-// of the getZmanim function in hebcal-web src/zman.js. It returns times for a
-// single date or a date range, and (with im=1) an "is work prohibited" status.
+// Package zmanim computes the halachic times behind the /zmanim API. It returns
+// times for a single date or a date range, and (with im=1) an "is work
+// prohibited" status.
 package zmanim
 
 import (
@@ -15,9 +15,9 @@ import (
 )
 
 // ---------------------------------------------------------------------------
-// Zman name tables, ported from the TIMES / TZEIT_TIMES objects in zman.js.
-// timeFuncs covers the fixed and degree-based times; tzeitDeg and tzeitMin
-// cover the tzeit variants (degree-based vs fixed-minutes after sunset).
+// Zman name tables. timeFuncs covers the fixed and degree-based times;
+// tzeitDeg and tzeitMin cover the tzeit variants (degree-based vs
+// fixed-minutes after sunset).
 // ---------------------------------------------------------------------------
 
 var timeFuncs = map[string]func(z *zman.Zmanim) time.Time{
@@ -55,7 +55,7 @@ var timeFuncs = map[string]func(z *zman.Zmanim) time.Time{
 	"tzaisBaalHatanya":         (*zman.Zmanim).TzaisBaalHatanya,
 }
 
-// timesOrder is the ordering of the fixed/degree-based times (TIMES in JS).
+// timesOrder is the output ordering of the fixed/degree-based times.
 var timesOrder = []string{
 	"chatzotNight", "alosBaalHatanya", "alotHaShachar", "misheyakir",
 	"misheyakirMachmir", "dawn", "sunrise", "seaLevelSunrise",
@@ -69,7 +69,7 @@ var timesOrder = []string{
 }
 
 // seaLevelTimes are only reported when elevation is enabled (they are identical
-// to sunrise/sunset otherwise). Matches the seaLevel* handling in Times().
+// to sunrise/sunset otherwise).
 var seaLevelTimes = map[string]bool{
 	"seaLevelSunrise": true,
 	"seaLevelSunset":  true,
@@ -88,16 +88,16 @@ var tzeitMin = map[string]int{
 	"tzeit72min": 72,
 }
 
-// tzeitOrder is the ordering of the tzeit times (TZEIT_TIMES in JS).
+// tzeitOrder is the output ordering of the tzeit times.
 var tzeitOrder = []string{
 	"tzeit7083deg", "tzeit85deg", "tzeit42min", "tzeit50min", "tzeit72min",
 }
 
-// allTimesOrder is the concatenation of timesOrder and tzeitOrder (ALL_TIMES).
+// allTimesOrder is the concatenation of timesOrder and tzeitOrder.
 var allTimesOrder = append(append([]string{}, timesOrder...), tzeitOrder...)
 
 // RoundTime discards seconds, rounding to the nearest minute (>= 30s rounds
-// up), matching @hebcal/core Zmanim.RoundTime.
+// up).
 func RoundTime(dt time.Time) time.Time {
 	if dt.IsZero() {
 		return dt
@@ -114,8 +114,8 @@ func RoundTime(dt time.Time) time.Time {
 }
 
 // formatISOWithTimeZone renders a time as "2022-04-01T13:06:00-11:00", or nil
-// (JSON null) for the zero time, matching zman.js which emits null when a
-// time does not occur (e.g. polar latitudes).
+// (JSON null) for the zero time, which is what a time that does not occur
+// (e.g. at polar latitudes) is reported as.
 func formatISOWithTimeZone(dt time.Time) *string {
 	if dt.IsZero() {
 		return nil
@@ -134,7 +134,7 @@ func forDate(d model.GregDate, loc *geodb.Location, useElevation bool) zman.Zman
 }
 
 // Times returns the halachic times for a single date as an ordered object
-// of name -> ISO 8601 string (or null). Ported from Times() in zman.js.
+// of name -> ISO 8601 string (or null).
 func Times(d model.GregDate, loc *geodb.Location, roundMinute, useElevation bool) jsutil.OrderedObj {
 	z := forDate(d, loc, useElevation)
 	out := make(jsutil.OrderedObj, 0, len(allTimesOrder))

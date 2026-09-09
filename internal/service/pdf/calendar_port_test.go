@@ -11,10 +11,10 @@ import (
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 )
 
-// These cover the derivations ported from hebcal-web's src/calendar.js
-// (makeHebcalOptions) that the protobuf does not carry: a location implies
-// candle-lighting, Israel forces its own offset, early years drop times, the
-// 12/24-hour default follows the country, and lg=ah/sh append the Hebrew name.
+// These cover the derivations that the protobuf does not carry: a location
+// implies candle-lighting, Israel forces its own offset, early years drop
+// times, the 12/24-hour default follows the country, and lg=ah/sh append the
+// Hebrew name.
 
 // A location before 1900 (Gregorian) or 5661 (Hebrew) renders without candle
 // times even though the location itself implies them.
@@ -106,11 +106,10 @@ func TestIsraelLocationKeepsCustomOffset(t *testing.T) {
 	}
 }
 
-// deserializeDownload.js sets q.m = havdalahMins when M=off, and makeHebcalOptions
-// leaves options.havdalahMins === 0 there, which @hebcal/core reads as "no
-// Havdalah". hebcal-go reads a zero HavdalahMins as "use the default tzeit"
-// instead, so DecodeParams sets SuppressHavdalah to reproduce the suppression. A
-// non-default offset or tzeit keeps Havdalah.
+// A download URL that named no Havdalah time means "no Havdalah". hebcal-go
+// reads a zero HavdalahMins as "use the default tzeit" instead, so DecodeParams
+// sets SuppressHavdalah to reproduce the suppression. A non-default offset or
+// tzeit keeps Havdalah.
 func TestSuppressHavdalah(t *testing.T) {
 	tests := []struct {
 		name         string
@@ -214,8 +213,8 @@ func TestAltDateBrief(t *testing.T) {
 	}
 }
 
-// Years outside hebcal-web's supported range yield an OutOfRangeError, which the
-// handler turns into 410 Gone, and never reach the generator.
+// Years outside the supported range yield an OutOfRangeError, which the handler
+// turns into 410 Gone, and never reach the generator.
 func TestYearRange(t *testing.T) {
 	tests := []struct {
 		name    string

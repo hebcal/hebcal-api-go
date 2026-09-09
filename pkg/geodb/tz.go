@@ -1,7 +1,7 @@
 package geodb
 
 // ZipcodesTzMap maps the numeric timezone column of the ZIP database to an IANA
-// tz identifier, matching @hebcal/core Location.ZIPCODES_TZ_MAP.
+// tz identifier.
 var ZipcodesTzMap = map[int]string{
 	0:  "UTC",
 	4:  "America/Puerto_Rico",
@@ -19,7 +19,7 @@ var ZipcodesTzMap = map[int]string{
 }
 
 // UsaTzid resolves a US state + numeric timezone + DST flag to an IANA tz
-// identifier, matching @hebcal/core Location.getUsaTzid.
+// identifier.
 func UsaTzid(state string, tz int, dst string) string {
 	if tz == 10 && state == "AK" {
 		return "America/Adak"

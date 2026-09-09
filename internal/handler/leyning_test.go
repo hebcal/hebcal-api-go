@@ -142,9 +142,9 @@ func leyningByItem(t *testing.T, body []byte) map[string]string {
 	return out
 }
 
-// leyningGoldens are hebcal-web /shabbat responses captured from a live
-// server. Only the per-item "leyning" objects are compared: the rest of the
-// item (titles, times, links) is the older, separately-tested code path.
+// leyningGoldens are reference /shabbat responses captured from a live server.
+// Only the per-item "leyning" objects are compared: the rest of the item
+// (titles, times, links) is the older, separately-tested code path.
 var leyningGoldens = []struct {
 	name string
 	path string
@@ -164,8 +164,8 @@ var leyningGoldens = []struct {
 	{"la-shabbat-shuva", "/shabbat?cfg=json&gd=15&geonameid=5368361&gm=9&gy=2026"},
 	// Yom Kippur midweek: the Mincha reading must not leak into the item
 	{"la-yom-kippur", "/shabbat?cfg=json&gd=1&geonameid=5368361&gm=10&gy=2025"},
-	// Tzom Tammuz: the one event @hebcal/core spells with a double "m",
-	// which normMonth() must leave alone or the reading stops matching
+	// Tzom Tammuz: the one event spelled with a double "m", which normMonth()
+	// must leave alone or the reading stops matching
 	{"ny-tzom-tammuz", "/shabbat?cfg=json&geonameid=5128581&dt=2025-07-10"},
 	// the same Sukkot week read two ways: the Diaspora schedule, then the
 	// Israel schedule (i=on), which is a day out of step through Chol

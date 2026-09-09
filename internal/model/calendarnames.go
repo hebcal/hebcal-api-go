@@ -4,10 +4,8 @@ import "strings"
 
 // Month and weekday names for every locale the PDF calendars can render.
 //
-// Generated from the dayjs locales that hebcal-web's src/dayjs-locales.js
-// imports, so the strings match what the Node implementation prints. hebcal-web
-// maps its short `lg` codes onto these through localeMap in src/lang.js;
-// AliasLocale does the same, and CalendarNames below is keyed by the result.
+// Generated data. The short `lg` codes are mapped onto these resolved locale
+// names by AliasLocale, and CalendarNames below is keyed by the result.
 //
 // Regenerate with tools/dump-locales.mjs (see the repo README).
 
@@ -23,9 +21,9 @@ type CalendarNames struct {
 }
 
 // namesByLocale is keyed by the resolved locale name, not by the short `lg`
-// code. Locales absent here fall back to English, which is what hebcal-web
-// does for its transliterated locales (`s`, `ashkenazi`): their event text is
-// Latin script, so English month names are the right pairing.
+// code. Locales absent here fall back to English, as the transliterated
+// locales (`s`, `ashkenazi`) do: their event text is Latin script, so English
+// month names are the right pairing.
 var namesByLocale = map[string]CalendarNames{
 	"en": {
 		Months:      [12]string{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"},
@@ -96,8 +94,7 @@ var namesByLocale = map[string]CalendarNames{
 
 // NamesFor returns the calendar vocabulary for a resolved locale, falling back
 // to English. The lookup is case-insensitive, and he-x-nonikud shares he's
-// month and weekday names -- hebcal-web's localeMap resolves both to the same
-// dayjs `he` locale, since the no-nikud variant only affects event subjects.
+// month and weekday names -- the no-nikud variant only affects event subjects.
 func NamesFor(locale string) CalendarNames {
 	key := strings.ToLower(locale)
 	if key == "he-x-nonikud" {

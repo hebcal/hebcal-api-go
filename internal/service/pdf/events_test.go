@@ -14,10 +14,10 @@ func ev(desc string, flags event.HolidayFlags, timeStr string) Event {
 	return Event{Subject: desc, Flags: flags, TimeStr: timeStr}
 }
 
-// @hebcal/core emits a day's events by walking the holidays that fall on it and
-// pushing each one's related events around it. This is the 14 Nisan case, which
-// is both a fast day and Erev Pesach: hebcal-go walks the two holidays in the
-// opposite order, so without sorting the chametz deadlines came out above
+// The published sequence walks the holidays that fall on a day and places each
+// one's related events around it. This is the 14 Nisan case, which is both a
+// fast day and Erev Pesach: hebcal-go walks the two holidays in the opposite
+// order, so without sorting the chametz deadlines came out above
 // "Fast begins" instead of below it.
 func TestSortDayErevPesachOnAFastDay(t *testing.T) {
 	// The order hebcal-go produces.
@@ -47,10 +47,10 @@ func TestSortDayErevPesachOnAFastDay(t *testing.T) {
 }
 
 // "Fast ends" carries the same fast flag as "Fast begins" but sorts after the
-// fast day itself, matching @hebcal/core's begins/holiday/ends sequence -- e.g.
+// fast day itself, matching the published begins/holiday/ends sequence -- e.g.
 // on Asara B'Tevet. It still sorts before the parsha and candle lighting, since
-// @hebcal/core pushes the fast end inside the holiday block. Regression for the
-// order that put "Fast ends" above the fast day.
+// the fast end belongs inside the holiday block. Regression for the order that
+// put "Fast ends" above the fast day.
 func TestSortDayFastEndsAfterFastDay(t *testing.T) {
 	fastEnds := ev("Fast ends", event.MINOR_FAST, "5:14p")
 	fastEnds.FastEnds = true
@@ -123,7 +123,7 @@ func TestSortDayHolidaysBeforeParsha(t *testing.T) {
 // where they came out above Daf Yomi and Mishna Yomi rather than beside them.
 //
 // A Boston 2027 calendar with F+myomi+dps+dr3 drew every cell as Psalms,
-// Rambam, Daf Yomi, Mishna Yomi where hebcal-web draws Daf Yomi, Mishna Yomi,
+// Rambam, Daf Yomi, Mishna Yomi where production draws Daf Yomi, Mishna Yomi,
 // Psalms, Rambam. That also cost 30 Mishna Yomi links, because on a crowded day
 // the row that overflows the cell is whichever one is last.
 func TestSortDayKeepsAllDailyLearningTogether(t *testing.T) {
@@ -274,11 +274,10 @@ func TestSplitByGregorianMonthEmptyInput(t *testing.T) {
 	}
 }
 
-// hebcal-web filters by category rather than by flag, and @hebcal/rest-api's
-// getEventCategories files Purim and Chanukah as major even though their flags
-// say MINOR_HOLIDAY. That is what keeps them in a calendar asking only for
-// major holidays, while Tu BiShvat and Rosh Hashana LaBehemot drop out --
-// all four carry the same flag.
+// The minor-holiday filter goes by category, not by flag: Purim and Chanukah
+// are filed as major even though their flags say MINOR_HOLIDAY. That is what
+// keeps them in a calendar asking only for major holidays, while Tu BiShvat and
+// Rosh Hashana LaBehemot drop out -- all four carry the same flag.
 func TestMinorHolidayFilterUsesCategories(t *testing.T) {
 	opts := hebcal.CalOptions{Year: 2026}
 	evs, err := hebcal.HebrewCalendar(&opts)

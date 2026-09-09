@@ -11,11 +11,9 @@ import (
 )
 
 // MakeETag computes a weak ETag from the request path, the query string
-// (minus utm_* params), the Accept-Encoding class, and the library versions.
-// A 128-bit FNV-1a hash stands in for the murmurhash3 used by hebcal-web;
-// weak ETags need not match across implementations. extra mixes in any
-// per-request input that is not in the URL (e.g. the caller's IP for
-// /complete).
+// (minus utm_* params), the Accept-Encoding class, and the library versions,
+// using a 128-bit FNV-1a hash. extra mixes in any per-request input that is
+// not in the URL (e.g. the caller's IP for /complete).
 func MakeETag(r *http.Request, extra string) string {
 	h := fnv.New128a()
 	h.Write([]byte(config.LibraryVersions))
@@ -41,7 +39,7 @@ func MakeETag(r *http.Request, extra string) string {
 		h.Write([]byte(extra))
 		h.Write([]byte{0})
 	}
-	// vary the tag by encoding class, like hebcal-web does
+	// vary the tag by encoding class
 	enc := r.Header.Get("Accept-Encoding")
 	if strings.Contains(enc, "zstd") {
 		h.Write([]byte("zstd"))

@@ -170,9 +170,8 @@ func TestHebrewMonthModesRender(t *testing.T) {
 // and path operators they contain.
 //
 // Whole files never match between runs: the PDF carries a random file ID and a
-// creation timestamp. hebcal-web's perf harness compares inflated content
-// streams for the same reason, and that is what actually determines what a
-// reader sees.
+// creation timestamp. The inflated content streams are what actually determine
+// what a reader sees.
 func contentStreams(pdf []byte) [][]byte {
 	var out [][]byte
 	for _, m := range regexp.MustCompile(`stream\r?\n`).FindAllIndex(pdf, -1) {

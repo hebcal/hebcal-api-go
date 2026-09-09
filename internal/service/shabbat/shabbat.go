@@ -1,6 +1,6 @@
-// Package shabbat implements the /shabbat JSON API, a Go port of shabbatApp in
-// hebcal-web src/shabbat.js. It builds this week's (or a given week's)
-// candle-lighting, Torah portion, havdalah, and related events for a location.
+// Package shabbat implements the /shabbat JSON API. It builds this week's (or a
+// given week's) candle-lighting, Torah portion, havdalah, and related events
+// for a location.
 //
 // Scope: only cfg=json is supported by the handler; any other cfg returns 501
 // Not Implemented. Torah readings (the default, suppressed with
@@ -44,8 +44,7 @@ import (
 //	                  the one Shabbat week containing the start date)
 //	gy=YYYY&gm=MM&gd=DD
 //
-// hebcal-web's getTodayDate() reads only dt and gy/gm/gd; date and start
-// silently fall back to today there. This endpoint honors them instead.
+// date and start are honored here in addition to dt and gy/gm/gd.
 func QueryDate(q url.Values) (model.GregDate, bool, error) {
 	for _, param := range []string{"dt", "date", "start"} {
 		if s := strings.TrimSpace(q.Get(param)); s != "" {
@@ -60,12 +59,10 @@ func QueryDate(q url.Values) (model.GregDate, bool, error) {
 	return model.GregDate{}, true, nil
 }
 
-// QueryLang returns the requested `lg`, falling back to the much older
-// a=on spelling of Ashkenazi transliteration. Ported from makeHebcalOptions()
-// in hebcal-web src/calendar.js, which rewrites a=on to lg=a whenever lg is
-// absent; the /converter route has no such fallback in hebcal-web, so this
-// stays local to /shabbat. (Resolving the short codes themselves is
-// model.AliasLocale's job, and both routes share it.)
+// QueryLang returns the requested `lg`, falling back to the much older a=on
+// spelling of Ashkenazi transliteration when lg is absent. This fallback is
+// local to /shabbat; /converter has none. (Resolving the short codes
+// themselves is model.AliasLocale's job, and both routes share it.)
 func QueryLang(q url.Values) string {
 	if lg := q.Get("lg"); lg != "" {
 		return lg
@@ -76,9 +73,8 @@ func QueryLang(q url.Values) string {
 	return ""
 }
 
-// WeekRange returns the [start, endOfWeek] Gregorian window for the
-// Shabbat listing, ported from shabbatWeekRange + getStartAndEnd in
-// hebcal-web src/dateUtil.js. If isToday, "now" in the location tz is used.
+// WeekRange returns the [start, endOfWeek] Gregorian window for the Shabbat
+// listing. If isToday, "now" in the location tz is used.
 func WeekRange(dt model.GregDate, isToday bool, tzid string) (model.GregDate, model.GregDate, error) {
 	loc, err := zmanim.LoadLocation(tzid)
 	if err != nil {
@@ -148,8 +144,8 @@ type Candles struct {
 }
 
 // CandleOptions resolves b, m, M and td into candle-lighting and havdalah
-// settings, porting the precedence rules in makeHebcalOptions() (hebcal-web
-// src/calendar.js) together with the default in shabbatApp().
+// settings, applying the request's precedence rules together with the
+// /shabbat default.
 func CandleOptions(q url.Values, loc *geodb.Location) Candles {
 	var c Candles
 	mStr, tdStr := q.Get("m"), q.Get("td")
@@ -157,7 +153,7 @@ func CandleOptions(q url.Values, loc *geodb.Location) Candles {
 	if mIsOn {
 		mStr = ""
 	}
-	// shabbatApp() defaults to tzeit when the request names no preference
+	// default to tzeit when the request names no preference
 	havdalahTzeit := mIsOn || jsutil.IsOn(q.Get("M")) ||
 		(q.Get("M") == "" && mStr == "" && tdStr == "")
 	// with both degrees and fixed minutes, M disambiguates
@@ -184,7 +180,7 @@ func CandleOptions(q url.Values, loc *geodb.Location) Candles {
 	if mStr != "" {
 		if m, ok := jsutil.ParseInt(mStr); ok {
 			if m == 0 {
-				// @hebcal/core drops the havdalah outright at zero minutes
+				// zero minutes means no havdalah at all
 				c.NoHavdalah = true
 			} else {
 				c.HavdalahMins = m
@@ -192,8 +188,8 @@ func CandleOptions(q url.Values, loc *geodb.Location) Candles {
 		}
 	}
 	if c.HavdalahMins == 0 && c.HavdalahDeg == 0 {
-		// nothing survived, so @hebcal/core falls back on Zmanim.tzeit(),
-		// whose own default is 8.5 degrees
+		// nothing survived; fall back on tzeit, whose own default is
+		// 8.5 degrees
 		c.HavdalahDeg = 8.5
 	}
 
@@ -217,10 +213,10 @@ func CandleOptions(q url.Values, loc *geodb.Location) Candles {
 // expressed no preference.
 const DefaultCandleMins = 18
 
-// locationDefaultCandleMins ports locationDefaultCandleMins() in hebcal-web
-// src/urlArgs.js. hebcal-go applies the same custom, but keys the Israeli
-// cities by name, and this service passes the full "Jerusalem, Israel" form
-// as the location name, so those lookups would miss.
+// locationDefaultCandleMins returns the customary candle-lighting offset for a
+// location. hebcal-go applies the same custom, but keys the Israeli cities by
+// name, and this service passes the full "Jerusalem, Israel" form as the
+// location name, so those lookups would miss.
 func locationDefaultCandleMins(loc *geodb.Location) int {
 	if !loc.IsIsrael() {
 		return DefaultCandleMins
@@ -234,9 +230,8 @@ func locationDefaultCandleMins(loc *geodb.Location) int {
 	return 20
 }
 
-// FilterYomTovOnly keeps only the Yom Tov days, for yto=on. Ported from
-// makeHebrewCalendar() in hebcal-web src/calendar.js, which applies the
-// filter after the calendar is built.
+// FilterYomTovOnly keeps only the Yom Tov days, for yto=on. The filter is
+// applied after the calendar is built.
 func FilterYomTovOnly(events []event.CalEvent) []event.CalEvent {
 	out := events[:0]
 	for _, ev := range events {
@@ -250,10 +245,10 @@ func FilterYomTovOnly(events []event.CalEvent) []event.CalEvent {
 }
 
 // MoveCandleLightingToSunset re-times candle-lighting to sunset itself, for
-// b=0. @hebcal/core lights at sunsetOffset(0) in that case, but hebcal-go
-// only reaches for a zero offset on the havdalah side and rewrites a zero
-// CandleLightingMins to the default before the calendar is built, so the
-// times have to be recomputed here. Drop this once hebcal-go can express it.
+// b=0. hebcal-go only reaches for a zero offset on the havdalah side and
+// rewrites a zero CandleLightingMins to the default before the calendar is
+// built, so the times have to be recomputed here. Drop this once hebcal-go can
+// express it.
 func MoveCandleLightingToSunset(events []event.CalEvent, opts *hebcal.CalOptions) {
 	for i, ev := range events {
 		timed, ok := ev.(hebcal.TimedEvent)
@@ -298,7 +293,7 @@ func Response(events []event.CalEvent, loc *geodb.Location, il bool, locale, lg 
 	return body
 }
 
-// title ports getCalendarTitle for this endpoint: "Hebcal <city> <Month
+// title builds the calendar title for this endpoint: "Hebcal <city> <Month
 // Year>" (or year range when the events span multiple years).
 func title(events []event.CalEvent, loc *geodb.Location) string {
 	title := "Hebcal " + loc.ShortName()
@@ -314,8 +309,8 @@ func title(events []event.CalEvent, loc *geodb.Location) string {
 	return fmt.Sprintf("%s %s %d", title, sm.String(), sy)
 }
 
-// item serializes one event to the classic-API item object. Ordered to
-// match @hebcal/rest-api eventToClassicApiObject.
+// item serializes one event to the classic-API item object, in the classic
+// API's key order.
 func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hdp bool,
 	hour12 *bool, leyning map[string][]readings.Item) jsutil.OrderedObj {
 	flags := ev.GetFlags()
@@ -329,12 +324,11 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 	// title (+ ": time" for candles/havdalah only); date
 	title := renderBriefLike(ev, locale)
 	if flags&event.MOLAD != 0 {
-		// @hebcal/core renders the announcement and the Shabbat Mevarchim
-		// memo from the same Molad.render(), so keep them one string
+		// the announcement and the Shabbat Mevarchim memo are the same string
 		title = mevarchimMoladMemo(hd, locale, loc.CC, il, hour12)
 	}
 	if isTimed {
-		// @hebcal/core rounds candle-lighting and havdalah to the whole minute.
+		// candle-lighting and havdalah are rounded to the whole minute.
 		t := zmanimsvc.RoundTime(timed.EventTime)
 		if isCandleOrHavdalah(desc) {
 			title = title + ": " + reformatTimeStr(t.Format("15:04"), "pm", loc.CC, il, hour12)
@@ -358,7 +352,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 		item = append(item, jsutil.KV{Key: "title_orig", Val: desc})
 	}
 
-	// eventToClassicApiObject deletes `hebrew` again on a molad announcement
+	// a molad announcement carries no `hebrew` field
 	if flags&event.MOLAD == 0 {
 		if hebrew := renderBriefLike(ev, "he-x-NoNikud"); hebrew != "" {
 			item = append(item, jsutil.KV{Key: "hebrew", Val: hebrew})
@@ -366,10 +360,9 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 	}
 
 	// The holiday an event stands for, which is the event itself except for
-	// the Chanukah candle-lighting: @hebcal/core models that as a
-	// ChanukahEvent subclass carrying a time, so it keeps the holiday's own
-	// basename and URL, while hebcal-go models it as a TimedEvent that
-	// repeats the holiday's description and links back to it.
+	// the Chanukah candle-lighting: hebcal-go models that as a TimedEvent that
+	// repeats the holiday's description and links back to it, so recover the
+	// holiday it points at.
 	holiday := ev
 	if isTimed {
 		if he, ok := linkedHoliday(timed); ok {
@@ -378,8 +371,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 	}
 
 	// leyning and link: neither for candle-lighting or havdalah. Leyning is
-	// also skipped for every other timed event, matching
-	// getLeyningForHoliday(), which rejects anything with an eventTime.
+	// also skipped for every other timed event (anything with an eventTime).
 	if !isCandleOrHavdalah(desc) {
 		if !isTimed {
 			if ley := itemLeyning(hd, flags, desc, leyning); len(ley) != 0 {
@@ -399,9 +391,9 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 		item = append(item, jsutil.KV{Key: "heDateParts", Val: model.MakeHeDateParts(hd)})
 	}
 
-	// memo priority (per eventToClassicApiObject):
-	//   ev.memo (molad for Shabbat Mevarchim) || getHolidayDescription()
-	//   || (for timed events) linkedEvent.render()
+	// memo priority:
+	//   ev.memo (molad for Shabbat Mevarchim) || holiday description
+	//   || (for timed events) the linked event's rendering
 	memo := ""
 	if flags&event.SHABBAT_MEVARCHIM != 0 {
 		memo = mevarchimMoladMemo(hd, locale, loc.CC, il, hour12)
@@ -410,7 +402,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 		memo = holidayMemo(desc, eventBasename(holiday), memoLocaleName(locale))
 	}
 	// As of hebcal-go v0.17.0, erev-Shabbat candle-lighting carries the
-	// upcoming parsha as its LinkedEvent, matching @hebcal/core.
+	// upcoming parsha as its LinkedEvent.
 	if memo == "" && isTimed && timed.LinkedEvent != nil {
 		memo = jsutil.SmartApostrophe(timed.LinkedEvent.Render(locale))
 	}
@@ -430,7 +422,7 @@ func memoLocaleName(locale string) string {
 	return "en"
 }
 
-// holidayMemo ports getHolidayDescription: MEMO:<desc>, then MEMO:<basename>.
+// holidayMemo looks up the holiday's memo: MEMO:<desc>, then MEMO:<basename>.
 func holidayMemo(desc, basename, localeName string) string {
 	if s := lookupMemo("MEMO:"+desc, localeName); s != "" {
 		return s
@@ -474,8 +466,7 @@ func moladDesc(hd hdate.HDate) string {
 	return fmt.Sprintf("Molad %s %d", monthEn, hd.Year())
 }
 
-// moladObj builds the `molad` member of a molad announcement item, matching
-// eventToClassicApiObject.
+// moladObj builds the `molad` member of a molad announcement item.
 func moladObj(hd hdate.HDate) jsutil.OrderedObj {
 	m, monthEn := announcedMolad(hd)
 	return jsutil.OrderedObj{
@@ -489,9 +480,9 @@ func moladObj(hd hdate.HDate) jsutil.OrderedObj {
 	}
 }
 
-// moladInstant renders the exact moment of the molad as a UTC timestamp,
-// porting getMoladAsDate() in @hebcal/core. The molad's wall clock is
-// Jerusalem *mean solar* time, so the reading is taken in fixed UTC+2 (never
+// moladInstant renders the exact moment of the molad as a UTC timestamp. The
+// molad's wall clock is Jerusalem *mean solar* time, so the reading is taken
+// in fixed UTC+2 (never
 // Israel daylight time) and then shifted back by the local mean time offset
 // of Har Habayis: longitude 35.2354° is 5.2354° east of the meridian its
 // zone is named for, which at 4 minutes per degree is 20 minutes 56.496
@@ -503,8 +494,8 @@ func moladInstant(m molad.Molad) string {
 	gy, gm, gd := m.Date.Greg()
 	t := time.Date(gy, gm, gd, m.Hours, m.Minutes, 0, 0, time.FixedZone("", 2*60*60)).
 		Add(time.Duration(nanos) - lmtOffset).UTC()
-	// JavaScript's Temporal.Instant.toJSON() prints milliseconds and trims
-	// trailing zeros, so ".170" comes out as ".17"
+	// milliseconds are printed with trailing zeros trimmed, so ".170" comes
+	// out as ".17"
 	frac := strings.TrimRight(fmt.Sprintf("%03d", t.Nanosecond()/int(time.Millisecond)), "0")
 	if frac != "" {
 		frac = "." + frac
@@ -512,20 +503,20 @@ func moladInstant(m molad.Molad) string {
 	return t.Format("2006-01-02T15:04:05") + frac + "Z"
 }
 
-// mevarchimMoladMemo reproduces @hebcal/core MevarchimChodeshEvent.memo, i.e.
-// Molad.render(locale, options) for the announced (next) month. locale is the
-// aliased request locale (e.g. "he", "ru", "en").
+// mevarchimMoladMemo renders the Shabbat Mevarchim memo: the molad of the
+// announced (next) month. locale is the aliased request locale (e.g. "he",
+// "ru", "en").
 func mevarchimMoladMemo(hd hdate.HDate, locale, cc string, il bool, hour12 *bool) string {
 	m, monthEn := announcedMolad(hd)
 	// Hebrew uses a distinct sentence structure; hebcal-go's moladEvent renders
-	// it identically to @hebcal/core, so reuse it.
+	// it, so reuse it.
 	if locale == "he" || locale == "he-x-nonikud" {
 		return event.NewMoladEvent(m.Date, m, monthEn, cc).Render(locale)
 	}
 	// Other locales: "Molad <month>: <weekday>, <time> and <n> chalakim", with
 	// the month localized and the time formatted per the location's country.
-	// Molad.render() curls the apostrophe in the month name ("Sh'vat" =>
-	// "Sh’vat"), and only there — the Hebrew sentence above does not.
+	// The apostrophe in the month name is curled ("Sh'vat" => "Sh’vat"), and
+	// only here — the Hebrew sentence above does not.
 	month := jsutil.SmartApostrophe(model.Gettext(monthEn, locale))
 	dow := moladDayName(m.Date.Weekday(), locale)
 	fmtTime := reformatTimeStr(fmt.Sprintf("%d:%02d", m.Hours, m.Minutes), "pm", cc, il, hour12)
@@ -536,10 +527,9 @@ func mevarchimMoladMemo(hd hdate.HDate, locale, cc string, il bool, hour12 *bool
 	return result
 }
 
-// moladDayName returns the weekday of the molad. @hebcal/core's
-// getDayNames() carries its own French names for this one sentence and falls
-// back to English everywhere else; the Hebrew names live in hebcal-go's
-// molad renderer, which handles the Hebrew sentence.
+// moladDayName returns the weekday of the molad. French has its own names for
+// this one sentence and everything else falls back to English; the Hebrew
+// names live in hebcal-go's molad renderer, which handles the Hebrew sentence.
 func moladDayName(dow time.Weekday, locale string) string {
 	if locale == "fr" {
 		return [...]string{"Dimanche", "Lundi", "Mardi", "Mercredi",
@@ -548,10 +538,9 @@ func moladDayName(dow time.Weekday, locale string) string {
 	return dow.String()
 }
 
-// normMonth normalizes hebcal-go's "Tammuz" to the "Tamuz" spelling used by
-// @hebcal/core (and this API), in English strings only (a no-op elsewhere).
-// The 17th of Tammuz fast is the one place @hebcal/core keeps the double
-// "m", so "Tzom Tammuz" is left alone: it is the event description the
+// normMonth normalizes hebcal-go's "Tammuz" to the "Tamuz" spelling this API
+// uses, in English strings only (a no-op elsewhere). "Tzom Tammuz", the 17th
+// of Tammuz fast, keeps the double "m": it is the event description the
 // classic API reports as title_orig, the key the MEMO catalog and the event
 // URL are built from, and the name /leyning uses for the fast's reading.
 //
@@ -571,7 +560,7 @@ func normMonth(s string) string {
 func descOf(ev event.CalEvent) string {
 	// hebcal-go's molad event has no description of its own: Render() returns
 	// the whole announcement sentence and the month and year it was built
-	// from are unexported, so rebuild @hebcal/core's "Molad <month> <year>".
+	// from are unexported, so rebuild "Molad <month> <year>".
 	if ev.GetFlags()&event.MOLAD != 0 {
 		return moladDesc(ev.GetDate())
 	}
@@ -591,8 +580,8 @@ func renderBriefLike(ev event.CalEvent, locale string) string {
 	if e, ok := ev.(hebcal.TimedEvent); ok {
 		return timedEventLabel(e, locale)
 	}
-	// Rosh Hashana renders the year as a number in every locale (matching the
-	// JS API), rather than hebcal-go's gematriya.
+	// Rosh Hashana renders the year as a number in every locale, rather than
+	// hebcal-go's gematriya.
 	if he, ok := ev.(event.HolidayEvent); ok &&
 		he.Date.Month() == hdate.Tishrei && he.Date.Day() == 1 &&
 		strings.HasPrefix(he.Desc, "Rosh Hashana") {
@@ -611,8 +600,7 @@ func renderBriefLike(ev event.CalEvent, locale string) string {
 // directly is what keeps the "(50 min)" on a havdalah pinned to a fixed
 // number of minutes after sunset (m=<min>): hebcal-go adds it from the
 // event's sunsetOffset, which is unexported, so the label cannot be rebuilt
-// from the outside. @hebcal/core spells it the same way, in the title and in
-// the Hebrew rendering both.
+// from the outside.
 func timedEventLabel(ev hebcal.TimedEvent, locale string) string {
 	s := ev.Render(locale)
 	// the time is last and never contains ": ", so a Chanukah candle event
@@ -624,8 +612,7 @@ func timedEventLabel(ev hebcal.TimedEvent, locale string) string {
 }
 
 // stripMevarchimPrefix drops the first (space-delimited) word from a Shabbat
-// Mevarchim title, matching MevarchimChodeshEvent.renderBrief across locales
-// (e.g. "Shabbat "/"שַׁבַּת "/"Шаббат "/"Shabbos ").
+// Mevarchim title across locales (e.g. "Shabbat "/"שַׁבַּת "/"Шаббат "/"Shabbos ").
 func stripMevarchimPrefix(s string) string {
 	if i := strings.Index(s, " "); i >= 0 {
 		return s[i+1:]
@@ -642,18 +629,15 @@ func isCandleOrHavdalah(desc string) bool {
 // itemLeyning returns the Torah reading for an event, or nil when it has
 // none (or when readings were not requested).
 //
-// readings-svc builds each item with eventToClassicApiObject(), so the reading
-// is already the object this response wants -- aliyot, torah, haftarah, the
-// "| Shabbat Shekalim" reasons, and (for a parsha from Hebrew year 5745 on)
-// the triennial cycle -- in @hebcal/rest-api's own key order. It is passed
-// through as raw JSON rather than decoded and rebuilt.
+// The readings-svc sidecar returns each item already in the classic-API shape
+// this response wants -- aliyot, torah, haftarah, the "| Shabbat Shekalim"
+// reasons, and (for a parsha from Hebrew year 5745 on) the triennial cycle --
+// so it is passed through as raw JSON rather than decoded and rebuilt.
 //
-// The lookup is the JS one turned inside out: there, each event asks for its
-// reading; here, hebcal-go's events are matched to the sidecar's by the
-// untranslated event description, except for the parsha, which is the one item
-// on the day whose category is "parashat". Timed events are never passed here,
-// matching the JS side, where getLeyningForHoliday() rejects anything with an
-// eventTime.
+// hebcal-go's events are matched to the sidecar's items by the untranslated
+// event description, except for the parsha, which is the one item on the day
+// whose category is "parashat". Timed events are never passed here (anything
+// with an eventTime has no holiday reading).
 func itemLeyning(hd hdate.HDate, flags event.HolidayFlags, desc string,
 	leyning map[string][]readings.Item) json.RawMessage {
 	if leyning == nil {
@@ -663,8 +647,8 @@ func itemLeyning(hd hdate.HDate, flags event.HolidayFlags, desc string,
 	if len(onDate) == 0 {
 		return nil
 	}
-	// @hebcal/rest-api tests the mask for equality, so an event merely
-	// carrying PARSHA_HASHAVUA alongside other flags is not a parsha.
+	// the mask is tested for equality, so an event merely carrying
+	// PARSHA_HASHAVUA alongside other flags is not a parsha.
 	if flags == event.PARSHA_HASHAVUA {
 		return readings.FindParsha(onDate)
 	}
@@ -687,10 +671,10 @@ func linkedHoliday(timed hebcal.TimedEvent) (event.HolidayEvent, bool) {
 	return he, true
 }
 
-// eventBasename ports @hebcal/core's basename(), which strips the qualifiers
-// that distinguish days of one holiday ("Sukkot III (CH”M)" => "Sukkot") so
-// related events share one description. It is the fallback key for the memo
-// catalog, looked up when the full description has no memo of its own.
+// eventBasename strips the qualifiers that distinguish days of one holiday
+// ("Sukkot III (CH”M)" => "Sukkot") so related events share one description.
+// It is the fallback key for the memo catalog, looked up when the full
+// description has no memo of its own.
 //
 // Rosh Chodesh keeps its whole description: the generic rule strips a
 // trailing Roman numeral, which would turn "Rosh Chodesh Adar I" into "Rosh
@@ -768,11 +752,10 @@ func holidayShortURL(he event.HolidayEvent, il bool) string {
 	return "https://hebcal.com/h/" + slug + q
 }
 
-// categoriesOf ports @hebcal/rest-api getEventCategories + @hebcal/core
-// getCategories (including the HolidayEvent override): [category, subcat].
+// categoriesOf returns [category, subcat] for an event, applying the special
+// cases the classic API layers on top of the flag-to-category table.
 func categoriesOf(ev event.CalEvent, desc string, flags event.HolidayFlags) (string, string) {
-	// TimedEvents are keyed by their description (@hebcal/core
-	// TimedEvent.getCategories)
+	// TimedEvents are keyed by their description
 	switch {
 	case desc == "Candle lighting":
 		return "candles", ""
@@ -785,15 +768,15 @@ func categoriesOf(ev event.CalEvent, desc string, flags event.HolidayFlags) (str
 	case desc == "Biur Chametz":
 		return "zmanim", "biurChametz"
 	}
-	// getEventCategories special cases
+	// special cases
 	if desc == "Purim" || desc == "Erev Purim" || strings.HasPrefix(desc, "Chanukah: ") {
 		return "holiday", "major"
 	}
-	// base Event.getCategories via the flagToCategory table (first match wins)
+	// the flag-to-category table (first match wins)
 	if cat, sub, ok := baseCategory(flags); ok {
 		return cat, sub
 	}
-	// HolidayEvent.getCategories override, reached when the base is "unknown"
+	// HolidayEvent override, reached when the base is "unknown"
 	if he, ok := ev.(event.HolidayEvent); ok {
 		if he.CholHaMoedDay != 0 {
 			return "holiday", "major" // (+ "cholhamoed", unused by the classic API)
@@ -807,9 +790,9 @@ func categoriesOf(ev event.CalEvent, desc string, flags event.HolidayFlags) (str
 	return "holiday", "major"
 }
 
-// baseCategory ports the flagToCategory table of @hebcal/core Event.getCategories.
-// ok is false when no flag matches (the caller then applies the HolidayEvent
-// fallback).
+// baseCategory maps an event's flags to [category, subcat] via the
+// flag-to-category table. ok is false when no flag matches (the caller then
+// applies the HolidayEvent fallback).
 func baseCategory(flags event.HolidayFlags) (string, string, bool) {
 	type entry struct {
 		flag     event.HolidayFlags
@@ -838,10 +821,10 @@ func baseCategory(flags event.HolidayFlags) (string, string, bool) {
 	return "", "", false
 }
 
-// reformatTimeStr ports @hebcal/core reformatTimeStr: converts 24h "HH:MM" to
-// 12h "h:MMpm" for countries that use 12-hour clocks, else returns unchanged.
-// hour12 is the h12 query override and wins over the country when set: false
-// forces the 24-hour form, true forces the 12-hour one.
+// reformatTimeStr converts 24h "HH:MM" to 12h "h:MMpm" for countries that use
+// 12-hour clocks, else returns it unchanged. hour12 is the h12 query override
+// and wins over the country when set: false forces the 24-hour form, true
+// forces the 12-hour one.
 func reformatTimeStr(timeStr, suffix, cc string, il bool, hour12 *bool) string {
 	if hour12 != nil && !*hour12 {
 		return timeStr

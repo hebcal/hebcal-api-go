@@ -37,10 +37,9 @@ const (
 	HebrewHebrew MonthMode = 2
 )
 
-// Params is everything the renderer needs, decoded from the URL. It is the Go
-// equivalent of what hebcal-web builds by running deserializeDownload() into
-// makeDownloadProps(): the protobuf carries the user's calendar choices, and
-// these fields are the resolved form of them.
+// Params is everything the renderer needs, decoded from the URL: the protobuf
+// carries the user's calendar choices, and these fields are the resolved form
+// of them.
 type Params struct {
 	Opts hebcal.CalOptions
 
@@ -49,7 +48,8 @@ type Params struct {
 	// Locale is the resolved locale name ("en", "he", "ashkenazi").
 	Locale string
 	// LG is the raw `lg` code from the request ("s", "h", "de"). The resolved
-	// name drives rendering; this is what hebcal-web's own query strings want.
+	// name drives rendering; this raw code is retained for building the legacy
+	// /v2/ and CGI query strings.
 	LG string
 	// RTL is true when the calendar renders right-to-left (Hebrew locales).
 	RTL bool
@@ -66,10 +66,9 @@ type Params struct {
 	// CityName is the typeahead label for a lat/long location, used in the subtitle.
 	CityName string
 	// CityNameAscii is the location's plain-ASCII geonames name ("Zuerich",
-	// "New York City"), which the link campaign uses in place of CityName.
-	// getCalendarTitle takes it whenever it is a string, so it is empty for the
-	// locations that have none -- lat/long and ZIP -- and CityName stands in.
-	// See CampaignName.
+	// "New York City"), which the link campaign uses in place of CityName. It is
+	// empty for the locations that have none -- lat/long and ZIP -- and CityName
+	// stands in. See CampaignName.
 	CityNameAscii string
 	// Subscribe marks the calendar as a subscription (affects the footer only).
 	Subscribe bool
@@ -83,14 +82,13 @@ type Params struct {
 	// NoSpecialShabbat but no equivalent for minor holidays, so this one is
 	// applied as a flag filter in Generate rather than as a calendar option.
 	NoMinorHolidays bool
-	// AppendHebrew appends each event's Hebrew name to its rendered subject, the
-	// `appendHebrewToSubject` option that lg=ah and lg=sh set in src/calendar.js.
+	// AppendHebrew appends each event's Hebrew name to its rendered subject.
+	// Set by lg=ah and lg=sh.
 	AppendHebrew bool
 	// PerEventCampaign takes each link's uc= / utm_campaign value from that
 	// event's own Hebrew year ("pdf-5787") instead of from the document title.
-	// That is renderPdfEvent's fallback when options.utmCampaign is unset, which
-	// is how the /holidays/ calendars are rendered: hebcal-download.js sets the
-	// campaign from the title, holidayPdf.js sets nothing.
+	// The /holidays/ calendars are rendered this way; the /v4/ downloads set the
+	// campaign from the document title instead.
 	PerEventCampaign bool
 }
 
@@ -99,11 +97,8 @@ var hebrewLocales = map[string]bool{
 	"he": true, "he-x-nonikud": true,
 }
 
-// maxNumYears bounds a multi-year calendar. hebcal-web caps an explicitly
-// requested span at 10 in getNumYears() (src/calendar.js), which makeHebcalOptions
-// applies to every PDF request; matching that keeps a 10-year request the same
-// length in both, and also bounds the work a scanner can ask for (see the
-// event-loop note in hebcal-web's CLAUDE.md).
+// maxNumYears bounds a multi-year calendar. An explicitly requested span is
+// capped at 10, which also bounds the work a scanner can ask for.
 const maxNumYears = 10
 
 // useGematriya reports whether day numbers and years are written in Hebrew
@@ -130,8 +125,7 @@ func ParsePath(path string) (string, error) {
 }
 
 // decodeBase64 accepts both the standard and URL-safe alphabets, with or
-// without padding. hebcal-web writes these with Node's Buffer.from(s,'base64'),
-// which is permissive in the same way.
+// without padding.
 func decodeBase64(s string) ([]byte, error) {
 	s = strings.ReplaceAll(strings.ReplaceAll(s, "-", "+"), "_", "/")
 	if m := len(s) % 4; m != 0 {
@@ -163,12 +157,8 @@ func DecodeParams(payload string, db *geodb.DB) (*Params, error) {
 	return ParamsFromMessage(msg, db)
 }
 
-// ParamsFromMessage resolves a decoded Download message into Params.
-//
-// This is the Go port of hebcal-web's src/deserializeDownload.js followed by
-// the parts of src/makeDownloadProps.js that matter to the PDF: rather than
-// round-tripping through a query-string map the way the Node code does, it
-// writes straight into hebcal.CalOptions.
+// ParamsFromMessage resolves a decoded Download message into Params, writing
+// the user's calendar choices straight into hebcal.CalOptions.
 func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) {
 	p := &Params{
 		MonthMode:            MonthMode(msg.GetMonthMode()),
@@ -186,14 +176,13 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 	p.LG = msg.GetLocale()
 	p.Locale = model.AliasLocale(p.LG)
 	p.RTL = hebrewLocales[strings.ToLower(p.Locale)]
-	// lg=ah and lg=sh render the transliteration and then the Hebrew name of each
-	// event (src/calendar.js sets appendHebrewToSubject for exactly these two).
+	// lg=ah and lg=sh render the transliteration and then the Hebrew name of
+	// each event.
 	p.AppendHebrew = p.LG == "ah" || p.LG == "sh"
 
 	o := &p.Opts
-	// deserializeDownload.js maps the booleans to `maj`/`min`/... query params,
-	// which makeDownloadProps then inverts into these No* suppression flags.
-	// Going straight to CalOptions skips that double negative.
+	// The protobuf carries positive "include this" booleans; CalOptions uses
+	// negative "suppress this" flags. Invert as we copy.
 	o.NoHolidays = !msg.GetMajor()
 	o.NoRoshChodesh = !msg.GetRoshChodesh()
 	o.NoModern = !msg.GetModern()
@@ -210,22 +199,16 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 
 	// Asking for Rosh Chodesh, the special Shabbatot and the weekly Torah
 	// reading together implies Shabbat Mevarchim, the Shabbat that announces
-	// the coming month. hebcal-web does this in src/calendar.js by setting the
-	// SHABBAT_MEVARCHIM bit in the query mask, which @hebcal/core then turns
-	// back into options.shabbatMevarchim.
-	//
-	// It belongs here rather than in hebcal-go: it is a convention about what
-	// a user who ticked three boxes on a form probably wants, not a rule about
-	// the calendar. hebcal-go has no mask and no notion of query parameters.
+	// the coming month. This belongs here rather than in hebcal-go: it is a
+	// convention about what a user who ticked three boxes on a form probably
+	// wants, not a rule about the calendar.
 	if msg.GetRoshChodesh() && msg.GetSpecialShabbat() && msg.GetSedrot() {
 		o.ShabbatMevarchim = true
 	}
 	// In Gregorian-month mode the alternate date is the Hebrew date, so hebcal-go
 	// generates it. In Hebrew-month mode (mm=1/mm=2) the alternate date is the
-	// Gregorian date, which hebcal-go does not generate -- src/calendar.js only
-	// sets addHebrewDates when !hebrewMonths, and instead inserts its own
-	// GregorianDateEvents. Generate() does the equivalent from p.AddAltDates /
-	// p.AddAltDatesForEvents.
+	// Gregorian date, which hebcal-go does not generate; Generate() synthesizes
+	// it from p.AddAltDates / p.AddAltDatesForEvents instead.
 	if p.MonthMode == GregorianArabic {
 		o.AddHebrewDates = msg.GetAddAltDates()
 		o.AddHebrewDatesForEvents = msg.GetAddAltDatesForEvents()
@@ -240,13 +223,11 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 		}
 	} else {
 		o.HavdalahMins = int(msg.GetHavdalahMins())
-		// deserializeDownload.js sets q.m = havdalahMins whenever M=off, and
-		// makeHebcalOptions leaves options.havdalahMins === 0 in that case, which
-		// @hebcal/core reads as "no Havdalah" (calendar.js suppresses any
-		// HavdalahEvent when havdalahMins===0). hebcal-go instead reads a zero
-		// HavdalahMins as "use the default tzeit", so it would draw Havdalah where
-		// production draws none; ask it to suppress. A non-default offset (m>0) or
-		// tzeit (M=on, handled above) both keep Havdalah.
+		// A download URL that did not ask for a specific Havdalah time means
+		// "no Havdalah". hebcal-go reads a zero HavdalahMins as "use the
+		// default tzeit" and would draw one anyway, so ask it to suppress. A
+		// non-default offset (m>0) or tzeit (M=on, handled above) both keep
+		// Havdalah.
 		o.SuppressHavdalah = o.HavdalahMins == 0
 	}
 	o.CandleLightingMins = int(msg.GetCandleLightingMins())
@@ -254,8 +235,8 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 	if err := applyDateRange(msg, p); err != nil {
 		return nil, err
 	}
-	// A single-year request outside the supported range is 410, matching
-	// hebcal-download.js. A start/end range leaves Year zero and is not checked.
+	// A single-year request outside the supported range is 410. A start/end
+	// range leaves Year zero and is not checked.
 	if o.Year != 0 && !YearIsSupported(o.Year, o.IsHebrewYear) {
 		return nil, &OutOfRangeError{Year: o.Year, IsHebrewYear: o.IsHebrewYear}
 	}
@@ -264,8 +245,7 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 	}
 	// Candle-lighting is switched off for years before the modern zmanim tables
 	// begin -- Gregorian before 1900, Hebrew before 5661 -- even when a location
-	// is present (src/calendar.js). A start/end range leaves Year zero and is
-	// left alone, matching the `typeof options.year === 'number'` guard.
+	// is present. A start/end range leaves Year zero and is left alone.
 	if o.CandleLighting && o.Year != 0 {
 		if (o.IsHebrewYear && o.Year < 5661) || o.Year < 1900 {
 			o.CandleLighting = false
@@ -276,20 +256,19 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 }
 
 // defaultCandleMins is the default number of minutes before sunset that candles
-// are lit, matching DEFAULT_CANDLE_MINS in hebcal-web's src/urlArgs.js.
+// are lit.
 const defaultCandleMins = 18
 
 // geonameIDCandleOffset holds the Israeli cities whose customary candle-lighting
-// offset is larger than the 20-minute default, matching geonameIdCandleOffset in
-// hebcal-web's src/urlArgs.js.
+// offset is larger than the 20-minute default.
 var geonameIDCandleOffset = map[int]int{
 	281184: 40, // Jerusalem
 	294801: 30, // Haifa
 	293067: 30, // Zikhron Yaakov
 }
 
-// locationDefaultCandleMins is the port of locationDefaultCandleMins() in
-// src/urlArgs.js: an Israeli location lights candles earlier than the diaspora
+// locationDefaultCandleMins reports the default candle-lighting offset for a
+// location: an Israeli location lights candles earlier than the diaspora
 // default, either by a city-specific amount or by the 20-minute fallback.
 func locationDefaultCandleMins(loc *geodb.Location) int {
 	if loc.IsIsrael() {
@@ -301,7 +280,7 @@ func locationDefaultCandleMins(loc *geodb.Location) int {
 	return defaultCandleMins
 }
 
-// applyIsraelCandleMins mirrors the Israel branch of src/calendar.js: an Israeli
+// applyIsraelCandleMins applies the Israel candle-lighting rule: an Israeli
 // location uses its own default candle-lighting offset unless the request set a
 // non-default offset of its own. `given` is the requested offset (0 if unset),
 // `offset` the location's default.
@@ -315,14 +294,13 @@ func applyIsraelCandleMins(o *hebcal.CalOptions, given, offset int) {
 // records the display name used in the title and subtitle.
 //
 // A resolved location implies candle-lighting, regardless of whether the request
-// asked for it -- this is the `if (location) options.candlelighting = true` rule
-// in src/calendar.js, without which a calendar carrying a geonameid but no c=on
+// asked for it: without this rule a calendar carrying a geonameid but no c=on
 // renders with no times at all.
 func setLocation(p *Params, loc *geodb.Location, msg *downloadpb.Download) error {
 	zl := loc.ZmanimLocation()
 	if !msg.GetUseElevation() {
-		// hebcal-web only honours the stored elevation when the request asked
-		// for elevation-aware zmanim; otherwise sea level is used.
+		// The stored elevation is only honoured when the request asked for
+		// elevation-aware zmanim; otherwise sea level is used.
 		zl.Elevation = 0
 	}
 	p.Opts.Location = &zl
@@ -394,8 +372,7 @@ func applyDateRange(msg *downloadpb.Download, p *Params) error {
 	return nil
 }
 
-// parseISODate parses YYYY-MM-DD into an HDate, the way hebcal-web's
-// makeDownloadProps does before handing dates to @hebcal/core.
+// parseISODate parses YYYY-MM-DD into an HDate.
 func parseISODate(s string) (hdate.HDate, error) {
 	t, err := time.Parse("2006-01-02", s)
 	if err != nil {
@@ -404,9 +381,9 @@ func parseISODate(s string) (hdate.HDate, error) {
 	return hdate.FromTime(t), nil
 }
 
-// OutOfRangeError marks a year hebcal-web has no calendar for. hebcal-web's
-// hebcal-download.js answers these with HTTP 410 Gone, which also keeps a
-// far-future request from ever reaching the generator.
+// OutOfRangeError marks a year there is no calendar for. The handler answers
+// these with HTTP 410 Gone, which also keeps a far-future request from ever
+// reaching the generator.
 type OutOfRangeError struct {
 	Year         int
 	IsHebrewYear bool
@@ -419,10 +396,10 @@ func (e *OutOfRangeError) Error() string {
 	return fmt.Sprintf("No calendar for Gregorian year %d", e.Year)
 }
 
-// YearIsSupported mirrors yearIsOutsideGregRange / yearIsOutsideHebRange in
-// src/dateUtil.js: no calendar is served before year 100 or after 2999
-// (Gregorian), or before 3860 or after 6759 (Hebrew). The /holidays/ calendars
-// range-check their own year with it too.
+// YearIsSupported reports whether a calendar is served for the given year: no
+// calendar before year 100 or after 2999 (Gregorian), or before 3860 or after
+// 6759 (Hebrew). The /holidays/ calendars range-check their own year with it
+// too.
 func YearIsSupported(year int, hebrew bool) bool {
 	if hebrew {
 		return year >= 3860 && year <= 6759
@@ -431,9 +408,8 @@ func YearIsSupported(year int, hebrew bool) bool {
 }
 
 // NotFoundError marks a named location (geonameid, ZIP or legacy city) that
-// could not be resolved. hebcal-web's getLocationFromQuery reports these with
-// HTTP 404 ("Sorry, can't find …"), reserving 400 for malformed input, so the
-// handler distinguishes the two.
+// could not be resolved. The handler answers these with HTTP 404, reserving
+// 400 for malformed input.
 type NotFoundError struct{ msg string }
 
 func (e *NotFoundError) Error() string { return e.msg }
@@ -445,17 +421,16 @@ func NotFoundf(format string, a ...any) error {
 
 // applyLocation resolves the candle-lighting location. A lat/long ("geoPos")
 // calendar needs nothing else; geonameid, ZIP and legacy-city calendars are
-// resolved against the SQLite geo databases, the same ones @hebcal/geo-sqlite
-// reads in hebcal-web.
+// resolved against the SQLite geo databases.
 func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 	// Resolve whenever a location was given, not only when candle-lighting was
 	// asked for. The location names the calendar -- "Hebcal Prestea 2008"
-	// rather than "Hebcal Diaspora 2008" -- and hebcal-web's footer reports its
+	// rather than "Hebcal Diaspora 2008" -- and the footer reports its
 	// candle-lighting offset even for a calendar that carries no times.
 	if !msg.GetGeoPos() && msg.GetGeonameid() == 0 && msg.GetZip() == "" &&
 		msg.GetCityName() == "" {
-		// No location: candle-lighting is impossible, so hebcal-web deletes it
-		// even when the request asked for it (the `else` in src/calendar.js).
+		// No location: candle-lighting is impossible, so drop it even when the
+		// request asked for it.
 		p.Opts.CandleLighting = false
 		return nil
 	}
@@ -472,8 +447,8 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 		if tzid == "" {
 			return errors.New("geoPos location without tzid")
 		}
-		// getLocationFromQuery treats a lat/long location as Israel when the
-		// request said so or the timezone is Asia/Jerusalem.
+		// A lat/long location is treated as Israel when the request said so or
+		// the timezone is Asia/Jerusalem.
 		il := msg.GetIsrael() || tzid == "Asia/Jerusalem"
 		name := msg.GetCityName()
 		cc := ""
@@ -520,10 +495,9 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 	}
 	if city := msg.GetCityName(); city != "" {
 		// A cityName with no geoPos is a legacy Hebcal city identifier, which
-		// only a /v2/ URL carries (downloadHref2 sets cityName only alongside
-		// geoPos, from the typeahead). It is a lookup key -- "GB-London" --
-		// rather than a label, so clear it and let setLocation name the
-		// calendar after the resolved location, as getCalendarTitle does.
+		// only a /v2/ URL carries. It is a lookup key -- "GB-London" -- rather
+		// than a label, so clear it and let setLocation name the calendar after
+		// the resolved location.
 		if loc := db.LookupLegacyCity(city); loc != nil {
 			p.CityName = ""
 			return setLocation(p, loc, msg)
@@ -551,8 +525,8 @@ var learningSchedules = []struct {
 	{"yerushalmi-schottenstein", func(m *downloadpb.Download) bool { return m.GetYySchottenstein() }},
 	{"perekYomi", func(m *downloadpb.Download) bool { return m.GetPerekYomi() }},
 	// The dw checkbox resolves to dafWeeklySunday (one row each Sunday), not
-	// dafWeekly (the same daf drawn all seven days), matching hebcal-web's
-	// dailyLearningConfig.json. The protobuf field keeps its dw-derived name.
+	// dafWeekly (the same daf drawn all seven days). The protobuf field keeps
+	// its dw-derived name.
 	{"dafWeeklySunday", func(m *downloadpb.Download) bool { return m.GetDafWeekly() }},
 	{"929", func(m *downloadpb.Download) bool { return m.GetNine29() }},
 	{"psalms", func(m *downloadpb.Download) bool { return m.GetPsalms() }},
@@ -574,8 +548,8 @@ func applyDailyLearning(msg *downloadpb.Download, o *hebcal.CalOptions) {
 
 // unsupportedSeries reports the daily-learning series a request asked for that
 // hebcal-go cannot generate. Rendering anyway would silently drop rows the user
-// explicitly selected, so callers hand these requests back to the Node service
-// instead.
+// explicitly selected, so their rows are fetched from the readings-svc sidecar
+// and merged instead (see fallback.go).
 //
 // These seven have no schedule in github.com/hebcal/learning. Keep this list and
 // learningSchedules together: anything the learning package gains should move

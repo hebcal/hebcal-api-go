@@ -1,6 +1,6 @@
 package geodb
 
-// StateNames maps US state/territory abbreviations to full names (from @hebcal/cities).
+// StateNames maps US state/territory abbreviations to full names.
 
 var StateNames = map[string]string{
 	"AK": "Alaska",

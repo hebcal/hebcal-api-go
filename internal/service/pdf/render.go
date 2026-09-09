@@ -26,12 +26,11 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/model"
 )
 
-// Page geometry, copied from hebcal-web's src/pdf.js. US Letter, landscape.
+// Page geometry. US Letter, landscape.
 //
-// All layout in this file is expressed in pdfkit's coordinate system, which
-// runs top-down from the top-left corner, so the constants and arithmetic can
-// be read side by side with src/pdf.js. Conversion to PDF's bottom-up
-// coordinates happens in exactly two places, baseline() and yLine().
+// All layout in this file is expressed in a top-down coordinate system, with
+// the origin at the top-left corner. Conversion to PDF's bottom-up coordinates
+// happens in exactly two places, baseline() and yLine().
 const (
 	pdfWidth      = 792.0
 	pdfHeight     = 612.0
@@ -45,7 +44,7 @@ const (
 	timeFontSize  = 8.5
 )
 
-// Colours from src/pdf.js.
+// Calendar colours, keyed to event type.
 var (
 	colorLearning = rgb("#666666")
 	colorRoshChod = rgb("#660099")
@@ -66,8 +65,8 @@ func rgb(hex string) color.Color {
 	return color.SRGB(float64(r)/255, float64(g)/255, float64(b)/255)
 }
 
-// eventColor is the port of eventColor() in src/pdf.js. The order of the tests
-// matters: an event can carry several flags and the first match wins.
+// eventColor returns the colour for an event. The order of the tests matters:
+// an event can carry several flags and the first match wins.
 func eventColor(f event.HolidayFlags) color.Color {
 	switch {
 	case f&(learningFlags|event.OMER_COUNT|event.HEBREW_DATE) != 0:
@@ -112,8 +111,8 @@ func (r *Renderer) Render(w io.Writer, p *Params, events []Event, title string) 
 	}
 	doc.Out.GetMeta().Info = &pdflib.Info{
 		Title: pdflib.TextString(title),
-		// hebcal-web sets Subject to the title as well, and macOS shows it as
-		// the file's Description.
+		// Subject is set to the title as well; macOS shows it as the file's
+		// Description.
 		Subject:  pdflib.TextString(title),
 		Keywords: pdflib.TextString(documentKeywords(p)),
 		Author:   pdflib.TextString("Hebcal Jewish Calendar (hebcal.com)"),
@@ -147,9 +146,8 @@ func (r *Renderer) Render(w io.Writer, p *Params, events []Event, title string) 
 	return doc.Close()
 }
 
-// baseline converts a pdfkit top-down text position into the PDF baseline.
-// pdfkit's doc.text(str, x, y) treats y as the top of the text box and puts
-// the baseline one ascender below it.
+// baseline converts a top-down text position into the PDF baseline. The input
+// y is the top of the text box; the baseline sits one ascender below it.
 func (r *Renderer) baseline(fontName string, size, yTopDown float64) float64 {
 	return pdfHeight - yTopDown - r.fonts.Ascent(fontName, size)
 }
@@ -174,7 +172,7 @@ func (r *Renderer) shape(inst *Instances, fontName string, size float64, s strin
 	return r.shaper.Shape(fontName, size, s)
 }
 
-// draw writes one shaped string. x and yTopDown are pdfkit coordinates.
+// draw writes one shaped string. x and yTopDown are top-down coordinates.
 func (r *Renderer) draw(page *document.Page, inst *Instances, fontName string, size float64, col color.Color, x, yTopDown float64, s string) {
 	f := inst.Get(fontName)
 	if f == nil || s == "" {
@@ -190,9 +188,9 @@ func (r *Renderer) draw(page *document.Page, inst *Instances, fontName string, s
 	page.TextEnd()
 }
 
-// width is the equivalent of pdfkit's doc.widthOfString(). It shares the
-// document's shaping cache with draw, so the measuring pass a caller makes
-// before drawing the same string costs a single shape.
+// width returns the advance width of a string. It shares the document's
+// shaping cache with draw, so the measuring pass a caller makes before drawing
+// the same string costs a single shape.
 func (r *Renderer) width(inst *Instances, fontName string, size float64, s string) float64 {
 	var w float64
 	for _, run := range r.shape(inst, fontName, size, s) {
@@ -212,9 +210,9 @@ func (r *Renderer) drawRightAligned(page *document.Page, inst *Instances, fontNa
 	r.draw(page, inst, fontName, size, col, x-r.width(inst, fontName, size, s), yTopDown, s)
 }
 
-// rowsFor returns 5 or 6 week rows. This is the rule from src/pdf.js rather
-// than a computed ceiling: the grid stays five rows unless the month genuinely
-// cannot fit, which keeps cell heights consistent from page to page.
+// rowsFor returns 5 or 6 week rows. It is a fixed rule rather than a computed
+// ceiling: the grid stays five rows unless the month genuinely cannot fit,
+// which keeps cell heights consistent from page to page.
 func rowsFor(daysInMonth, startDayOfWeek int) int {
 	if (daysInMonth == 31 && startDayOfWeek >= 5) || (daysInMonth == 30 && startDayOfWeek == 6) {
 		return 6
@@ -240,8 +238,8 @@ func (r *Renderer) renderMonth(doc *document.MultiPage, inst *Instances, p *Para
 	return page.Close()
 }
 
-// drawMonthTitle writes the centred month title and the Hebrew-month subtitle,
-// matching renderPdfMonthTitle(): 26pt at TMARGIN-24 and 14pt at TMARGIN+4.
+// drawMonthTitle writes the centred month title and the Hebrew-month subtitle:
+// 26pt at TMARGIN-24 and 14pt at TMARGIN+4.
 func (r *Renderer) drawMonthTitle(page *document.Page, inst *Instances, p *Params, mp MonthPage) {
 	titleFont, subFont := FontSemi, FontPlain
 	if p.RTL {
@@ -254,8 +252,8 @@ func (r *Renderer) drawMonthTitle(page *document.Page, inst *Instances, p *Param
 }
 
 // drawGrid draws the calendar rectangle, its rules and the weekday headings.
-// Ported from renderPdfMonthGrid(): the rectangle runs from BMARGIN down to
-// HEIGHT-TMARGIN in pdfkit's coordinates.
+// The rectangle runs from BMARGIN down to HEIGHT-TMARGIN in top-down
+// coordinates.
 func (r *Renderer) drawGrid(page *document.Page, inst *Instances, p *Params, rows int, rowHeight float64) {
 	gridW := pdfWidth - pdfLMargin - pdfRMargin
 	top, bottom := pdfBMargin, pdfHeight-pdfTMargin
@@ -349,8 +347,8 @@ func (r *Renderer) drawDays(page *document.Page, inst *Instances, p *Params, mp 
 	}
 }
 
-// renderEvent draws one event line and returns the next top-down y, matching
-// renderPdfEvent()'s `y + numLines * fontSize * 1.4`.
+// renderEvent draws one event line and returns the next top-down y
+// (`y + numLines * fontSize * 1.4`).
 func (r *Renderer) renderEvent(page *document.Page, inst *Instances, p *Params, ev *Event, x, y float64, campaign string) float64 {
 	return r.renderEventColored(page, inst, p, ev, x, y, campaign, nil)
 }
@@ -399,15 +397,14 @@ func (r *Renderer) renderEventColored(page *document.Page, inst *Instances, p *P
 	numLines := 1
 	if timedWidth+width > available {
 		lines = splitInTwo(subject, rtl)
-		// renderPdfEvent counts the wrap whether or not the split found a place
-		// to break, so the row advances by two lines either way.
+		// count the wrap whether or not the split found a place to break, so
+		// the row advances by two lines either way.
 		numLines = 2
 	}
 
-	// Alignment within the cell, following renderPdfEvent(). Right-to-left
-	// calendars right-align: a timed event places the time and its subject as
-	// one unit against the cell's right edge, with the time on the left, which
-	// is where it reads first.
+	// Alignment within the cell. Right-to-left calendars right-align: a timed
+	// event places the time and its subject as one unit against the cell's
+	// right edge, with the time on the left, which is where it reads first.
 	textX := x + 2*pdfCellMargin
 	switch {
 	case rtl && ev.Timed():
@@ -428,8 +425,7 @@ func (r *Renderer) renderEventColored(page *document.Page, inst *Instances, p *P
 	for i, ln := range lines {
 		r.draw(page, inst, fontName, fontSize, col, textX, textY+float64(i)*fontSize*1.4, ln)
 	}
-	// A link over the whole event line, matching the textOptions.link that
-	// hebcal-web hands to pdfkit.
+	// A link over the whole event line.
 	if href := eventLink(ev.URL, ev.HD.Year(), p.campaignFor(campaign, ev), p.Opts.IL); href != "" {
 		h := float64(numLines) * fontSize * 1.4
 		r.addLink(page, href, textX-timedWidth, y-fontSize*0.25, timedWidth+width, h)
@@ -440,12 +436,11 @@ func (r *Renderer) renderEventColored(page *document.Page, inst *Instances, p *P
 	return y + float64(numLines)*fontSize*1.4
 }
 
-// appendHebrew draws the Hebrew name after a transliterated subject, the
-// appendHebrewToSubject branch of renderPdfEvent(). If the transliteration, a
-// " / " separator and the Hebrew fit on the line they are drawn as one unit,
-// with the Hebrew sitting 1.35pt lower; otherwise the Hebrew drops to the next
-// line at the subject's left edge with no separator. It returns the next
-// top-down y.
+// appendHebrew draws the Hebrew name after a transliterated subject (lg=ah,
+// lg=sh). If the transliteration, a " / " separator and the Hebrew fit on the
+// line they are drawn as one unit, with the Hebrew sitting 1.35pt lower;
+// otherwise the Hebrew drops to the next line at the subject's left edge with
+// no separator. It returns the next top-down y.
 func (r *Renderer) appendHebrew(page *document.Page, inst *Instances, ev *Event, col color.Color, textX, y, width, timedWidth float64, numLines int, subjFont string, subjSize float64) float64 {
 	const (
 		slash  = " / "
@@ -465,27 +460,18 @@ func (r *Renderer) appendHebrew(page *document.Page, inst *Instances, ev *Event,
 	return y + float64(numLines)*subjSize*1.4 + 1.35
 }
 
-// splitInTwo breaks a subject across two lines, the two-line fallback in
-// renderPdfEvent(). It returns one line when no break point is found, which the
-// caller still spaces as two (see below).
+// splitInTwo breaks a subject across two lines. It returns one line when no
+// break point is found, which the caller still spaces as two (see below).
 //
-// renderPdfEvent splits on `/(\s)/`, keeping the separators, and looks for the
-// break at the element just past the midpoint of that array -- which lands on a
-// space for some word counts and on a word for others, in which case it takes
-// the space after it. For an even number of words that leaves one more word on
-// the first line than halving would: production draws "Yom HaAliyah School" /
-// "Observance", not "Yom HaAliyah" / "School Observance".
+// A left-to-right subject breaks at the word just past the middle -- for an
+// even number of words that leaves one more word on the first line than
+// halving would: "Yom HaAliyah School" / "Observance", not "Yom HaAliyah" /
+// "School Observance". A right-to-left subject is halved plainly.
 //
-// A right-to-left subject arrives at that split already rejoined by
-// reverseHebrewWords() with *two* spaces between words, so the array has an
-// empty element between every pair, the midpoint lands half a word earlier, and
-// the break is a plain halving.
-//
-// With fewer than three words there is no space past the midpoint of the
-// left-to-right array, so no break is inserted at all -- and yet renderPdfEvent
-// increments its line count either way, spacing the row and sizing its link box
-// as if it had wrapped. That is why the caller counts two lines regardless of
-// how many this returns.
+// With fewer than three left-to-right words (or fewer than two right-to-left)
+// no break is inserted at all -- and yet the row still advances by two lines,
+// spacing the row and sizing its link box as if it had wrapped. That is why
+// the caller counts two lines regardless of how many this returns.
 func splitInTwo(s string, rtl bool) []string {
 	words := strings.Split(s, " ")
 	n := len(words)
@@ -504,18 +490,15 @@ func splitInTwo(s string, rtl bool) []string {
 	}
 }
 
-// altDateBrief renders a HEBREW_DATE alternate date without its year, matching
-// HebrewDateEvent.renderBrief() in @hebcal/core. hebcal-go's hebrewDateEvent
-// only renders the full form (with year), so the brief is that form with the
-// trailing year trimmed. Rosh Hashana (1 Tishrei) keeps its year, as it does in
-// @hebcal/core.
+// altDateBrief renders a HEBREW_DATE alternate date without its year. hebcal-go's
+// hebrewDateEvent only renders the full form (with year), so the brief is that
+// form with the trailing year trimmed. Rosh Hashana (1 Tishrei) keeps its year.
 //
-// The apostrophe is smartened here as it is on an event subject: @hebcal/hdate
-// ends HDate.render() with `monthName.replace(/'/g, '’')` and hebcal-go does
-// not, so without this a day line reads "1st of Sh'vat" where hebcal-web writes
-// "1st of Sh’vat". The ordinal differs the same way for the locales that are
-// neither English nor Spanish ("12 Tewet" here, "12. Tewet" there); that one
-// belongs in hebcal-go rather than in a second date formatter over here.
+// The apostrophe is smartened here as it is on an event subject, since hebcal-go
+// does not: without this a day line reads "1st of Sh'vat" rather than "1st of
+// Sh’vat". The ordinal for a locale that is neither English nor Spanish comes
+// out as "12 Tewet" where a current reference draws "12. Tewet"; that
+// difference belongs in hebcal-go rather than in a second date formatter here.
 func altDateBrief(hd hdate.HDate, locale string) string {
 	full := jsutil.SmartApostrophe(model.FixMonthSpelling(event.NewHebrewDateEvent(hd).Render(locale)))
 	if hd.Month() == hdate.Tishrei && hd.Day() == 1 {
@@ -544,9 +527,9 @@ func firstAltDate(evs []Event) *Event {
 }
 
 // renderAltDateOnLine draws the brief alternate date on the day-number line,
-// left-aligned near the cell's left edge. Port of renderAlternateDateOnLine():
-// xpos is the day number's right edge, the date sits 3pt below the number's top,
-// in the plain face (or the Hebrew face in an RTL calendar) at 10pt and in grey.
+// left-aligned near the cell's left edge: xpos is the day number's right edge,
+// the date sits 3pt below the number's top, in the plain face (or the Hebrew
+// face in an RTL calendar) at 10pt and in grey.
 func (r *Renderer) renderAltDateOnLine(page *document.Page, inst *Instances, p *Params, alt *Event, xpos, ypos float64, override color.Color) {
 	if alt == nil {
 		return
@@ -570,10 +553,10 @@ func (r *Renderer) renderAltDateOnLine(page *document.Page, inst *Instances, p *
 	if p.RTL {
 		// A Hebrew-month Gregorian alt date ("25 אוק") starts with a number, and
 		// x/text/bidi resolves a number-first string to an LTR paragraph, which
-		// would draw the month to the right of the digits. hebcal-web forces the
-		// order with reverseHebrewWords; here a leading right-to-left mark makes
-		// the paragraph RTL so the Unicode algorithm orders it the same way. The
-		// mark is zero-width and default-ignorable, so it adds no visible glyph.
+		// would draw the month to the right of the digits. A leading
+		// right-to-left mark makes the paragraph RTL so the Unicode algorithm
+		// orders it the same way. The mark is zero-width and default-ignorable,
+		// so it adds no visible glyph.
 		text = "‏" + text
 	}
 	altX := xpos - pdfColWidth + pdfCellMargin*marginFactor
@@ -590,7 +573,7 @@ func (r *Renderer) drawFooter(page *document.Page, inst *Instances, p *Params) {
 	r.drawRightAligned(page, inst, FontPlain, 8, colorBlack, pdfWidth-pdfRMargin, y, ccLine)
 }
 
-// leftFooterText is the port of makeLeftText(): the location and its
+// leftFooterText builds the bottom-left footer line: the location and its
 // candle-lighting offset when there is one, otherwise the calendar subtitle.
 func leftFooterText(p *Params) string {
 	loc := p.Opts.Location
@@ -611,9 +594,9 @@ func leftFooterText(p *Params) string {
 	return fmt.Sprintf("%s · Candle-lighting times %d min before sunset", str, mins)
 }
 
-// documentKeywords is the port of the Keywords line in createPdfDoc(). The
-// full location name is used here, not the short form the title carries, so a
-// search for the ZIP code finds the file.
+// documentKeywords builds the PDF Keywords metadata. The full location name is
+// used here, not the short form the title carries, so a search for the ZIP
+// code finds the file.
 func documentKeywords(p *Params) string {
 	kw := "Hebrew calendar, Jewish holidays"
 	name := p.LocationName
@@ -626,13 +609,11 @@ func documentKeywords(p *Params) string {
 	return kw
 }
 
-// hebMonthName returns a Hebrew month name as hebcal-web spells it in the
-// subtitle. hebcal-web builds that with Locale.gettext(getMonthName(), locale),
-// translating the English name through the locale's .po file -- a Spanish
-// calendar reads "Jeshvan" and a German one "Cheschwan", not "Cheshvan". The Go
-// equivalent is locales.LookupTranslation, the same call hebcal-go's own event
-// rendering uses. Hebrew locales keep the native (nikud or plain) name, and the
-// English family keeps the English name with the Tamuz spelling fixed.
+// hebMonthName returns a Hebrew month name as it is spelled in the subtitle:
+// the English name translated through the locale's catalog, so a Spanish
+// calendar reads "Jeshvan" and a German one "Cheschwan", not "Cheshvan".
+// Hebrew locales keep the native (nikud or plain) name, and the English family
+// keeps the English name with the Tamuz spelling fixed.
 func hebMonthName(hd hdate.HDate, locale string) string {
 	en := hd.MonthName("en") // raw hdate spelling, e.g. "Tammuz", "Cheshvan"
 	switch strings.ToLower(locale) {
@@ -642,9 +623,9 @@ func hebMonthName(hd hdate.HDate, locale string) string {
 	case "he", "he-x-nonikud":
 		return hd.MonthName(locale)
 	}
-	// Translate the raw English name through the locale's .po, the way
-	// hebcal-go's own event rendering does: de/fr have a "Tammus"/"Tammouz" for
-	// the month, while es has none and falls back to the fixed "Tamuz" spelling.
+	// Translate the raw English name through the locale's catalog: de/fr have a
+	// "Tammus"/"Tammouz" for the month, while es has none and falls back to the
+	// fixed "Tamuz" spelling.
 	if tr, ok := locales.LookupTranslation(en, locale); ok {
 		return tr
 	}
@@ -652,9 +633,9 @@ func hebMonthName(hd hdate.HDate, locale string) string {
 }
 
 // hebMonthRange builds the Hebrew-month subtitle under a Gregorian month
-// title, e.g. "Av – Elul 5786". Port of makeHebMonthStr(): the start year is
-// only shown when the month spans a Hebrew year boundary, and the end month
-// only when it differs from the start month.
+// title, e.g. "Av – Elul 5786": the start year is only shown when the month
+// spans a Hebrew year boundary, and the end month only when it differs from
+// the start month.
 func hebMonthRange(mp MonthPage, p *Params) string {
 	firstG := time.Date(mp.Year, mp.Month, 1, 0, 0, 0, 0, time.UTC)
 	lastG := firstG.AddDate(0, 1, -1)
@@ -672,8 +653,8 @@ func hebMonthRange(mp MonthPage, p *Params) string {
 	return strings.ReplaceAll(str, "'", "’")
 }
 
-// addLink attaches a URI link annotation over a rectangle given in pdfkit's
-// top-down coordinates.
+// addLink attaches a URI link annotation over a rectangle given in top-down
+// coordinates.
 func (r *Renderer) addLink(page *document.Page, href string, x, yTopDown, w, h float64) {
 	if w <= 0 || h <= 0 {
 		return
@@ -711,13 +692,12 @@ func (r *Renderer) renderHebMonth(doc *document.MultiPage, inst *Instances, p *P
 	return page.Close()
 }
 
-// hebTitleYear formats the Hebrew year for a Hebrew-month title. pdfkit's
-// pdfMonthTitleHebrew keys this on rtl, not on gematriyaNumerals:
-// `const yearStr = rtl ? gematriya(year) : year`. So mm=2 with a non-Hebrew
-// locale (e.g. lg=s) draws the year as a plain number, even though the day
-// numbers below it are still in gematriya (which uses useGematriya). Keying it
-// on useGematriya() instead put the Hebrew year letters into the Latin FontSemi
-// used for a non-RTL title, rendering them as tofu boxes.
+// hebTitleYear formats the Hebrew year for a Hebrew-month title. It is keyed on
+// rtl, not on useGematriya(): mm=2 with a non-Hebrew locale (e.g. lg=s) draws
+// the year as a plain number, even though the day numbers below it are still in
+// gematriya. Keying it on useGematriya() instead put the Hebrew year letters
+// into the Latin FontSemi used for a non-RTL title, rendering them as tofu
+// boxes.
 func hebTitleYear(p *Params, year int) string {
 	if p.RTL {
 		return gematriya.Gematriya(year)
@@ -726,7 +706,7 @@ func hebTitleYear(p *Params, year int) string {
 }
 
 // drawHebMonthTitle writes the Hebrew month and year, with the Gregorian range
-// beneath. Port of pdfMonthTitleHebrew().
+// beneath.
 func (r *Renderer) drawHebMonthTitle(page *document.Page, inst *Instances, p *Params, hp HebMonthPage, first hdate.HDate, daysInMonth int) {
 	titleFont, subFont := FontSemi, FontPlain
 	if p.RTL {
@@ -740,8 +720,8 @@ func (r *Renderer) drawHebMonthTitle(page *document.Page, inst *Instances, p *Pa
 		gregRange(first.Gregorian(), last.Gregorian(), model.NamesFor(p.Locale)))
 }
 
-// gregRange formats the Gregorian span of a Hebrew month, matching the three
-// cases in pdfMonthTitleHebrew(): same month, same year, or spanning years.
+// gregRange formats the Gregorian span of a Hebrew month in three cases: same
+// month, same year, or spanning years.
 func gregRange(start, end time.Time, names model.CalendarNames) string {
 	mon := func(t time.Time) string {
 		return names.MonthsShort[int(t.Month())-1]
@@ -839,10 +819,9 @@ func (r *Renderer) dayNumber(p *Params, day int) string {
 	return strconv.Itoa(day)
 }
 
-// cellOrigin returns the x that src/pdf.js passes to renderPdfEvent for a
-// column: the cell's left edge less the cell margin. The alignment branches in
-// renderEventColored add their own insets to it, so this is deliberately not
-// the position anything is drawn at.
+// cellOrigin returns the reference x for a column: the cell's left edge less
+// the cell margin. The alignment branches in renderEventColored add their own
+// insets to it, so this is deliberately not the position anything is drawn at.
 func cellOrigin(rtl bool, dow int) float64 {
 	if rtl {
 		return pdfWidth - pdfRMargin - float64(dow+1)*pdfColWidth - pdfCellMargin

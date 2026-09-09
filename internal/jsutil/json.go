@@ -13,7 +13,7 @@ type KV struct {
 
 // OrderedObj marshals to a JSON object preserving insertion order. Several
 // responses (the zmanim ALL_TIMES ordering, the classic-API item objects, the
-// /geo location) reproduce JavaScript object key order, which a Go map cannot.
+// /geo location) depend on a specific key order, which a Go map cannot hold.
 type OrderedObj []KV
 
 // MarshalJSON implements json.Marshaler.

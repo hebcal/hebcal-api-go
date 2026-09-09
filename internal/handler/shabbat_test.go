@@ -103,8 +103,8 @@ func TestShabbatBasic(t *testing.T) {
 }
 
 // TestShabbatAshkenazi covers both spellings of the Ashkenazi
-// transliteration option. hebcal-web's makeHebcalOptions() rewrites the very
-// old a=on to lg=a when lg is absent, and lets an explicit lg win.
+// transliteration option. The very old a=on is rewritten to lg=a when lg is
+// absent, and an explicit lg wins.
 func TestShabbatAshkenazi(t *testing.T) {
 	srv := testServerWithDB(t)
 	const base = "/shabbat?cfg=json&geonameid=5128581&dt=2026-11-07&leyning=off"
@@ -158,10 +158,10 @@ func TestShabbatAshkenazi(t *testing.T) {
 	}
 }
 
-// TestShabbatLocaleValidation checks the accepted `lg` values against the set
-// hebcal-web's makeHebcalOptions() takes, and the 400 it answers otherwise.
-// Only /shabbat validates: hebcal-web's /converter and /zmanim render from
-// the raw lg and fall back to English for anything they do not know.
+// TestShabbatLocaleValidation checks the accepted `lg` values and the 400
+// answered for anything else. Only /shabbat validates: /converter and /zmanim
+// render from the raw lg and fall back to English for anything they do not
+// know.
 func TestShabbatLocaleValidation(t *testing.T) {
 	srv := testServerWithDB(t)
 	const base = "/shabbat?cfg=json&geonameid=5128581&dt=2026-11-07&leyning=off"
@@ -177,8 +177,8 @@ func TestShabbatLocaleValidation(t *testing.T) {
 			t.Errorf("lg=%q: status = %d, want 200 (%s)", lg, resp.StatusCode, body)
 		}
 	}
-	// "sephardic" is the internal name of the "s" locale, and hebcal-web
-	// rejects it just like any other unknown value
+	// "sephardic" is the internal name of the "s" locale, and it is rejected
+	// just like any other unknown value
 	for _, lg := range []string{"it", "xx", "ru-RU", "sephardic"} {
 		resp, body := get(t, srv, base+"&lg="+lg)
 		if resp.StatusCode != http.StatusBadRequest {
@@ -192,8 +192,8 @@ func TestShabbatLocaleValidation(t *testing.T) {
 }
 
 // TestShabbatHavdalahMinutes verifies that a havdalah pinned to a fixed
-// number of minutes after sunset (m=<min>) says so in its title, the way
-// @hebcal/core's HavdalahEvent does. td=<deg> and the M=on default do not.
+// number of minutes after sunset (m=<min>) says so in its title. td=<deg> and
+// the M=on default do not.
 func TestShabbatHavdalahMinutes(t *testing.T) {
 	srv := testServerWithDB(t)
 	const base = "/shabbat?cfg=json&geonameid=5128581&dt=2026-11-07&leyning=off"

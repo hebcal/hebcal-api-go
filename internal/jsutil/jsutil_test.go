@@ -85,11 +85,10 @@ func TestMakeAnchor(t *testing.T) {
 		"Adar II":           "adar-ii",
 		"Rosh Chodesh Elul": "rosh-chodesh-elul",
 		"Yom HaAtzma'ut":    "yom-haatzmaut",
-		// Only the straight apostrophe is deleted. The character class is
-		// JavaScript's `\w` without the `u` flag, so the typographic one is not a
-		// word character and becomes a hyphen like any other punctuation
-		// (measured against @hebcal/rest-api: "Ta’anit Bechorot" gives
-		// "ta-anit-bechorot").
+		// Only the straight apostrophe is deleted. The character class is ASCII
+		// word characters only, so the typographic apostrophe is not one and
+		// becomes a hyphen like any other punctuation: "Ta’anit Bechorot"
+		// gives "ta-anit-bechorot".
 		"Ta’anit Bechorot": "ta-anit-bechorot",
 		// A PDF campaign slug (campaignFromTitle): punctuation collapses to
 		// single hyphens and the ends are trimmed, rather than surviving into the

@@ -1,8 +1,8 @@
 // Package jsutil holds the small JavaScript-compatibility helpers this service
-// needs to reproduce hebcal-web's output byte for byte: JS parseInt and
-// Date.toISOString semantics, the string munging @hebcal/core applies to event
-// titles and anchors, JSON.stringify-compatible marshalling, and the
-// "undefined"/falsy conventions the JS routes apply to query parameters.
+// needs to match the reference API's output byte for byte: JS parseInt and
+// Date.toISOString semantics, the string munging applied to event titles and
+// anchors, JSON.stringify-compatible marshalling, and the "undefined"/falsy
+// conventions applied to query parameters.
 package jsutil
 
 import (
@@ -21,7 +21,7 @@ import (
 // (NaN in JS). Sscanf's %d verb has exactly these semantics, except that it
 // reports an error on int64 overflow where parseInt would yield a huge
 // float; saturating instead keeps range checks (e.g. "Gregorian year cannot
-// be greater than 9999") answering like the JS API.
+// be greater than 9999") answering the way the reference API does.
 func ParseInt(s string) (int, bool) {
 	var n int
 	if _, err := fmt.Sscanf(s, "%d", &n); err != nil {
@@ -80,8 +80,8 @@ func IsoDateString(gy int, gm time.Month, gd int) string {
 	}
 }
 
-// SmartApostrophe converts straight apostrophes to U+2019, same as
-// @hebcal/core's renderer does for event titles ("Sh'vat" => "Sh’vat").
+// SmartApostrophe converts straight apostrophes to U+2019, the same
+// substitution applied to event titles ("Sh'vat" => "Sh’vat").
 func SmartApostrophe(s string) string {
 	return strings.ReplaceAll(s, "'", "’")
 }
@@ -89,7 +89,9 @@ func SmartApostrophe(s string) string {
 var nonWordRe = regexp.MustCompile(`[^a-zA-Z0-9_]`)
 var multiDashRe = regexp.MustCompile(`-+`)
 
-// MakeAnchor mimics @hebcal/rest-api makeAnchor() used for the CSV filename.
+// MakeAnchor slugifies s the way the CSV filename is built: lowercase,
+// apostrophes dropped, every other non-word run collapsed to a single dash,
+// and leading/trailing dashes trimmed.
 func MakeAnchor(s string) string {
 	s = strings.ToLower(s)
 	s = strings.ReplaceAll(s, "'", "")
@@ -100,7 +102,7 @@ func MakeAnchor(s string) string {
 	return s
 }
 
-// xmlEscaper escapes the five characters that EJS <%= %> escapes.
+// xmlEscaper escapes the five HTML metacharacters (&, <, >, ", ').
 var xmlEscaper = strings.NewReplacer(
 	"&", "&amp;",
 	"<", "&lt;",
@@ -109,7 +111,7 @@ var xmlEscaper = strings.NewReplacer(
 	"'", "&#39;",
 )
 
-// XMLEscape escapes the five characters EJS <%= %> escapes.
+// XMLEscape escapes the five HTML metacharacters (&, <, >, ", ').
 func XMLEscape(s string) string {
 	return xmlEscaper.Replace(s)
 }

@@ -178,8 +178,7 @@ func RenderXML(p Props, q url.Values, lg string) []byte {
 }
 
 // RenderCSV builds the CSV body listing the Gregorian dates on which the
-// Hebrew date falls over a range of years. Ported from converter.js
-// dateConverterCsv() / makeFutureYearsHeb().
+// Hebrew date falls over a range of years.
 func RenderCSV(hd hdate.HDate) []byte {
 	var buf bytes.Buffer
 	buf.WriteString("Gregorian Date,Hebrew Date\r\n")
@@ -195,7 +194,8 @@ func RenderCSV(hd hdate.HDate) []byte {
 
 // FutureYearsHeb returns the same Hebrew calendar date across a range of
 // years, from 5 years before to numYears after the original date, applying
-// the same Adar and end-of-month adjustments as the JS makeFutureYearsHeb().
+// Adar and end-of-month adjustments where the day does not exist in a
+// target year.
 func FutureYearsHeb(orig hdate.HDate, numYears int) []hdate.HDate {
 	hy := orig.Year()
 	month := orig.Month()

@@ -16,10 +16,8 @@ import (
 
 // Cache-Control values used across the routes.
 //
-// The two PDF lifetimes come from hebcal-web's cacheControl(days): its download
-// dispatcher (src/app-download.js) sets 14 days before dispatching to the .pdf
-// branch, and src/holidayPdf.js sets 60 for the /holidays/ calendars, which are
-// a pure function of the year.
+// The two PDF lifetimes: 14 days for the /v4/ and /v2/ downloads, and 60 days
+// for the /holidays/ calendars, which are a pure function of the year.
 const (
 	CacheControl1Year  = "public, max-age=31536000, s-maxage=31536000"
 	CacheControl60Days = "public, max-age=5184000, s-maxage=5184000"
@@ -37,8 +35,8 @@ const (
 	ContentTypeJSONP = "text/javascript; charset=utf-8"
 )
 
-// SetCORS mirrors hebcal-web: API responses (cfg param present) are
-// world-readable.
+// SetCORS marks a response world-readable, for API responses (cfg param
+// present).
 func SetCORS(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Cross-Origin-Resource-Policy", "cross-origin")

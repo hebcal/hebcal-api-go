@@ -1,8 +1,7 @@
 // Package geodb reads the pre-built geonames.sqlite3 and zips.sqlite3
 // databases and resolves the documented ways of specifying a location for the
 // Hebcal calendar APIs (GeoNames id, US ZIP code, and the legacy city
-// identifier), plus the geographic typeahead behind /complete. It is a Go port
-// of the @hebcal/geo-sqlite GeoDb class.
+// identifier), plus the geographic typeahead behind /complete.
 //
 // The package depends only on the SQLite driver and hebcal-go, never on the
 // rest of this service, so it can be reused (or split out) on its own.
@@ -44,7 +43,7 @@ FROM ZIPCodes_Primary WHERE ZipCode = ?`
 )
 
 // DB wraps the geonames and zips SQLite databases with prepared statements
-// and small LRU caches (mirroring the @hebcal/geo-sqlite QuickLRU sizes).
+// and small LRU caches.
 type DB struct {
 	geonamesDB      *sql.DB
 	zipsDB          *sql.DB
@@ -171,7 +170,7 @@ func (db *DB) LookupGeoname(geonameid int) *Location {
 	if geonameid == 0 {
 		return nil
 	}
-	if geonameid == 293396 { // legacy alias fixup, matching @hebcal/geo-sqlite
+	if geonameid == 293396 { // legacy alias fixup
 		geonameid = 293397
 	}
 	if loc, ok := db.geonameCache.Get(geonameid); ok {
@@ -238,7 +237,7 @@ func (db *DB) LookupZip(zip string) *Location {
 		elev = int(elevation.Int64)
 	}
 	loc := &Location{
-		// hebcal-web's ZIP Location carries no asciiname, so we omit it too.
+		// A ZIP Location carries no asciiname.
 		Name:       fmt.Sprintf("%s, %s %s", city, state, zip5),
 		CC:         "US",
 		Country:    "United States",
@@ -287,8 +286,7 @@ func (db *DB) CountryName(cc string) string {
 	return db.countryNames[cc]
 }
 
-// geonameCityDescr builds a display name from geonames components, matching
-// @hebcal/geo-sqlite's GeoDb.geonameCityDescr.
+// geonameCityDescr builds a display name from geonames components.
 func geonameCityDescr(cityName, admin1, countryName string) string {
 	switch countryName {
 	case "United States":
@@ -320,8 +318,8 @@ func munge(s string) string {
 	return s
 }
 
-// foldAccents removes diacritical marks (São -> Sao), approximating the
-// transliteration used by @hebcal/geo-sqlite for the city-description dedup.
+// foldAccents removes diacritical marks (São -> Sao), used for the
+// city-description dedup.
 func foldAccents(s string) string {
 	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
 	out, _, err := transform.String(t, s)

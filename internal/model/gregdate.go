@@ -14,8 +14,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 )
 
-// MaxRangeDays caps a date-range request, matching the limit hebcal-web
-// applies to /converter and /zmanim.
+// MaxRangeDays caps a date-range request on /converter and /zmanim.
 const MaxRangeDays = 399
 
 // GregDate is a proleptic Gregorian calendar date.
@@ -30,7 +29,7 @@ func (g GregDate) RD() int64 {
 	return greg.ProlepticToRD(g.Year, g.Month, g.Day)
 }
 
-// String formats the date as YYYY-MM-DD, matching JS Date.toISOString.
+// String formats the date as YYYY-MM-DD.
 func (g GregDate) String() string {
 	return jsutil.IsoDateString(g.Year, g.Month, g.Day)
 }
@@ -45,7 +44,7 @@ func GregFromRD(rd int64) GregDate {
 // (proleptic Gregorian -003760-09-07).
 var rdEpochHebrew = hdate.ToRD(1, hdate.Tishrei, 1)
 
-// ReIsoDate matches the YYYY-MM-DD prefix the JS routes validate against.
+// ReIsoDate matches the YYYY-MM-DD prefix the routes validate against.
 var ReIsoDate = regexp.MustCompile(`^\d\d\d\d-\d\d-\d\d`)
 
 // nyLoc is the America/New_York location used to resolve "today" for the

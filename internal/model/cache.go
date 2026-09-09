@@ -14,20 +14,14 @@ import (
 // Year-level memoization.
 //
 // A single /converter range request converts up to ~399 days, and for each day
-// getEvents() needs that day's holidays. Those come from a whole-Hebrew-year
+// GetEvents() needs that day's holidays. Those come from a whole-Hebrew-year
 // computation: hebcal.HebrewCalendar / GetHolidaysForYear build and sort ~120
 // events for the year. Recomputing that per day made a range request redo the
-// same year ~399 times, which is what made the ported service slower than the
-// Node original for range requests.
+// same year ~399 times. These caches compute each year's holidays only once, so
+// a range spanning one or two Hebrew years pays for each only once.
 //
-// @hebcal/core (the Node implementation this service was ported from) avoids
-// that by memoizing getHolidaysForYear_ behind a QuickLRU. These caches port
-// that behavior to Go so that a range spanning one or two Hebrew years computes
-// each year's holidays only once.
-//
-// (@hebcal/core also memoizes getSedra, but measurements here showed sedra.New
-// costs ~230ns and caching it saved nothing on a range render, so the sedra
-// schedule is left uncached.)
+// (The sedra schedule is left uncached: sedra.New costs ~230ns and caching it
+// saved nothing on a range render.)
 
 // yearKey identifies a cached per-year computation. il matters because the
 // holiday schedule differs between Israel and the Diaspora.
@@ -79,7 +73,7 @@ func (m *yearMemo[V]) get(key yearKey, compute func() V) V {
 	return v.(V)
 }
 
-// yearCacheSize mirrors the QuickLRU({maxSize: 120}) used by @hebcal/core.
+// yearCacheSize bounds the per-year LRU caches.
 const yearCacheSize = 120
 
 var (

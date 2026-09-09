@@ -105,7 +105,7 @@ func (s *Server) zmanim(w http.ResponseWriter, r *http.Request) {
 }
 
 // checkMelacha implements the im=1 branch: reports whether melacha (work) is
-// prohibited at a given moment. Ported from checkMelacha() in zmanim.js.
+// prohibited at a given moment.
 func (s *Server) checkMelacha(w http.ResponseWriter, q url.Values,
 	loc *geodb.Location, locObj jsutil.OrderedObj, useElevation bool) {
 	now := time.Now()

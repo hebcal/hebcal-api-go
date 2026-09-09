@@ -1,18 +1,15 @@
 // Package pdf renders the Hebcal.com PDF calendars served from
-// download.hebcal.com/v4/<data>/<name>.pdf, a port of the pdfkit implementation
-// in hebcal-web's src/pdf.js.
+// download.hebcal.com/v4/<data>/<name>.pdf.
 //
 // The bar is that a calendar rendered here is indistinguishable from the one
-// production serves for the same URL, so most of this package is written to be
-// read side by side with the JavaScript it came from. See CLAUDE.md for the
-// things that cost real time to work out (pdfkit's top-down coordinates, hhea
-// baselines, shaping at a reference size) before changing layout or shaping.
+// production serves for the same URL. See CLAUDE.md for the things that cost
+// real time to work out (the top-down coordinate system, hhea baselines,
+// shaping at a reference size) before changing layout or shaping.
 //
 // A request arrives as a base64 protobuf in the URL path. DecodeParams turns it
 // into Params, Generate produces the calendar's events, and Renderer.Render
 // draws them; Service.Prepare and Service.Render bundle those steps in the
-// order the handler needs them, which is the same order hebcal-web's
-// src/hebcal-download.js runs in.
+// order the handler needs them.
 package pdf
 
 import (
@@ -39,7 +36,7 @@ type Service struct {
 	// may be for the other location-dependent routes.
 	Geo *geodb.DB
 	// Learning fetches the daily-learning series no Go schedule generates. Nil
-	// when no hebcal-web URL is configured, in which case those requests are
+	// when no readings-svc is configured, in which case those requests are
 	// refused rather than rendered incomplete.
 	Learning *LearningFetcher
 }
@@ -57,14 +54,14 @@ type Calendar struct {
 }
 
 // UnsupportedSeriesError reports daily-learning series this build cannot
-// generate. The two cases are deliberately different: with no hebcal-web
+// generate. The two cases are deliberately different: with no readings-svc
 // configured the calendar can never be rendered (501, retrying cannot help),
-// while a configured hebcal-web that did not answer is transient (503).
+// while a configured readings-svc that did not answer is transient (503).
 type UnsupportedSeriesError struct {
 	// Series names the schedules that could not be produced.
 	Series []string
-	// Retryable is true when a hebcal-web fetch failed, false when no
-	// hebcal-web URL is configured at all.
+	// Retryable is true when a readings-svc fetch failed, false when no
+	// readings-svc is configured at all.
 	Retryable bool
 	// Err is the underlying fetch failure, if there was one.
 	Err error
@@ -83,9 +80,9 @@ func (e *UnsupportedSeriesError) Unwrap() error { return e.Err }
 func (e *UnsupportedSeriesError) Header() string { return strings.Join(e.Series, ", ") }
 
 // Prepare decodes a /v4/<data>/<name>.pdf path and generates the calendar's
-// events, in the order src/hebcal-download.js does: decode, generate, fill in
-// the daily-learning series hebcal-go cannot produce, and only then refuse an
-// empty calendar -- those fetched rows can be the whole calendar.
+// events: decode, generate, fill in the daily-learning series hebcal-go cannot
+// produce, and only then refuse an empty calendar -- those fetched rows can be
+// the whole calendar.
 //
 // The errors it returns carry their own status: *NotFoundError is 404,
 // *OutOfRangeError 410, *UnsupportedSeriesError 501 or 503, a *model.HTTPError
@@ -126,9 +123,9 @@ func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
 		events = mergeLearning(events, extra)
 	}
 
-	// hebcal-web answers a PDF request that produced no events with 400 rather
-	// than an empty document (src/hebcal-download.js). The check comes after
-	// the fetch above, since those rows can be the whole calendar.
+	// A PDF request that produced no events is answered with 400 rather than an
+	// empty document. The check comes after the fetch above, since those rows
+	// can be the whole calendar.
 	if len(events) == 0 {
 		return nil, model.BadRequest("Please select at least one event option")
 	}
@@ -154,9 +151,9 @@ func (s *Service) Render(cal *Calendar) ([]byte, error) {
 
 // decodeRequest turns any of the three download URL shapes into the Download
 // message it carries: the current /v4/<base64-protobuf>/<name>.pdf, the legacy
-// /v2/h/<base64-querystring>/<name>.pdf that hebcal-web answers with a 301 to
-// the former (see v2.go), and the classic /hebcal/index.cgi/<name>.pdf?<query>
-// older than both (see cgi.go). From here on all three are the same request.
+// /v2/h/<base64-querystring>/<name>.pdf (see v2.go), and the classic
+// /hebcal/index.cgi/<name>.pdf?<query> older than both (see cgi.go). From here
+// on all three are the same request.
 //
 // isOpaquePath reports whether a download URL hides its calendar options behind
 // a base64 payload -- the /v4/ protobuf and the /v2/h/ query string both do, so
@@ -167,7 +164,7 @@ func isOpaquePath(path string) bool {
 	return !strings.HasPrefix(path, cgiPrefix)
 }
 
-// A URL that is none of these is 404, which is what hebcal-web's router answers.
+// A URL that is none of these is 404.
 func decodeRequest(u *url.URL) (*downloadpb.Download, error) {
 	switch path := u.Path; {
 	case strings.HasPrefix(path, cgiPrefix):
@@ -196,15 +193,12 @@ func decodeRequest(u *url.URL) (*downloadpb.Download, error) {
 }
 
 // DecodeError wraps a failure to base64-decode or protobuf-unmarshal a /v4/
-// URL's payload. It is otherwise just a 400 (writeCommonPDFError's default),
-// but the handler special-cases it for bingbot: bingbot crawls /v4/ URLs with
-// the path lowercased, which breaks both the base64 alphabet (mixed-case) and
-// the protobuf it decodes to, so every one of its requests hit this branch.
-// hebcal-web's app-download.js caught exactly this error and answered such
-// requests 404 rather than 400 for that one user agent (`isBingBot`), on the
-// theory that a crawler told "not found" backs off where one told "bad
-// request" does not -- ported here rather than left behind with the rest of
-// fixup2's /v4/ handling.
+// URL's payload. It is otherwise just a 400, but the handler special-cases it
+// for bingbot: bingbot crawls /v4/ URLs with the path lowercased, which breaks
+// both the base64 alphabet (mixed-case) and the protobuf it decodes to, so
+// every one of its requests hits this branch. Those are answered 404 rather
+// than 400 for that one user agent, on the theory that a crawler told "not
+// found" backs off where one told "bad request" does not.
 type DecodeError struct{ Err error }
 
 func (e *DecodeError) Error() string { return e.Err.Error() }
@@ -213,23 +207,22 @@ func (e *DecodeError) Unwrap() error { return e.Err }
 // CalendarTitle builds the document title, e.g. "Hebcal Palo Alto 2028",
 // "Hebcal Diaspora August 2026" or "Hebcal Palo Alto 2026-2027".
 //
-// Port of getCalendarTitle() in @hebcal/rest-api. CampaignName builds the link
-// tracking campaign from the same function, so the date range the two show can
-// never drift apart -- only the location name differs, deliberately.
+// CampaignName builds the link-tracking campaign from the same code, so the
+// date range the two show can never drift apart -- only the location name
+// differs, deliberately.
 func CalendarTitle(p *Params, events []Event) string {
 	return calendarTitle(p, events, false)
 }
 
 // CampaignName is the uc= / utm_campaign value every link on the calendar
-// carries. Port of campaignName() in src/hebcal-download.js, which is the
-// document title again -- but built with `preferAsciiName: true`, and that is
-// not a cosmetic difference:
+// carries. It is the document title again -- but built preferring the
+// location's plain-ASCII geonames name, and that is not a cosmetic difference:
 //
 //	geonameid=5128581  title "Hebcal New York 2026"  campaign pdf-new-york-city-2026
 //	geonameid=2657896  title "Hebcal Zürich 2026"    campaign pdf-zuerich-2026
 //
-// shortLocationName() takes the location's raw geonames asciiname whenever it
-// has one, and getShortName() only otherwise. So the campaign is not
+// The location's raw geonames asciiname is used whenever it has one, and the
+// display short name only otherwise. So the campaign is not
 // campaignFromTitle(document title) for a location whose asciiname differs from
 // its short name -- which is every accented city, and a few whose geonames row
 // is longer than their display name.
@@ -237,8 +230,8 @@ func CampaignName(p *Params, events []Event) string {
 	return campaignFromTitle(calendarTitle(p, events, true))
 }
 
-// calendarTitle is getCalendarTitle(); preferAscii is its preferAsciiName
-// option, which only the campaign sets.
+// calendarTitle builds the document title; preferAscii uses the location's
+// plain-ASCII name and is set only by the campaign.
 func calendarTitle(p *Params, events []Event, preferAscii bool) string {
 	title := "Hebcal"
 	cityName := p.CityName
@@ -277,10 +270,10 @@ func calendarTitle(p *Params, events []Event, preferAscii bool) string {
 	return title
 }
 
-// campaignFromTitle is the second half of campaignName(): drop the leading
-// "Hebcal" and makeAnchor the rest, giving "pdf-diaspora-august-2026". Its
-// argument is the ascii-preferring title, so call it through CampaignName
-// rather than passing the document's own title.
+// campaignFromTitle drops the leading "Hebcal" from a title and slugifies the
+// rest, giving "pdf-diaspora-august-2026". Its argument is the ascii-preferring
+// title, so call it through CampaignName rather than passing the document's own
+// title.
 //
 // jsutil.MakeAnchor is what keeps punctuation out of the campaign: a title like
 // "Hebcal Washington, D.C 2026" or the "40°42′N 74°0′W America/New_York" name a
@@ -296,10 +289,9 @@ func campaignFromTitle(title string) string {
 	return "pdf"
 }
 
-// campaignFor returns the campaign one event's link is tagged with. It is
-// renderPdfEvent's `options.utmCampaign || 'pdf-' + evt.getDate().getFullYear()`:
-// a download names the whole document, while a /holidays/ calendar, which sets
-// no campaign, names each event's own Hebrew year.
+// campaignFor returns the campaign one event's link is tagged with: a download
+// names the whole document, while a /holidays/ calendar, which sets no
+// campaign, names each event's own Hebrew year.
 func (p *Params) campaignFor(document string, ev *Event) string {
 	if p.PerEventCampaign {
 		return "pdf-" + strconv.Itoa(ev.HD.Year())

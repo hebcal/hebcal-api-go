@@ -9,9 +9,9 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/model"
 )
 
-// rowsFor is src/pdf.js's rule, not a computed ceiling: the grid stays five
-// rows unless the month genuinely cannot fit, which keeps cell heights
-// consistent from page to page.
+// rowsFor is a fixed rule, not a computed ceiling: the grid stays five rows
+// unless the month genuinely cannot fit, which keeps cell heights consistent
+// from page to page.
 func TestRowsFor(t *testing.T) {
 	tests := []struct {
 		days, startDow, want int
@@ -47,10 +47,9 @@ func TestEveryMonthFitsItsRows(t *testing.T) {
 	}
 }
 
-// The grid rectangle runs from BMARGIN down to HEIGHT-TMARGIN in pdfkit's
-// top-down coordinates, which is the opposite of what the constant names
-// suggest. Anchoring it to the wrong edge put every day number in the wrong
-// place.
+// The grid rectangle runs from BMARGIN down to HEIGHT-TMARGIN in top-down
+// coordinates, which is the opposite of what the constant names suggest.
+// Anchoring it to the wrong edge put every day number in the wrong place.
 func TestGridGeometry(t *testing.T) {
 	if got, want := yLine(pdfBMargin), 540.0; got != want {
 		t.Errorf("grid top in PDF coordinates = %v, want %v", got, want)
@@ -63,8 +62,8 @@ func TestGridGeometry(t *testing.T) {
 	}
 }
 
-// cellOrigin is what src/pdf.js passes to renderPdfEvent: the cell's left edge
-// less the cell margin. Right-to-left calendars run the columns backwards.
+// cellOrigin is the reference x for a column: the cell's left edge less the
+// cell margin. Right-to-left calendars run the columns backwards.
 func TestCellOrigin(t *testing.T) {
 	ltr0 := cellOrigin(false, 0)
 	ltr6 := cellOrigin(false, 6)
@@ -119,11 +118,11 @@ func TestHebMonthRangeUsesSmartApostrophe(t *testing.T) {
 	}
 }
 
-// The Hebrew-month title year follows rtl, not gematriyaNumerals (mm=2): a
-// non-Hebrew locale draws plain digits even in mm=2, matching pdfkit's
-// `const yearStr = rtl ? gematriya(year) : year`. Keying it on useGematriya()
-// put Hebrew year letters into the Latin title font as tofu boxes. The day
-// numbers below the title stay in gematriya; only the title year changed.
+// The Hebrew-month title year follows rtl, not useGematriya() (mm=2): a
+// non-Hebrew locale draws plain digits even in mm=2. Keying it on
+// useGematriya() put Hebrew year letters into the Latin title font as tofu
+// boxes. The day numbers below the title stay in gematriya; only the title
+// year changed.
 func TestHebTitleYear(t *testing.T) {
 	// mm=2 with lg=s: gematriya day numbers, but a plain-digit title year.
 	if got := hebTitleYear(&Params{MonthMode: HebrewHebrew, RTL: false}, 5788); got != "5788" {
@@ -200,11 +199,10 @@ func TestEventColorPrecedence(t *testing.T) {
 	}
 }
 
-// The break point is not the middle of the string. renderPdfEvent looks one
-// element past the midpoint of a split that keeps its separators, which puts
-// the extra word on the first line for an even number of words -- production
-// draws "Yom HaAliyah School" / "Observance" -- while a right-to-left subject,
-// rejoined with two spaces before the same split, breaks in the middle. With
+// The break point is not the middle of the string. A left-to-right subject
+// breaks one word past the midpoint, which puts the extra word on the first
+// line for an even number of words -- production draws "Yom HaAliyah School" /
+// "Observance" -- while a right-to-left subject breaks in the middle. With
 // fewer than three words a left-to-right subject finds no break at all.
 func TestSplitInTwo(t *testing.T) {
 	tests := []struct {
@@ -251,8 +249,8 @@ func TestLeftFooterText(t *testing.T) {
 	}
 }
 
-// hdate spells one month differently from @hebcal/core, and the published
-// calendars follow @hebcal/core.
+// hdate spells one month ("Tammuz") differently from the published calendars,
+// which use "Tamuz".
 func TestTamuzSpelling(t *testing.T) {
 	// July 2027 spans Tamuz-Av 5787.
 	got := hebMonthRange(MonthPage{Year: 2027, Month: time.July}, &Params{Locale: "en"})

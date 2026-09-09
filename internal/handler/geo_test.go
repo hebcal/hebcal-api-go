@@ -8,9 +8,8 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
 )
 
-// The expected bodies below were captured from hebcal-web's /geo route
-// (getLocationFromQuery serialized by Koa) using the same testdata databases,
-// so they double as a byte-for-byte parity check with the Node implementation.
+// The expected bodies below were captured from the reference /geo route using
+// the same testdata databases, so they double as a byte-for-byte parity check.
 
 func TestGeoGeoname(t *testing.T) {
 	srv := testServerWithDB(t)
@@ -109,7 +108,7 @@ func TestGeoPosIsrael(t *testing.T) {
 
 func TestGeoNoParams(t *testing.T) {
 	srv := testServerWithDB(t)
-	// No location parameters: hebcal-web assigns ctx.body = null => 204.
+	// No location parameters: 204 No Content.
 	resp, body := get(t, srv, "/geo")
 	if resp.StatusCode != http.StatusNoContent {
 		t.Fatalf("status = %d, want 204; body=%s", resp.StatusCode, body)

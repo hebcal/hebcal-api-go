@@ -16,8 +16,7 @@ import (
 	"seehuhn.de/go/sfnt"
 )
 
-// Font names match the names hebcal-web registers in src/pdf.js, so the
-// rendering code reads the same way in both implementations.
+// Font names used throughout the rendering code.
 const (
 	FontPlain      = "plain"
 	FontSemi       = "semi"
@@ -26,7 +25,7 @@ const (
 	FontHebrewBold = "hebrew-bold"
 )
 
-// fontFiles mirrors FONT_FILES from hebcal-web. The Source Sans Pro faces are
+// fontFiles maps each font name to its file. The Source Sans Pro faces are
 // TrueType (glyf outlines); the Adobe Hebrew faces are OpenType/CFF, which is
 // why they are embedded through a different package below.
 var fontFiles = map[string]string{
@@ -40,12 +39,9 @@ var fontFiles = map[string]string{
 // FontSet holds the parsed fonts for the process.
 //
 // Parsing is done once at startup and the *sfnt.Font values are then shared by
-// every request. That is safe here in a way it was not in the Node
-// implementation: sfnt.Font is read-only after parsing, whereas pdfkit's
-// EmbeddedFont accumulates per-document subset state. hebcal-web tried sharing
-// at the pdfkit layer and had to revert it after the workers were OOM-killed --
-// see the PDF section of its CLAUDE.md. Each request still builds its own
-// embedded font instances (Instances below), which are per-document by design.
+// every request: sfnt.Font is read-only after parsing. Each request still
+// builds its own embedded font instances (Instances below), which accumulate
+// per-document subset state and so cannot be shared.
 type FontSet struct {
 	// parsed drives PDF embedding and subsetting (seehuhn).
 	parsed map[string]*sfnt.Font
@@ -53,8 +49,8 @@ type FontSet struct {
 	// files, so glyph IDs from a face are valid indices into the matching
 	// embedded font.
 	faces map[string]*gotextfont.Face
-	// hheaAscent holds the hhea ascender per font, which is what pdfkit uses
-	// to place a baseline. See Ascent.
+	// hheaAscent holds the hhea ascender per font, which is what places a
+	// baseline. See Ascent.
 	hheaAscent map[string]float64
 }
 
@@ -129,12 +125,12 @@ func (fs *FontSet) Embed() (*Instances, error) {
 			l   font.Layouter
 			err error
 		)
-		// Composite (Type0/CID) rather than simple fonts, which is how pdfkit
-		// embeds them. A simple font addresses at most 256 glyphs through a
-		// custom encoding, and viewers differ in how they treat one whose
-		// encoding is not a standard base: Chrome's PDFium rendered the Hebrew
-		// noticeably heavier than macOS Preview did from the same file.
-		// Composite fonts sidestep that and lift the 256-glyph ceiling.
+		// Composite (Type0/CID) rather than simple fonts. A simple font
+		// addresses at most 256 glyphs through a custom encoding, and viewers
+		// differ in how they treat one whose encoding is not a standard base:
+		// Chrome's PDFium rendered the Hebrew noticeably heavier than macOS
+		// Preview did from the same file. Composite fonts sidestep that and
+		// lift the 256-glyph ceiling.
 		if parsed.Outlines != nil && parsed.AsCFF() != nil {
 			l, err = cff.NewComposite(parsed, &cff.OptionsComposite{MakeEncoder: makeIdentityEncoder})
 		} else {
@@ -155,14 +151,13 @@ func (in *Instances) Get(name string) font.Layouter {
 
 // Ascent returns the font's ascender in PDF text-space units at the given size.
 //
-// pdfkit's doc.text(str, x, y) treats y as the top of the text box and puts the
+// The layout in render.go treats a y as the top of the text box and puts the
 // baseline one ascender below it, while PDF coordinates run bottom-up from the
-// page edge. Converting hebcal-web's layout constants therefore needs the
-// ascender, and specifically the one fontkit reports, which is the hhea
-// table's. sfnt.Font.Ascent exposes the OS/2 typographic ascender instead, and
-// the two disagree sharply for Source Sans Pro -- 984 against 750 -- which put
-// every day number about 3.3pt too high in its cell. They happen to agree for
-// Adobe Hebrew, which is why only the Latin faces looked wrong.
+// page edge. That conversion needs the hhea table's ascender specifically.
+// sfnt.Font.Ascent exposes the OS/2 typographic ascender instead, and the two
+// disagree sharply for Source Sans Pro -- 984 against 750 -- which put every
+// day number about 3.3pt too high in its cell. They happen to agree for Adobe
+// Hebrew, which is why only the Latin faces looked wrong.
 func (fs *FontSet) Ascent(name string, size float64) float64 {
 	f := fs.parsed[name]
 	if f == nil || f.UnitsPerEm == 0 {
@@ -175,8 +170,8 @@ func (fs *FontSet) Ascent(name string, size float64) float64 {
 	return asc / float64(f.UnitsPerEm) * size
 }
 
-// readHheaAscent returns the ascender from a font file's hhea table, which is
-// the value fontkit (and therefore pdfkit) reports as the font ascender.
+// readHheaAscent returns the ascender from a font file's hhea table, the value
+// the layout code uses as the font ascender (see Ascent).
 func readHheaAscent(path string) (float64, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -204,6 +199,5 @@ func readHheaAscent(path string) (float64, error) {
 	return 0, fmt.Errorf("%s: no hhea table", path)
 }
 
-// pdfVersion matches the pdfVersion pdfkit is configured with in hebcal-web's
-// createPdfDoc, so viewers see the same declared feature level.
+// pdfVersion is the declared PDF feature level viewers see.
 const pdfVersion = pdflib.V1_5

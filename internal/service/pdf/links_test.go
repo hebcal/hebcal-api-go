@@ -166,10 +166,9 @@ func TestDoubledPortionsWithSingleWordFirstHalf(t *testing.T) {
 
 // "Achrei Mot-Kedoshim" is the one doubled portion whose first half is itself
 // two words, so keying it by the text before the first hyphen looks up
-// "achrei" and finds nothing. @hebcal/rest-api's shortenSedrotUrl has the same
-// quirk -- it does anchor.split('-')[0] -- and falls back to the long form, so
-// matching production means falling back here too rather than "fixing" it into
-// a divergence.
+// "achrei" and finds nothing. Production has the same quirk and falls back to
+// the long form, so matching it means falling back here too rather than
+// "fixing" it into a divergence.
 func TestAchreiMotKedoshimFallsBackToTheLongForm(t *testing.T) {
 	got := eventLink("https://www.hebcal.com/sedrot/achrei-mot-kedoshim-20270501", 5787, "", false)
 	if !strings.Contains(got, "/s/achrei-mot-kedoshim-20270501") {
@@ -183,10 +182,9 @@ func TestAchreiMotKedoshimFallsBackToTheLongForm(t *testing.T) {
 	}
 }
 
-// appendIsraelAndTracking sets i=on with searchParams.set(), and does it before
-// shortening. Both halves matter, and getting either wrong put a wrong link on
-// every event of every Israel calendar -- 56 of 103 on a Jerusalem 2026
-// download, measured against hebcal-web.
+// i=on is set (not appended) and is set before shortening. Both halves matter,
+// and getting either wrong put a wrong link on every event of every Israel
+// calendar -- 56 of 103 on a Jerusalem 2026 download.
 func TestIsraelParameterIsSetNotAppended(t *testing.T) {
 	const campaign = "pdf-jerusalem-2026"
 
@@ -209,9 +207,8 @@ func TestIsraelParameterIsSetNotAppended(t *testing.T) {
 		}
 	})
 
-	// A parsha link spends the i on its path -- /s/5786i/12 -- and
-	// shortenSedrotUrl deletes the parameter as it does so, rather than
-	// carrying both.
+	// A parsha link spends the i on its path -- /s/5786i/12 -- and drops the
+	// parameter as it does so, rather than carrying both.
 	t.Run("a parsha spends it on the path", func(t *testing.T) {
 		got := eventLink("https://www.hebcal.com/sedrot/vayechi-20260103?i=on",
 			5786, campaign, true)
@@ -243,11 +240,11 @@ func TestIsraelParameterIsSetNotAppended(t *testing.T) {
 	})
 }
 
-// campaignName() builds its title with preferAsciiName, so the campaign names
-// the location by its raw geonames asciiname wherever there is one, while the
-// document title uses the display short name. Measured against hebcal-web:
-// geonameid 2657896 renders "Hebcal Zürich 2026" and tags every link
-// pdf-zuerich-2026, and 5128581 renders "Hebcal New York 2026" and tags
+// The campaign names the location by its raw geonames asciiname wherever there
+// is one, while the document title uses the display short name. Measured
+// against production: geonameid 2657896 renders "Hebcal Zürich 2026" and tags
+// every link pdf-zuerich-2026, and 5128581 renders "Hebcal New York 2026" and
+// tags
 // pdf-new-york-city-2026. Deriving the campaign from the document title gave
 // "pdf-z-rich-2026", which matched nothing production had ever emitted.
 func TestCampaignPrefersTheAsciiName(t *testing.T) {

@@ -1,16 +1,14 @@
-// Package mcp is the Model Context Protocol server behind www.hebcal.com/mcp,
-// ported from the Node.js @hebcal/mcp (../hebcal-mcp) so it becomes another
-// route on this one binary. It exposes seven calendar tools over a stateless
-// streamable-HTTP transport.
+// Package mcp is the Model Context Protocol server behind www.hebcal.com/mcp.
+// It exposes seven calendar tools over a stateless streamable-HTTP transport.
 //
 // All seven tools compute in-process with the same libraries the JSON APIs
 // use. The one exception is torah-portion's reading name and summary, which
-// come from the readings-svc sidecar's /shabbatTorahReading route because they
-// are @hebcal/leyning output (makeSummaryFromParts, and the chag reading label)
-// hebcal-go has no counterpart for. That one tool therefore soft-depends on the
-// sidecar: with none configured, or an error, the "Reading:" line is omitted
-// and the chag portion name falls back to hebcal-go's coarser label, rather
-// than the whole tool failing.
+// come from the readings-svc sidecar's /shabbatTorahReading route because the
+// merged verse-range summary and the chag reading label have no hebcal-go
+// counterpart. That one tool therefore soft-depends on the sidecar: with none
+// configured, or an error, the "Reading:" line is omitted and the chag portion
+// name falls back to hebcal-go's coarser label, rather than the whole tool
+// failing.
 //
 // The package is named mcp; the SDK it wraps is aliased mcpsdk to keep the two
 // apart. The handler layer only calls Handler, so the SDK does not leak past
@@ -92,9 +90,8 @@ func NewServer(rd *readings.Client) *mcpsdk.Server {
 }
 
 // Handler returns the stateless streamable-HTTP handler for POST /mcp. In
-// stateless mode the SDK answers GET and DELETE with 405, matching the Node
-// server. One server instance is shared across requests, as it holds no
-// per-session state.
+// stateless mode the SDK answers GET and DELETE with 405. One server instance
+// is shared across requests, as it holds no per-session state.
 func Handler(rd *readings.Client) http.Handler {
 	srv := NewServer(rd)
 	return mcpsdk.NewStreamableHTTPHandler(
@@ -111,14 +108,14 @@ func textResult(s string) *mcpsdk.CallToolResult {
 	}
 }
 
-// errorCard is the Node errorCard: an ordinary (non-IsError) text result
-// carrying a human-readable message, so the model sees the problem and can
-// self-correct rather than getting a protocol error.
+// errorCard returns an ordinary (non-IsError) text result carrying a
+// human-readable message, so the model sees the problem and can self-correct
+// rather than getting a protocol error.
 func errorCard(message string) *mcpsdk.CallToolResult {
 	return textResult(message)
 }
 
-// lines joins tool output lines the way the Node tools do (results.join('\n')).
+// lines joins tool output lines with newlines.
 func lines(l ...string) *mcpsdk.CallToolResult {
 	return textResult(strings.Join(l, "\n"))
 }

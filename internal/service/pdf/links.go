@@ -9,11 +9,10 @@ import (
 	"github.com/hebcal/hebcal-go/sedra"
 )
 
-// Link tracking defaults, matching hebcal-web's renderPdfEvent().
+// Link tracking defaults.
 const (
-	// utmSource is "hebcal.com" rather than "pdf" for external links:
-	// appendIsraelAndTracking defaults it that way so a Sefaria page can see
-	// where the visit came from.
+	// utmSource is "hebcal.com" rather than "pdf" for external links, so a
+	// Sefaria page can see where the visit came from.
 	utmSource = "hebcal.com"
 	utmMedium = "document"
 )
@@ -127,10 +126,10 @@ func eventLink(rawURL string, hyear int, campaign string, il bool) string {
 // appendParams adds parameters to a query string in the order given, skipping
 // empty values.
 //
-// net/url's Values.Encode sorts keys, so it cannot reproduce the order
-// URLSearchParams produces on the Node side. The URLs resolve identically
-// either way, but matching the order keeps a link-by-link comparison against
-// production a clean equality rather than one that needs normalising.
+// net/url's Values.Encode sorts keys, so it cannot reproduce the parameter
+// order production emits. The URLs resolve identically either way, but matching
+// the order keeps a link-by-link comparison against production a clean equality
+// rather than one that needs normalising.
 func appendParams(raw string, params ...[2]string) string {
 	var b strings.Builder
 	b.WriteString(raw)
@@ -149,8 +148,7 @@ func appendParams(raw string, params ...[2]string) string {
 }
 
 // shortenSedrot rewrites /sedrot/<parsha>-<YYYYMMDD> to /s/<hyear>[i]/<id>[d].
-// If the path does not have that shape the prefix is simply trimmed to /s/,
-// which is what @hebcal/rest-api does.
+// If the path does not have that shape the prefix is simply trimmed to /s/.
 //
 // It reports whether the short form was produced, because that is the only
 // case in which shortenSedrotUrl consumes the i=on parameter into the path.

@@ -2,23 +2,17 @@
 // that supplies the two things hebcal-go cannot produce in-process:
 //
 //   - /leyning — Torah readings for Shabbat and holidays, including the
-//     triennial cycle, from @hebcal/leyning and @hebcal/triennial. These back
-//     the /shabbat API.
+//     triennial cycle. These back the /shabbat API.
 //   - /learning — the daily-learning series with no Go schedule (Sefer
 //     HaMitzvot, Kitzur Shulchan Arukh, Arukh HaShulchan, Amud HaYomi,
 //     Chofetz Chaim and Shemirat HaLashon), which back the PDF calendars.
 //
 // The sidecar answers HTTP over a unix domain socket, so both endpoints are
-// local calls with no Varnish, DNS or TCP in the way. It replaces the two
-// separate hebcal-web dependencies this service used to carry: an HTTP call to
-// /leyning?cfg=json for readings and one out through the www.hebcal.com front
-// door to /hebcal?cfg=json for daily learning.
+// local calls with no Varnish, DNS or TCP in the way.
 //
-// Both endpoints answer in @hebcal/rest-api's "classic API" shape — the same
-// objects hebcal-web's own /shabbat and /hebcal responses are built from — so
-// an item's "leyning" needs no reformatting here: it is passed through
-// verbatim, key order included. That is what formatLeyningResult() in
-// @hebcal/rest-api produces, and what this package used to reimplement.
+// Both endpoints answer in the "classic API" shape — the same objects the
+// /shabbat and /hebcal responses are built from — so an item's "leyning" needs
+// no reformatting here: it is passed through verbatim, key order included.
 package readings
 
 import (

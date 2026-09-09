@@ -9,16 +9,14 @@ import (
 	"github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 )
 
-// MessageToQuery renders a decoded Download protobuf back into the query string
-// hebcal-web's deserializeDownload.js would produce from the same message
-// (e.g. "v=1&M=on&yt=H&year=5787&lg=s&dksa=on&mm=0"). It is a diagnostic: a
-// /v4/<base64>/<name>.pdf URL is opaque in the access log, and this makes the
-// request readable and reproducible under the log's "qs" key.
+// MessageToQuery renders a decoded Download protobuf back into an equivalent
+// query string (e.g. "v=1&M=on&yt=H&year=5787&lg=s&dksa=on&mm=0"). It is a
+// diagnostic: a /v4/<base64>/<name>.pdf URL is opaque in the access log, and
+// this makes the request readable and reproducible under the log's "qs" key.
 //
-// It is a faithful port of deserializeDownload.js, field-for-field and in the
-// same order, so the output round-trips through DecodeV2 and can be pasted onto
-// a hebcal.com URL. Keep it in step with that file and with the daily-learning
-// list in learningQueryParams below.
+// The output round-trips through DecodeV2 and can be pasted onto a hebcal.com
+// URL. Keep it in step with the daily-learning list in learningQueryParams
+// below.
 func MessageToQuery(msg *downloadpb.Download) string {
 	var q queryBuilder
 	q.set("v", "1")
@@ -33,7 +31,7 @@ func MessageToQuery(msg *downloadpb.Download) string {
 		q.set("M", "on")
 	} else {
 		q.set("M", "off")
-		// deserializeDownload sets q.m = havdalahMins whenever M=off, even when 0.
+		// m = havdalahMins is emitted whenever M=off, even when 0.
 		q.set("m", strconv.Itoa(int(msg.GetHavdalahMins())))
 	}
 	if tz := msg.GetTzeit(); tz != 0 {
@@ -127,9 +125,8 @@ func MessageToQuery(msg *downloadpb.Download) string {
 }
 
 // learningQueryParams maps each daily-learning protobuf field to its query
-// parameter, in the order deserializeDownload.js walks dailyLearningConfig.json
-// (so the "qs" field lists them the way hebcal-web would). The last entry is
-// sedrot, whose config row carries the plain `s` Torah-readings parameter.
+// parameter, in a fixed order so the "qs" field lists them consistently. The
+// last entry is sedrot, which carries the plain `s` Torah-readings parameter.
 var learningQueryParams = []struct {
 	param string
 	on    func(*downloadpb.Download) bool
@@ -157,7 +154,7 @@ var learningQueryParams = []struct {
 }
 
 // queryBuilder accumulates key=value pairs in insertion order, so the rendered
-// query matches deserializeDownload.js's field order rather than being sorted.
+// query keeps a stable field order rather than being sorted.
 type queryBuilder struct {
 	b     strings.Builder
 	wrote bool
@@ -170,8 +167,8 @@ func (q *queryBuilder) set(key, val string) {
 	q.wrote = true
 	q.b.WriteString(key)
 	q.b.WriteByte('=')
-	// Encode like JavaScript's encodeURIComponent (spaces as %20, not +), which
-	// deserializeDownload's consumers use, so the query pastes cleanly into a URL.
+	// Encode with spaces as %20 rather than +, so the query pastes cleanly
+	// into a URL.
 	q.b.WriteString(strings.ReplaceAll(url.QueryEscape(val), "+", "%20"))
 }
 
@@ -191,8 +188,8 @@ func (q *queryBuilder) setIf(key, val string, cond bool) {
 
 func (q *queryBuilder) String() string { return q.b.String() }
 
-// formatFloat renders a float the way JavaScript's String(number) does: the
-// shortest form that round-trips, no trailing zeros.
+// formatFloat renders a float in the shortest form that round-trips, with no
+// trailing zeros.
 func formatFloat(f float64) string {
 	return strconv.FormatFloat(f, 'f', -1, 64)
 }

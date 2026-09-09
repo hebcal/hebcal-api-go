@@ -55,18 +55,17 @@ func (s *Server) converter(w http.ResponseWriter, r *http.Request) {
 	}
 	now := s.Now()
 	p, err := converter.ParseQuery(q, now)
-	// Ported from hebcal-web src/converter.js: a GET request that omits
-	// every date parameter (bare /converter, or h2g=1/g2h=1 with no
-	// hy/hm/hd or gy/gm/gd) resolves against "today" and so must not be
-	// cached under a stable URL. Redirect to an equivalent request that
-	// pins the date explicitly, with a short private Cache-Control.
+	// A GET request that omits every date parameter (bare /converter, or
+	// h2g=1/g2h=1 with no hy/hm/hd or gy/gm/gd) resolves against "today" and
+	// so must not be cached under a stable URL. Redirect to an equivalent
+	// request that pins the date explicitly, with a short private
+	// Cache-Control.
 	//
 	// HEAD redirects alongside GET: RFC 9110 §9.3.2 makes HEAD identical to
 	// GET but for the content, so answering 200 here while GET answers 302
 	// would misreport the resource to any client that probes with HEAD.
-	// hebcal-web tests only for GET, so this deliberately diverges from it;
-	// POST keeps the JS behavior and renders "today" directly, since a POST
-	// is not the cacheable, followable request the redirect exists to fix.
+	// POST instead renders "today" directly, since a POST is not the
+	// cacheable, followable request the redirect exists to fix.
 	if err == nil && (r.Method == http.MethodGet || r.Method == http.MethodHead) && p.NoCache {
 		redirectConverterNoCache(w, q, cfg, now)
 		return
@@ -127,16 +126,15 @@ func writeConverterError(w http.ResponseWriter, cfg string, err error) {
 }
 
 // redirectConverterNoCache 302s a date-less /converter GET to an equivalent
-// URL with gd/gm/gy pinned to today. Ported from the noCache/message check
-// in hebcal-web src/converter.js, with one deliberate fix: the JS version
-// only re-appends &cfg=json (never &cfg=xml) to the redirect target, which
-// silently drops cfg=xml from the round trip. The caller only reaches this
-// function once cfg has already passed the {json,xml} gate, so cfg is
-// always one of those two values here and we preserve it either way.
-// Unlike hebcal-web, this microservice does not resolve a per-request
-// location (there is no IP geolocation for /converter, only the fixed
-// New-York "today" also used by Server.Now), so the redirect never appends
-// &gs=on or &i=on: those require knowing the caller's location to
+// URL with gd/gm/gy pinned to today, with one deliberate fix over production:
+// production only re-appends &cfg=json (never &cfg=xml) to the redirect
+// target, silently dropping cfg=xml from the round trip. The caller only
+// reaches this function once cfg has already passed the {json,xml} gate, so
+// cfg is always one of those two values here and we preserve it either way.
+// This microservice does not resolve a per-request location (there is no IP
+// geolocation for /converter, only the fixed New-York "today" also used by
+// Server.Now), so the redirect never appends &gs=on or &i=on: those require
+// knowing the caller's location to
 // determine after-sunset/Israel status.
 func redirectConverterNoCache(w http.ResponseWriter, q url.Values, cfg string, gd model.GregDate) {
 	lg := ""

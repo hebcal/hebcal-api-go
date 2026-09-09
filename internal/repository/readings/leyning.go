@@ -89,7 +89,7 @@ func (c *Client) fetchLeyning(ctx context.Context, from, to string, il bool) (ma
 	// No lg: /leyning is English-only by design and ignores one. The readings
 	// are locale-invariant, and items are matched to hebcal-go's events by the
 	// untranslated event description, so a localized /shabbat request still
-	// gets English readings -- as it does from hebcal-web.
+	// gets English readings.
 	ctx, cancel := context.WithTimeout(ctx, leyningTimeout)
 	defer cancel()
 	items, err := c.get(ctx, "/leyning", q)

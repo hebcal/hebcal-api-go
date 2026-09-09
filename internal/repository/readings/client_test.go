@@ -82,7 +82,7 @@ func TestLeyningCachesEveryDayInTheSpan(t *testing.T) {
 	}
 }
 
-// The "ah"/"sh" transliteration spellings are not @hebcal/locales names --
+// The "ah"/"sh" transliteration spellings are not real locale names --
 // readings-svc 400s on them -- so Learning sends their base locale ("a"/"s")
 // instead; every other lg passes through unchanged.
 func TestLearningMapsTransliterationLocales(t *testing.T) {

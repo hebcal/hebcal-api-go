@@ -54,7 +54,7 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if loc == nil {
-		// hebcal-web defaults to New York when no location is given.
+		// Default to New York when no location is given.
 		loc = s.DB.LookupLegacyCity("New York")
 		if loc == nil {
 			loc = s.DB.LookupGeoname(5128581)
@@ -77,12 +77,11 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// i=on puts a Diaspora location on the Israel schedule. The candle-lighting
-	// custom still follows the location itself, as it does in hebcal-web.
+	// custom still follows the location itself.
 	il := loc.IsIsrael() || jsutil.IsOn(q.Get("i"))
 	lg := shabbat.QueryLang(q)
-	// hebcal-web validates the locale here (makeHebcalOptions calls
-	// Locale.useLocale, which throws for an unknown name); its other JSON
-	// routes accept any lg and quietly fall back to English.
+	// /shabbat validates the locale and rejects an unknown name; the other
+	// JSON routes accept any lg and quietly fall back to English.
 	if !model.LocaleSupported(lg) {
 		httpx.WriteJSONError(w, model.BadRequest("Locale '%s' not found", lg))
 		return
@@ -104,7 +103,7 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 	}
 	// Deliberately after the empty check: asking for Yom Tov only in a week
 	// that has none is a fair question with an empty answer, so it returns
-	// 200 and no items. hebcal-web filters before its own check and answers
+	// 200 and no items. Production filters before its own check and answers
 	// 400 there.
 	if jsutil.IsOn(q.Get("yto")) {
 		events = shabbat.FilterYomTovOnly(events)
@@ -151,8 +150,7 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 }
 
 // queryHour12 reads the h12 override, or nil when the request does not ask.
-// hebcal-web sets options.hour12 = !off(query.h12), so h12=0 and h12=off both
-// mean 24-hour and anything else present means 12-hour.
+// h12=0 and h12=off both mean 24-hour; anything else present means 12-hour.
 func queryHour12(q url.Values) *bool {
 	v := q.Get("h12")
 	if v == "" {
@@ -167,9 +165,9 @@ const jsonpCallbackMaxLen = 128
 var jsonpCallbackRe = regexp.MustCompile(`^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*$`)
 
 // writeShabbatBody writes the response, wrapping it in a JSONP callback when
-// one is requested. Ported from jsonpBody() in hebcal-web src/common.js: a
-// callback that is too long or not a plain dotted identifier is ignored
-// rather than sanitized, so a bad one still yields ordinary JSON.
+// one is requested. A callback that is too long or not a plain dotted
+// identifier is ignored rather than sanitized, so a bad one still yields
+// ordinary JSON.
 func writeShabbatBody(w http.ResponseWriter, q url.Values, body interface{}) {
 	callback := q.Get("callback")
 	if len(callback) == 0 || len(callback) > jsonpCallbackMaxLen || !jsonpCallbackRe.MatchString(callback) {

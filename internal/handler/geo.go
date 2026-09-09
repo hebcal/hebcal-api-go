@@ -1,15 +1,10 @@
 package handler
 
 // The /geo endpoint resolves an HTTP request's query parameters to a location
-// and returns the raw @hebcal/core Location object as JSON, matching the
-// hebcal-web src/router.js "/geo" route:
+// and returns the full Location object as JSON.
 //
-//	ctx.response.type = ctx.request.header['accept'] = 'application/json';
-//	ctx.body = getLocationFromQuery(ctx.db, ctx.request.query);
-//
-// The JSON shape deliberately mirrors how Koa serializes an @hebcal/core
-// Location rather than the trimmed "location" object used by /zmanim and
-// /shabbat; see location.ToGeoJSON.
+// The JSON shape is the full serialized Location rather than the trimmed
+// "location" object used by /zmanim and /shabbat; see location.ToGeoJSON.
 
 import (
 	"net/http"
@@ -20,8 +15,8 @@ import (
 )
 
 // geo implements GET/HEAD /geo. It returns the resolved location as JSON, 204
-// No Content when no location parameters are supplied (matching Koa setting
-// ctx.body = null), or a JSON error for malformed/unresolvable input.
+// No Content when no location parameters are supplied, or a JSON error for
+// malformed/unresolvable input.
 func (s *Server) geo(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	jsutil.TrimTrailingWhitespace(q)
@@ -29,8 +24,8 @@ func (s *Server) geo(w http.ResponseWriter, r *http.Request) {
 		httpx.CORSPreflight(w, "GET")
 		return
 	}
-	// hebcal-web only sets CORS headers when a cfg parameter is present; the
-	// /geo route is normally called without one.
+	// CORS headers are only set when a cfg parameter is present; the /geo
+	// route is normally called without one.
 	if q.Get("cfg") != "" {
 		httpx.SetCORS(w)
 	}
@@ -48,8 +43,7 @@ func (s *Server) geo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if loc == nil {
-		// No location parameters: hebcal-web assigns ctx.body = null, which Koa
-		// turns into a 204 No Content with no body.
+		// No location parameters: answer 204 No Content with no body.
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}

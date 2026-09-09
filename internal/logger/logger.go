@@ -1,5 +1,5 @@
-// Package logger writes pino-compatible JSON log lines, so the access log this
-// service produces is interchangeable with the one hebcal-web produces.
+// Package logger writes pino-compatible JSON log lines, so this service's
+// access log is interchangeable with the rest of the Hebcal.com fleet's.
 package logger
 
 import (

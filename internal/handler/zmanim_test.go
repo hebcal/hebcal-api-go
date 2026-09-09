@@ -45,7 +45,7 @@ func TestZmanimGeoname(t *testing.T) {
 		t.Fatalf("status = %d body=%s", resp.StatusCode, body)
 	}
 	times := decodeTimes(t, body)
-	// reference values from @hebcal/core Zmanim for Jerusalem on 2026-07-07
+	// reference values for Jerusalem on 2026-07-07
 	want := map[string]string{
 		"sunrise":          "2026-07-07T05:40:00+03:00",
 		"sunset":           "2026-07-07T19:48:00+03:00",
@@ -291,7 +291,7 @@ func TestZmanimMelacha(t *testing.T) {
 	if !strings.HasPrefix(out.Status.LocalTime, "2026-07-11T15:00:00") {
 		t.Errorf("localTime = %q", out.Status.LocalTime)
 	}
-	// boundary cases cross-checked against @hebcal/core isAssurBemlacha:
+	// boundary cases cross-checked against a reference implementation:
 	//   Wed 15:00 = false, Fri 20:00 (after shkiah) = true,
 	//   Sat 21:30 (after tzeit) = false.
 	for _, tc := range []struct {

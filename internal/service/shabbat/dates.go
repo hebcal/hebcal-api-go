@@ -7,9 +7,9 @@ import (
 )
 
 // ExpiresSaturdayNight returns "now" and the next Sunday 00:00 in the
-// location's timezone. The handler stamps them onto Last-Modified and Expires,
-// matching expiresSaturdayNight in hebcal-web: a rolling "this week" answer
-// stops being true once the Shabbat it describes has passed.
+// location's timezone. The handler stamps them onto Last-Modified and Expires:
+// a rolling "this week" answer stops being true once the Shabbat it describes
+// has passed.
 func ExpiresSaturdayNight(tzid string) (now, expires time.Time) {
 	loc, err := zmanim.LoadLocation(tzid)
 	if err != nil {

@@ -1,10 +1,8 @@
 // Command hebcal-api is a small HTTP microservice implementing a subset of the
-// Hebcal.com REST APIs in Go: the Hebrew Date Converter (JSON, XML, and CSV,
-// ported from hebcal-web src/converter.js), Zmanim / Assur Melacha (JSON,
-// ported from src/zmanim.js), the Shabbat candle-lighting times, the /geo and
-// /complete location endpoints, and the PDF calendars served from
-// download.hebcal.com/v4/ and www.hebcal.com/holidays/ (ported from
-// src/pdf.js and src/holidayPdf.js).
+// Hebcal.com REST APIs in Go: the Hebrew Date Converter (JSON, XML, and CSV),
+// Zmanim / Assur Melacha (JSON), the Shabbat candle-lighting times, the /geo
+// and /complete location endpoints, and the PDF calendars served from
+// download.hebcal.com/v4/ and www.hebcal.com/holidays/.
 //
 // It wires the configuration, logger, and data sources together and starts the
 // listener; all request handling lives in internal/handler.

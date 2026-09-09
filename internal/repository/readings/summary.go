@@ -41,10 +41,10 @@ type readingResponse struct {
 
 // ShabbatTorahReading returns the reading for the Shabbat whose parsha is read
 // on dateISO (a YYYY-MM-DD Gregorian date), or -- when a chag displaces the
-// parsha -- the holiday's own reading. Both name and summary are @hebcal/leyning
-// output that hebcal-go cannot produce in-process (the summary is
-// makeSummaryFromParts(), deliberately absent from the classic-API leyning
-// object /leyning and /shabbat return), which is why it is a sidecar call.
+// parsha -- the holiday's own reading. Both name and summary are output
+// hebcal-go cannot produce in-process (the merged verse-range summary is
+// deliberately absent from the classic-API leyning object /leyning and
+// /shabbat return), which is why it is a sidecar call.
 //
 // It is its own request rather than the (date,il)-keyed Leyning() LRU, which
 // must stay summary-free so /shabbat matches production.

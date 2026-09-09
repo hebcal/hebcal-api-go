@@ -22,13 +22,11 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
 )
 
-// reISODate matches a leading YYYY-MM-DD, the same prefix test as the Node
-// isoDateStringToDate.
+// reISODate matches a leading YYYY-MM-DD.
 var reISODate = regexp.MustCompile(`^\d\d\d\d-\d\d-\d\d`)
 
-// parseISODate parses a "YYYY-MM-DD" string into an HDate, mirroring the Node
-// isoDateStringToDate (new Date(yy, mm-1, dd) then new HDate(date)). ok is
-// false when the string does not match the format.
+// parseISODate parses a "YYYY-MM-DD" string into an HDate. ok is false when the
+// string does not match the format.
 func parseISODate(s string) (hdate.HDate, bool) {
 	if !reISODate.MatchString(s) {
 		return hdate.HDate{}, false
@@ -45,9 +43,9 @@ func isoGreg(hd hdate.HDate) string {
 	return hd.Gregorian().Format("2006-01-02")
 }
 
-// renderEn renders an event's English description the way hebcal-mcp gets it
-// from @hebcal/core: with the smart apostrophe ("Ta’anit Esther", "CH’’M") and
-// the one-m Tamuz spelling that hebcal-go does not apply on its own.
+// renderEn renders an event's English description with the smart apostrophe
+// ("Ta’anit Esther", "CH’’M") and the one-m Tamuz spelling that hebcal-go does
+// not apply on its own.
 func renderEn(ev event.CalEvent) string {
 	return jsutil.SmartApostrophe(model.FixMonthSpelling(ev.Render("en")))
 }
@@ -105,9 +103,8 @@ func (t *tools) yahrzeit(_ context.Context, _ *mcpsdk.CallToolRequest, in yahrze
 }
 
 // doYahrzeit builds the yahrzeit markdown table for the anniversaries of
-// origHd, a port of the Node doYahrzeit. It sweeps two years back through
-// twenty years forward of the current Hebrew year, skipping years where the
-// anniversary does not fall (getYahrzeitHD returning nothing).
+// origHd. It sweeps two years back through twenty years forward of the current
+// Hebrew year, skipping years where the anniversary does not fall.
 func doYahrzeit(origHd hdate.HDate, afterSunset bool) []string {
 	if afterSunset {
 		origHd = origHd.Next()
@@ -131,8 +128,7 @@ func doYahrzeit(origHd hdate.HDate, afterSunset bool) []string {
 }
 
 // hebDayMonthEn renders a Hebrew date's day and month in English without the
-// year, the Node hd.render('en', false): "24th of Tevet", "1st of Sh’vat". The
-// apostrophe is smartened as @hebcal/hdate's render() does.
+// year: "24th of Tevet", "1st of Sh’vat". The apostrophe is smartened.
 func hebDayMonthEn(hd hdate.HDate) string {
 	return humanize.Ordinal(hd.Day()) + " of " + jsutil.SmartApostrophe(model.HDMonthNameEn(hd))
 }
@@ -153,15 +149,15 @@ func (t *tools) torahPortion(ctx context.Context, _ *mcpsdk.CallToolRequest, in 
 	s := sedra.New(hd.Year(), il)
 	parsha := s.Lookup(hd)
 	// The parsha is read on the Saturday on or after the date, which is what
-	// getHolidaysOnDate, "Date read" and the readings-svc lookup all key on.
+	// the holiday lookup, "Date read" and the readings-svc lookup all key on.
 	shabbat := hd.OnOrAfter(time.Saturday)
 
 	// The name, Hebrew name and reading summary are the parts hebcal-go cannot
 	// produce, so they come from readings-svc's /shabbatTorahReading. On a chag
-	// it returns the holiday's own reading (getLeyningForHoliday): the label
-	// @hebcal/leyning gives ("Shmini Atzeret (on Shabbat)"), that label in
-	// Hebrew, and the merged verse summary. A nil client or an error leaves the
-	// reading empty and the tool falls back to what hebcal-go can render.
+	// it returns the holiday's own reading: the label ("Shmini Atzeret (on
+	// Shabbat)"), that label in Hebrew, and the merged verse summary. A nil
+	// client or an error leaves the reading empty and the tool falls back to
+	// what hebcal-go can render.
 	var reading readings.ShabbatReading
 	if t.rd != nil {
 		reading, _ = t.rd.ShabbatTorahReading(ctx, isoGreg(shabbat), il)
@@ -169,10 +165,9 @@ func (t *tools) torahPortion(ctx context.Context, _ *mcpsdk.CallToolRequest, in 
 
 	var out []string
 	if parsha.Chag {
-		// hebcal-go has no ParshaEvent for a chag week, so unlike the original
-		// hebcal-mcp -- which prints only the portion and the date on a chag --
-		// the Hebrew name and reading come straight from the sidecar's holiday
-		// reading when it is available.
+		// hebcal-go has no ParshaEvent for a chag week, so the Hebrew name and
+		// reading come straight from the sidecar's holiday reading when it is
+		// available.
 		if reading.Name != "" {
 			out = append(out, "Torah portion: "+reading.Name)
 			if reading.NameHe != "" {
@@ -206,9 +201,9 @@ func (t *tools) torahPortion(ctx context.Context, _ *mcpsdk.CallToolRequest, in 
 
 // chagReadingName is the fallback name for the holiday reading that displaces
 // the parsha on a chag Shabbat, used only when readings-svc is unavailable.
-// hebcal-go's sedra returns no name for a chag week (unlike @hebcal/core), so
-// the name comes from the holiday on that Saturday -- a coarser label
-// ("Pesach V (CH”M)") than the sidecar's ("Pesach Shabbat Chol ha-Moed").
+// hebcal-go's sedra returns no name for a chag week, so the name comes from the
+// holiday on that Saturday -- a coarser label ("Pesach V (CH”M)") than the
+// sidecar's ("Pesach Shabbat Chol ha-Moed").
 func chagReadingName(shabbat hdate.HDate, il bool) string {
 	if hols := hebcal.GetHolidaysOnDate(shabbat, il); len(hols) > 0 {
 		return renderEn(hols[0])
@@ -262,7 +257,7 @@ func (t *tools) dafYomi(_ context.Context, _ *mcpsdk.CallToolRequest, in dafYomi
 	}
 	ev := dafyomi.NewDafYomiEvent(hd, daf)
 	// hebcal-go's dafYomiEvent.Render is already the brief form ("Berakhot 2"),
-	// with no "Daf Yomi:" prefix, so it matches the Node renderBrief.
+	// with no "Daf Yomi:" prefix.
 	return lines(
 		"Daf Yomi (English): "+ev.Render("en"),
 		"Daf Yomi (Hebrew): "+ev.Render("he"),

@@ -46,9 +46,8 @@ func candleTitles(items []shabbatTestItem) []string {
 	return out
 }
 
-// TestShabbatHavdalahPrecedence walks the b/m/M/td combinations through the
-// precedence rules in makeHebcalOptions() (hebcal-web src/calendar.js), whose
-// results were captured from a live hebcal-web.
+// TestShabbatHavdalahPrecedence walks the b/m/M/td combinations through their
+// precedence rules, with results captured from a live reference server.
 func TestShabbatHavdalahPrecedence(t *testing.T) {
 	srv := testServerWithDB(t)
 	const ny = "/shabbat?cfg=json&geonameid=5128581&dt=2026-11-07&leyning=off"
@@ -159,7 +158,7 @@ func TestShabbatMolad(t *testing.T) {
 }
 
 // TestShabbatYomTovOnly covers yto=on. A week with no Yom Tov in it answers
-// 200 with no items, rather than the 400 hebcal-web gives: the filter having
+// 200 with no items, rather than the 400 production gives: the filter having
 // nothing to keep is an empty answer, not a bad request.
 func TestShabbatYomTovOnly(t *testing.T) {
 	srv := testServerWithDB(t)
@@ -235,9 +234,8 @@ func TestShabbatUseElevation(t *testing.T) {
 	}
 }
 
-// TestShabbatJSONP covers the callback parameter. hebcal-web ignores a
-// callback that is too long or is not a plain dotted identifier, rather than
-// sanitizing it.
+// TestShabbatJSONP covers the callback parameter. A callback that is too long
+// or is not a plain dotted identifier is ignored rather than sanitized.
 func TestShabbatJSONP(t *testing.T) {
 	srv := testServerWithDB(t)
 	const base = "/shabbat?cfg=json&geonameid=5128581&dt=2026-11-07&leyning=off"

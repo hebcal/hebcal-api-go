@@ -5,12 +5,11 @@ import (
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 )
 
-// ToGeoJSON serializes a Location exactly as Koa serializes the @hebcal/core
-// Location returned by hebcal-web's /geo route. The key order and presence
-// rules reproduce the class field declaration order (latitude, longitude,
-// locationName, timeZoneId, elevation, il, cc, geoid, admin1, stateName, geo,
-// zip, population, asciiname) followed by any dynamically-added properties
-// (geonameid for geoname lookups, state for zip lookups).
+// ToGeoJSON serializes a Location in the full shape the /geo route returns. The
+// key order and presence rules are: latitude, longitude, locationName,
+// timeZoneId, elevation, il, cc, geoid, admin1, stateName, geo, zip,
+// population, asciiname, then any dynamically-added properties (geonameid for
+// geoname lookups, state for zip lookups).
 //
 // This shape is deliberately not the trimmed "location" object ToPlainObj
 // builds for /zmanim and /shabbat. The two are not interchangeable.
@@ -49,8 +48,8 @@ func ToGeoJSON(loc *geodb.Location) jsutil.OrderedObj {
 	if loc.Asciiname != "" {
 		o = append(o, jsutil.KV{Key: "asciiname", Val: loc.Asciiname})
 	}
-	// geonameid is set as a separate own property (in addition to geoid) by
-	// @hebcal/geo-sqlite's makeGeonameLocation, so it sorts after asciiname.
+	// geonameid is set as a separate own property (in addition to geoid) for
+	// geoname lookups, so it sorts after asciiname.
 	if loc.Geo == "geoname" && loc.GeonameID != 0 {
 		o = append(o, jsutil.KV{Key: "geonameid", Val: loc.GeonameID})
 	}
@@ -62,9 +61,8 @@ func ToGeoJSON(loc *geodb.Location) jsutil.OrderedObj {
 }
 
 // ToPlainObj builds the ordered "location" object embedded in the /zmanim and
-// /shabbat responses, ported from @hebcal/rest-api locationToPlainObj. Fields
-// are omitted when empty, and elevation is only present when elevation is
-// enabled.
+// /shabbat responses. Fields are omitted when empty, and elevation is only
+// present when elevation is enabled.
 func ToPlainObj(loc *geodb.Location, useElevation bool) jsutil.OrderedObj {
 	o := jsutil.OrderedObj{
 		{Key: "title", Val: loc.Name},

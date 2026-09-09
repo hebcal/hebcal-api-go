@@ -28,25 +28,25 @@ type Event struct {
 	// TimeStr is the formatted clock time for timed events (candle lighting,
 	// havdalah, fast start/end), or empty for all-day events.
 	TimeStr string
-	// Learning marks a daily-learning row fetched from hebcal-web because no
-	// Go schedule generates it. hebcal-go has no flag for these, so colour and
-	// ordering key off this instead of Flags.
+	// Learning marks a daily-learning row fetched from the readings-svc sidecar
+	// because no Go schedule generates it. hebcal-go has no flag for these, so
+	// colour and ordering key off this instead of Flags.
 	Learning bool
 	// AltDate marks a HEBREW_DATE alternate-date event (from d=on / D=on). It is
 	// not drawn as an event row; the renderer prints its brief form on the
-	// day-number line via renderAltDateOnLine, matching src/pdf.js.
+	// day-number line via renderAltDateOnLine.
 	AltDate bool
 	// FastEnds marks the "Fast ends" timed event, which carries the same fast
 	// flag as "Fast begins" but sorts after the fast day itself rather than
-	// before it (eventOrder). @hebcal/core emits begins, holiday, ends.
+	// before it (eventOrder). The published sequence is begins, holiday, ends.
 	FastEnds bool
 	// URL is the canonical hebcal.com page for this event, or empty. The
 	// renderer turns it into the short, tracked form and attaches a link
 	// annotation over the drawn text.
 	URL string
 	// HebrewBrief is the event's brief Hebrew name, set only when the request
-	// asked for appendHebrewToSubject (lg=ah / lg=sh). The renderer draws it
-	// after the transliterated subject.
+	// asked for the Hebrew name alongside the transliteration (lg=ah / lg=sh).
+	// The renderer draws it after the transliterated subject.
 	HebrewBrief string
 }
 
@@ -55,11 +55,9 @@ func (e *Event) Timed() bool { return e.TimeStr != "" }
 
 // Generate produces the events for a calendar, in date order.
 //
-// Everything comes from hebcal-go in-process. hebcal-web reaches this same
-// result through @hebcal/core; the two libraries share the holiday tables, so
-// the event sets agree for the options this service accepts. Requests naming a
-// daily-learning series hebcal-go cannot generate are rejected upstream in the
-// handler rather than silently rendered without those rows.
+// Everything comes from hebcal-go in-process. Requests naming a daily-learning
+// series hebcal-go cannot generate are rejected upstream in the handler rather
+// than silently rendered without those rows.
 func Generate(p *Params) ([]Event, error) {
 	opts := p.Opts
 	events, err := hebcal.HebrewCalendar(&opts)
@@ -96,12 +94,12 @@ func Generate(p *Params) ([]Event, error) {
 			AltDate:  flags&event.HEBREW_DATE != 0,
 			FastEnds: isFastEnds(ev),
 		}
-		// appendHebrewToSubject draws the Hebrew name after the transliteration.
-		// It is the brief Hebrew rendering, computed here because the renderer
-		// only sees the flattened Event, not the source CalEvent. Timed events
-		// need the same clock-time trim as the English subject above, or the
-		// time is drawn twice -- once in bold by the renderer, once baked into
-		// the Hebrew text.
+		// The Hebrew name drawn after the transliteration (lg=ah / lg=sh). It
+		// is the brief Hebrew rendering, computed here because the renderer only
+		// sees the flattened Event, not the source CalEvent. Timed events need
+		// the same clock-time trim as the English subject above, or the time is
+		// drawn twice -- once in bold by the renderer, once baked into the
+		// Hebrew text.
 		if p.AppendHebrew && !e.AltDate {
 			hebrewBrief := model.FixMonthSpelling(renderSubject(ev, flags, "he"))
 			if timeStr != "" {
@@ -114,7 +112,7 @@ func Generate(p *Params) ([]Event, error) {
 		out = append(out, e)
 	}
 	// Hebrew-month calendars show the Gregorian date as the alternate date, which
-	// hebcal-go does not generate; synthesize it the way src/calendar.js does.
+	// hebcal-go does not generate; synthesize it here.
 	if p.MonthMode != GregorianArabic && (p.AddAltDates || p.AddAltDatesForEvents) {
 		out = addGregorianAltDates(out, p)
 	}
@@ -122,10 +120,10 @@ func Generate(p *Params) ([]Event, error) {
 }
 
 // addGregorianAltDates inserts the Gregorian alternate-date events a Hebrew-month
-// calendar draws on its day-number line -- the GregorianDateEvent path in
-// src/calendar.js. AddAltDates covers every day from the first event to the
-// last; AddAltDatesForEvents covers only days that already have events. The
-// events carry AltDate so the renderer prints them on the day line, not as rows.
+// calendar draws on its day-number line. AddAltDates covers every day from the
+// first event to the last; AddAltDatesForEvents covers only days that already
+// have events. The events carry AltDate so the renderer prints them on the day
+// line, not as rows.
 func addGregorianAltDates(events []Event, p *Params) []Event {
 	if len(events) == 0 {
 		return events
@@ -156,9 +154,9 @@ func addGregorianAltDates(events []Event, p *Params) []Event {
 	return out
 }
 
-// nonEnglishDateLocales mirrors localeMap in src/lang.js: the resolved locales
-// dayjs formats as "D MMM" rather than the English "MMM D". Anything not listed
-// falls through to the English template, matching `localeMap[locale] || 'en'`.
+// nonEnglishDateLocales are the resolved locales that format a short date as
+// "D MMM" rather than the English "MMM D". Anything not listed falls through to
+// the English template.
 var nonEnglishDateLocales = map[string]bool{
 	"de": true, "es": true, "fi": true, "fr": true, "he": true,
 	"he-x-nonikud": true, "hu": true, "nl": true, "pl": true, "pt": true,
@@ -166,8 +164,8 @@ var nonEnglishDateLocales = map[string]bool{
 }
 
 // gregorianAltText renders the Gregorian date shown on a Hebrew-month calendar's
-// day-number line, matching GregorianDateEvent.render(): "Jun 12" in English,
-// "12 Jun" (localized month) elsewhere. No year, as in production.
+// day-number line: "Jun 12" in English, "12 Jun" (localized month) elsewhere.
+// No year.
 func gregorianAltText(hd hdate.HDate, locale string) string {
 	g := hd.Gregorian()
 	mon := model.NamesFor(locale).MonthsShort[int(g.Month())-1]
@@ -189,7 +187,7 @@ func untranslatedDesc(ev event.CalEvent) string {
 	return ev.Render("en")
 }
 
-// eventCategories is the port of getEventCategories() in @hebcal/rest-api.
+// eventCategories returns an event's [category, subcategory].
 //
 // Purim and Chanukah are filed as major even though their flags say
 // MINOR_HOLIDAY, which is what keeps them in a calendar that asked only for
@@ -202,9 +200,9 @@ func eventCategories(ev event.CalEvent) []string {
 	return ev.GetCategories()
 }
 
-// keepEvent applies the two filters hebcal-web applies after generating a
-// calendar (src/calendar.js). Both work on categories rather than flags, which
-// is what makes the Purim and Chanukah special case above take effect.
+// keepEvent applies the two post-generation filters (yom-tov-only and
+// no-minor-holidays). Both work on categories rather than flags, which is what
+// makes the Purim and Chanukah special case above take effect.
 func keepEvent(ev event.CalEvent, flags event.HolidayFlags, p *Params) bool {
 	switch {
 	case p.YomTovOnly:
@@ -217,10 +215,10 @@ func keepEvent(ev event.CalEvent, flags event.HolidayFlags, p *Params) bool {
 	return true
 }
 
-// hour12Countries are the country codes that default to a 12-hour clock,
-// matching hour12cc in @hebcal/core's reformatTimeStr.js. Every other country --
-// including Israel, which is deliberately absent -- defaults to 24-hour, so a
-// Ghana or Reykjavik calendar shows "17:49" where a US one shows "5:49p".
+// hour12Countries are the country codes that default to a 12-hour clock. Every
+// other country -- including Israel, which is deliberately absent -- defaults
+// to 24-hour, so a Ghana or Reykjavik calendar shows "17:49" where a US one
+// shows "5:49p".
 var hour12Countries = map[string]bool{
 	"US": true, "CA": true, "BR": true, "AU": true, "NZ": true, "DO": true,
 	"PR": true, "GR": true, "IN": true, "KR": true, "NP": true, "ZA": true,
@@ -228,8 +226,7 @@ var hour12Countries = map[string]bool{
 
 // use12Hour reports whether clock times render in 12-hour form. hour12 forces it
 // either way (1 = force 12-hour, 2 = force 24-hour); otherwise it follows the
-// location's country, mirroring reformatTimeStr() in @hebcal/core, which falls
-// back to "IL" or "US" when no country is known.
+// location's country, falling back to "IL" or "US" when no country is known.
 func (p *Params) use12Hour() bool {
 	switch p.Hour12 {
 	case 1:
@@ -251,13 +248,10 @@ func (p *Params) use12Hour() bool {
 	return hour12Countries[cc]
 }
 
-// timeStringOf formats the clock time for a timed event.
-//
-// hebcal-go renders these into the description as "Havdalah: 8:51" with no
-// meridiem, but the PDF wants hebcal-web's compact form: reformatTimeStr(…,
-// 'p', …) produces "8:51p" in 12-hour countries and keeps 24-hour ones as
-// "20:51". The time itself comes from TimedEvent.EventTime rather than from
-// parsing the description back apart.
+// timeStringOf formats the clock time for a timed event in the compact form the
+// PDF uses: "8:51p" in 12-hour countries, "20:51" in 24-hour ones. The time
+// comes from TimedEvent.EventTime rather than from parsing hebcal-go's
+// "Havdalah: 8:51" description back apart.
 func timeStringOf(ev event.CalEvent, p *Params) string {
 	te, ok := ev.(hebcal.TimedEvent)
 	if !ok {
@@ -282,27 +276,23 @@ func timeStringOf(ev event.CalEvent, p *Params) string {
 	return fmt.Sprintf("%d:%02d%s", h12, m, suffix)
 }
 
-// learningFlags are the daily-learning series, which @hebcal/rest-api groups as
-// LEARNING_MASK.
+// learningFlags are the daily-learning series flags.
 const learningFlags = event.DAF_YOMI | event.MISHNA_YOMI |
 	event.NACH_YOMI | event.YERUSHALMI_YOMI | event.DAILY_LEARNING
 
-// renderSubject renders an event the way hebcal-web's renderPdfEvent does:
-// shouldRenderBrief() in @hebcal/rest-api decides between render() and
-// renderBrief(), and a calendar cell is narrow enough that the difference
-// matters.
+// renderSubject renders an event's subject for a calendar cell, which is narrow
+// enough that the brief form is wanted over the full one.
 //
 // Only the cases this service can generate are handled. Timed events are
 // already brief by construction -- Generate splits the clock time out of the
-// subject, which is what TimedEvent.renderBrief does.
+// subject.
 func renderSubject(ev event.CalEvent, flags event.HolidayFlags, locale string) string {
 	full := ev.Render(locale)
 	switch {
 	case flags&event.SHABBAT_MEVARCHIM != 0:
 		// "Shabbat Mevarchim Chodesh Sh'vat" -> "Mevarchim Chodesh Sh'vat".
-		// MevarchimChodeshEvent.renderBrief drops everything up to the first
-		// space, in whatever language, so this does the same rather than
-		// matching on the English word.
+		// Drop everything up to the first space, in whatever language, rather
+		// than matching on the English word.
 		if i := strings.Index(full, " "); i >= 0 {
 			return full[i+1:]
 		}
@@ -339,25 +329,23 @@ func isFastEnds(ev event.CalEvent) bool {
 
 // eventOrder gives the sort position of an event within a single day.
 //
-// @hebcal/core emits a day's events by walking the holidays that fall on it
-// and, for each, pushing its related events around it: the Erev Pesach chametz
-// deadlines, then the fast start, then the holiday itself, then the fast end;
-// afterwards come the parsha, daily learning, the Omer, Molad, and finally
-// candle lighting and Havdalah. hebcal-go walks the same holidays in a
-// different order, so a fast day that is also Erev Pesach came out with the
-// chametz times above "Fast begins" instead of below it.
+// The published sequence walks the holidays that fall on a day and, for each,
+// places its related events around it: the Erev Pesach chametz deadlines, then
+// the fast start, then the holiday itself, then the fast end; afterwards come
+// the parsha, daily learning, the Omer, Molad, and finally candle lighting and
+// Havdalah. hebcal-go emits them in a different order, so a fast day that is
+// also Erev Pesach comes out with the chametz times above "Fast begins" unless
+// re-sorted.
 //
-// Note that @hebcal/core pushes the fast end (endEvent) inside the fast
-// holiday's block, so "Fast ends" lands after the fast day itself but still
-// before the parsha, learning and candle lighting of the main loop -- e.g. on
-// Asara B'Tevet the sequence is "Fast begins", "Asara B'Tevet", "Fast ends".
-// "Fast begins" and "Fast ends" share the fast flag, so FastEnds tells them
-// apart (isFastEnds).
+// The fast end lands after the fast day itself but still before the parsha,
+// learning and candle lighting -- e.g. on Asara B'Tevet the sequence is "Fast
+// begins", "Asara B'Tevet", "Fast ends". "Fast begins" and "Fast ends" share
+// the fast flag, so FastEnds tells them apart (isFastEnds).
 //
-// Ordering by kind reproduces the published sequence without depending on
-// either library's internal walk. Note that a holiday can carry LIGHT_CANDLES
-// itself -- Erev Pesach does -- so the timed events are told apart by having a
-// clock time, not by that flag.
+// Ordering by kind reproduces that sequence without depending on either
+// library's internal walk. Note that a holiday can carry LIGHT_CANDLES itself
+// -- Erev Pesach does -- so the timed events are told apart by having a clock
+// time, not by that flag.
 func eventOrder(ev *Event) int {
 	timed := ev.Timed()
 	f := ev.Flags
@@ -402,7 +390,7 @@ func sortDay(evs []Event) {
 
 // SplitByGregorianMonth groups events into one bucket per Gregorian month, in
 // chronological order, inserting empty months so a gap does not silently drop a
-// page. Mirrors eventsToCells() in hebcal-web's src/pdf.js.
+// page.
 func SplitByGregorianMonth(events []Event) []MonthPage {
 	if len(events) == 0 {
 		return nil

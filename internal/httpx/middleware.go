@@ -50,12 +50,12 @@ func (w *bufWriter) Write(p []byte) (int, error) { return w.buf.Write(p) }
 // over the header overhead. See TestThresholdExperiment.
 const CompressThreshold = 512
 
-// brotliQuality 6 matches the setting used by www.hebcal.com (app-www.js).
+// brotliQuality 6 matches the setting used by www.hebcal.com.
 const brotliQuality = 6
 
 // negotiateEncoding picks the response encoding from Accept-Encoding,
-// preferring brotli, with the same simple substring matching that
-// hebcal-web's ETag classing uses.
+// preferring brotli, with the same simple substring matching the ETag
+// classing uses.
 func negotiateEncoding(r *http.Request) string {
 	ae := r.Header.Get("Accept-Encoding")
 	if strings.Contains(ae, "br") {
@@ -111,8 +111,8 @@ func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 				bw.header.Set("Content-Encoding", enc)
 				compressed = true
 			}
-			// mimic hebcal-web: Vary appears on any compressible response,
-			// but is stripped from uncompressed JSON
+			// Vary appears on any compressible response, but is stripped from
+			// uncompressed JSON
 			if compressed || !strings.HasPrefix(contentType, "application/json") {
 				bw.header.Set("Vary", "Accept-Encoding")
 			}
@@ -139,16 +139,15 @@ func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// logAccess writes one access-log line, similar to hebcal-web makeLogInfo().
+// logAccess writes one access-log line.
 func (m *Middleware) logAccess(r *http.Request, bw *bufWriter, length int, start time.Time, calls *reqlog.Collector) {
 	fields := []logger.KV{
 		{K: "status", V: logger.Int(bw.status)},
 	}
 	// On a 4xx/5xx, log the error the response is rendering (e.g. the
-	// OutOfRangeError's "No calendar for year 38") under "msg", mirroring
-	// pino/koa. The error helpers record the value into the request's collector
-	// (see RecordError); we render it here and place it right after status, as
-	// hebcal-web's log does.
+	// OutOfRangeError's "No calendar for year 38") under "msg". The error
+	// helpers record the value into the request's collector (see RecordError);
+	// we render it here and place it right after status.
 	if err := calls.Err(); err != nil {
 		fields = append(fields, logger.KV{K: "msg", V: logger.String(err.Error())})
 	}

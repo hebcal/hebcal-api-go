@@ -10,8 +10,8 @@ import (
 )
 
 // GetEvents returns the list of holidays and other calendar events occurring
-// on the given Hebrew date. Ported from converter.js getEvents(), but leaning
-// on hebcal.HebrewCalendar for holiday, Shabbat Mevarchim, and Molad events.
+// on the given Hebrew date, leaning on hebcal.HebrewCalendar for holiday,
+// Shabbat Mevarchim, and Molad events.
 func GetEvents(hd hdate.HDate, il bool) []CalEv {
 	// Matan Torah traditionally on 6 Sivan 2448
 	if hd.Abs() < -479441 {
@@ -43,9 +43,8 @@ func holidaysOnDate(hd hdate.HDate, il bool) []event.HolidayEvent {
 }
 
 // hasHolidayReading reports whether the date has a special (non-parsha) full
-// Torah reading. This approximates @hebcal/leyning getLeyningOnDate() with
-// `fullkriyah && !parshaNum`: major holidays, chol hamoed, Rosh Chodesh, fast
-// days, Chanukah, and Purim all have full kriyah readings.
+// Torah reading: major holidays, chol hamoed, Rosh Chodesh, fast days,
+// Chanukah, and Purim all have full kriyah readings.
 func hasHolidayReading(hd hdate.HDate, il bool) bool {
 	const readingFlags = event.CHAG | event.CHOL_HAMOED | event.ROSH_CHODESH |
 		event.MINOR_FAST | event.MAJOR_FAST | event.CHANUKAH_CANDLES
@@ -68,7 +67,6 @@ func hasHolidayReading(hd hdate.HDate, il bool) bool {
 }
 
 // parshaEvents returns the upcoming Torah reading for the date.
-// Ported from converter.js getParshaEvents().
 func parshaEvents(hd hdate.HDate, il bool) []CalEv {
 	saturday := hd.OnOrAfter(time.Saturday)
 	hy := saturday.Year()
@@ -95,8 +93,8 @@ func parshaEvents(hd hdate.HDate, il bool) []CalEv {
 }
 
 // omerEvents returns the Sefirat HaOmer count for the date, if within the
-// Omer. Ported from converter.js makeOmer(); appended after the parsha so
-// the events array matches the documented API output order.
+// Omer. Appended after the parsha so the events array matches the documented
+// API output order.
 func omerEvents(hd hdate.HDate) []CalEv {
 	mm := hd.Month()
 	if mm == hdate.Nisan || mm == hdate.Iyyar || mm == hdate.Sivan {

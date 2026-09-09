@@ -13,10 +13,10 @@ import (
 
 var reHasTZOffset = regexp.MustCompile(`[+-]\d\d:\d\d$`)
 
-// ParseMelachaDate emulates the JavaScript `new Date(dateStr)` (plus the
-// location-offset fixup) used by the im=1 branch: a trailing Z is UTC, an
-// explicit ±HH:MM offset is honored, a bare YYYY-MM-DD is UTC midnight, and a
-// datetime without a zone is interpreted as wall-clock time in the location.
+// ParseMelachaDate parses the date the im=1 branch accepts: a trailing Z is
+// UTC, an explicit ±HH:MM offset is honored, a bare YYYY-MM-DD is UTC
+// midnight, and a datetime without a zone is interpreted as wall-clock time in
+// the location.
 func ParseMelachaDate(dateStr string, tz *time.Location) (time.Time, bool) {
 	if strings.HasSuffix(dateStr, "Z") {
 		if t, err := time.Parse(time.RFC3339, dateStr); err == nil {
@@ -57,7 +57,7 @@ func NowInTimezone(tzid string) model.GregDate {
 }
 
 // StartAndEnd resolves the start, end, and date query parameters to a date
-// or date range, ported from getStartAndEnd() in hebcal-web src/dateUtil.js.
+// or date range.
 func StartAndEnd(q url.Values, tzid string) (isRange bool, startD, endD model.GregDate, err error) {
 	start := q.Get("start")
 	end := q.Get("end")
@@ -97,9 +97,9 @@ func StartAndEnd(q url.Values, tzid string) (isRange bool, startD, endD model.Gr
 }
 
 // ExpiresTomorrow returns "now" and tomorrow's midnight in the location's
-// timezone. The handler stamps them onto Last-Modified and Expires, matching
-// expires() in zmanim.js: a request without an explicit date describes today,
-// so its answer stops being true when the day rolls over there.
+// timezone. The handler stamps them onto Last-Modified and Expires: a request
+// without an explicit date describes today, so its answer stops being true
+// when the day rolls over there.
 func ExpiresTomorrow(tzid string) (now, expires time.Time) {
 	loc, err := zman.LoadLocation(tzid)
 	if err != nil {

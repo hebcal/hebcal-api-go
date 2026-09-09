@@ -36,6 +36,24 @@ the alternate-date bug below. Horizontal position comes from text
 measurement, so a systematic dx means the shaper disagrees with pdfkit; that is
 how the pixel-grid quantisation below was found.
 
+## Comments and port lineage
+
+Almost every file here is a port of something in `hebcal-web`, `@hebcal/*`,
+`hebcal-mcp` or `hebcal-pdf-go`, and it is likely more will be ported over time.
+Keep that lineage **out of the `*.go` doc comments** and **in this file**:
+
+- A Go doc comment describes what the function *does* and why, in Go terms, and
+  reads standalone. It does not say "port of `foo()` in `src/bar.js`", "matches
+  `@hebcal/core`", or "the JS version does X differently".
+- Behavioural facts that look like bugs stay in the comment — "Purim carries
+  `MINOR_HOLIDAY` but a major-only calendar keeps it", "`euro=0` still sets
+  euro" — just phrased as domain rules, not as "because `@hebcal/rest-api`
+  does X".
+- The Go↔JS mapping (function, variable, whole file, or a 1:1 concept) goes in
+  **Port provenance** at the end of this file. When you port more code, add its
+  rows there.
+- References to the JS source are fine in `README.md` and `CLAUDE.md`.
+
 ## Architecture of the PDF half
 
 The service follows the repository's usual direction — `handler` → `service` →
@@ -1039,3 +1057,318 @@ They concentrate on what actually went wrong rather than on easy targets, and
 several encode behaviour that looks wrong and is not — the two `links_test.go`
 cases above especially. When a test looks like it is asserting a bug, check its
 comment before changing it.
+
+## Port provenance: Go symbol → JS source
+
+Where each Go symbol came from. `src/*` is `hebcal-web`; `@hebcal/*` is the npm
+package. This is the lineage that used to live in the doc comments. Add rows as
+more code is ported.
+
+### `internal/service/pdf/params.go` — `deserializeDownload.js` + the PDF parts of `makeDownloadProps.js`
+
+| Go | JS source |
+|---|---|
+| `ParamsFromMessage`, `Params` struct | `deserializeDownload()` → the PDF-relevant parts of `makeDownloadProps.js`; writes straight to `hebcal.CalOptions` instead of a query map |
+| `maxNumYears` (10) | `getNumYears()` in `src/calendar.js` |
+| `decodeBase64` | Node `Buffer.from(s,'base64')` permissiveness |
+| Shabbat Mevarchim implication (RC + specialShabbat + sedrot) | `src/calendar.js` sets the `SHABBAT_MEVARCHIM` query-mask bit |
+| Gregorian vs Hebrew alt-date branch | `src/calendar.js` sets `addHebrewDates` only when `!hebrewMonths` |
+| `SuppressHavdalah` when `M=off` & `m=0` | `deserializeDownload.js` `q.m = havdalahMins`; `@hebcal/core` `calendar.js` drops HavdalahEvent when `havdalahMins===0` |
+| `defaultCandleMins` (18) | `DEFAULT_CANDLE_MINS` in `src/urlArgs.js` |
+| `geonameIDCandleOffset` | `geonameIdCandleOffset` in `src/urlArgs.js` |
+| `locationDefaultCandleMins` | `locationDefaultCandleMins()` in `src/urlArgs.js` |
+| `applyIsraelCandleMins` | Israel branch of `src/calendar.js` |
+| `setLocation` "location ⇒ candle-lighting" | `if (location) options.candlelighting = true` in `src/calendar.js` |
+| `parseISODate` | `makeDownloadProps` date handling before `@hebcal/core` |
+| `OutOfRangeError` / 410 | `hebcal-download.js` |
+| `YearIsSupported` | `yearIsOutsideGregRange` / `yearIsOutsideHebRange` in `src/dateUtil.js` |
+| `NotFoundError` / 404 | `getLocationFromQuery` |
+| `applyLocation` | `getLocationFromQuery` + `@hebcal/geo-sqlite` |
+| legacy `cityName` branch | `downloadHref2` sets `cityName` only alongside `geoPos` |
+| `learningSchedules`, `dw`→`dafWeeklySunday` | `dailyLearningConfig.json` |
+| `unsupportedSeries` | the seven series with no `github.com/hebcal/learning` schedule |
+
+### `internal/service/pdf/v2.go` — `downloadHref2()` (`src/makeDownloadProps.js`)
+
+Whole file = `parseV2Path()` (`src/app-download.js`) + `downloadHref2()`, minus
+the base64 encode. `v2Query.on/off/empty/truthy/getInt/getFloat` ←
+`makeDownloadProps.js` `on()` / `urlArgs.js` `off()` / `empty.js` `empty()` /
+bare `if (q.x)` / `getInt()` / `Number.parseFloat()`. `primaryGeoKeys`,
+`allGeoKeys`, `geoKeysToRemove`, `normalize` ← `urlArgs.js` lists +
+`getGeoKeysToRemove()` + `urlArgsObj()`. `applyV2Location`'s default (deg/min)
+branch ← `getLocationFromQuery` legacy branch, and is a **deliberate divergence
+from the 301**. `applyV2DailyLearning` ← `downloadHref2`'s `dailyLearningConfig`
+loop. `checkISODate` ← `isoDateStringToDate()` 400 guard.
+
+### `internal/service/pdf/cgi.go` — `makeHebcalOptions(query)` path
+
+`makeHebcalOptions(query)` ≡ `ParamsFromMessage(downloadHref2(query))` (the
+equivalence `v2.go` was measured to hold), so `ParseCGIPath` builds the same
+`v2Query` and runs `DecodeV2`. `normalizeCGIQuery` ← the CGI half of
+`fixup2`'s querystring rewriting (`;` separator, double-encoded `%3B`,
+Latin-1 `unescape()`). `applyCGILegacyParams` ← `makeHebcalOptions`
+pre-read rewrites (`nh=on` expansion, lowercase `m=on`, `v=now`).
+`unescapeLatin1` ← JavaScript `unescape()`.
+
+### `internal/service/pdf/render.go` — `renderPdf()` (`src/pdf.js`)
+
+Whole file is `src/pdf.js`'s layout in pdfkit's top-down coordinate system.
+`baseline`/`yLine` ← pdfkit `doc.text()` (top-of-box, baseline one hhea
+ascender down). `width` ← `doc.widthOfString()`. `rowsFor` ← the 5/6-row rule.
+`eventColor` ← `eventColor()`. `drawMonthTitle` ← `renderPdfMonthTitle()`.
+`drawGrid` ← `renderPdfMonthGrid()`. `renderEvent`/`renderEventColored` ←
+`renderPdfEvent()`. `appendHebrew` ← its `appendHebrewToSubject` branch.
+`splitInTwo` ← its two-line fallback (`/(\s)/` split); the RTL side reproduces
+`reverseHebrewWords()`'s two-space rejoin. `altDateBrief` ← `@hebcal/core`
+`HebrewDateEvent.renderBrief()` + `@hebcal/hdate` `HDate.render()`'s smart
+apostrophe. `renderAltDateOnLine` ← `renderAlternateDateOnLine()`.
+`leftFooterText` ← `makeLeftText()`. `documentKeywords` ← the Keywords line of
+`createPdfDoc()`. `hebMonthName` ← `Locale.gettext(getMonthName(), locale)`.
+`hebMonthRange` ← `makeHebMonthStr()`. `hebTitleYear` / `drawHebMonthTitle` /
+`gregRange` ← `pdfMonthTitleHebrew()`. `cellOrigin` ← the `x` `src/pdf.js`
+passes to `renderPdfEvent`.
+
+### `internal/service/pdf/events.go` — `@hebcal/core` + `@hebcal/rest-api` + `src/calendar.js`
+
+`Generate` ← `@hebcal/core` `HebrewCalendar`. `addGregorianAltDates` ← the
+`GregorianDateEvent` path in `src/calendar.js`. `nonEnglishDateLocales` ←
+`localeMap` in `src/lang.js` (dayjs `D MMM` vs `MMM D`). `gregorianAltText` ←
+`GregorianDateEvent.render()`. `eventCategories` ← `getEventCategories()`
+(`@hebcal/rest-api`). `keepEvent` ← the two post-generation filters in
+`src/calendar.js`. `hour12Countries` ← `hour12cc` in `reformatTimeStr.js`.
+`use12Hour` / `timeStringOf` ← `reformatTimeStr()`. `learningFlags` ←
+`LEARNING_MASK`. `renderSubject` ← `shouldRenderBrief()`'s render/renderBrief
+choice. `eventOrder` ← `@hebcal/core`'s per-day emission order.
+`SplitByGregorianMonth` ← `eventsToCells()`.
+
+### `internal/service/pdf/pdf.go`
+
+`Service` flow ← `src/pdf.js` + `src/hebcal-download.js` run order. `Prepare` ←
+`src/hebcal-download.js` (decode → generate → learning fetch → empty check).
+empty-events 400 ← `src/hebcal-download.js`. `decodeRequest` 404 default ←
+hebcal-web download router. `DecodeError` bingbot-404 ← `app-download.js`
+`isBingBot` special case (part of `fixup2`'s `/v4/` handling). `CalendarTitle`
+/ `calendarTitle` ← `getCalendarTitle()` (`@hebcal/rest-api`). `CampaignName` /
+`campaignFromTitle` ← `campaignName()` (`src/hebcal-download.js`), with
+`preferAsciiName` + `shortLocationName()`/`getShortName()`. `campaignFor` ←
+`renderPdfEvent`'s `options.utmCampaign || 'pdf-' + year`.
+
+### `internal/service/pdf/fonts.go`
+
+Font-name consts ← the names `src/pdf.js` registers. `fontFiles` ← `FONT_FILES`.
+The FontSet-sharing note ← pdfkit's `EmbeddedFont` per-document subset state
+(hebcal-web tried sharing at that layer and reverted it after an OOM). Composite
+(Type0/CID) fonts ← pdfkit. `Ascent` / `readHheaAscent` ← fontkit/pdfkit taking
+the ascender from **hhea**, not OS/2. `pdfVersion` (V1_5) ← pdfkit
+`createPdfDoc`.
+
+### `internal/service/pdf/text.go`
+
+`Shaper` replaces the `reverseHebrewWords()` hack in `src/pdf.js` (pdfkit had no
+bidi). `shapeRun`'s RTL leading offset reproduces `reverseHebrewWords()`'s
+two-space rejoin, which fontkit then re-reverses. `shapeRefSize` (1000pt) exists
+because fontkit scales linearly from font units while HarfBuzz quantises to the
+ppem grid — pdfkit's widths are the unrounded ones.
+
+### `internal/service/pdf/querylog.go`
+
+`MessageToQuery`, `learningQueryParams`, `queryBuilder` ← `deserializeDownload.js`
+field-for-field, in `dailyLearningConfig.json` order. `formatFloat` ← JS
+`String(number)`. `queryBuilder.set()` encoding ← `encodeURIComponent` (spaces
+as `%20`, not `+`).
+
+### `internal/service/pdf/fallback.go`, `links.go`, `hebmonth.go`
+
+`fallbackSeries` codes ← readings-svc's documented codes (also hebcal-web's
+`/hebcal` query params). `canonicalLearningURL` ← strips `@hebcal/rest-api`'s
+`utm_*` tracking. `links.go` UTM defaults ← `renderPdfEvent()` /
+`appendIsraelAndTracking`. `shortenSedrot`'s trim-to-`/s/` fallthrough ←
+`@hebcal/rest-api`. `appendParams` ordering ← matching `URLSearchParams`
+emission order for a clean link-by-link comparison. `SplitByHebrewMonth` ←
+`eventsToCellsHeb()` (`src/pdf.js`).
+
+### `internal/service/holidaypdf/holidaypdf.go` — `src/holidayPdf.js`
+
+`package` / `Parse` ← the first half of `holidayPdf.js`. `hebrewYearOffset`
+(3761) ← `yearNum + 3761`. `leadingInt` ← `Number.parseInt(s, 10)` keeping the
+`.pdf` suffix. `BadRequestError` ← its 400 throw. `Params` defaults ←
+`holidayPdf.js`: never sets `hebrewMonths`, ignores `lg` (English only),
+hard-codes `addHebrewDates`, leaves `utmCampaign` unset. The `-il` filename
+suffix ← `applyIsraelSuffix` (newer spelling of `?i=on`).
+
+### `internal/handler/pdf.go`
+
+`pdfDownload` headers ← `src/app-download.js`'s 14-day `cacheControl` + the
+`.pdf` branch of `src/hebcal-download.js`. `pdfHoliday` headers ←
+`holidayPdf.js` (60-day cache, no CORS, nosniff, cache set after URL accepted).
+`bingUA` / `isBingBot` ← `app-download.js` `fixup2`'s UA check for
+`compatible; bingbot/2.`. `writeDownloadError` ← hebcal-web's status mapping;
+the 404-drops-Cache-Control is a **deliberate divergence**. `writeHolidayError`
+← `holidayPdf.js`'s three throws. `writeCommonPDFError` ←
+`getLocationFromQuery`'s 404/400 split.
+
+### `internal/handler/` (JSON routes)
+
+| Go | JS source |
+|---|---|
+| `converter.go` date-less redirect | `src/converter.js`'s noCache/message check; HEAD parity and `cfg=xml` preservation are deliberate fixes |
+| `converter.go` `redirectConverterNoCache` | `src/converter.js`; no per-request location because `/converter` has no IP geo |
+| `geo.go` `/geo` route | `src/router.js` `/geo` (`getLocationFromQuery` serialized by Koa); `ctx.body = null` ⇒ 204 |
+| `shabbat.go` default New York | hebcal-web default when no location given |
+| `shabbat.go` locale validation | `makeHebcalOptions`'s `Locale.useLocale` throw; `/shabbat`-only |
+| `shabbat.go` yto-after-empty-check | **deliberate divergence** — production filters before its check and 400s |
+| `shabbat.go` `queryHour12` | `options.hour12 = !off(query.h12)` |
+| `shabbat.go` `writeShabbatBody` JSONP | `jsonpBody()` in `src/common.js` |
+| `zmanim.go` `checkMelacha` | `checkMelacha()` in `zmanim.js` |
+
+### `internal/service/converter/`
+
+`parse.go` `ParseQuery` ← `parseConverterQuery()` (`src/converter.js`).
+`parseStartAndEnd` ← `getStartAndEnd()` (`src/dateUtil.js`). `render.go`
+`RenderCSV` / `FutureYearsHeb` ← `dateConverterCsv()` / `makeFutureYearsHeb()`
+(`src/converter.js`).
+
+### `internal/service/zmanim/` — `getZmanim` (`src/zman.js`)
+
+`zmanim.go` `package` / `Times` ← `getZmanim` / `Times()`. The
+`TIMES` / `TZEIT_TIMES` tables and their order ← `zman.js`. `RoundTime` ←
+`@hebcal/core` `Zmanim.RoundTime`. `formatISOWithTimeZone`'s `null` ← `zman.js`
+emitting `null` for a time that does not occur. `dates.go` `ParseMelachaDate` ←
+JS `new Date(dateStr)` + the location-offset fixup (`im=1` branch). `StartAndEnd`
+← `getStartAndEnd()` (`src/dateUtil.js`). `ExpiresTomorrow` ← `expires()` in
+`zmanim.js`.
+
+### `internal/service/shabbat/` — `shabbatApp` (`src/shabbat.js`)
+
+| Go | JS source |
+|---|---|
+| package `shabbat` | `shabbatApp` in `src/shabbat.js` |
+| `QueryDate` | `getTodayDate()`; `date`/`start` are added here |
+| `QueryLang` | `makeHebcalOptions()`'s `a=on` → `lg=a` rewrite; `/shabbat`-only |
+| `WeekRange` | `shabbatWeekRange` + `getStartAndEnd` (`src/dateUtil.js`) |
+| `CandleOptions` | `makeHebcalOptions()` precedence + `shabbatApp()` default |
+| `locationDefaultCandleMins` | `locationDefaultCandleMins()` (`src/urlArgs.js`) |
+| `FilterYomTovOnly` | `makeHebrewCalendar()`'s `yto` filter |
+| `MoveCandleLightingToSunset` | `@hebcal/core` `sunsetOffset(0)` for `b=0` |
+| `title` | `getCalendarTitle` |
+| `item` | `@hebcal/rest-api` `eventToClassicApiObject` (key order) |
+| `holidayMemo` | `getHolidayDescription` |
+| `moladObj` | `eventToClassicApiObject`'s molad member |
+| `moladInstant` | `getMoladAsDate()` (`@hebcal/core`) |
+| `mevarchimMoladMemo` | `MevarchimChodeshEvent.memo` / `Molad.render` |
+| `moladDayName` | `getDayNames()`'s French names |
+| `eventBasename` | `@hebcal/core` `basename()` |
+| `categoriesOf` | `@hebcal/rest-api` `getEventCategories` + `@hebcal/core` `getCategories` |
+| `baseCategory` | `@hebcal/core` `Event.getCategories`'s `flagToCategory` table |
+| `reformatTimeStr` | `@hebcal/core` `reformatTimeStr` |
+| `stripMevarchimPrefix` | `MevarchimChodeshEvent.renderBrief` |
+| `itemLeyning` | the inverse of the `getLeyningForHoliday()` lookup |
+| `normMonth` | `hdate` `Tammuz` vs `@hebcal/core` `Tamuz`; keeps `Tzom Tammuz` |
+| `dates.go` `ExpiresSaturdayNight` | `expiresSaturdayNight` |
+
+### `internal/service/mcp/` — `@hebcal/mcp` (`../hebcal-mcp`)
+
+`package` / tools ← `@hebcal/mcp`'s seven tools over stateless streamable-HTTP.
+`torah-portion`'s reading summary and chag reading ← readings-svc's
+`/shabbatTorahReading` (`getLeyningForParshaHaShavua().summary` /
+`getLeyningForHoliday()`; the merged summary is `makeSummaryFromParts`, which is
+not in the classic-API `leyning` object). **The chag branch deliberately emits
+more than the Node original** (`Name in Hebrew:` and `Reading:`). `reISODate` /
+`parseISODate` ← JS `isoDateStringToDate`. `doYahrzeit` ← Node `doYahrzeit`.
+`hebDayMonthEn` ← Node `hd.render('en', false)`. `renderEn` ← `@hebcal/core`
+`render` + smart apostrophe + one-m Tamuz. `daf-yomi`'s brief render ← hebcal-go's
+`dafYomiEvent.Render` (already the brief form, no `Daf Yomi:` prefix, ==
+Node `renderBrief`). `errorCard` ← Node `errorCard` (non-`IsError` text).
+`lines` ← Node `results.join('\n')`. `chagReadingName` is a fallback: hebcal-go's
+`sedra` returns no name for a chag week, unlike `@hebcal/core`.
+
+### `internal/repository/readings/` — the readings-svc sidecar
+
+Replaces two hebcal-web dependencies: an HTTP call to `/leyning?cfg=json`
+(`@hebcal/leyning` + `@hebcal/triennial`) and one out through the www front door
+to `/hebcal?cfg=json` for daily learning. Both endpoints answer in
+`@hebcal/rest-api`'s classic-API shape (`formatLeyningResult()`), so `leyning`
+is passed through with no reformatting. `learning.go` `learningLocale` ←
+`@hebcal/locales` names (`ah`/`sh` → `a`/`s`). `/leyning` takes no `lg` (English
+by design). `summary.go` `ShabbatTorahReading` ←
+`getLeyningForParshaHaShavua().summary` / `getLeyningForHoliday()`
+(`makeSummaryFromParts`).
+
+### `internal/jsutil/` — JS-language-semantics compat shims
+
+These keep their `JavaScript …` phrasing because the semantics *are* the
+contract (the package is literally named `jsutil`). `ParseInt` / `ParseFloat` /
+`IsoDateString` ← JS `parseInt` / `Number.parseFloat` / `Date.toISOString`.
+`SmartApostrophe` ← `@hebcal/core`'s event-title apostrophe. `MakeAnchor` ←
+`@hebcal/rest-api` `makeAnchor()` (CSV filename slug). `json.go` `OrderedObj` ←
+JS object key order (zmanim `ALL_TIMES`, classic-API items, `/geo`). `query.go`
+`QueryGet` / `QueryEmpty` / `IsOn` ← JS `undefined`/falsy conventions and the
+`booleanOpts` loop in `src/calendar.js`. `pkg/geodb/parseint.go` is a copy of
+`ParseInt`, kept separate so `geodb` has no internal deps.
+
+### `internal/httpx/`
+
+`etag.go` `MakeETag` ← hebcal-web's murmurhash3 weak ETag + encoding-class vary
+(FNV-1a here; weak ETags need not match). `httpx.go` Cache-Control consts ←
+`cacheControl(days)`: 14 (`app-download.js`) and 60 (`holidayPdf.js`). `SetCORS`
+← hebcal-web's cfg-param-present rule. `middleware.go` `brotliQuality` 6 ←
+`app-www.js`. The Vary rule (on any compressible response, stripped from
+uncompressed JSON) ← hebcal-web. `logAccess` ← `makeLogInfo()`; the `host`
+field is a deliberate addition for the dual vhost.
+
+### `internal/logger/logger.go`
+
+pino-compatible JSON lines, so the access log is interchangeable with the rest
+of the Hebcal.com fleet's.
+
+### `internal/model/`
+
+| Go | JS source |
+|---|---|
+| `locale.go` `AliasLocale` | `lgToLocale` map (`src/lang.js`) |
+| `locale.go` `LocaleSupported` | `@hebcal/core` `Locale.useLocale()`'s accepted set after `lgToLocale` |
+| `locale.go` `FixMonthSpelling` | `hdate` `Tammuz` vs `@hebcal/core` `Tamuz`; `Tzom Tammuz` exception |
+| `hebdate.go` `IsoDateStringToDate` | JS `isoDateStringToDate` (format-only validate, JS-Date rollover) |
+| `hebdate.go` `MakeGregDate` / `MakeHebDate` | `src/dateUtil.js` `makeGregDate()` / `makeHebDate()` |
+| `hebdate.go` `enMonthNames` | `@hebcal/hdate`'s transliterated names (`Tamuz`, single m) |
+| `hebdate.go` `MonthNameEn` / `HDMonthNameEn` / `HDateString` | classic-API `hm` / `HDate.toString()` format |
+| `hebdate.go` `NewHDateLenient` | JS `new HDate(day, month, year)` rollover |
+| `hebdate.go` `gematriyaMonthNames` | `src/gematriyaDate.js` |
+| `calendarnames.go` | dayjs locales (`src/dayjs-locales.js`); `lg` map via `localeMap` (`src/lang.js`); regenerate with `tools/dump-locales.mjs` |
+| `calendar.go` `GetEvents` / `parshaEvents` / `omerEvents` | `converter.js` `getEvents()` / `getParshaEvents()` / `makeOmer()` |
+| `calendar.go` `hasHolidayReading` | approximates `@hebcal/leyning` `getLeyningOnDate()` (`fullkriyah && !parshaNum`) |
+| `cache.go` `yearMemo` | `@hebcal/core`'s `getHolidaysForYear_` `QuickLRU` memo (`maxSize: 120`) |
+| `gregdate.go` `MaxRangeDays` (399) | hebcal-web's `/converter` + `/zmanim` limit |
+| `gregdate.go` `String` / `ReIsoDate` | JS `Date.toISOString` / the route validation regex |
+| `event.go` `RenderEvent` | `converter.js` `renameChanukah()` |
+| `event.go` `HolidayEv.Render` Rosh Hashana number | classic API renders the year as a number in every locale |
+
+### `internal/service/location/` — `getLocationFromQuery` (`src/location.js`)
+
+`package` / `FromQuery` ← `getLocationFromQuery`, the four query methods only
+(no GeoIP, no `ladeg`/`lamin` here — those live in `pdf/v2.go`). `geoposLegacy`
+← `src/urlArgs.js`. `fromLatLongLegacy` ← the `hasLatLongLegacy` branch.
+`legacyTzToTzid` ← `@hebcal/core` `Location.legacyTzToTzid`. `makeGeoCityName` ←
+the `37°25′N 122°5′W America/Los_Angeles` name. The missing geo-tz shape
+fallback (a required-tzid 400 instead) ← hebcal-web guesses the tz from geo-tz
+shape data, which this service does not ship. `render.go` `ToGeoJSON` ← Koa's
+serialization of an `@hebcal/core` `Location` + `@hebcal/geo-sqlite`
+`makeGeonameLocation`'s own-property order. `ToPlainObj` ← `@hebcal/rest-api`
+`locationToPlainObj`.
+
+### `pkg/geodb/` — `@hebcal/geo-sqlite` `GeoDb`
+
+`package` / `DB` ← the `GeoDb` class + its `QuickLRU` cache sizes.
+`LookupGeoname`'s `293396`→`293397` ← `@hebcal/geo-sqlite`'s legacy alias fixup.
+ZIP `Location` carrying no `asciiname` ← hebcal-web's ZIP `Location`.
+`geonameCityDescr` ← `GeoDb.geonameCityDescr`. `foldAccents` ←
+`@hebcal/geo-sqlite`'s city-description dedup transliteration. `location.go`
+`Is5DigitZip` ← `GeoDb.is5DigitZip`. `statenames.go` `StateNames` ←
+`@hebcal/cities`. `tz.go` `ZipcodesTzMap` / `UsaTzid` ← `@hebcal/core`
+`Location.ZIPCODES_TZ_MAP` / `getUsaTzid`.
+
+### `pkg/downloadpb/doc.go`
+
+The `Download` message / `download.proto` share a schema with the hebcal.com
+download form (the form serializes against it; `downloadHref2` produces the
+`/v4/` URLs). Change the two together.

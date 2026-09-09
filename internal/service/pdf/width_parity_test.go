@@ -2,16 +2,15 @@ package pdf
 
 import "testing"
 
-// Hebrew string widths must match what pdfkit draws, because the calendar
-// right-aligns Hebrew event text inside its cell: a width that is off by a
-// space moves the whole line.
+// Hebrew string widths must match what the published calendars draw, because
+// the calendar right-aligns Hebrew event text inside its cell: a width that is
+// off by a space moves the whole line.
 //
-// The reference values are pdfkit's widthOfString() for the string it actually
-// draws, which is the output of reverseHebrewWords() -- that function rejoins
-// words with two spaces, so a published calendar carries wider word gaps than
-// a single space would give. This renderer reproduces the gap by widening the
-// space glyph's advance instead of inserting a second space, so the text stays
-// one space wide for copy/paste while the layout matches.
+// The reference values are measured against the published calendars, whose
+// Hebrew word gaps are wider than a single space (two spaces are rejoined
+// between words). This renderer reproduces the gap by widening the space
+// glyph's advance instead of inserting a second space, so the text stays one
+// space wide for copy/paste while the layout matches.
 func TestHebrewWidthsMatchPdfkit(t *testing.T) {
 	sh := testShaper(t)
 	const tol = 0.01
@@ -32,7 +31,7 @@ func TestHebrewWidthsMatchPdfkit(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			got := sh.Width(FontHebrew, 12, c.s)
 			if d := got - c.want; d > tol || d < -tol {
-				t.Errorf("Width(%q) = %.3f, want %.3f (pdfkit) within %.2f", c.s, got, c.want, tol)
+				t.Errorf("Width(%q) = %.3f, want %.3f (reference) within %.2f", c.s, got, c.want, tol)
 			}
 		})
 	}

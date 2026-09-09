@@ -97,9 +97,9 @@ func TestFetchParsesItems(t *testing.T) {
 	if !e.Learning {
 		t.Error("fetched rows must be marked as learning, which drives their colour and order")
 	}
-	// @hebcal/rest-api's own tracking is stripped; the renderer adds its own.
+	// the sidecar's own tracking is stripped; the renderer adds its own.
 	if strings.Contains(e.URL, "utm_") {
-		t.Errorf("URL still carries hebcal-web's tracking: %s", e.URL)
+		t.Errorf("URL still carries the sidecar's tracking: %s", e.URL)
 	}
 	if !strings.HasPrefix(e.URL, "https://www.sefaria.org/") {
 		t.Errorf("URL host was rewritten: %s", e.URL)

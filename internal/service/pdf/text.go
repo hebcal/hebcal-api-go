@@ -34,12 +34,9 @@ type ShapedRun struct {
 
 // Shaper turns strings into positioned glyphs.
 //
-// This replaces the reverseHebrewWords() hack in hebcal-web's src/pdf.js, which
-// reversed word order by hand and patched up parentheses and trailing commas
-// because pdfkit offered no bidi support at all. Here the Unicode
-// bidirectional algorithm (UAX #9) decides visual order and HarfBuzz does the
-// shaping, so mixed Hebrew/Latin strings, nikud and presentation forms come out
-// correct without any per-string special-casing.
+// The Unicode bidirectional algorithm (UAX #9) decides visual order and
+// HarfBuzz does the shaping, so mixed Hebrew/Latin strings, nikud and
+// presentation forms come out correct without any per-string special-casing.
 type Shaper struct {
 	faces map[string]*gotextfont.Face
 
@@ -54,8 +51,8 @@ func NewShaper(faces map[string]*gotextfont.Face) *Shaper {
 	s := &Shaper{faces: faces}
 	s.pool.New = func() any {
 		hb := &shaping.HarfbuzzShaper{}
-		// Bounded so a long-lived process cannot accumulate shaping caches the
-		// way hebcal-web's reverted pdfkit cache accumulated parsed fonts.
+		// Bounded so a long-lived process cannot accumulate shaping caches
+		// without limit.
 		hb.SetFontCacheSize(len(faces))
 		return hb
 	}
@@ -105,9 +102,8 @@ func (s *Shaper) Shape(fontName string, size float64, str string) []ShapedRun {
 	return runs
 }
 
-// Width returns the total advance of s, the equivalent of pdfkit's
-// widthOfString(). The layout decisions in the renderer -- the font-shrinking
-// loop and the two-line fallback -- branch on this.
+// Width returns the total advance of s. The layout decisions in the renderer --
+// the font-shrinking loop and the two-line fallback -- branch on this.
 func (s *Shaper) Width(fontName string, size float64, str string) float64 {
 	var w float64
 	for _, r := range s.Shape(fontName, size, str) {
@@ -130,9 +126,9 @@ func (s *Shaper) shapeRun(face *gotextfont.Face, size float64, str string, rtl b
 	// HarfBuzz quantises advances to the pixel grid at the ppem it is given.
 	// At the sizes a calendar uses that is a visible error -- an 8.5pt space
 	// came out 1.797pt instead of 1.700, about 5.8% wide, and the error
-	// compounds across a string. fontkit scales linearly from font units, so
-	// pdfkit's widths are the unrounded ones. Shaping at 1000pt and scaling
-	// brings the quantisation below a thousandth of a point.
+	// compounds across a string. The reference widths this must match scale
+	// linearly from font units and are unrounded. Shaping at 1000pt and
+	// scaling brings the quantisation below a thousandth of a point.
 	hb := s.pool.Get().(*shaping.HarfbuzzShaper)
 	out := hb.Shape(shaping.Input{
 		Text:      text,
@@ -148,12 +144,10 @@ func (s *Shaper) shapeRun(face *gotextfont.Face, size float64, str string, rtl b
 	scale := size / shapeRefSize
 
 	run := ShapedRun{RTL: rtl, Glyphs: make([]pdffont.Glyph, 0, len(out.Glyphs))}
-	// hebcal-web's reverseHebrewWords() rejoins right-to-left text with two
-	// spaces between words, and pdfkit then hands that string to fontkit,
-	// which lays Hebrew out right-to-left and reverses it again. The visible
-	// result is one space between the words and the second one accumulated at
-	// the run's leading edge: "הדלקת נרות" draws 46.92pt of ink starting
-	// 2.83pt in, inside a 49.75pt advance.
+	// A right-to-left run right-aligns with one visible space between its words
+	// and a second space's worth of width accumulated at its leading edge:
+	// "הדלקת נרות" draws 46.92pt of ink starting 2.83pt in, inside a 49.75pt
+	// advance.
 	//
 	// Reproducing that means keeping the spaces single and adding their extra
 	// width to Skip, rather than widening each space in place. Widening in

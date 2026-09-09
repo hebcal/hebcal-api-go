@@ -127,9 +127,8 @@ func TestTorahPortion(t *testing.T) {
 
 // TestTorahPortionChag uses the holiday reading the sidecar returns when a chag
 // displaces the parsha: the name ("Pesach Shabbat Chol ha-Moed"), that name in
-// Hebrew, and the merged verse summary. Unlike the original hebcal-mcp, which
-// printed only the portion and the date on a chag, the Go tool shows the Hebrew
-// name and reading whenever the sidecar supplies them.
+// Hebrew, and the merged verse summary. The tool shows the Hebrew name and
+// reading whenever the sidecar supplies them.
 func TestTorahPortionChag(t *testing.T) {
 	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -212,8 +211,7 @@ func TestJewishHolidaysYear(t *testing.T) {
 	if !strings.Contains(got, "Rosh Chodesh Tamuz") {
 		t.Errorf("Rosh Chodesh Tamuz should have one m:\n%s", got)
 	}
-	// ...but "Tzom Tammuz" keeps two, exactly as @hebcal/core (and hebcal-mcp)
-	// render it -- FixMonthSpelling leaves it alone.
+	// ...but "Tzom Tammuz" keeps two -- FixMonthSpelling leaves it alone.
 	if !strings.Contains(got, "Tzom Tammuz") {
 		t.Errorf("Tzom Tammuz should keep two m's to match production:\n%s", got)
 	}
@@ -243,7 +241,7 @@ func TestShabbatTimes(t *testing.T) {
 	if !strings.Contains(got, "Candle lighting") || !strings.Contains(got, "Havdalah") {
 		t.Errorf("missing candle/havdalah rows:\n%s", got)
 	}
-	// The first candle-lighting row is pinned by the Node test.
+	// The first candle-lighting row is pinned against production.
 	if !strings.Contains(got, "| 2024-01-05 | 16:15 | Candle lighting | Parashat Shemot |") {
 		t.Errorf("first candle row does not match production:\n%s", got)
 	}

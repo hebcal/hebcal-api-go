@@ -39,11 +39,11 @@ func serveAndReadLog(t *testing.T, h http.HandlerFunc, req *http.Request) map[st
 	return m
 }
 
-// The log format has to match hebcal-web's makeLogInfo(), field for field, so
-// one pipeline reads both and hebcal-web's tools/perf analysis works against
-// these logs too. "host" is the one deliberate addition: this binary answers
-// both www.hebcal.com and download.hebcal.com, where hebcal-web's makeLogInfo
-// only ever logs for a single vhost.
+// The log format has to match the rest of the Hebcal.com fleet's, field for
+// field, so one pipeline reads them all and the shared perf analysis works
+// against these logs too. "host" is the one deliberate addition: this binary
+// answers both www.hebcal.com and download.hebcal.com, where the other
+// backends each log for a single vhost.
 func TestAccessLogFormat(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/v4/abc/hebcal_2026.pdf?x=1&y=2", nil)
 	req.Host = "download.hebcal.com"
@@ -57,7 +57,7 @@ func TestAccessLogFormat(t *testing.T) {
 	for _, k := range []string{"level", "time", "pid", "hostname", "status", "length",
 		"duration", "ip", "method", "host", "url", "ua"} {
 		if _, ok := m[k]; !ok {
-			t.Errorf("missing field %q; hebcal-web's log tooling expects it", k)
+			t.Errorf("missing field %q; the log tooling expects it", k)
 		}
 	}
 	if m["status"] != float64(200) {

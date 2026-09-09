@@ -1,7 +1,7 @@
 // Package location resolves an HTTP request's query parameters to a geographic
 // location, and renders a resolved location in the two JSON shapes the API
-// uses: the raw @hebcal/core Location returned by /geo, and the trimmed
-// "location" object embedded in /zmanim and /shabbat responses.
+// uses: the full Location object returned by /geo, and the trimmed "location"
+// object embedded in /zmanim and /shabbat responses.
 package location
 
 import (
@@ -25,9 +25,8 @@ var reGmtSpace = regexp.MustCompile(`^Etc/GMT (\d{1,2})$`)
 
 // FromQuery resolves an HTTP request's query parameters to a geodb.Location,
 // supporting the four documented ways to specify a location for the Hebcal
-// APIs. It is a Go port of getLocationFromQuery in hebcal-web src/location.js,
-// limited to the four query-based methods (the GeoIP and legacy ladeg/lamin
-// degree-minute forms are out of scope here).
+// APIs. The GeoIP and legacy ladeg/lamin degree-minute forms are out of scope
+// here.
 //
 // It returns (nil, nil)
 // when no location parameters are present (the caller decides whether that is
@@ -96,7 +95,7 @@ func FromLegacyLatLong(q url.Values) (*geodb.Location, error) {
 }
 
 // geoposLegacy lists the legacy degree/minute parameters and their maximum
-// values, matching hebcal-web src/urlArgs.js.
+// values.
 var geoposLegacy = []struct {
 	key string
 	max int
@@ -119,8 +118,7 @@ func hasLatLongLegacy(q url.Values) bool {
 }
 
 // fromLatLongLegacy builds a geo=pos location from the legacy
-// ladeg/lamin/ladir + lodeg/lomin/lodir degree-minute-direction form, ported
-// from the hasLatLongLegacy branch of FromQuery in location.js.
+// ladeg/lamin/ladir + lodeg/lomin/lodir degree-minute-direction form.
 // Unlike the decimal form, west/south are expressed as positive magnitudes
 // with a direction letter rather than negative numbers.
 func fromLatLongLegacy(q url.Values, cityTypeahead string) (*geodb.Location, error) {
@@ -147,8 +145,8 @@ func fromLatLongLegacy(q url.Values, cityTypeahead string) (*geodb.Location, err
 		tzid = legacyTzToTzid(q.Get("tz"), q.Get("dst"))
 	}
 	if tzid == "" {
-		// hebcal-web falls back to a geo-tz shape lookup here; that data is
-		// not available to this service, so a timezone is required.
+		// A geo-tz shape lookup would go here, but that data is not available
+		// to this service, so a timezone is required.
 		return nil, model.BadRequest("Timezone required")
 	}
 	if _, err := zmanim.LoadLocation(tzid); err != nil {
@@ -173,9 +171,8 @@ func fromLatLongLegacy(q url.Values, cityTypeahead string) (*geodb.Location, err
 }
 
 // legacyTzToTzid resolves a legacy numeric timezone plus DST rule to an IANA
-// tzid, ported from @hebcal/core Location.legacyTzToTzid. It returns "" when
-// the combination is unrecognized. Note the reversed Etc/GMT sign convention
-// (tz=-5 becomes "Etc/GMT-5", i.e. UTC+5).
+// tzid. It returns "" when the combination is unrecognized. Note the reversed
+// Etc/GMT sign convention (tz=-5 becomes "Etc/GMT-5", i.e. UTC+5).
 func legacyTzToTzid(tz, dst string) string {
 	tzNum, _ := jsutil.ParseInt(tz)
 	switch {
@@ -220,8 +217,8 @@ func fromLatLong(q url.Values, cityTypeahead string) (*geodb.Location, error) {
 		return nil, model.BadRequest("Invalid longitude specified: %s", q.Get("longitude"))
 	}
 	if jsutil.QueryEmpty(q, "tzid") {
-		// hebcal-web guesses the timezone from geo-tz shape data here; that
-		// dataset is not available to this service, so a timezone is required.
+		// A geo-tz shape guess would go here, but that dataset is not available
+		// to this service, so a timezone is required.
 		return nil, model.BadRequest("Timezone required")
 	}
 	il := q.Get("i") == "on"
@@ -265,7 +262,7 @@ func fromLatLong(q url.Values, cityTypeahead string) (*geodb.Location, error) {
 }
 
 // makeGeoCityName formats a latitude/longitude/tzid as a human-readable name
-// like "37°25′N 122°5′W America/Los_Angeles", matching hebcal-web.
+// like "37°25′N 122°5′W America/Los_Angeles".
 func makeGeoCityName(latitude, longitude float64, tzid string) string {
 	ladir := "N"
 	if latitude < 0 {
