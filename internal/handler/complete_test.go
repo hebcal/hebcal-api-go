@@ -38,6 +38,11 @@ func TestCompleteGeonameLatLong(t *testing.T) {
 	if resp.StatusCode != 200 {
 		t.Fatalf("status = %d body=%s", resp.StatusCode, body)
 	}
+	// g=on marks the request as a public query with no IP bias: it gets a
+	// public, longer-lived Cache-Control instead of the default private one.
+	if cc := resp.Header.Get("Cache-Control"); cc != "public, max-age=259200" {
+		t.Errorf("Cache-Control = %q, want %q", cc, "public, max-age=259200")
+	}
 	want := `[{"id":281184,"value":"Jerusalem, Israel","admin1":"Jerusalem District","country":"Israel","cc":"IL","latitude":31.76904,"longitude":35.21633,"timezone":"Asia/Jerusalem","elevation":786,"geo":"geoname","population":801000,"asciiname":"Jerusalem","flag":"🇮🇱"}]`
 	if body != want {
 		t.Errorf("body mismatch\n got: %s\nwant: %s", body, want)

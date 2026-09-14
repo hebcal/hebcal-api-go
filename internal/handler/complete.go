@@ -34,20 +34,35 @@ func (s *Server) complete(w http.ResponseWriter, r *http.Request) {
 		httpx.WriteJSONError(w, dbUnavailable())
 		return
 	}
-	w.Header().Set("Cache-Control", "private, max-age=259200")
+	// ?g={on,1} marks the request as a public query with no IP-address bias:
+	// it skips the GeoIP nearness hint and gets a public, longer-lived
+	// Cache-Control instead of the default per-caller private one.
+	latlong := jsutil.IsOn(q.Get("g"))
+	if latlong {
+		w.Header().Set("Cache-Control", "public, max-age=259200")
+	} else {
+		w.Header().Set("Cache-Control", "private, max-age=259200")
+	}
+	// A public query's ETag must not vary by caller IP, or it stops being
+	// cacheable across clients.
+	etagExtra := ""
 	callerIP := httpx.ClientIP(r)
-	etag := httpx.MakeETag(r, callerIP)
+	if !latlong {
+		etagExtra = callerIP
+	}
+	etag := httpx.MakeETag(r, etagExtra)
 	w.Header().Set("ETag", etag)
 	if httpx.CheckFresh(r, etag) {
 		w.WriteHeader(http.StatusNotModified)
 		return
 	}
-	latlong := jsutil.IsOn(q.Get("g"))
 	// The GeoIP hint is best-effort: a missing or unreachable service just
 	// means results are ranked without a proximity bias.
 	var near *geodb.Point
-	if p, err := s.GeoIP.LookupPoint(r.Context(), callerIP); err == nil {
-		near = &geodb.Point{Latitude: p.Latitude, Longitude: p.Longitude}
+	if !latlong {
+		if p, err := s.GeoIP.LookupPoint(r.Context(), callerIP); err == nil {
+			near = &geodb.Point{Latitude: p.Latitude, Longitude: p.Longitude}
+		}
 	}
 	items := s.DB.AutoComplete(qraw, near)
 	if len(items) == 0 {
