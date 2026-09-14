@@ -237,7 +237,7 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 	}
 	// A single-year request outside the supported range is 410. A start/end
 	// range leaves Year zero and is not checked.
-	if o.Year != 0 && !YearIsSupported(o.Year, o.IsHebrewYear) {
+	if o.Year != 0 && !model.YearIsSupported(o.Year, o.IsHebrewYear) {
 		return nil, &OutOfRangeError{Year: o.Year, IsHebrewYear: o.IsHebrewYear}
 	}
 	if err := applyLocation(msg, p, db); err != nil {
@@ -394,17 +394,6 @@ func (e *OutOfRangeError) Error() string {
 		return fmt.Sprintf("No calendar for Hebrew year %d", e.Year)
 	}
 	return fmt.Sprintf("No calendar for Gregorian year %d", e.Year)
-}
-
-// YearIsSupported reports whether a calendar is served for the given year: no
-// calendar before year 100 or after 2999 (Gregorian), or before 3860 or after
-// 6759 (Hebrew). The /holidays/ calendars range-check their own year with it
-// too.
-func YearIsSupported(year int, hebrew bool) bool {
-	if hebrew {
-		return year >= 3860 && year <= 6759
-	}
-	return year >= 100 && year <= 2999
 }
 
 // NotFoundError marks a named location (geonameid, ZIP or legacy city) that

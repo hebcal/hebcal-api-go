@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 )
 
@@ -95,7 +96,7 @@ func Parse(rpath string, query url.Values) (*pdf.Params, error) {
 	if isHebrewYear && yearNum < hebrewYearOffset {
 		calendarYear = yearNum + hebrewYearOffset
 	}
-	if !pdf.YearIsSupported(calendarYear, isHebrewYear) {
+	if !model.YearIsSupported(calendarYear, isHebrewYear) {
 		return nil, &pdf.OutOfRangeError{Year: calendarYear, IsHebrewYear: isHebrewYear}
 	}
 

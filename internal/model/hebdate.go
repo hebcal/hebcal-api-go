@@ -103,6 +103,16 @@ func HDateFromRD(rd int64) hdate.HDate {
 	return hdate.FromRD(rd)
 }
 
+// YearIsSupported reports whether a calendar is served for the given year: no
+// calendar before year 100 or after 2999 (Gregorian), or before 3860 or after
+// 6759 (Hebrew).
+func YearIsSupported(year int, hebrew bool) bool {
+	if hebrew {
+		return year >= 3860 && year <= 6759
+	}
+	return year >= 100 && year <= 2999
+}
+
 // NewHDateLenient rolls an out-of-range day over into the following month
 // (e.g. 30 Cheshvan in a year when Cheshvan has 29 days becomes 1 Kislev).
 func NewHDateLenient(year int, month hdate.HMonth, day int) hdate.HDate {

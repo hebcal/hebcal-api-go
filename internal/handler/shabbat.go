@@ -36,9 +36,7 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 	// Scope gate: only cfg=json is implemented.
 	if q.Get("cfg") != "json" {
 		w.WriteHeader(http.StatusNotImplemented)
-		w.Write(jsutil.Marshal(map[string]string{
-			"error": "Only cfg=json is supported by this endpoint",
-		}))
+		w.Write(httpx.JSONErrorBody("Only cfg=json is supported by this endpoint"))
 		return
 	}
 	leyningParam := q.Get("leyning")
@@ -68,6 +66,13 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 	dt, isToday, err := shabbat.QueryDate(q)
 	if err != nil {
 		httpx.WriteJSONError(w, err)
+		return
+	}
+	// A calendar is only served for years the PDF routes would serve; an
+	// explicit date outside that Gregorian range is a 400 here, not an empty
+	// week. "Today" is always in range, so only a requested date is checked.
+	if !isToday && !model.YearIsSupported(dt.Year, false) {
+		httpx.WriteJSONError(w, model.BadRequest("Gregorian year %d out of range", dt.Year))
 		return
 	}
 	start, end, err := shabbat.WeekRange(dt, isToday, loc.TimeZoneID)

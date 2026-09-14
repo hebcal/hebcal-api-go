@@ -184,9 +184,37 @@ func TestShabbatLocaleValidation(t *testing.T) {
 		if resp.StatusCode != http.StatusBadRequest {
 			t.Errorf("lg=%q: status = %d, want 400 (%s)", lg, resp.StatusCode, body)
 		}
-		want := `{"error":"Locale '` + lg + `' not found"}`
+		want := `{"error":"Locale '` + lg + `' not found"}` + "\n"
 		if body != want {
 			t.Errorf("lg=%q: body = %s, want %s", lg, body, want)
+		}
+	}
+}
+
+// TestShabbatYearRange checks that a requested Gregorian year outside the
+// normal range (model.YearIsSupported: 100-2999) is a 400, rather
+// than an empty week. The check applies to a requested date only; "today" is
+// always in range.
+func TestShabbatYearRange(t *testing.T) {
+	srv := testServerWithDB(t)
+	const base = "/shabbat?cfg=json&geonameid=5128581&leyning=off"
+	bad := []string{
+		"&gd=15&gm=6&gy=-1",
+		"&gd=15&gm=6&gy=0",
+		"&gd=15&gm=6&gy=99",
+		"&dt=0099-06-15",
+		"&dt=3000-06-15",
+	}
+	for _, q := range bad {
+		resp, body := get(t, srv, base+q)
+		if resp.StatusCode != http.StatusBadRequest {
+			t.Errorf("%q: status = %d, want 400 (%s)", q, resp.StatusCode, body)
+		}
+	}
+	for _, q := range []string{"&gd=15&gm=6&gy=100", "&dt=2999-06-15"} {
+		resp, body := get(t, srv, base+q)
+		if resp.StatusCode != 200 {
+			t.Errorf("%q: status = %d, want 200 (%s)", q, resp.StatusCode, body)
 		}
 	}
 }

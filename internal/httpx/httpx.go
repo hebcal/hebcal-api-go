@@ -79,6 +79,12 @@ func WritePlainError(w http.ResponseWriter, err error) {
 	fmt.Fprintln(w, err.Error())
 }
 
+// JSONErrorBody marshals a {"error": message} body with a trailing newline,
+// the shape every non-200 application/json response uses.
+func JSONErrorBody(message string) []byte {
+	return append(jsutil.Marshal(map[string]string{"error": message}), '\n')
+}
+
 // WriteJSONError emits a JSON {"error": ...} body carrying the error's own
 // status. It is the error shape the /geo, /zmanim, /shabbat and /complete
 // routes share.
@@ -86,7 +92,7 @@ func WriteJSONError(w http.ResponseWriter, err error) {
 	RecordError(w, err)
 	w.Header().Set("Content-Type", ContentTypeJSON)
 	w.WriteHeader(model.StatusOf(err))
-	w.Write(jsutil.Marshal(map[string]string{"error": err.Error()}))
+	w.Write(JSONErrorBody(err.Error()))
 }
 
 // WriteNotFoundText emits the plain-text 404 used by /ping and the catch-all

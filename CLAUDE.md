@@ -1081,7 +1081,6 @@ more code is ported.
 | `setLocation` "location ⇒ candle-lighting" | `if (location) options.candlelighting = true` in `src/calendar.js` |
 | `parseISODate` | `makeDownloadProps` date handling before `@hebcal/core` |
 | `OutOfRangeError` / 410 | `hebcal-download.js` |
-| `YearIsSupported` | `yearIsOutsideGregRange` / `yearIsOutsideHebRange` in `src/dateUtil.js` |
 | `NotFoundError` / 404 | `getLocationFromQuery` |
 | `applyLocation` | `getLocationFromQuery` + `@hebcal/geo-sqlite` |
 | legacy `cityName` branch | `downloadHref2` sets `cityName` only alongside `geoPos` |
@@ -1330,6 +1329,7 @@ of the Hebcal.com fleet's.
 | `locale.go` `FixMonthSpelling` | `hdate` `Tammuz` vs `@hebcal/core` `Tamuz`; `Tzom Tammuz` exception |
 | `hebdate.go` `IsoDateStringToDate` | JS `isoDateStringToDate` (format-only validate, JS-Date rollover) |
 | `hebdate.go` `MakeGregDate` / `MakeHebDate` | `src/dateUtil.js` `makeGregDate()` / `makeHebDate()` |
+| `hebdate.go` `YearIsSupported` | `yearIsOutsideGregRange` / `yearIsOutsideHebRange` in `src/dateUtil.js` |
 | `hebdate.go` `enMonthNames` | `@hebcal/hdate`'s transliterated names (`Tamuz`, single m) |
 | `hebdate.go` `MonthNameEn` / `HDMonthNameEn` / `HDateString` | classic-API `hm` / `HDate.toString()` format |
 | `hebdate.go` `NewHDateLenient` | JS `new HDate(day, month, year)` rollover |

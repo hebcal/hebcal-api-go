@@ -212,7 +212,7 @@ func TestCompleteNoResults(t *testing.T) {
 	if resp.StatusCode != http.StatusNotFound {
 		t.Fatalf("status = %d, want 404; body=%s", resp.StatusCode, body)
 	}
-	if body != `{"error":"Not Found"}` {
+	if body != "{\"error\":\"Not Found\"}\n" {
 		t.Errorf("body = %s, want Not Found error", body)
 	}
 	// The no-results 404 drops the ETag but keeps Cache-Control.
@@ -230,7 +230,7 @@ func TestCompleteEmptyQuery(t *testing.T) {
 	if resp.StatusCode != http.StatusNotFound {
 		t.Fatalf("status = %d, want 404; body=%s", resp.StatusCode, body)
 	}
-	if body != `{"error":"Not Found"}` {
+	if body != "{\"error\":\"Not Found\"}\n" {
 		t.Errorf("body = %s, want Not Found error", body)
 	}
 	// The empty-query 404 is returned before any Cache-Control is set.

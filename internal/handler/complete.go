@@ -69,5 +69,5 @@ func (s *Server) complete(w http.ResponseWriter, r *http.Request) {
 func writeNotFoundJSON(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", httpx.ContentTypeJSON)
 	w.WriteHeader(http.StatusNotFound)
-	w.Write(jsutil.Marshal(map[string]string{"error": "Not Found"}))
+	w.Write(httpx.JSONErrorBody("Not Found"))
 }
