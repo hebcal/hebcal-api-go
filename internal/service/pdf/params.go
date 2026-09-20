@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
@@ -432,6 +433,16 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 		if msg.GetOldLongitude() != 0 {
 			long = msg.GetOldLongitude()
 		}
+		// Range-check the coordinates before they reach the generator: zmanim.New
+		// panics (via noaa.NewGeoLocation) on an out-of-range or NaN latitude or
+		// longitude. A crafted /v4/, /v2/ or CGI URL can carry any value, so
+		// report a bad one as a bad request rather than crashing the request.
+		if math.IsNaN(lat) || lat > 90 || lat < -90 {
+			return fmt.Errorf("invalid latitude specified: %v", lat)
+		}
+		if math.IsNaN(long) || long > 180 || long < -180 {
+			return fmt.Errorf("invalid longitude specified: %v", long)
+		}
 		tzid := msg.GetTzid()
 		if tzid == "" {
 			return errors.New("geoPos location without tzid")
@@ -451,13 +462,20 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 		if il {
 			cc = "IL"
 		}
+		// noaa.NewGeoLocation also rejects a negative elevation, and the download
+		// form only ever sends a positive one; ignore a bad value (mirroring the
+		// location package's geo=pos branch) rather than panicking on it.
+		elevation := int(msg.GetElev())
+		if elevation < 0 {
+			elevation = 0
+		}
 		p.Opts.Location = &zmanim.Location{
 			Name:        name,
 			Latitude:    lat,
 			Longitude:   long,
 			TimeZoneId:  tzid,
 			CountryCode: cc,
-			Elevation:   int(msg.GetElev()),
+			Elevation:   elevation,
 		}
 		p.Opts.CandleLighting = true
 		if il {

@@ -258,6 +258,31 @@ func TestGeoPosBadTzidIsRejected(t *testing.T) {
 	}
 }
 
+// TestGeoPosBadCoordsAreRejected pins the fix for another panic vector: an
+// out-of-range latitude or longitude reached zmanim.New (via
+// noaa.NewGeoLocation), which panics. It must be a bad request instead.
+func TestGeoPosBadCoordsAreRejected(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		lat, long float32
+	}{
+		{"latitude", 999, -74.0},
+		{"longitude", 40.71, 999},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			msg := &pb.Download{
+				Candlelighting: true, GeoPos: true, Year: 2026,
+				LatOneof:  &pb.Download_Latitude{Latitude: tc.lat},
+				LongOneof: &pb.Download_Longitude{Longitude: tc.long},
+				Tzid:      "America/New_York",
+			}
+			if _, err := DecodeParams(encode(t, msg), nil); err == nil {
+				t.Errorf("expected an error for a geoPos location with an invalid %s", tc.name)
+			}
+		})
+	}
+}
+
 // Requested series are enabled through CalOptions' generic DailyLearning
 // list, which hebcal-go resolves against the registry, and the ones with no
 // schedule are reported so the handler can hand the request back to Node.
