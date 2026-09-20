@@ -82,6 +82,31 @@ func TestConvertHebrewToGregorianBadMonth(t *testing.T) {
 	}
 }
 
+// TestConvertHebrewToGregorianBadDay pins the fix for a remotely-triggerable
+// crash: an out-of-range day (30 in a 29-day month) reached hdate.New, which
+// panics, and because the MCP SDK runs each tool in its own goroutine the panic
+// took the whole process down rather than being recovered by net/http.
+func TestConvertHebrewToGregorianBadDay(t *testing.T) {
+	tl := &tools{}
+	got := tt{t}.text(tl.convertHebrewToGregorian(context.Background(), nil,
+		convertHebrewToGregorianArgs{Day: 30, Month: "Kislev", Year: 5784}))
+	if !strings.Contains(got, "Invalid Hebrew day") {
+		t.Errorf("want day range error, got %q", got)
+	}
+}
+
+// TestGuardRecoversPanic checks the backstop: even if a tool panics, the server
+// returns an error card instead of crashing.
+func TestGuardRecoversPanic(t *testing.T) {
+	h := guard("boom", func(context.Context, *mcpsdk.CallToolRequest, struct{}) (*mcpsdk.CallToolResult, any, error) {
+		panic("boom")
+	})
+	got := tt{t}.text(h(context.Background(), nil, struct{}{}))
+	if !strings.Contains(got, "Internal error computing boom") {
+		t.Errorf("want recovered error card, got %q", got)
+	}
+}
+
 func TestYahrzeit(t *testing.T) {
 	tl := &tools{}
 	got := tt{t}.text(tl.yahrzeit(context.Background(), nil,

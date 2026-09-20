@@ -16,7 +16,11 @@
 package mcp
 
 import (
+	"context"
+	"fmt"
 	"net/http"
+	"os"
+	"runtime/debug"
 	"strings"
 
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
@@ -33,6 +37,24 @@ var serverVersion = strings.TrimPrefix(config.APIVersion, "v")
 // uses rd, and it tolerates a nil client.
 type tools struct {
 	rd *readings.Client
+}
+
+// guard wraps a tool handler so a panic becomes a returned error instead of
+// crashing the whole process. The MCP SDK runs each tool in its own goroutine
+// (jsonrpc2's handleAsync), outside net/http's per-request recover, so an
+// unguarded panic in one tool takes the entire binary down -- a request-driven
+// crash for every route, not just /mcp. The stack is written to stderr so the
+// panic is still visible in journald.
+func guard[In any](name string, h mcpsdk.ToolHandlerFor[In, any]) mcpsdk.ToolHandlerFor[In, any] {
+	return func(ctx context.Context, req *mcpsdk.CallToolRequest, in In) (res *mcpsdk.CallToolResult, out any, err error) {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Fprintf(os.Stderr, "mcp: recovered panic in tool %s: %v\n%s", name, r, debug.Stack())
+				res, out, err = errorCard("Internal error computing "+name), nil, nil
+			}
+		}()
+		return h(ctx, req, in)
+	}
 }
 
 // NewServer builds the MCP server with all seven hebcal tools registered. rd
@@ -54,37 +76,37 @@ func NewServer(rd *readings.Client) *mcpsdk.Server {
 	mcpsdk.AddTool(srv, &mcpsdk.Tool{
 		Name:        "convert-gregorian-to-hebrew",
 		Description: "Converts a Gregorian (civil) date to a Hebrew date (Jewish calendar)",
-	}, t.convertGregorianToHebrew)
+	}, guard("convert-gregorian-to-hebrew", t.convertGregorianToHebrew))
 
 	mcpsdk.AddTool(srv, &mcpsdk.Tool{
 		Name:        "convert-hebrew-to-gregorian",
 		Description: "Converts a Hebrew date to a Gregorian (civil) date",
-	}, t.convertHebrewToGregorian)
+	}, guard("convert-hebrew-to-gregorian", t.convertHebrewToGregorian))
 
 	mcpsdk.AddTool(srv, &mcpsdk.Tool{
 		Name:        "yahrzeit",
 		Description: "Calculates the Yahrzeit, the anniversary of the day of death of a loved one, according to the Hebrew calendar for a specified date",
-	}, t.yahrzeit)
+	}, guard("yahrzeit", t.yahrzeit))
 
 	mcpsdk.AddTool(srv, &mcpsdk.Tool{
 		Name:        "torah-portion",
 		Description: "Calculates the weekly Torah portion (also called parashat haShavua) for a specified date",
-	}, t.torahPortion)
+	}, guard("torah-portion", t.torahPortion))
 
 	mcpsdk.AddTool(srv, &mcpsdk.Tool{
 		Name:        "jewish-holidays-year",
 		Description: "Calculates a list of all Jewish holidays during a Gregorian (civil) year",
-	}, t.jewishHolidaysYear)
+	}, guard("jewish-holidays-year", t.jewishHolidaysYear))
 
 	mcpsdk.AddTool(srv, &mcpsdk.Tool{
 		Name:        "daf-yomi",
 		Description: "Calculates the Daf Yomi (Babylonian Talmud) learning for a specified date",
-	}, t.dafYomi)
+	}, guard("daf-yomi", t.dafYomi))
 
 	mcpsdk.AddTool(srv, &mcpsdk.Tool{
 		Name:        "shabbat-times",
 		Description: "Generates Shabbat and holiday candle-lighting and Havdalah times for a given location and date range",
-	}, t.shabbatTimes)
+	}, guard("shabbat-times", t.shabbatTimes))
 
 	return srv
 }

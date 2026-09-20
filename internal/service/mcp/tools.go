@@ -83,6 +83,19 @@ func (t *tools) convertHebrewToGregorian(_ context.Context, _ *mcpsdk.CallToolRe
 	if err != nil {
 		return errorCard(`Cannot interpret "` + in.Month + `" as a Hebrew month name`), nil, nil
 	}
+	// hdate.New panics on an out-of-range year or day, so validate the request
+	// first and report it as an error the model can correct. Mirror hdate.New's
+	// own Adar2-in-a-common-year remap before the day-range check, since a
+	// common year has no Adar II and its day count is Adar I's.
+	if in.Year < 1 {
+		return errorCard(fmt.Sprintf("Invalid Hebrew year %d", in.Year)), nil, nil
+	}
+	if mon == hdate.Adar2 && !hdate.IsLeapYear(in.Year) {
+		mon = hdate.Adar1
+	}
+	if in.Day < 1 || in.Day > hdate.DaysInMonth(mon, in.Year) {
+		return errorCard(fmt.Sprintf("Invalid Hebrew day %d for %s %d", in.Day, in.Month, in.Year)), nil, nil
+	}
 	hd := hdate.New(in.Year, mon, in.Day)
 	return textResult(isoGreg(hd)), nil, nil
 }
