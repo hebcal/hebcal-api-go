@@ -236,6 +236,28 @@ func TestGeoPosWithoutTzidIsRejected(t *testing.T) {
 	}
 }
 
+// TestGeoPosBadTzidIsRejected pins the fix for a panic: a client-supplied
+// timezone that time.LoadLocation cannot load reached zmanim.New, which panics.
+// It must be reported as an error instead of reaching the generator.
+//
+// In production the trigger was a case-wrong IANA name ("america/new_york"):
+// IANA zone names are case-sensitive and the embedded time/tzdata matches them
+// exactly, so it panics on Linux. That exact string is a poor test input,
+// because macOS's case-insensitive filesystem loads it and the test would pass
+// there and fail on Linux; a genuinely nonexistent zone fails on every
+// platform and exercises the same guard.
+func TestGeoPosBadTzidIsRejected(t *testing.T) {
+	msg := &pb.Download{
+		Candlelighting: true, GeoPos: true, Year: 2026,
+		LatOneof:  &pb.Download_Latitude{Latitude: 40.71},
+		LongOneof: &pb.Download_Longitude{Longitude: -74.0},
+		Tzid:      "Nowhere/Fake",
+	}
+	if _, err := DecodeParams(encode(t, msg), nil); err == nil {
+		t.Error("expected an error for a geoPos location with an invalid tzid")
+	}
+}
+
 // Requested series are enabled through CalOptions' generic DailyLearning
 // list, which hebcal-go resolves against the registry, and the ones with no
 // schedule are reported so the handler can hand the request back to Node.

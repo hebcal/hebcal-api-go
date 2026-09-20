@@ -436,6 +436,13 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 		if tzid == "" {
 			return errors.New("geoPos location without tzid")
 		}
+		// Validate the timezone before it reaches the generator: zmanim.New
+		// panics if the tzid cannot be loaded, and IANA names are case-sensitive,
+		// so a client-supplied "america/new_york" would otherwise crash the
+		// request (recovered as a 500). Report it as a bad request instead.
+		if _, err := zmanim.LoadLocation(tzid); err != nil {
+			return fmt.Errorf("invalid time zone specified: %s", tzid)
+		}
 		// A lat/long location is treated as Israel when the request said so or
 		// the timezone is Asia/Jerusalem.
 		il := msg.GetIsrael() || tzid == "Asia/Jerusalem"
