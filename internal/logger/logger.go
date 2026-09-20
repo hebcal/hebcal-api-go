@@ -15,8 +15,9 @@ import (
 
 // Log levels, matching pino's numeric levels.
 const (
-	LevelInfo = 30
-	LevelWarn = 40
+	LevelInfo  = 30
+	LevelWarn  = 40
+	LevelError = 50
 )
 
 // KV is one log field: a key and its already-encoded JSON value.

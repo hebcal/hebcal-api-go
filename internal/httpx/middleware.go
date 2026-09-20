@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -79,6 +81,29 @@ type Middleware struct {
 	Logger *logger.AccessLogger
 }
 
+// callHandler runs h and recovers a panic into a 500, so a bug in one handler
+// answers one request rather than taking down the process. h writes into bw
+// rather than the real ResponseWriter, so a recovered panic can still discard
+// a partial body and set a clean status; that would not be safe against the
+// real http.ResponseWriter, which may already have flushed a header.
+func (m *Middleware) callHandler(bw *bufWriter, r *http.Request, h http.HandlerFunc, calls *reqlog.Collector) {
+	defer func() {
+		if rec := recover(); rec != nil {
+			m.Logger.Write(logger.LevelError, []logger.KV{
+				{K: "panic", V: logger.String(fmt.Sprint(rec))},
+				{K: "stack", V: logger.String(string(debug.Stack()))},
+				{K: "url", V: logger.String(r.URL.RequestURI())},
+			})
+			bw.buf.Reset()
+			bw.header = make(http.Header)
+			bw.status = http.StatusInternalServerError
+			calls.SetError(fmt.Errorf("panic: %v", rec))
+			http.Error(bw, "Internal Server Error", http.StatusInternalServerError)
+		}
+	}()
+	h(bw, r)
+}
+
 // Serve runs the handler with buffering, then applies gzip/brotli compression,
 // response-time and length headers, Prometheus metrics, and access logging.
 func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
@@ -89,7 +114,7 @@ func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 		ctx, calls := reqlog.NewContext(r.Context())
 		bw := newBufWriter(calls)
 		r = r.WithContext(ctx)
-		h(bw, r)
+		m.callHandler(bw, r, h, calls)
 
 		body := bw.buf.Bytes()
 		uncompressedLen := len(body)

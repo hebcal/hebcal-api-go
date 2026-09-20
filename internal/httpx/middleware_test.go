@@ -99,6 +99,60 @@ func TestAccessLogLevels(t *testing.T) {
 	}
 }
 
+// A panicking handler answers 500 rather than crashing the process or
+// dropping the connection, and the panic is logged like any other error.
+func TestPanicRecovery(t *testing.T) {
+	rec := httptest.NewRecorder()
+	path := filepath.Join(t.TempDir(), "api.log")
+	lg, err := logger.New(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mw := &Middleware{Logger: lg}
+	mw.Serve(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("partial")) // buffered, so this must not reach the client
+		var s []int
+		_ = s[5] // index out of range
+	})(rec, httptest.NewRequest(http.MethodGet, "/boom", nil))
+
+	if rec.Code != http.StatusInternalServerError {
+		t.Errorf("status = %d, want 500", rec.Code)
+	}
+	if strings.Contains(rec.Body.String(), "partial") {
+		t.Errorf("body leaked pre-panic output: %q", rec.Body.String())
+	}
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Two lines: the panic itself (with its stack trace) logged at error level,
+	// then the normal access-log line for the request it turned into a 500.
+	lines := strings.Split(strings.TrimSpace(string(data)), "\n")
+	if len(lines) != 2 {
+		t.Fatalf("got %d log lines, want 2:\n%s", len(lines), data)
+	}
+	var panicLine, accessLine map[string]any
+	if err := json.Unmarshal([]byte(lines[0]), &panicLine); err != nil {
+		t.Fatalf("panic log line is not JSON: %v\n%s", err, lines[0])
+	}
+	if err := json.Unmarshal([]byte(lines[1]), &accessLine); err != nil {
+		t.Fatalf("access log line is not JSON: %v\n%s", err, lines[1])
+	}
+	if panicLine["level"] != float64(logger.LevelError) {
+		t.Errorf("panic line level = %v, want %d", panicLine["level"], logger.LevelError)
+	}
+	if s, ok := panicLine["panic"].(string); !ok || !strings.Contains(s, "index out of range") {
+		t.Errorf("panic line panic field = %v", panicLine["panic"])
+	}
+	if accessLine["status"] != float64(500) {
+		t.Errorf("logged status = %v, want 500", accessLine["status"])
+	}
+	if s, ok := accessLine["msg"].(string); !ok || !strings.Contains(s, "panic:") {
+		t.Errorf("logged msg = %v, want a panic message", accessLine["msg"])
+	}
+}
+
 // A 4xx/5xx response logs the error it rendered under "msg", so the reason (an
 // OutOfRangeError's "No calendar for year 38", a bad location, etc.) is
 // searchable in the access log without re-deriving it from the URL. The error
