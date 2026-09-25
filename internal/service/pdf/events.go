@@ -64,6 +64,24 @@ func Generate(p *Params) ([]Event, error) {
 	if err != nil {
 		return nil, fmt.Errorf("hebcal: %w", err)
 	}
+	// A whole-Hebrew-year calendar in Hebrew-month mode intentionally carries
+	// Tishrei of the following year too, as a head start for next year's
+	// calendar (useful when a printed copy is mailed once a year). Mirrors
+	// hebcal-web's makeHebrewCalendar: the events for that month are generated
+	// with their own explicit Gregorian start/end, or SplitByHebrewMonth's
+	// trailing Tishrei page would be empty.
+	if p.MonthMode != GregorianArabic && opts.IsHebrewYear && opts.Year != 0 &&
+		opts.Start.Abs() == 0 && opts.End.Abs() == 0 {
+		extraOpts := opts
+		extraOpts.IsHebrewYear = false
+		extraOpts.Start = hdate.New(opts.Year+1, hdate.Tishrei, 1)
+		extraOpts.End = hdate.New(opts.Year+1, hdate.Tishrei, 30) // Tishrei always has 30 days
+		extra, err := hebcal.HebrewCalendar(&extraOpts)
+		if err != nil {
+			return nil, fmt.Errorf("hebcal: next Tishrei: %w", err)
+		}
+		events = append(events, extra...)
+	}
 	out := make([]Event, 0, len(events))
 	for _, ev := range events {
 		flags := ev.GetFlags()
