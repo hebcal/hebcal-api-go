@@ -12,7 +12,6 @@ import (
 
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
-	"github.com/hebcal/hebcal-api-go/internal/service/shabbat"
 )
 
 // Event is one rendered line in a calendar cell: the flattened form of a
@@ -66,7 +65,7 @@ func Generate(p *Params) ([]Event, error) {
 		return nil, fmt.Errorf("hebcal: %w", err)
 	}
 	if p.AtSunset {
-		shabbat.MoveCandleLightingToSunset(events, &opts)
+		model.MoveCandleLightingToSunset(events, &opts)
 	}
 	out := make([]Event, 0, len(events))
 	for _, ev := range events {

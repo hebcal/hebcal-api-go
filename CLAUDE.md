@@ -1248,7 +1248,6 @@ JS `new Date(dateStr)` + the location-offset fixup (`im=1` branch). `StartAndEnd
 | `CandleOptions` | `makeHebcalOptions()` precedence + `shabbatApp()` default |
 | `locationDefaultCandleMins` | `locationDefaultCandleMins()` (`src/urlArgs.js`) |
 | `FilterYomTovOnly` | `makeHebrewCalendar()`'s `yto` filter |
-| `MoveCandleLightingToSunset` | `@hebcal/core` `sunsetOffset(0)` for `b=0` |
 | `title` | `getCalendarTitle` |
 | `item` | `@hebcal/rest-api` `eventToClassicApiObject` (key order) |
 | `holidayMemo` | `getHolidayDescription` |
@@ -1342,6 +1341,7 @@ of the Hebcal.com fleet's.
 | `gregdate.go` `String` / `ReIsoDate` | JS `Date.toISOString` / the route validation regex |
 | `event.go` `RenderEvent` | `converter.js` `renameChanukah()` |
 | `event.go` `HolidayEv.Render` Rosh Hashana number | classic API renders the year as a number in every locale |
+| `candlelighting.go` `MoveCandleLightingToSunset` | `@hebcal/core` `sunsetOffset(0)` for `b=0`; shared by `/shabbat` and the PDF calendars |
 
 ### `internal/service/location/` — `getLocationFromQuery` (`src/location.js`)
 

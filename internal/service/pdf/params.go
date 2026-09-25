@@ -94,9 +94,8 @@ type Params struct {
 	// AtSunset marks an explicit b=0: candle-lighting exactly at sunset.
 	// hebcal-go cannot express it (checkCandleOptions rewrites a zero
 	// CandleLightingMins to the 18/20-minute default before the calendar is
-	// built, same as the /shabbat service works around in
-	// shabbat.MoveCandleLightingToSunset), so Generate fixes the times up
-	// afterwards.
+	// built, same as model.MoveCandleLightingToSunset works around), so
+	// Generate fixes the times up afterwards.
 	AtSunset bool
 }
 
