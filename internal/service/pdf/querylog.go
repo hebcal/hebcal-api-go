@@ -56,8 +56,8 @@ func MessageToQuery(msg *downloadpb.Download) string {
 	} else {
 		q.set("lg", "s")
 	}
-	if b := msg.GetCandleLightingMins(); b != 0 {
-		q.set("b", strconv.Itoa(int(b)))
+	if msg.CandleLightingMins != nil {
+		q.set("b", strconv.Itoa(int(msg.GetCandleLightingMins())))
 	}
 	q.setIf("emoji", "1", msg.GetEmoji())
 	q.setIf("euro", "1", msg.GetEuro())

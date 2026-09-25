@@ -135,7 +135,7 @@ type Download struct {
 	Year                 int32                  `protobuf:"varint,12,opt,name=year,proto3" json:"year,omitempty"`
 	Locale               string                 `protobuf:"bytes,13,opt,name=locale,proto3" json:"locale,omitempty"`
 	HavdalahMins         int32                  `protobuf:"varint,14,opt,name=havdalahMins,proto3" json:"havdalahMins,omitempty"`
-	CandleLightingMins   int32                  `protobuf:"varint,15,opt,name=candleLightingMins,proto3" json:"candleLightingMins,omitempty"`
+	CandleLightingMins   *int32                 `protobuf:"varint,15,opt,name=candleLightingMins,proto3,oneof" json:"candleLightingMins,omitempty"`
 	Emoji                bool                   `protobuf:"varint,16,opt,name=emoji,proto3" json:"emoji,omitempty"`
 	Sedrot               bool                   `protobuf:"varint,17,opt,name=sedrot,proto3" json:"sedrot,omitempty"`
 	Zip                  string                 `protobuf:"bytes,18,opt,name=zip,proto3" json:"zip,omitempty"`
@@ -332,8 +332,8 @@ func (x *Download) GetHavdalahMins() int32 {
 }
 
 func (x *Download) GetCandleLightingMins() int32 {
-	if x != nil {
-		return x.CandleLightingMins
+	if x != nil && x.CandleLightingMins != nil {
+		return *x.CandleLightingMins
 	}
 	return 0
 }
@@ -807,7 +807,7 @@ var File_download_proto protoreflect.FileDescriptor
 
 const file_download_proto_rawDesc = "" +
 	"\n" +
-	"\x0edownload.proto\"\xe5\x11\n" +
+	"\x0edownload.proto\"\x81\x12\n" +
 	"\bDownload\x12\x14\n" +
 	"\x05major\x18\x01 \x01(\bR\x05major\x12\x14\n" +
 	"\x05minor\x18\x02 \x01(\bR\x05minor\x12 \n" +
@@ -823,8 +823,8 @@ const file_download_proto_rawDesc = "" +
 	"\tgeonameid\x18\v \x01(\x05R\tgeonameid\x12\x12\n" +
 	"\x04year\x18\f \x01(\x05R\x04year\x12\x16\n" +
 	"\x06locale\x18\r \x01(\tR\x06locale\x12\"\n" +
-	"\fhavdalahMins\x18\x0e \x01(\x05R\fhavdalahMins\x12.\n" +
-	"\x12candleLightingMins\x18\x0f \x01(\x05R\x12candleLightingMins\x12\x14\n" +
+	"\fhavdalahMins\x18\x0e \x01(\x05R\fhavdalahMins\x123\n" +
+	"\x12candleLightingMins\x18\x0f \x01(\x05H\x04R\x12candleLightingMins\x88\x01\x01\x12\x14\n" +
 	"\x05emoji\x18\x10 \x01(\bR\x05emoji\x12\x16\n" +
 	"\x06sedrot\x18\x11 \x01(\bR\x06sedrot\x12\x10\n" +
 	"\x03zip\x18\x12 \x01(\tR\x03zip\x12\x18\n" +
@@ -894,7 +894,8 @@ const file_download_proto_rawDesc = "" +
 	"\n" +
 	"long_oneofB\r\n" +
 	"\vstart_oneofB\v\n" +
-	"\tend_oneofJ\x04\b&\x10'B0Z.github.com/hebcal/hebcal-api-go/pkg/downloadpbb\x06proto3"
+	"\tend_oneofB\x15\n" +
+	"\x13_candleLightingMinsJ\x04\b&\x10'B0Z.github.com/hebcal/hebcal-api-go/pkg/downloadpbb\x06proto3"
 
 var (
 	file_download_proto_rawDescOnce sync.Once

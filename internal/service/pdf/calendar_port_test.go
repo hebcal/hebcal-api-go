@@ -7,6 +7,7 @@ import (
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/hebcal-go/zmanim"
+	"google.golang.org/protobuf/proto"
 
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 )
@@ -95,7 +96,7 @@ func TestIsraelLocationKeepsCustomOffset(t *testing.T) {
 		LatOneof:  &pb.Download_Latitude{Latitude: 31.78},
 		LongOneof: &pb.Download_Longitude{Longitude: 35.23},
 		Tzid:      "Asia/Jerusalem", CityName: "Jerusalem",
-		CandleLightingMins: 30,
+		CandleLightingMins: proto.Int32(30),
 	}
 	p, err := DecodeParams(encode(t, msg), nil)
 	if err != nil {

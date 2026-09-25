@@ -91,6 +91,13 @@ type Params struct {
 	// The /holidays/ calendars are rendered this way; the /v4/ downloads set the
 	// campaign from the document title instead.
 	PerEventCampaign bool
+	// AtSunset marks an explicit b=0: candle-lighting exactly at sunset.
+	// hebcal-go cannot express it (checkCandleOptions rewrites a zero
+	// CandleLightingMins to the 18/20-minute default before the calendar is
+	// built, same as the /shabbat service works around in
+	// shabbat.MoveCandleLightingToSunset), so Generate fixes the times up
+	// afterwards.
+	AtSunset bool
 }
 
 // hebrewLocales are the resolved locale names that render right-to-left.
@@ -253,6 +260,10 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 		}
 	}
 	applyDailyLearning(msg, o)
+	// Resolved after applyLocation (which may have run applyIsraelCandleMins):
+	// an explicit b=0 survives that override as a literal zero, which is
+	// otherwise indistinguishable from "unset" once it reaches hebcal-go.
+	p.AtSunset = o.CandleLighting && msg.CandleLightingMins != nil && o.CandleLightingMins == 0
 	return p, nil
 }
 
@@ -283,10 +294,14 @@ func locationDefaultCandleMins(loc *geodb.Location) int {
 
 // applyIsraelCandleMins applies the Israel candle-lighting rule: an Israeli
 // location uses its own default candle-lighting offset unless the request set a
-// non-default offset of its own. `given` is the requested offset (0 if unset),
-// `offset` the location's default.
-func applyIsraelCandleMins(o *hebcal.CalOptions, given, offset int) {
-	if given == 0 || (offset != defaultCandleMins && given == defaultCandleMins) {
+// non-default offset of its own. `hasGiven` reports whether the request
+// carried a candleLightingMins field at all -- the protobuf field is
+// `optional` precisely so this can be told apart from an explicit b=0 (light
+// candles exactly at sunset), which must not be overridden. `given` is the
+// requested offset, meaningful only when hasGiven is true; `offset` is the
+// location's default.
+func applyIsraelCandleMins(o *hebcal.CalOptions, hasGiven bool, given, offset int) {
+	if !hasGiven || (offset != defaultCandleMins && given == defaultCandleMins) {
 		o.CandleLightingMins = offset
 	}
 }
@@ -315,7 +330,7 @@ func setLocation(p *Params, loc *geodb.Location, msg *downloadpb.Download) error
 	p.Opts.CandleLighting = true
 	if loc.IsIsrael() {
 		p.Opts.IL = true
-		applyIsraelCandleMins(&p.Opts, int(msg.GetCandleLightingMins()), locationDefaultCandleMins(loc))
+		applyIsraelCandleMins(&p.Opts, msg.CandleLightingMins != nil, int(msg.GetCandleLightingMins()), locationDefaultCandleMins(loc))
 	}
 	return nil
 }
@@ -482,7 +497,7 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 			p.Opts.IL = true
 			// A lat/long location has no geonameid, so its Israel default is the
 			// 20-minute fallback.
-			applyIsraelCandleMins(&p.Opts, int(msg.GetCandleLightingMins()), 20)
+			applyIsraelCandleMins(&p.Opts, msg.CandleLightingMins != nil, int(msg.GetCandleLightingMins()), 20)
 		}
 		return nil
 	}

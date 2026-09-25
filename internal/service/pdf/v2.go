@@ -250,7 +250,7 @@ func DecodeV2(q v2Query) (*downloadpb.Download, error) {
 	if b, ok, err := q.getInt("b"); err != nil {
 		return nil, err
 	} else if ok {
-		msg.CandleLightingMins = b
+		msg.CandleLightingMins = &b
 	}
 
 	msg.Emoji = q.on("emoji")
