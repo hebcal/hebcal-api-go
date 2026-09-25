@@ -324,6 +324,56 @@ func TestMinorHolidaysKeptWhenRequested(t *testing.T) {
 	}
 }
 
+// A whole Hebrew-year calendar in Hebrew-month mode carries real events for
+// Tishrei of the following year too -- a head start for next year's printed
+// calendar -- rather than an empty trailing page. Mirrors hebcal-web's
+// makeHebrewCalendar.
+func TestGenerateIncludesNextYearTishrei(t *testing.T) {
+	p := &Params{
+		MonthMode: HebrewArabic,
+		Opts:      hebcal.CalOptions{Year: 5787, IsHebrewYear: true},
+	}
+	evs, err := Generate(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var sawNextRoshHashana bool
+	for _, e := range evs {
+		if e.HD.Year() != 5788 {
+			continue
+		}
+		if e.HD.Month() != hdate.Tishrei {
+			t.Errorf("event %q on %d %v %d: next year's calendar should carry only Tishrei",
+				e.Subject, e.HD.Day(), e.HD.Month(), e.HD.Year())
+		}
+		if strings.Contains(e.Subject, "Rosh Hashana") {
+			sawNextRoshHashana = true
+		}
+	}
+	if !sawNextRoshHashana {
+		t.Error("expected next year's Rosh Hashana among the events, got none")
+	}
+}
+
+// Gregorian-month mode does not paginate by Hebrew month, so it has no
+// trailing page to fill and must not carry next year's events either.
+func TestGenerateGregorianModeSkipsNextYearTishrei(t *testing.T) {
+	p := &Params{
+		MonthMode: GregorianArabic,
+		Opts:      hebcal.CalOptions{Year: 5787, IsHebrewYear: true},
+	}
+	evs, err := Generate(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, e := range evs {
+		if e.HD.Year() == 5788 {
+			t.Errorf("Gregorian-month mode should not carry next year's events, got %q on %v %d, %d",
+				e.Subject, e.HD.Month(), e.HD.Day(), e.HD.Year())
+		}
+	}
+}
+
 func TestYomTovOnlyKeepsOnlyChagim(t *testing.T) {
 	opts := hebcal.CalOptions{Year: 2026}
 	evs, _ := hebcal.HebrewCalendar(&opts)
