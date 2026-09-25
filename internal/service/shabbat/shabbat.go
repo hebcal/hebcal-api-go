@@ -237,7 +237,7 @@ func FilterYomTovOnly(events []event.CalEvent) []event.CalEvent {
 	for _, ev := range events {
 		flags := ev.GetFlags()
 		cat, _ := categoriesOf(ev, descOf(ev), flags)
-		if cat == "holiday" && flags&event.CHAG != 0 {
+		if cat == "holiday" && flags.Has(event.CHAG) {
 			out = append(out, ev)
 		}
 	}
@@ -300,7 +300,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 
 	// title (+ ": time" for candles/havdalah only); date
 	title := renderBriefLike(ev, locale)
-	if flags&event.MOLAD != 0 {
+	if flags.Has(event.MOLAD) {
 		// the announcement and the Shabbat Mevarchim memo are the same string
 		title = mevarchimMoladMemo(hd, locale, loc.CC, il, hour12)
 	}
@@ -322,7 +322,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 	if subcat != "" {
 		item = append(item, jsutil.KV{Key: "subcat", Val: subcat})
 	}
-	if cat == "holiday" && flags&event.CHAG != 0 {
+	if cat == "holiday" && flags.Has(event.CHAG) {
 		item = append(item, jsutil.KV{Key: "yomtov", Val: true})
 	}
 	if title != desc {
@@ -330,7 +330,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 	}
 
 	// a molad announcement carries no `hebrew` field
-	if flags&event.MOLAD == 0 {
+	if !flags.Has(event.MOLAD) {
 		if hebrew := renderBriefLike(ev, "he-x-NoNikud"); hebrew != "" {
 			item = append(item, jsutil.KV{Key: "hebrew", Val: hebrew})
 		}
@@ -360,7 +360,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 		}
 	}
 
-	if flags&event.MOLAD != 0 {
+	if flags.Has(event.MOLAD) {
 		item = append(item, jsutil.KV{Key: "molad", Val: moladObj(hd)})
 	}
 
@@ -372,7 +372,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 	//   ev.memo (molad for Shabbat Mevarchim) || holiday description
 	//   || (for timed events) the linked event's rendering
 	memo := ""
-	if flags&event.SHABBAT_MEVARCHIM != 0 {
+	if flags.Has(event.SHABBAT_MEVARCHIM) {
 		memo = mevarchimMoladMemo(hd, locale, loc.CC, il, hour12)
 	}
 	if memo == "" {
@@ -538,7 +538,7 @@ func descOf(ev event.CalEvent) string {
 	// hebcal-go's molad event has no description of its own: Render() returns
 	// the whole announcement sentence and the month and year it was built
 	// from are unexported, so rebuild "Molad <month> <year>".
-	if ev.GetFlags()&event.MOLAD != 0 {
+	if ev.GetFlags().Has(event.MOLAD) {
 		return moladDesc(ev.GetDate())
 	}
 	switch e := ev.(type) {
@@ -565,7 +565,7 @@ func renderBriefLike(ev event.CalEvent, locale string) string {
 		return model.Gettext("Rosh Hashana", locale) + " " + strconv.Itoa(he.Date.Year())
 	}
 	r := ev.Render(locale)
-	if ev.GetFlags()&event.SHABBAT_MEVARCHIM != 0 {
+	if ev.GetFlags().Has(event.SHABBAT_MEVARCHIM) {
 		r = stripMevarchimPrefix(r)
 	}
 	return jsutil.SmartApostrophe(normMonth(r))
@@ -657,7 +657,7 @@ func linkedHoliday(timed hebcal.TimedEvent) (event.HolidayEvent, bool) {
 // trailing Roman numeral, which would turn "Rosh Chodesh Adar I" into "Rosh
 // Chodesh Adar" — a different month in a leap year, with a memo of its own.
 func eventBasename(ev event.CalEvent) string {
-	if ev.GetFlags()&event.ROSH_CHODESH != 0 {
+	if ev.GetFlags().Has(event.ROSH_CHODESH) {
 		return descOf(ev)
 	}
 	return normMonth(ev.Basename())
@@ -666,11 +666,11 @@ func eventBasename(ev event.CalEvent) string {
 // itemLink builds the shortened, tracked hebcal.com URL for an event.
 func itemLink(ev event.CalEvent, hd hdate.HDate, il bool) string {
 	flags := ev.GetFlags()
-	if flags&event.SHABBAT_MEVARCHIM != 0 {
+	if flags.Has(event.SHABBAT_MEVARCHIM) {
 		return "" // Shabbat Mevarchim events have no URL
 	}
 	switch {
-	case flags&event.PARSHA_HASHAVUA != 0:
+	case flags.Has(event.PARSHA_HASHAVUA):
 		return sedrotShortURL(hd, il)
 	default:
 		if he, ok := ev.(event.HolidayEvent); ok {
@@ -791,7 +791,7 @@ func baseCategory(flags event.HolidayFlags) (string, string, bool) {
 		{event.USER_EVENT, "user", ""},
 	}
 	for _, e := range table {
-		if flags&e.flag != 0 {
+		if flags.Has(e.flag) {
 			return e.cat, e.sub, true
 		}
 	}

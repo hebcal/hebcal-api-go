@@ -52,11 +52,11 @@ func hasHolidayReading(hd hdate.HDate, il bool) bool {
 		if hev.Desc == "Chanukah: 1 Candle" {
 			continue // candle-lighting the previous evening; no Torah reading
 		}
-		if hev.Flags&event.YOM_KIPPUR_KATAN != 0 ||
+		if hev.Flags.Has(event.YOM_KIPPUR_KATAN) ||
 			hev.Desc == "Ta'anit BeHaB" || hev.Desc == "Ta'anit Bechorot" {
 			continue // fast-day flag but no special Torah reading in leyning
 		}
-		if hev.Flags&readingFlags != 0 {
+		if hev.Flags.HasAny(readingFlags) {
 			return true
 		}
 		if hev.Desc == "Purim" || hev.Desc == "Shushan Purim" {
