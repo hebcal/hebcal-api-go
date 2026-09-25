@@ -100,7 +100,7 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if candleOpts.AtSunset {
-		shabbat.MoveCandleLightingToSunset(events, &opts)
+		model.MoveCandleLightingToSunset(events, &opts)
 	}
 	if len(events) == 0 {
 		httpx.WriteJSONError(w, model.BadRequest("Bad request: no events"))
