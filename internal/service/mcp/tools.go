@@ -202,7 +202,7 @@ func (t *tools) torahPortion(ctx context.Context, _ *mcpsdk.CallToolRequest, in 
 			out = append(out, "Reading: "+reading.Summary)
 		}
 		for _, h := range hebcal.GetHolidaysOnDate(shabbat, il) {
-			if h.GetFlags()&event.SPECIAL_SHABBAT != 0 {
+			if h.GetFlags().Has(event.SPECIAL_SHABBAT) {
 				out = append(out, "Special Shabbat: "+renderEn(h))
 				break
 			}

@@ -69,17 +69,17 @@ func rgb(hex string) color.Color {
 // an event can carry several flags and the first match wins.
 func eventColor(f event.HolidayFlags) color.Color {
 	switch {
-	case f&(learningFlags|event.OMER_COUNT|event.HEBREW_DATE) != 0:
+	case f.HasAny(learningFlags | event.OMER_COUNT | event.HEBREW_DATE):
 		return colorLearning
-	case f&event.ROSH_CHODESH != 0:
+	case f.Has(event.ROSH_CHODESH):
 		return colorRoshChod
-	case f&event.MINOR_FAST != 0:
+	case f.Has(event.MINOR_FAST):
 		return colorMinorFst
-	case f&event.PARSHA_HASHAVUA != 0:
+	case f.Has(event.PARSHA_HASHAVUA):
 		return colorParsha
-	case f&(event.SPECIAL_SHABBAT|event.MODERN_HOLIDAY|event.MINOR_HOLIDAY) != 0:
+	case f.HasAny(event.SPECIAL_SHABBAT | event.MODERN_HOLIDAY | event.MINOR_HOLIDAY):
 		return colorMinorHol
-	case f&(event.CHAG|event.EREV|event.CHOL_HAMOED|event.MAJOR_FAST) != 0:
+	case f.HasAny(event.CHAG | event.EREV | event.CHOL_HAMOED | event.MAJOR_FAST):
 		return colorChag
 	}
 	return colorBlack
@@ -365,7 +365,7 @@ func (r *Renderer) renderEventColored(page *document.Page, inst *Instances, p *P
 	if override != nil {
 		col = override
 	}
-	isChag := ev.Flags&event.CHAG != 0 && !ev.Timed()
+	isChag := ev.Flags.Has(event.CHAG) && !ev.Timed()
 
 	var timedWidth float64
 	if ev.Timed() {

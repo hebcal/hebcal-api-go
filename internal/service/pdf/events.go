@@ -94,7 +94,7 @@ func Generate(p *Params) ([]Event, error) {
 			Flags:    flags,
 			TimeStr:  timeStr,
 			URL:      event.URL(ev),
-			AltDate:  flags&event.HEBREW_DATE != 0,
+			AltDate:  flags.Has(event.HEBREW_DATE),
 			FastEnds: isFastEnds(ev),
 		}
 		// The Hebrew name drawn after the transliteration (lg=ah / lg=sh). It
@@ -210,7 +210,7 @@ func keepEvent(ev event.CalEvent, flags event.HolidayFlags, p *Params) bool {
 	switch {
 	case p.YomTovOnly:
 		cats := eventCategories(ev)
-		return len(cats) > 0 && cats[0] == "holiday" && flags&event.CHAG != 0
+		return len(cats) > 0 && cats[0] == "holiday" && flags.Has(event.CHAG)
 	case p.NoMinorHolidays:
 		cats := eventCategories(ev)
 		return len(cats) < 2 || cats[1] != "minor"
@@ -292,14 +292,14 @@ const learningFlags = event.DAF_YOMI | event.MISHNA_YOMI |
 func renderSubject(ev event.CalEvent, flags event.HolidayFlags, locale string) string {
 	full := ev.Render(locale)
 	switch {
-	case flags&event.SHABBAT_MEVARCHIM != 0:
+	case flags.Has(event.SHABBAT_MEVARCHIM):
 		// "Shabbat Mevarchim Chodesh Sh'vat" -> "Mevarchim Chodesh Sh'vat".
 		// Drop everything up to the first space, in whatever language, rather
 		// than matching on the English word.
 		if i := strings.Index(full, " "); i >= 0 {
 			return full[i+1:]
 		}
-	case flags&learningFlags != 0:
+	case flags.HasAny(learningFlags):
 		// The daily-learning series render as "Daf Yomi: Berakhot 2"; the cell
 		// shows only the reading.
 		if i := strings.Index(full, ": "); i >= 0 {
@@ -352,7 +352,7 @@ func isFastEnds(ev event.CalEvent) bool {
 func eventOrder(ev *Event) int {
 	timed := ev.Timed()
 	f := ev.Flags
-	isFast := f&(event.MINOR_FAST|event.MAJOR_FAST) != 0
+	isFast := f.HasAny(event.MINOR_FAST | event.MAJOR_FAST)
 	switch {
 	case ev.Learning:
 		return 6 // alongside the daily-learning series generated locally
@@ -364,18 +364,18 @@ func eventOrder(ev *Event) int {
 		return 2 // "Fast ends" -- after the fast day, before parsha/candles
 	case timed && f == 0:
 		return 3 // the Erev Pesach chametz deadlines carry no flags
-	case f&event.PARSHA_HASHAVUA != 0:
+	case f.Has(event.PARSHA_HASHAVUA):
 		return 5
 	// DAILY_LEARNING is the generic flag; only four schedules have one of their
 	// own. Testing just those four left the other nine -- Psalms, both Rambam
 	// cycles, Daf-a-Week, Perek Yomi, Tanakh Yomi, 929 and Pirkei Avot -- to
 	// fall through to the holiday slot below, where they sorted *above* Daf
 	// Yomi and Mishna Yomi instead of beside them.
-	case f&learningFlags != 0:
+	case f.HasAny(learningFlags):
 		return 6
-	case f&event.OMER_COUNT != 0:
+	case f.Has(event.OMER_COUNT):
 		return 6
-	case f&(event.MOLAD|event.SHABBAT_MEVARCHIM) != 0:
+	case f.HasAny(event.MOLAD | event.SHABBAT_MEVARCHIM):
 		return 6
 	case timed:
 		return 7 // candle lighting, Havdalah

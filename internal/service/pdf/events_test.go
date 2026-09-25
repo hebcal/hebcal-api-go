@@ -104,10 +104,10 @@ func TestSortDayHolidaysBeforeParsha(t *testing.T) {
 	}
 	parsha, hol := -1, -1
 	for i, e := range evs {
-		if e.Flags&event.PARSHA_HASHAVUA != 0 {
+		if e.Flags.Has(event.PARSHA_HASHAVUA) {
 			parsha = i
 		}
-		if e.Flags&(event.MINOR_HOLIDAY|event.SPECIAL_SHABBAT) != 0 && hol < i {
+		if e.Flags.HasAny(event.MINOR_HOLIDAY|event.SPECIAL_SHABBAT) && hol < i {
 			hol = i
 		}
 	}
@@ -330,7 +330,7 @@ func TestYomTovOnlyKeepsOnlyChagim(t *testing.T) {
 	p := &Params{YomTovOnly: true}
 	for _, ev := range evs {
 		keep := keepEvent(ev, ev.GetFlags(), p)
-		if keep && ev.GetFlags()&event.CHAG == 0 {
+		if keep && !ev.GetFlags().Has(event.CHAG) {
 			t.Errorf("%q is not a chag but survived yomTovOnly", untranslatedDesc(ev))
 		}
 	}

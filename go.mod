@@ -10,7 +10,7 @@ require (
 	github.com/hebcal/gematriya v1.1.0
 	github.com/hebcal/greg v1.1.0
 	github.com/hebcal/hdate v1.4.0
-	github.com/hebcal/hebcal-go v0.19.1
+	github.com/hebcal/hebcal-go v0.20.0
 	github.com/hebcal/learning v0.5.0
 	github.com/hebcal/locales v1.1.1
 	github.com/mattn/go-sqlite3 v1.14.50
@@ -21,6 +21,7 @@ require (
 	golang.org/x/text v0.41.0
 	google.golang.org/protobuf v1.36.12
 	seehuhn.de/go/pdf v0.7.4
+	seehuhn.de/go/postscript v0.7.4
 	seehuhn.de/go/sfnt v0.7.4
 )
 
@@ -44,6 +45,5 @@ require (
 	seehuhn.de/go/geom v0.7.4 // indirect
 	seehuhn.de/go/icc v0.7.4 // indirect
 	seehuhn.de/go/membudget v0.7.4 // indirect
-	seehuhn.de/go/postscript v0.7.4 // indirect
 	seehuhn.de/go/xmp v0.7.4 // indirect
 )
