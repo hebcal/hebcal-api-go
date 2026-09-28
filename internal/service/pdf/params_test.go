@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hebcal/hebcal-go/event"
 	"google.golang.org/protobuf/proto"
 
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
@@ -98,7 +99,8 @@ func TestSuppressionFlagsAreInverted(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if p.Opts.NoHolidays || p.Opts.NoRoshChodesh || p.Opts.NoModern ||
+	if !p.Opts.Mask.Has(majorHolidayMask|event.ROSH_CHODESH|event.MINOR_FAST) ||
+		p.Opts.NoRoshChodesh || p.Opts.NoModern ||
 		p.Opts.NoMinorFast || p.Opts.NoSpecialShabbat || p.NoMinorHolidays {
 		t.Errorf("everything requested, but something is suppressed: %+v", p.Opts)
 	}
@@ -108,7 +110,7 @@ func TestSuppressionFlagsAreInverted(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !p.Opts.NoHolidays || !p.Opts.NoRoshChodesh || !p.NoMinorHolidays {
+	if p.Opts.Mask != event.USER_EVENT || !p.Opts.NoRoshChodesh || !p.NoMinorHolidays {
 		t.Errorf("nothing requested, but something is not suppressed: %+v", p.Opts)
 	}
 }

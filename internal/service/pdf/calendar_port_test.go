@@ -2,6 +2,7 @@ package pdf
 
 import (
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/hebcal/hdate"
@@ -319,4 +320,56 @@ func TestDiasporaLocationDefaults(t *testing.T) {
 		t.Errorf("CandleLightingMins = %d, want 0 (default 18)", p.Opts.CandleLightingMins)
 	}
 	var _ hebcal.CalOptions = p.Opts
+}
+
+// Rosh Chodesh, the special Shabbatot and the minor holidays are drawn without
+// the major holidays. Selecting them by suppressing "holidays" as a whole
+// emptied such a calendar, which then answered 400 "Please select at least one
+// event option" (/v4/GAEwAUABYMwRagFz8AEF/hebcal_2252_5.pdf).
+func TestHolidaySubsetWithoutMajor(t *testing.T) {
+	descs := func(msg *pb.Download) map[string]bool {
+		t.Helper()
+		p, err := ParamsFromMessage(msg, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		evs, err := Generate(p)
+		if err != nil {
+			t.Fatal(err)
+		}
+		got := map[string]bool{}
+		for _, ev := range evs {
+			got[ev.Subject] = true
+		}
+		return got
+	}
+
+	got := descs(&pb.Download{Year: 2252, Month: 5, RoshChodesh: true, SpecialShabbat: true})
+	if !got["Rosh Chodesh Iyyar"] || len(got) != 1 {
+		t.Errorf("RC + special Shabbat, May 2252: got %v, want only Rosh Chodesh Iyyar", got)
+	}
+
+	got = descs(&pb.Download{Year: 2026, Month: 3, Minor: true})
+	if !got["Purim"] || got["Pesach I"] {
+		t.Errorf("minor holidays only, March 2026: got %v, want Purim and no Pesach", got)
+	}
+
+	// Nothing checked but candle-lighting: no holiday rows and no yom tov
+	// candle times, since those ride on the holiday's own flags. The fast and
+	// chametz times are tied to candle-lighting rather than to the mask.
+	got = descs(&pb.Download{
+		Year: 2026, Month: 4, Candlelighting: true, GeoPos: true,
+		LatOneof:  &pb.Download_Latitude{Latitude: 40.71},
+		LongOneof: &pb.Download_Longitude{Longitude: -74.01},
+		Tzid:      "America/New_York",
+	})
+	for s := range got {
+		switch s {
+		case "Candle lighting", "Havdalah", "Finish eating chametz", "Biur Chametz":
+			continue
+		}
+		if !strings.HasPrefix(s, "Fast") {
+			t.Errorf("candle-lighting only, April 2026: unexpected %q", s)
+		}
+	}
 }

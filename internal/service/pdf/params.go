@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/hebcal/hdate"
+	"github.com/hebcal/hebcal-go/event"
 	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/hebcal-go/zmanim"
 
@@ -190,7 +191,6 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 	o := &p.Opts
 	// The protobuf carries positive "include this" booleans; CalOptions uses
 	// negative "suppress this" flags. Invert as we copy.
-	o.NoHolidays = !msg.GetMajor()
 	o.NoRoshChodesh = !msg.GetRoshChodesh()
 	o.NoModern = !msg.GetModern()
 	o.NoMinorFast = !msg.GetMinorFast()
@@ -212,6 +212,7 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 	if msg.GetRoshChodesh() && msg.GetSpecialShabbat() && msg.GetSedrot() {
 		o.ShabbatMevarchim = true
 	}
+	o.Mask = holidayMask(msg, o.ShabbatMevarchim)
 	// In Gregorian-month mode the alternate date is the Hebrew date, so hebcal-go
 	// generates it. In Hebrew-month mode (mm=1/mm=2) the alternate date is the
 	// Gregorian date, which hebcal-go does not generate; Generate() synthesizes
@@ -332,6 +333,51 @@ func setLocation(p *Params, loc *geodb.Location, msg *downloadpb.Download) error
 		applyIsraelCandleMins(&p.Opts, msg.CandleLightingMins != nil, int(msg.GetCandleLightingMins()), locationDefaultCandleMins(loc))
 	}
 	return nil
+}
+
+// majorHolidayMask is what "major holidays" selects. It includes
+// MINOR_HOLIDAY, so Purim and Chanukah come with it and NoMinorHolidays then
+// drops the rest of the minor holidays by category.
+const majorHolidayMask = event.YOM_TOV_ENDS | event.MAJOR_FAST |
+	event.LIGHT_CANDLES | event.LIGHT_CANDLES_TZEIS |
+	event.MINOR_HOLIDAY | event.EREV | event.CHOL_HAMOED |
+	event.CHANUKAH_CANDLES
+
+// holidayMask selects the holiday-table events a calendar draws, one bit
+// group per checkbox. The calendar is always built from an explicit mask
+// rather than from NoHolidays: NoHolidays also removes Rosh Chodesh, the
+// special Shabbatot and the minor holidays, so a calendar asking for those
+// without the major holidays would come out empty.
+//
+// A mask of zero means "unset" to hebcal-go, which would then draw every
+// holiday. Nothing checked means nothing drawn -- not even the yom tov
+// candle-lighting times, which ride on the holiday's own flags -- so that
+// case gets USER_EVENT, a bit no holiday carries.
+func holidayMask(msg *downloadpb.Download, mevarchim bool) event.HolidayFlags {
+	var m event.HolidayFlags
+	for _, b := range []struct {
+		on   bool
+		bits event.HolidayFlags
+	}{
+		{msg.GetMajor(), majorHolidayMask},
+		{msg.GetRoshChodesh(), event.ROSH_CHODESH},
+		{msg.GetModern(), event.MODERN_HOLIDAY},
+		{msg.GetMinorFast(), event.MINOR_FAST},
+		{msg.GetSpecialShabbat(), event.SPECIAL_SHABBAT},
+		{msg.GetOmer(), event.OMER_COUNT},
+		{msg.GetSedrot(), event.PARSHA_HASHAVUA},
+		{msg.GetYomKippurKatan(), event.YOM_KIPPUR_KATAN},
+		{msg.GetMinor(), event.MINOR_HOLIDAY},
+		{mevarchim, event.SHABBAT_MEVARCHIM},
+	} {
+		if b.on {
+			m |= b.bits
+		}
+	}
+	if m == 0 {
+		return event.USER_EVENT
+	}
+	return m
 }
 
 // applyDateRange resolves the year/month/start/end fields. The protobuf can

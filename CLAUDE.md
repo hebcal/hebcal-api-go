@@ -1084,6 +1084,7 @@ more code is ported.
 | `NotFoundError` / 404 | `getLocationFromQuery` |
 | `applyLocation` | `getLocationFromQuery` + `@hebcal/geo-sqlite` |
 | legacy `cityName` branch | `downloadHref2` sets `cityName` only alongside `geoPos` |
+| `holidayMask`, `majorHolidayMask` | `optsToMask` / `getMaskFromQuery()` in `src/calendar.js`; hebcal-web never sets `noHolidays` (`maj=off` becomes `noMajor`, which `@hebcal/core` ignores), so `NoHolidays` must not be derived from `major` |
 | `learningSchedules`, `dw`→`dafWeeklySunday` | `dailyLearningConfig.json` |
 | `unsupportedSeries` | the seven series with no `github.com/hebcal/learning` schedule |
 
