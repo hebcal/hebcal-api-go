@@ -744,6 +744,12 @@ event, which is what closed the daily-learning link gap (see "Where things
 stand"). The empty URLs it returns for Schottenstein Yerushalmi and multi-reading
 Rambam 3-chapter days are deliberate and match @hebcal/core, not omissions.
 
+hebcal-go v0.22.0 adds `CalOptions.CandleLightingAtSunset` for `b=0`. A zero
+`CandleLightingMins` means "use the default" there, so candle-lighting at
+sunset used to be recomputed after generation here (`MoveCandleLightingToSunset`),
+which also moved the second-night Yom Tov candles -- tzeit in @hebcal/core --
+to sunset, and missed Chanukah's Friday lighting. Both are right now.
+
 hebcal-go v0.21.0 adds the fast start/end options and @hebcal/core's newer
 fast defaults; see "Fast start and end times" above.
 
@@ -1377,7 +1383,6 @@ of the Hebcal.com fleet's.
 | `event.go` `RenderEvent` | `converter.js` `renameChanukah()` |
 | `event.go` `HolidayEv.Render` Rosh Hashana number | classic API renders the year as a number in every locale |
 | `fasttimes.go` `SetFastTimes`, `FastTimeParams` | `getFastTimeOpts()` / `fastTimeOpts` (`src/urlArgs.js`) |
-| `candlelighting.go` `MoveCandleLightingToSunset` | `@hebcal/core` `sunsetOffset(0)` for `b=0`; shared by `/shabbat` and the PDF calendars |
 
 ### `internal/service/location/` — `getLocationFromQuery` (`src/location.js`)
 

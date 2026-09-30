@@ -93,12 +93,6 @@ type Params struct {
 	// The /holidays/ calendars are rendered this way; the /v4/ downloads set the
 	// campaign from the document title instead.
 	PerEventCampaign bool
-	// AtSunset marks an explicit b=0: candle-lighting exactly at sunset.
-	// hebcal-go cannot express it (checkCandleOptions rewrites a zero
-	// CandleLightingMins to the 18/20-minute default before the calendar is
-	// built, same as model.MoveCandleLightingToSunset works around), so
-	// Generate fixes the times up afterwards.
-	AtSunset bool
 }
 
 // hebrewLocales are the resolved locale names that render right-to-left.
@@ -263,9 +257,9 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 	}
 	applyDailyLearning(msg, o)
 	// Resolved after applyLocation (which may have run applyIsraelCandleMins):
-	// an explicit b=0 survives that override as a literal zero, which is
-	// otherwise indistinguishable from "unset" once it reaches hebcal-go.
-	p.AtSunset = o.CandleLighting && msg.CandleLightingMins != nil && o.CandleLightingMins == 0
+	// an explicit b=0 survives that override as a literal zero, which
+	// CandleLightingMins alone would read as "unset, use the default".
+	o.CandleLightingAtSunset = o.CandleLighting && msg.CandleLightingMins != nil && o.CandleLightingMins == 0
 	return p, nil
 }
 

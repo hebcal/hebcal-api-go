@@ -587,7 +587,7 @@ func leftFooterText(p *Params) string {
 	if p.Opts.UseElevation && loc.Elevation > 0 {
 		str += fmt.Sprintf(" (elevation: %d m)", loc.Elevation)
 	}
-	if p.AtSunset {
+	if p.Opts.CandleLightingAtSunset {
 		return fmt.Sprintf("%s · Candle-lighting times at sunset", str)
 	}
 	mins := p.Opts.CandleLightingMins

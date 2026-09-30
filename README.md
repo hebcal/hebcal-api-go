@@ -378,10 +378,6 @@ local midnight; an explicit date or range is cached for 30 days with an
 - `/shabbat` with `yto=on` and no Yom Tov in the week returns `200` and an
   empty `items` array; hebcal-web applies the filter before its own
   "no events" check and answers `400`.
-- `/shabbat` with `b=0` recomputes the candle-lighting times after the
-  calendar is built: hebcal-go's `CheckCandleOptions` rewrites a zero
-  `CandleLightingMins` to the 18/20-minute default, so there is no way to
-  ask it for sunset itself. Drop the workaround if hebcal-go grows one.
 
 For the PDF calendars, where the bar is that a rendered calendar is
 indistinguishable from the one production serves for the same URL:

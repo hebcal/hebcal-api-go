@@ -106,14 +106,10 @@ func WeekRange(dt model.GregDate, isToday bool, tzid string) (model.GregDate, mo
 // CalOptions builds the hebcal.CalOptions for the Shabbat week from the
 // request: location, date range, candle-lighting and Havdalah, and the fast
 // start and end times.
-//
-// atSunset reports b=0, candle-lighting exactly at sunset. CalOptions cannot
-// express it (HebrewCalendar rewrites a zero CandleLightingMins to the
-// 18/20-minute default), so the caller fixes the times up afterwards.
 func CalOptions(loc *geodb.Location, il bool, start, end model.GregDate,
-	q url.Values) (opts hebcal.CalOptions, atSunset bool) {
+	q url.Values) hebcal.CalOptions {
 	zloc := loc.ZmanimLocation()
-	opts = hebcal.CalOptions{
+	opts := hebcal.CalOptions{
 		Location:         &zloc,
 		IL:               il,
 		CandleLighting:   true,
@@ -124,18 +120,19 @@ func CalOptions(loc *geodb.Location, il bool, start, end model.GregDate,
 		Start:            hdate.FromProlepticGregorian(start.Year, start.Month, start.Day),
 		End:              hdate.FromProlepticGregorian(end.Year, end.Month, end.Day),
 	}
-	atSunset = setCandleOptions(&opts, q, loc)
+	setCandleOptions(&opts, q, loc)
 	model.SetFastTimes(&opts, q.Get)
-	return opts, atSunset
+	return opts
 }
 
 // setCandleOptions resolves b, m, M and td into o's candle-lighting and
 // Havdalah fields, applying the request's precedence rules together with the
 // /shabbat default. HavdalahMins and HavdalahDeg come out mutually exclusive,
 // and m=0 -- no Havdalah at all -- sets SuppressHavdalah, since a zero
-// HavdalahMins means "use the default tzeit". It reports whether b=0 asked
-// for candle-lighting at sunset.
-func setCandleOptions(o *hebcal.CalOptions, q url.Values, loc *geodb.Location) (atSunset bool) {
+// HavdalahMins means "use the default tzeit"; likewise b=0 -- candle-lighting
+// at sunset itself -- sets CandleLightingAtSunset, since a zero
+// CandleLightingMins means "use the default offset".
+func setCandleOptions(o *hebcal.CalOptions, q url.Values, loc *geodb.Location) {
 	mStr, tdStr := q.Get("m"), q.Get("td")
 	mIsOn := mStr == "on" // the lowercase spelling of M=on
 	if mIsOn {
@@ -189,11 +186,7 @@ func setCandleOptions(o *hebcal.CalOptions, q url.Values, loc *geodb.Location) (
 			o.CandleLightingMins = b
 		}
 	}
-	if o.CandleLightingMins == 0 {
-		atSunset = true
-		o.CandleLightingMins = DefaultCandleMins // placeholder; times are fixed up later
-	}
-	return atSunset
+	o.CandleLightingAtSunset = o.CandleLightingMins == 0
 }
 
 // DefaultCandleMins is the customary number of minutes before sunset outside

@@ -303,3 +303,20 @@ func TestShabbatFastTimes(t *testing.T) {
 		})
 	}
 }
+
+// TestShabbatCandleLightingAtSunset covers b=0 across Pesach: the first night
+// and Shabbat light at sunset, the second night at tzeit, as @hebcal/core
+// computes with candleLightingMins: 0.
+func TestShabbatCandleLightingAtSunset(t *testing.T) {
+	srv := testServerWithDB(t)
+	var got []string
+	for _, item := range getItems(t, srv, "/shabbat?cfg=json&geonameid=5128581&dt=2026-04-01&leyning=off&b=0") {
+		if item.Category == "candles" || item.Category == "havdalah" {
+			got = append(got, item.Date[:16])
+		}
+	}
+	want := "2026-04-01T19:20|2026-04-02T20:03|2026-04-03T19:22|2026-04-04T20:05"
+	if strings.Join(got, "|") != want {
+		t.Errorf("got  %s\nwant %s", strings.Join(got, "|"), want)
+	}
+}

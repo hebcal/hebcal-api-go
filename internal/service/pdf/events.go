@@ -64,9 +64,6 @@ func Generate(p *Params) ([]Event, error) {
 	if err != nil {
 		return nil, fmt.Errorf("hebcal: %w", err)
 	}
-	if p.AtSunset {
-		model.MoveCandleLightingToSunset(events, &opts)
-	}
 	out := make([]Event, 0, len(events))
 	for _, ev := range events {
 		flags := ev.GetFlags()

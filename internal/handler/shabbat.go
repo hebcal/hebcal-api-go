@@ -92,14 +92,11 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	locale := strings.ToLower(model.AliasLocale(lg))
-	opts, atSunset := shabbat.CalOptions(loc, il, start, end, q)
+	opts := shabbat.CalOptions(loc, il, start, end, q)
 	events, err := hebcal.HebrewCalendar(&opts)
 	if err != nil {
 		httpx.WriteJSONError(w, model.BadRequest("%s", err.Error()))
 		return
-	}
-	if atSunset {
-		model.MoveCandleLightingToSunset(events, &opts)
 	}
 	if len(events) == 0 {
 		httpx.WriteJSONError(w, model.BadRequest("Bad request: no events"))
