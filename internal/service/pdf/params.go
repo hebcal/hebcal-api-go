@@ -240,7 +240,7 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 		o.SuppressHavdalah = o.HavdalahMins == 0
 	}
 	o.CandleLightingMins = int(msg.GetCandleLightingMins())
-	fastTimesFromMessage(msg).Apply(o)
+	setFastTimes(o, msg)
 
 	if err := applyDateRange(msg, p); err != nil {
 		return nil, err
@@ -294,15 +294,15 @@ func fastTimeFields(msg *downloadpb.Download) [][2]string {
 	return out
 }
 
-// fastTimesFromMessage reads the fast start/end fields through the same
-// validation as the query parameters, so a crafted token can ask for nothing
-// a query string could not.
-func fastTimesFromMessage(msg *downloadpb.Download) model.FastTimes {
+// setFastTimes copies the message's fast start/end fields into o through the
+// same validation as the query parameters, so a crafted token can ask for
+// nothing a query string could not.
+func setFastTimes(o *hebcal.CalOptions, msg *downloadpb.Download) {
 	fields := map[string]string{}
 	for _, kv := range fastTimeFields(msg) {
 		fields[kv[0]] = kv[1]
 	}
-	return model.ParseFastTimes(func(key string) string { return fields[key] })
+	model.SetFastTimes(o, func(key string) string { return fields[key] })
 }
 
 // defaultCandleMins is the default number of minutes before sunset that candles

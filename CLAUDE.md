@@ -474,10 +474,11 @@ Tish'a B'Av's default, not noaa-go. Checked against `@hebcal/core` 6.11 for New
 York and Jerusalem 2026 with each of the six options and with none: 154 of 154
 times identical.
 
-This side only parses. `model.ParseFastTimes` is `getFastTimeOpts()`: degrees
-in (0, 90), minutes 1..240, `Math.abs` on both, and degrees win over minutes
-within a pair, so hebcal-go's mutual-exclusion error cannot be reached from a
-URL. `FastTimes.Apply` copies the result into `CalOptions`. The `/v4/` token
+This side only parses, straight into `hebcal.CalOptions`: `model.SetFastTimes`
+is `getFastTimeOpts()` -- degrees in (0, 90), minutes 1..240, `Math.abs` on
+both, and degrees win over minutes within a pair, so hebcal-go's
+mutual-exclusion error cannot be reached from a URL. `/shabbat` calls it from
+`shabbat.CalOptions`, the PDF path from `setFastTimes`. The `/v4/` token
 goes through the same function after rendering each field back to its
 query-string form, which is `deserializeDownload`'s path: a `float` field is
 32-bit, and `toPrecision(6)` there (`'g', 6, 32` here) is what turns
@@ -1117,7 +1118,7 @@ more code is ported.
 | legacy `cityName` branch | `downloadHref2` sets `cityName` only alongside `geoPos` |
 | `holidayMask`, `majorHolidayMask` | `optsToMask` / `getMaskFromQuery()` in `src/calendar.js`; hebcal-web never sets `noHolidays` (`maj=off` becomes `noMajor`, which `@hebcal/core` ignores), so `NoHolidays` must not be derived from `major` |
 | `learningSchedules`, `dw`→`dafWeeklySunday` | `dailyLearningConfig.json` |
-| `fastTimeFields` / `fastTimesFromMessage` | `deserializeDownload.js`'s fast fields + `floatToString()` (`toPrecision(6)`), then `getFastTimeOpts()` |
+| `fastTimeFields` / `setFastTimes` | `deserializeDownload.js`'s fast fields + `floatToString()` (`toPrecision(6)`), then `getFastTimeOpts()` |
 | `unsupportedSeries` | the seven series with no `github.com/hebcal/learning` schedule |
 
 ### `internal/service/pdf/v2.go` — `downloadHref2()` (`src/makeDownloadProps.js`)
@@ -1279,7 +1280,7 @@ JS `new Date(dateStr)` + the location-offset fixup (`im=1` branch). `StartAndEnd
 | `QueryDate` | `getTodayDate()`; `date`/`start` are added here |
 | `QueryLang` | `makeHebcalOptions()`'s `a=on` → `lg=a` rewrite; `/shabbat`-only |
 | `WeekRange` | `shabbatWeekRange` + `getStartAndEnd` (`src/dateUtil.js`) |
-| `CandleOptions` | `makeHebcalOptions()` precedence + `shabbatApp()` default |
+| `CalOptions` / `setCandleOptions` | `makeHebcalOptions()` precedence + `shabbatApp()` default |
 | `locationDefaultCandleMins` | `locationDefaultCandleMins()` (`src/urlArgs.js`) |
 | `FilterYomTovOnly` | `makeHebrewCalendar()`'s `yto` filter |
 | `title` | `getCalendarTitle` |
@@ -1375,7 +1376,7 @@ of the Hebcal.com fleet's.
 | `gregdate.go` `String` / `ReIsoDate` | JS `Date.toISOString` / the route validation regex |
 | `event.go` `RenderEvent` | `converter.js` `renameChanukah()` |
 | `event.go` `HolidayEv.Render` Rosh Hashana number | classic API renders the year as a number in every locale |
-| `fasttimes.go` `ParseFastTimes`, `FastTimeParams` | `getFastTimeOpts()` / `fastTimeOpts` (`src/urlArgs.js`) |
+| `fasttimes.go` `SetFastTimes`, `FastTimeParams` | `getFastTimeOpts()` / `fastTimeOpts` (`src/urlArgs.js`) |
 | `candlelighting.go` `MoveCandleLightingToSunset` | `@hebcal/core` `sunsetOffset(0)` for `b=0`; shared by `/shabbat` and the PDF calendars |
 
 ### `internal/service/location/` — `getLocationFromQuery` (`src/location.js`)

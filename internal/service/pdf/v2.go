@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/hebcal/hebcal-go/hebcal"
+
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/service/location"
@@ -256,11 +258,12 @@ func DecodeV2(q v2Query) (*downloadpb.Download, error) {
 	} else if ok {
 		msg.CandleLightingMins = &b
 	}
-	fast := model.ParseFastTimes(func(key string) string { return q[key] })
-	msg.FastStartDeg = float32(fast.StartDeg)
-	msg.FastStartMins = uint32(fast.StartMins)
-	msg.FastEndDeg = float32(fast.EndDeg)
-	msg.FastEndMins = uint32(fast.EndMins)
+	var fast hebcal.CalOptions
+	model.SetFastTimes(&fast, func(key string) string { return q[key] })
+	msg.FastStartDeg = float32(fast.FastStartDeg)
+	msg.FastStartMins = uint32(fast.FastStartMins)
+	msg.FastEndDeg = float32(fast.FastEndDeg)
+	msg.FastEndMins = uint32(fast.FastEndMins)
 	msg.TishaBavEndDeg = float32(fast.TishaBavEndDeg)
 	msg.TishaBavEndMins = uint32(fast.TishaBavEndMins)
 

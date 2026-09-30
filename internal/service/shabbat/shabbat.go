@@ -103,11 +103,17 @@ func WeekRange(dt model.GregDate, isToday bool, tzid string) (model.GregDate, mo
 	return start, endD, nil
 }
 
-// CalOptions builds the hebcal.CalOptions for the Shabbat week.
-func CalOptions(loc *geodb.Location, il bool, start, end model.GregDate, q url.Values,
-	c Candles) hebcal.CalOptions {
+// CalOptions builds the hebcal.CalOptions for the Shabbat week from the
+// request: location, date range, candle-lighting and Havdalah, and the fast
+// start and end times.
+//
+// atSunset reports b=0, candle-lighting exactly at sunset. CalOptions cannot
+// express it (HebrewCalendar rewrites a zero CandleLightingMins to the
+// 18/20-minute default), so the caller fixes the times up afterwards.
+func CalOptions(loc *geodb.Location, il bool, start, end model.GregDate,
+	q url.Values) (opts hebcal.CalOptions, atSunset bool) {
 	zloc := loc.ZmanimLocation()
-	opts := hebcal.CalOptions{
+	opts = hebcal.CalOptions{
 		Location:         &zloc,
 		IL:               il,
 		CandleLighting:   true,
@@ -118,36 +124,18 @@ func CalOptions(loc *geodb.Location, il bool, start, end model.GregDate, q url.V
 		Start:            hdate.FromProlepticGregorian(start.Year, start.Month, start.Day),
 		End:              hdate.FromProlepticGregorian(end.Year, end.Month, end.Day),
 	}
-	opts.CandleLightingMins = c.CandleMins
-	opts.HavdalahMins = c.HavdalahMins
-	opts.HavdalahDeg = c.HavdalahDeg
-	opts.SuppressHavdalah = c.NoHavdalah
-	return opts
+	atSunset = setCandleOptions(&opts, q, loc)
+	model.SetFastTimes(&opts, q.Get)
+	return opts, atSunset
 }
 
-// Candles holds the resolved candle-lighting and havdalah settings.
-// HavdalahMins and HavdalahDeg are mutually exclusive; both zero means no
-// havdalah at all.
-type Candles struct {
-	CandleMins   int
-	HavdalahMins int
-	HavdalahDeg  float64
-	// NoHavdalah marks m=0, which asks for no havdalah at all. It becomes
-	// CalOptions.SuppressHavdalah: a zero HavdalahMins means "use the default
-	// tzeit" to hebcal-go, so the intent needs its own flag.
-	NoHavdalah bool
-	// AtSunset marks b=0, which asks for candle-lighting exactly at sunset.
-	// hebcal-go cannot express it (CheckCandleOptions rewrites a zero
-	// CandleLightingMins to the 18/20-minute default), so the caller fixes
-	// the times up afterwards.
-	AtSunset bool
-}
-
-// CandleOptions resolves b, m, M and td into candle-lighting and havdalah
-// settings, applying the request's precedence rules together with the
-// /shabbat default.
-func CandleOptions(q url.Values, loc *geodb.Location) Candles {
-	var c Candles
+// setCandleOptions resolves b, m, M and td into o's candle-lighting and
+// Havdalah fields, applying the request's precedence rules together with the
+// /shabbat default. HavdalahMins and HavdalahDeg come out mutually exclusive,
+// and m=0 -- no Havdalah at all -- sets SuppressHavdalah, since a zero
+// HavdalahMins means "use the default tzeit". It reports whether b=0 asked
+// for candle-lighting at sunset.
+func setCandleOptions(o *hebcal.CalOptions, q url.Values, loc *geodb.Location) (atSunset bool) {
 	mStr, tdStr := q.Get("m"), q.Get("td")
 	mIsOn := mStr == "on" // the lowercase spelling of M=on
 	if mIsOn {
@@ -168,44 +156,44 @@ func CandleOptions(q url.Values, loc *geodb.Location) Candles {
 	// unparsable td is ignored
 	if tdStr != "" {
 		if deg, err := jsutil.ParseFloat(tdStr); err == nil && deg != 0 {
-			c.HavdalahDeg = deg
+			o.HavdalahDeg = deg
 			havdalahTzeit = false
 			mStr = ""
 		}
 	}
 	if havdalahTzeit {
-		c.HavdalahDeg = 8.5 // 3 small stars
+		o.HavdalahDeg = 8.5 // 3 small stars
 		mStr = ""
 	}
 	if mStr != "" {
 		if m, ok := jsutil.ParseInt(mStr); ok {
 			if m == 0 {
 				// zero minutes means no havdalah at all
-				c.NoHavdalah = true
+				o.SuppressHavdalah = true
 			} else {
-				c.HavdalahMins = m
+				o.HavdalahMins = m
 			}
 		}
 	}
-	if c.HavdalahMins == 0 && c.HavdalahDeg == 0 {
+	if o.HavdalahMins == 0 && o.HavdalahDeg == 0 {
 		// nothing survived; fall back on tzeit, whose own default is
 		// 8.5 degrees
-		c.HavdalahDeg = 8.5
+		o.HavdalahDeg = 8.5
 	}
 
 	// candle-lighting minutes before sunset. In Israel an absent b -- or the
 	// b=18 that the web form submits by default -- yields the local custom.
-	c.CandleMins = locationDefaultCandleMins(loc)
+	o.CandleLightingMins = locationDefaultCandleMins(loc)
 	if b, ok := jsutil.ParseInt(q.Get("b")); ok {
-		if !(loc.IsIsrael() && b == DefaultCandleMins && c.CandleMins != DefaultCandleMins) {
-			c.CandleMins = b
+		if !(loc.IsIsrael() && b == DefaultCandleMins && o.CandleLightingMins != DefaultCandleMins) {
+			o.CandleLightingMins = b
 		}
 	}
-	if c.CandleMins == 0 {
-		c.AtSunset = true
-		c.CandleMins = DefaultCandleMins // placeholder; times are fixed up later
+	if o.CandleLightingMins == 0 {
+		atSunset = true
+		o.CandleLightingMins = DefaultCandleMins // placeholder; times are fixed up later
 	}
-	return c
+	return atSunset
 }
 
 // DefaultCandleMins is the customary number of minutes before sunset outside

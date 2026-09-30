@@ -1,11 +1,13 @@
 package pdf
 
 import (
+	"reflect"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/hebcal/hebcal-api-go/internal/model"
+	"github.com/hebcal/hebcal-go/hebcal"
+
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 )
 
@@ -20,9 +22,11 @@ func TestFastTimesFromHebcalWebToken(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := model.FastTimes{StartDeg: 19.8, EndMins: 45, TishaBavEndDeg: 8.5}
-	if got := fastTimesFromMessage(msg); got != want {
-		t.Errorf("fastTimesFromMessage = %+v, want %+v", got, want)
+	var got hebcal.CalOptions
+	setFastTimes(&got, msg)
+	want := hebcal.CalOptions{FastStartDeg: 19.8, FastEndMins: 45, TishaBavEndDeg: 8.5}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("setFastTimes = %+v, want %+v", got, want)
 	}
 	if qs := MessageToQuery(msg); !strings.Contains(qs, "&fsd=19.8&fem=45&tbed=8.5&") {
 		t.Errorf("MessageToQuery = %q, want the fast parameters", qs)
@@ -37,9 +41,11 @@ func TestFastTimesFromCraftedToken(t *testing.T) {
 		FastEndMins:    300, // over 240
 		TishaBavEndDeg: 95,  // over 90
 	}
-	want := model.FastTimes{StartDeg: 16.1}
-	if got := fastTimesFromMessage(msg); got != want {
-		t.Errorf("fastTimesFromMessage = %+v, want %+v", got, want)
+	var got hebcal.CalOptions
+	setFastTimes(&got, msg)
+	want := hebcal.CalOptions{FastStartDeg: 16.1}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("setFastTimes = %+v, want %+v", got, want)
 	}
 }
 
