@@ -99,10 +99,6 @@ type Params struct {
 	// built, same as model.MoveCandleLightingToSunset works around), so
 	// Generate fixes the times up afterwards.
 	AtSunset bool
-	// FastTimes moves the start and end of fast days away from their
-	// defaults. hebcal-go has no such options, so Generate retimes the fast
-	// events afterwards.
-	FastTimes model.FastTimes
 }
 
 // hebrewLocales are the resolved locale names that render right-to-left.
@@ -244,7 +240,7 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 		o.SuppressHavdalah = o.HavdalahMins == 0
 	}
 	o.CandleLightingMins = int(msg.GetCandleLightingMins())
-	p.FastTimes = fastTimesFromMessage(msg)
+	fastTimesFromMessage(msg).Apply(o)
 
 	if err := applyDateRange(msg, p); err != nil {
 		return nil, err

@@ -382,9 +382,6 @@ local midnight; an explicit date or range is cached for 30 days with an
   calendar is built: hebcal-go's `CheckCandleOptions` rewrites a zero
   `CandleLightingMins` to the 18/20-minute default, so there is no way to
   ask it for sunset itself. Drop the workaround if hebcal-go grows one.
-- `/shabbat` and the PDF calendars recompute every "Fast begins" and "Fast
-  ends" time the same way (`model.RetimeFasts`), since hebcal-go has
-  neither the `fsd`…`tbem` options nor @hebcal/core's defaults for them.
 
 For the PDF calendars, where the bar is that a rendered calendar is
 indistinguishable from the one production serves for the same URL:

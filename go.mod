@@ -10,7 +10,7 @@ require (
 	github.com/hebcal/gematriya v1.1.0
 	github.com/hebcal/greg v1.1.0
 	github.com/hebcal/hdate v1.4.0
-	github.com/hebcal/hebcal-go v0.20.0
+	github.com/hebcal/hebcal-go v0.20.1-0.20260930202522-3cc29668c33d
 	github.com/hebcal/learning v0.5.0
 	github.com/hebcal/locales v1.1.1
 	github.com/mattn/go-sqlite3 v1.14.50
