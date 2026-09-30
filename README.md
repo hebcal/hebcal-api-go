@@ -104,6 +104,15 @@ solar calculations are backed by [hebcal/noaa-go](https://github.com/hebcal/noaa
     sunset; `m=0` suppresses havdalah entirely. When more than one is
     given, `td` wins over `m`, `M=on` wins over both, and `M=off` picks
     `m` over `td`.
+  - `fsd=<deg>` / `fsm=<min>` start minor fasts at a solar depression
+    angle or a number of minutes before sunrise (default 16.1°);
+    `fed=<deg>` / `fem=<min>` end them at an angle or minutes after sunset
+    (default 7.083°, or 15 minutes after sunset in Israel); `tbed=<deg>` /
+    `tbem=<min>` do the same for the end of Tish'a B'Av (default 6.45°).
+    Degrees must be in (0, 90) and minutes in 1–240, a negative value is
+    taken as positive, anything else is ignored, and when both halves of a
+    pair are given the degrees win. The PDF calendars carry the same six
+    settings in their download token.
   - `ue=on` folds the location's elevation into sunrise and sunset.
   - `i=on` puts a Diaspora location on the Israel schedule (the
     candle-lighting custom still follows the location itself).
@@ -373,6 +382,9 @@ local midnight; an explicit date or range is cached for 30 days with an
   calendar is built: hebcal-go's `CheckCandleOptions` rewrites a zero
   `CandleLightingMins` to the 18/20-minute default, so there is no way to
   ask it for sunset itself. Drop the workaround if hebcal-go grows one.
+- `/shabbat` and the PDF calendars recompute every "Fast begins" and "Fast
+  ends" time the same way (`model.RetimeFasts`), since hebcal-go has
+  neither the `fsd`…`tbem` options nor @hebcal/core's defaults for them.
 
 For the PDF calendars, where the bar is that a rendered calendar is
 indistinguishable from the one production serves for the same URL:

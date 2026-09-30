@@ -456,6 +456,37 @@ and the calendar is a deterministic function of that URL. An upgrade of this
 service or the hebcal libraries changes every tag, since `config.LibraryVersions`
 is folded into the hash.
 
+### Fast start and end times are recomputed after generation
+
+hebcal-web accepts six parameters that move the start and end of fast days --
+`fsd`/`fsm` (minor fasts begin, degrees or minutes before sunrise),
+`fed`/`fem` (minor fasts end) and `tbed`/`tbem` (Tish'a B'Av ends) -- and the
+`/v4/` token carries them as `fastStartDeg` … `tishaBavEndMins` (fields
+70-75). `@hebcal/core` 6.10 added the options and **also changed two
+defaults** in the same function: Tish'a B'Av now ends at 6.45° (Tucazinsky)
+rather than 7.083°, and in Israel a minor fast ends 15 minutes after sunset
+(Rabbi Deblitzky's practice) rather than at 7.083°.
+
+hebcal-go v0.20.0 has neither the options nor the new defaults: it places
+every fast at Alot HaShachar and tzeit 7.083°. So `model.RetimeFasts` walks the
+generated events and recomputes each "Fast begins"/"Fast ends" time the way
+`makeFastStartTime`/`makeFastEndTime` do, for `/shabbat` and every PDF route
+alike, whether or not a parameter was given. That is what fixed the
+long-standing "one `Fast ends` four minutes late" on the 2028 calendar: it was
+Tish'a B'Av's default, not noaa-go. Checked against `@hebcal/core` 6.11 for New
+York and Jerusalem 2026 with each of the six options and with none: 154 of 154
+times identical. **Move this into hebcal-go** (`CalOptions` fields plus the
+defaults in `makeFastStartEnd`) and delete `RetimeFasts` when it lands.
+
+`model.ParseFastTimes` is `getFastTimeOpts()`: degrees in (0, 90), minutes
+1..240, `Math.abs` on both, and degrees win over minutes within a pair, so the
+@hebcal/core mutual-exclusion `TypeError` cannot be reached. The `/v4/` token
+goes through the same function after rendering each field back to its
+query-string form, which is `deserializeDownload`'s path: a `float` field is
+32-bit, and `toPrecision(6)` there (`'g', 6, 32` here) is what turns
+19.799999237060547 back into 19.8. `geo=none` drops all six on a legacy URL,
+as it drops `b`, `m` and `td`.
+
 ## Deliberate divergences, and things that are not bugs
 
 Do not "fix" these without checking production first.
@@ -468,9 +499,10 @@ Do not "fix" these without checking production first.
 - **Tamuz is spelled with one m.** `hdate` uses two; `@hebcal/core` and the
   website use one. All fourteen other month names already agree, so
   `hebMonthNameOverrides` is a single entry. The proper fix belongs in `hdate`.
-- **Chanukah candle times differ by about a minute**, and one `Fast ends` time
-  by four. Of 143 timed events in 2028, four differ. That is a zmanim question
-  for hebcal-go and noaa-go, not a rendering one.
+- **Chanukah candle times differ by about a minute.** Of 143 timed events in
+  2028, three differ. That is a zmanim question for hebcal-go and noaa-go, not
+  a rendering one. (A fourth, Tish'a B'Av's `Fast ends` four minutes late, was
+  the fast-time default below, and is fixed.)
 - **The `ft` ligature is absent from both documents' ToUnicode maps**, so
   `Shoftim` extracts oddly from either. A pdftotext artifact, not a regression.
 
@@ -1038,9 +1070,8 @@ Schottenstein produces at least one URL.
 
 Also open: `hdate` spells Tamuz with two m's (worked around in `render.go` for
 month titles and `events.go` for event subjects, via `fixMonthSpelling`), and
-four of 143 timed events in 2028 differ from production by a minute or
-more, one `Fast ends` by four minutes -- a zmanim question for hebcal-go and
-noaa-go.
+three of 143 timed events in 2028 differ from production by a minute -- a
+zmanim question for hebcal-go and noaa-go.
 
 ## Testing
 
@@ -1086,6 +1117,7 @@ more code is ported.
 | legacy `cityName` branch | `downloadHref2` sets `cityName` only alongside `geoPos` |
 | `holidayMask`, `majorHolidayMask` | `optsToMask` / `getMaskFromQuery()` in `src/calendar.js`; hebcal-web never sets `noHolidays` (`maj=off` becomes `noMajor`, which `@hebcal/core` ignores), so `NoHolidays` must not be derived from `major` |
 | `learningSchedules`, `dw`→`dafWeeklySunday` | `dailyLearningConfig.json` |
+| `fastTimeFields` / `fastTimesFromMessage` | `deserializeDownload.js`'s fast fields + `floatToString()` (`toPrecision(6)`), then `getFastTimeOpts()` |
 | `unsupportedSeries` | the seven series with no `github.com/hebcal/learning` schedule |
 
 ### `internal/service/pdf/v2.go` — `downloadHref2()` (`src/makeDownloadProps.js`)
@@ -1098,7 +1130,8 @@ bare `if (q.x)` / `getInt()` / `Number.parseFloat()`. `primaryGeoKeys`,
 `getGeoKeysToRemove()` + `urlArgsObj()`. `applyV2Location`'s default (deg/min)
 branch ← `getLocationFromQuery` legacy branch, and is a **deliberate divergence
 from the 301**. `applyV2DailyLearning` ← `downloadHref2`'s `dailyLearningConfig`
-loop. `checkISODate` ← `isoDateStringToDate()` 400 guard.
+loop. The fast fields ← `downloadHref2`'s `getFastTimeOpts(q)` block; the
+fast keys in `geoKeysToRemove("none")` ← `fastTimeKeys` in `getGeoKeysToRemove()`. `checkISODate` ← `isoDateStringToDate()` 400 guard.
 
 ### `internal/service/pdf/cgi.go` — `makeHebcalOptions(query)` path
 
@@ -1342,6 +1375,8 @@ of the Hebcal.com fleet's.
 | `gregdate.go` `String` / `ReIsoDate` | JS `Date.toISOString` / the route validation regex |
 | `event.go` `RenderEvent` | `converter.js` `renameChanukah()` |
 | `event.go` `HolidayEv.Render` Rosh Hashana number | classic API renders the year as a number in every locale |
+| `fasttimes.go` `ParseFastTimes`, `FastTimeParams` | `getFastTimeOpts()` / `fastTimeOpts` (`src/urlArgs.js`) |
+| `fasttimes.go` `RetimeFasts` | `@hebcal/core` 6.10+ `makeFastStartTime()` / `makeFastEndTime()` (`candles.js`); shared by `/shabbat` and the PDF calendars |
 | `candlelighting.go` `MoveCandleLightingToSunset` | `@hebcal/core` `sunsetOffset(0)` for `b=0`; shared by `/shabbat` and the PDF calendars |
 
 ### `internal/service/location/` — `getLocationFromQuery` (`src/location.js`)

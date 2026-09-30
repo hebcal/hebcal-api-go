@@ -37,6 +37,9 @@ func MessageToQuery(msg *downloadpb.Download) string {
 	if tz := msg.GetTzeit(); tz != 0 {
 		q.set("td", formatFloat(float64(tz)))
 	}
+	for _, kv := range fastTimeFields(msg) {
+		q.set(kv[0], kv[1])
+	}
 	if msg.GetIsHebrewYear() {
 		q.set("yt", "H")
 	} else {

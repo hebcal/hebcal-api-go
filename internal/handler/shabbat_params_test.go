@@ -258,3 +258,48 @@ func TestShabbatJSONP(t *testing.T) {
 		}
 	}
 }
+
+// fastTimes returns the "Fast begins" and "Fast ends" items as title and local
+// time, in order.
+func fastTimes(items []shabbatTestItem) []string {
+	var out []string
+	for _, item := range items {
+		if strings.HasPrefix(item.Title, "Fast ") {
+			out = append(out, item.Title+" "+item.Date[:16])
+		}
+	}
+	return out
+}
+
+// TestShabbatFastTimes covers fsd/fsm, fed/fem and tbed/tbem. The expected
+// times are @hebcal/core's for the same location and options.
+func TestShabbatFastTimes(t *testing.T) {
+	srv := testServerWithDB(t)
+	const gedaliah = "/shabbat?cfg=json&geonameid=5128581&dt=2026-09-14&leyning=off"
+	const tishaBav = "/shabbat?cfg=json&geonameid=281184&dt=2026-07-22&leyning=off"
+	tests := []struct {
+		name, path, want string
+	}{
+		{"defaults", gedaliah, "Fast begins 2026-09-14T05:13|Fast ends 2026-09-14T19:40"},
+		{"fsd", gedaliah + "&fsd=19.8", "Fast begins 2026-09-14T04:52|Fast ends 2026-09-14T19:40"},
+		{"fsm", gedaliah + "&fsm=72", "Fast begins 2026-09-14T05:23|Fast ends 2026-09-14T19:40"},
+		{"fed", gedaliah + "&fed=8.5", "Fast begins 2026-09-14T05:13|Fast ends 2026-09-14T19:47"},
+		{"fem", gedaliah + "&fem=45", "Fast begins 2026-09-14T05:13|Fast ends 2026-09-14T19:52"},
+		{"degrees win", gedaliah + "&fed=8.5&fem=45", "Fast begins 2026-09-14T05:13|Fast ends 2026-09-14T19:47"},
+		{"out of range is ignored", gedaliah + "&fsd=95&fem=300", "Fast begins 2026-09-14T05:13|Fast ends 2026-09-14T19:40"},
+		// Tish'a B'Av ends at 6.45 degrees by default, in Israel too
+		{"tisha bav default", tishaBav, "Fast begins 2026-07-22T19:43|Fast ends 2026-07-23T20:11"},
+		{"tbed", tishaBav + "&tbed=8.5", "Fast begins 2026-07-22T19:43|Fast ends 2026-07-23T20:22"},
+		{"tbem", tishaBav + "&tbem=50", "Fast begins 2026-07-22T19:43|Fast ends 2026-07-23T20:32"},
+		// minor-fast settings leave Tish'a B'Av alone
+		{"fem on tisha bav", tishaBav + "&fem=45&fsm=72", "Fast begins 2026-07-22T19:43|Fast ends 2026-07-23T20:11"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := strings.Join(fastTimes(getItems(t, srv, tt.path)), "|")
+			if got != tt.want {
+				t.Errorf("got  %s\nwant %s", got, tt.want)
+			}
+		})
+	}
+}

@@ -102,7 +102,11 @@ func geoKeysToRemove(geo string) []string {
 	case "pos":
 		return primaryGeoKeys
 	case "none":
-		return append(append([]string(nil), allGeoKeys...), "b", "m", "td", "M", "ue")
+		out := append(append([]string(nil), allGeoKeys...), "b", "m", "td", "M", "ue")
+		for _, pair := range model.FastTimeParams {
+			out = append(out, pair[0], pair[1])
+		}
+		return out
 	case "geoname":
 		return allGeoKeysExcept("geonameid")
 	default:
@@ -252,6 +256,13 @@ func DecodeV2(q v2Query) (*downloadpb.Download, error) {
 	} else if ok {
 		msg.CandleLightingMins = &b
 	}
+	fast := model.ParseFastTimes(func(key string) string { return q[key] })
+	msg.FastStartDeg = float32(fast.StartDeg)
+	msg.FastStartMins = uint32(fast.StartMins)
+	msg.FastEndDeg = float32(fast.EndDeg)
+	msg.FastEndMins = uint32(fast.EndMins)
+	msg.TishaBavEndDeg = float32(fast.TishaBavEndDeg)
+	msg.TishaBavEndMins = uint32(fast.TishaBavEndMins)
 
 	msg.Emoji = q.on("emoji")
 	msg.Euro = q.truthy("euro")

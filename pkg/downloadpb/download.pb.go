@@ -199,6 +199,12 @@ type Download struct {
 	Tzeit               float32             `protobuf:"fixed32,67,opt,name=tzeit,proto3" json:"tzeit,omitempty"`
 	Nine29              bool                `protobuf:"varint,68,opt,name=nine29,proto3" json:"nine29,omitempty"`
 	DirshuDafHalacha    bool                `protobuf:"varint,69,opt,name=dirshuDafHalacha,proto3" json:"dirshuDafHalacha,omitempty"`
+	FastStartDeg        float32             `protobuf:"fixed32,70,opt,name=fastStartDeg,proto3" json:"fastStartDeg,omitempty"`
+	FastStartMins       uint32              `protobuf:"varint,71,opt,name=fastStartMins,proto3" json:"fastStartMins,omitempty"`
+	FastEndDeg          float32             `protobuf:"fixed32,72,opt,name=fastEndDeg,proto3" json:"fastEndDeg,omitempty"`
+	FastEndMins         uint32              `protobuf:"varint,73,opt,name=fastEndMins,proto3" json:"fastEndMins,omitempty"`
+	TishaBavEndDeg      float32             `protobuf:"fixed32,74,opt,name=tishaBavEndDeg,proto3" json:"tishaBavEndDeg,omitempty"`
+	TishaBavEndMins     uint32              `protobuf:"varint,75,opt,name=tishaBavEndMins,proto3" json:"tishaBavEndMins,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -739,6 +745,48 @@ func (x *Download) GetDirshuDafHalacha() bool {
 	return false
 }
 
+func (x *Download) GetFastStartDeg() float32 {
+	if x != nil {
+		return x.FastStartDeg
+	}
+	return 0
+}
+
+func (x *Download) GetFastStartMins() uint32 {
+	if x != nil {
+		return x.FastStartMins
+	}
+	return 0
+}
+
+func (x *Download) GetFastEndDeg() float32 {
+	if x != nil {
+		return x.FastEndDeg
+	}
+	return 0
+}
+
+func (x *Download) GetFastEndMins() uint32 {
+	if x != nil {
+		return x.FastEndMins
+	}
+	return 0
+}
+
+func (x *Download) GetTishaBavEndDeg() float32 {
+	if x != nil {
+		return x.TishaBavEndDeg
+	}
+	return 0
+}
+
+func (x *Download) GetTishaBavEndMins() uint32 {
+	if x != nil {
+		return x.TishaBavEndMins
+	}
+	return 0
+}
+
 type isDownload_LatOneof interface {
 	isDownload_LatOneof()
 }
@@ -807,7 +855,7 @@ var File_download_proto protoreflect.FileDescriptor
 
 const file_download_proto_rawDesc = "" +
 	"\n" +
-	"\x0edownload.proto\"\x81\x12\n" +
+	"\x0edownload.proto\"\xdf\x13\n" +
 	"\bDownload\x12\x14\n" +
 	"\x05major\x18\x01 \x01(\bR\x05major\x12\x14\n" +
 	"\x05minor\x18\x02 \x01(\bR\x05minor\x12 \n" +
@@ -881,7 +929,15 @@ const file_download_proto_rawDesc = "" +
 	"\x0edirshuAmudYomi\x18B \x01(\bR\x0edirshuAmudYomi\x12\x14\n" +
 	"\x05tzeit\x18C \x01(\x02R\x05tzeit\x12\x16\n" +
 	"\x06nine29\x18D \x01(\bR\x06nine29\x12*\n" +
-	"\x10dirshuDafHalacha\x18E \x01(\bR\x10dirshuDafHalacha\"$\n" +
+	"\x10dirshuDafHalacha\x18E \x01(\bR\x10dirshuDafHalacha\x12\"\n" +
+	"\ffastStartDeg\x18F \x01(\x02R\ffastStartDeg\x12$\n" +
+	"\rfastStartMins\x18G \x01(\rR\rfastStartMins\x12\x1e\n" +
+	"\n" +
+	"fastEndDeg\x18H \x01(\x02R\n" +
+	"fastEndDeg\x12 \n" +
+	"\vfastEndMins\x18I \x01(\rR\vfastEndMins\x12&\n" +
+	"\x0etishaBavEndDeg\x18J \x01(\x02R\x0etishaBavEndDeg\x12(\n" +
+	"\x0ftishaBavEndMins\x18K \x01(\rR\x0ftishaBavEndMins\"$\n" +
 	"\x06Hour12\x12\t\n" +
 	"\x05UNSET\x10\x00\x12\x06\n" +
 	"\x02ON\x10\x01\x12\a\n" +

@@ -102,6 +102,7 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 	if candleOpts.AtSunset {
 		model.MoveCandleLightingToSunset(events, &opts)
 	}
+	model.RetimeFasts(events, &opts, model.ParseFastTimes(q.Get))
 	if len(events) == 0 {
 		httpx.WriteJSONError(w, model.BadRequest("Bad request: no events"))
 		return

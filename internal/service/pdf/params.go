@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
 	"time"
 
@@ -98,6 +99,10 @@ type Params struct {
 	// built, same as model.MoveCandleLightingToSunset works around), so
 	// Generate fixes the times up afterwards.
 	AtSunset bool
+	// FastTimes moves the start and end of fast days away from their
+	// defaults. hebcal-go has no such options, so Generate retimes the fast
+	// events afterwards.
+	FastTimes model.FastTimes
 }
 
 // hebrewLocales are the resolved locale names that render right-to-left.
@@ -239,6 +244,7 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 		o.SuppressHavdalah = o.HavdalahMins == 0
 	}
 	o.CandleLightingMins = int(msg.GetCandleLightingMins())
+	p.FastTimes = fastTimesFromMessage(msg)
 
 	if err := applyDateRange(msg, p); err != nil {
 		return nil, err
@@ -265,6 +271,42 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 	// otherwise indistinguishable from "unset" once it reaches hebcal-go.
 	p.AtSunset = o.CandleLighting && msg.CandleLightingMins != nil && o.CandleLightingMins == 0
 	return p, nil
+}
+
+// fastTimeFields renders the message's fast start/end fields as the query
+// parameters they stand for, in order, leaving out the unset ones. A degrees
+// field is a 32-bit float, so it is rounded to six significant digits: 19.8
+// comes back as "19.8", not "19.799999237060547".
+func fastTimeFields(msg *downloadpb.Download) [][2]string {
+	var out [][2]string
+	for _, f := range []struct {
+		names [2]string
+		deg   float32
+		mins  uint32
+	}{
+		{model.FastTimeParams[0], msg.GetFastStartDeg(), msg.GetFastStartMins()},
+		{model.FastTimeParams[1], msg.GetFastEndDeg(), msg.GetFastEndMins()},
+		{model.FastTimeParams[2], msg.GetTishaBavEndDeg(), msg.GetTishaBavEndMins()},
+	} {
+		if f.deg != 0 {
+			out = append(out, [2]string{f.names[0], strconv.FormatFloat(float64(f.deg), 'g', 6, 32)})
+		}
+		if f.mins != 0 {
+			out = append(out, [2]string{f.names[1], strconv.FormatUint(uint64(f.mins), 10)})
+		}
+	}
+	return out
+}
+
+// fastTimesFromMessage reads the fast start/end fields through the same
+// validation as the query parameters, so a crafted token can ask for nothing
+// a query string could not.
+func fastTimesFromMessage(msg *downloadpb.Download) model.FastTimes {
+	fields := map[string]string{}
+	for _, kv := range fastTimeFields(msg) {
+		fields[kv[0]] = kv[1]
+	}
+	return model.ParseFastTimes(func(key string) string { return fields[key] })
 }
 
 // defaultCandleMins is the default number of minutes before sunset that candles

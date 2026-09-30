@@ -10,6 +10,6 @@
 //
 // Regenerate download.pb.go after editing download.proto:
 //
-//	protoc --go_out=. --go_opt=paths=source_relative \
+//	protoc --go_out=pkg/downloadpb --go_opt=paths=source_relative \
 //	  --proto_path=pkg/downloadpb pkg/downloadpb/download.proto
 package downloadpb

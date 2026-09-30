@@ -67,6 +67,9 @@ func Generate(p *Params) ([]Event, error) {
 	if p.AtSunset {
 		model.MoveCandleLightingToSunset(events, &opts)
 	}
+	if opts.CandleLighting {
+		model.RetimeFasts(events, &opts, p.FastTimes)
+	}
 	out := make([]Event, 0, len(events))
 	for _, ev := range events {
 		flags := ev.GetFlags()
