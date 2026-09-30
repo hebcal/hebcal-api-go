@@ -468,9 +468,7 @@ rather than 7.083°, and in Israel a minor fast ends 15 minutes after sunset
 (Rabbi Deblitzky's practice) rather than at 7.083°.
 
 Both live in hebcal-go (`CalOptions.FastStartDeg` … `TishaBavEndMins`, and
-the defaults in `makeFastStartEnd`), added on its `fast-start-end-options`
-branch; `go.mod` pins that commit as a pseudo-version until it is tagged --
-**bump to the release once it is.** The new defaults are what fixed the
+the defaults in `makeFastStartEnd`), released in v0.21.0. The new defaults are what fixed the
 long-standing "one `Fast ends` four minutes late" on the 2028 calendar: it was
 Tish'a B'Av's default, not noaa-go. Checked against `@hebcal/core` 6.11 for New
 York and Jerusalem 2026 with each of the six options and with none: 154 of 154
@@ -744,6 +742,9 @@ github.com/hebcal/learning v0.5.0 adds the `URL()` method to every schedule
 event, which is what closed the daily-learning link gap (see "Where things
 stand"). The empty URLs it returns for Schottenstein Yerushalmi and multi-reading
 Rambam 3-chapter days are deliberate and match @hebcal/core, not omissions.
+
+hebcal-go v0.21.0 adds the fast start/end options and @hebcal/core's newer
+fast defaults; see "Fast start and end times" above.
 
 hebcal-go v0.19.1 adds `CalOptions.SuppressHavdalah`. hebcal-go reads
 `HavdalahMins == 0` as "unset, use the default tzeit" and always draws Havdalah
