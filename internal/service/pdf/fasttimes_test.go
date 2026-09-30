@@ -15,7 +15,7 @@ import (
 // fastStartDeg=19.8, fastEndMins=45 and tishaBavEndDeg=8.5 beside a New York
 // 2026 calendar. 19.8 does not survive a 32-bit float exactly, and must come
 // back as 19.8 rather than 19.799999237060547.
-const hebcalWebFastToken = "CAEoAUABUAFYhYO5AmDqD7UEZmaeQcgELdUEAAAIQQ"
+const hebcalWebFastToken = "CAEoAUABUAFYhYO5AmDqD7UEZmaeQcgELdUEAAAIQQ" // ggignore: a /v4/ download token, not a secret
 
 func TestFastTimesFromHebcalWebToken(t *testing.T) {
 	msg, err := DecodeMessage(hebcalWebFastToken)
