@@ -423,7 +423,20 @@ func (r *Renderer) renderEventColored(page *document.Page, inst *Instances, p *P
 		textY += 0.65
 	}
 	for i, ln := range lines {
-		r.draw(page, inst, fontName, fontSize, col, textX, textY+float64(i)*fontSize*1.4, ln)
+		lnX := textX
+		// textX (and the width it was derived from) describes the
+		// undivided subject; once splitInTwo breaks it in two, each line
+		// has its own, shorter width and must be right-aligned on its
+		// own, or a right-to-left line reads as pushed left of the cell's
+		// right edge instead of flush against it (worst of all for a
+		// subject splitInTwo could not break at all, which still draws
+		// one line but reserves two, see numLines above). Left-to-right
+		// text does not need this: it already starts every line at the
+		// same left margin.
+		if rtl && !ev.Timed() && numLines > 1 {
+			lnX = x + available - r.width(inst, fontName, fontSize, ln)
+		}
+		r.draw(page, inst, fontName, fontSize, col, lnX, textY+float64(i)*fontSize*1.4, ln)
 	}
 	// A link over the whole event line.
 	if href := eventLink(ev.URL, ev.HD.Year(), p.campaignFor(campaign, ev), p.Opts.IL); href != "" {
