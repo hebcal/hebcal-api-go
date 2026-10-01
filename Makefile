@@ -4,7 +4,7 @@ PREFIX := /usr/local
 SVCUSER := www-data
 SVCGROUP := hebcal
 
-.PHONY: all build test vet fmt clean install uninstall
+.PHONY: all build run test vet fmt clean install uninstall
 
 all: build
 
@@ -14,8 +14,24 @@ all: build
 # by the autocomplete relevance-scoring SQL.
 GOTAGS := sqlite_fts5,sqlite_math_functions
 
+# This repo ships no geoname/ZIP databases of its own; local dev borrows the
+# ones hebcal-web downloads via `node_modules/@hebcal/geo-sqlite/bin/download-and-make-dbs`,
+# checked out as a sibling directory. Override GEO_DIR if yours lives
+# elsewhere: make run GEO_DIR=/path/to/hebcal-web
+GEO_DIR := ../hebcal-web
+
 build:
 	CGO_ENABLED=1 go build -tags $(GOTAGS) -trimpath -ldflags="-s -w" -o $(BIN) $(CMD)
+
+# Runs the server for local development, listening on :8082 (the port
+# hebcal-web's dev servers already point their PDF links at). Rebuilds first,
+# so a source change always takes effect: make run
+run: build
+	./$(BIN) \
+		-port 8082 \
+		-zips-db $(GEO_DIR)/zips.sqlite3 \
+		-geonames-db $(GEO_DIR)/geonames.sqlite3 \
+		-fonts fonts
 
 test:
 	go test -tags $(GOTAGS) ./...
