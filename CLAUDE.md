@@ -744,6 +744,14 @@ event, which is what closed the daily-learning link gap (see "Where things
 stand"). The empty URLs it returns for Schottenstein Yerushalmi and multi-reading
 Rambam 3-chapter days are deliberate and match @hebcal/core, not omissions.
 
+hebcal-go v0.23.0 adds `molad.Molad.Instant()` and the four Kiddush Levana
+times, plus their date-gated `zmanim.Zmanim` counterparts, which `/zmanim`
+reports (`moladTimes`). Checked against `@hebcal/core` 6.14.1: every month
+5000-6500 and every day 2000-2050 in ten locations agree to the millisecond.
+`/shabbat`'s `moladInstant` now uses `Instant()`, which reads the date as
+proleptic Gregorian; the private copy it replaces used `Greg()`, whose
+pre-1582 Julian fields put the molad 7-11 days early.
+
 hebcal-go v0.22.0 adds `CalOptions.CandleLightingAtSunset` for `b=0`. A zero
 `CandleLightingMins` means "use the default" there, so candle-lighting at
 sunset used to be recomputed after generation here (`MoveCandleLightingToSunset`),
@@ -1300,7 +1308,7 @@ this is an addition rather than a parity target. `ceilMinute` /
 | `item` | `@hebcal/rest-api` `eventToClassicApiObject` (key order) |
 | `holidayMemo` | `getHolidayDescription` |
 | `moladObj` | `eventToClassicApiObject`'s molad member |
-| `moladInstant` | `getMoladAsDate()` (`@hebcal/core`) |
+| `moladInstant` | `getMoladAsDate()` (`@hebcal/core`), via hebcal-go `molad.Instant()` |
 | `mevarchimMoladMemo` | `MevarchimChodeshEvent.memo` / `Molad.render` |
 | `moladDayName` | `getDayNames()`'s French names |
 | `eventBasename` | `@hebcal/core` `basename()` |
