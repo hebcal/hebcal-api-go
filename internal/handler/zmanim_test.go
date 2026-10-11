@@ -408,3 +408,81 @@ func TestZmanimTimezoneLookup(t *testing.T) {
 		t.Errorf("expected America/New_York in %s", body)
 	}
 }
+
+// TestZmanimMolad: the molad and Kiddush Levana times appear only on the date
+// each falls on. Rounded, the earliest times round up and the latest down.
+func TestZmanimMolad(t *testing.T) {
+	srv := testServerWithDB(t)
+	molad := []string{"molad", "tchilasZmanKidushLevana3Days", "tchilasZmanKidushLevana7Days",
+		"sofZmanKidushLevanaBetweenMoldos", "sofZmanKidushLevana15Days"}
+	// Molad Kislev 5787 is Monday 9 November 2026, 22:06:13.504 in Jerusalem
+	tests := []struct {
+		query string
+		want  map[string]string
+	}{
+		{"date=2026-07-07", map[string]string{}},
+		{"date=2026-11-09", map[string]string{"molad": "2026-11-09T22:06:00+02:00"}},
+		{"date=2026-11-09&sec=1", map[string]string{"molad": "2026-11-09T22:06:13+02:00"}},
+		{"date=2026-11-12", map[string]string{"tchilasZmanKidushLevana3Days": "2026-11-12T22:07:00+02:00"}},
+		{"date=2026-11-16", map[string]string{"tchilasZmanKidushLevana7Days": "2026-11-16T22:07:00+02:00"}},
+		{"date=2026-11-24", map[string]string{
+			"sofZmanKidushLevanaBetweenMoldos": "2026-11-24T16:28:00+02:00",
+			"sofZmanKidushLevana15Days":        "2026-11-24T22:06:00+02:00",
+		}},
+	}
+	for _, tc := range tests {
+		resp, body := get(t, srv, "/zmanim?cfg=json&geonameid=281184&"+tc.query)
+		if resp.StatusCode != 200 {
+			t.Fatalf("%s: status = %d body=%s", tc.query, resp.StatusCode, body)
+		}
+		times := decodeTimes(t, body)
+		for _, name := range molad {
+			got, ok := times[name]
+			exp, want := tc.want[name]
+			if ok != want || (want && got != exp) {
+				t.Errorf("%s: times[%s] = %v (present %v), want %q (present %v)",
+					tc.query, name, got, ok, exp, want)
+			}
+		}
+	}
+	// after the tzeit times
+	_, body := get(t, srv, "/zmanim?cfg=json&geonameid=281184&date=2026-11-24")
+	if strings.Index(body, `"tzeit72min"`) > strings.Index(body, `"sofZmanKidushLevanaBetweenMoldos"`) {
+		t.Errorf("molad times before tzeit times: %s", body)
+	}
+}
+
+func TestZmanimMoladRange(t *testing.T) {
+	srv := testServerWithDB(t)
+	_, body := get(t, srv, "/zmanim?cfg=json&geonameid=281184&start=2026-11-01&end=2026-11-30")
+	var out struct {
+		Times map[string]map[string]string `json:"times"`
+	}
+	if err := json.Unmarshal([]byte(body), &out); err != nil {
+		t.Fatalf("unmarshal: %v\nbody: %s", err, body)
+	}
+	want := map[string]map[string]string{
+		"molad":                            {"2026-11-09": "2026-11-09T22:06:00+02:00"},
+		"tchilasZmanKidushLevana3Days":     {"2026-11-12": "2026-11-12T22:07:00+02:00"},
+		"tchilasZmanKidushLevana7Days":     {"2026-11-16": "2026-11-16T22:07:00+02:00"},
+		"sofZmanKidushLevanaBetweenMoldos": {"2026-11-24": "2026-11-24T16:28:00+02:00"},
+		"sofZmanKidushLevana15Days":        {"2026-11-24": "2026-11-24T22:06:00+02:00"},
+	}
+	for name, exp := range want {
+		got := out.Times[name]
+		if len(got) != len(exp) {
+			t.Errorf("times[%s] = %v, want %v", name, got, exp)
+			continue
+		}
+		for d, v := range exp {
+			if got[d] != v {
+				t.Errorf("times[%s][%s] = %q, want %q", name, d, got[d], v)
+			}
+		}
+	}
+	// a range with no molad still has the key, as an empty object
+	_, body = get(t, srv, "/zmanim?cfg=json&geonameid=281184&start=2026-11-01&end=2026-11-02")
+	if !strings.Contains(body, `"molad":{}`) {
+		t.Errorf("expected an empty molad object: %s", body)
+	}
+}

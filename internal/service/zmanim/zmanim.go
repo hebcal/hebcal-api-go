@@ -96,6 +96,38 @@ var tzeitOrder = []string{
 // allTimesOrder is the concatenation of timesOrder and tzeitOrder.
 var allTimesOrder = append(append([]string{}, timesOrder...), tzeitOrder...)
 
+// moladTime is a time computed from the molad. Each falls on a single civil
+// date a month, so a date it does not fall on omits it instead of reporting
+// null.
+type moladTime struct {
+	name string
+	fn   func(z *zman.Zmanim) time.Time
+	// round rounds to the minute. The earliest Kiddush Levana times round up
+	// and the latest round down, so that rounding never widens the period in
+	// which it may be said.
+	round func(time.Time) time.Time
+}
+
+// moladTimes are the molad and Kiddush Levana times, in output order, after
+// the tzeit times. They are reported as computed, even when they fall during
+// the day, when Kiddush Levana is not said; alotHaShachar and tzeit85deg are
+// in the same response for a consumer that wants to move them to the night.
+var moladTimes = []moladTime{
+	{"molad", (*zman.Zmanim).ZmanMolad, RoundTime},
+	{"tchilasZmanKidushLevana3Days", func(z *zman.Zmanim) time.Time {
+		return z.TchilasZmanKidushLevana3Days(time.Time{}, time.Time{})
+	}, ceilMinute},
+	{"tchilasZmanKidushLevana7Days", func(z *zman.Zmanim) time.Time {
+		return z.TchilasZmanKidushLevana7Days(time.Time{}, time.Time{})
+	}, ceilMinute},
+	{"sofZmanKidushLevanaBetweenMoldos", func(z *zman.Zmanim) time.Time {
+		return z.SofZmanKidushLevanaBetweenMoldos(time.Time{}, time.Time{})
+	}, floorMinute},
+	{"sofZmanKidushLevana15Days", func(z *zman.Zmanim) time.Time {
+		return z.SofZmanKidushLevana15Days(time.Time{}, time.Time{})
+	}, floorMinute},
+}
+
 // RoundTime discards seconds, rounding to the nearest minute (>= 30s rounds
 // up).
 func RoundTime(dt time.Time) time.Time {
@@ -111,6 +143,19 @@ func RoundTime(dt time.Time) time.Time {
 		return dt.Add(time.Duration(60-sec)*time.Second - time.Duration(ns))
 	}
 	return dt.Add(-time.Duration(sec)*time.Second - time.Duration(ns))
+}
+
+// floorMinute discards seconds, rounding down to the minute.
+func floorMinute(dt time.Time) time.Time {
+	return dt.Add(-time.Duration(dt.Second())*time.Second - time.Duration(dt.Nanosecond()))
+}
+
+// ceilMinute rounds up to the next minute unless dt is already on one.
+func ceilMinute(dt time.Time) time.Time {
+	if dt.Second() == 0 && dt.Nanosecond() == 0 {
+		return dt
+	}
+	return floorMinute(dt).Add(time.Minute)
 }
 
 // formatISOWithTimeZone renders a time as "2022-04-01T13:06:00-11:00", or nil
@@ -159,15 +204,30 @@ func Times(d model.GregDate, loc *geodb.Location, roundMinute, useElevation bool
 		}
 		out = append(out, jsutil.KV{Key: name, Val: formatISOWithTimeZone(dt)})
 	}
+	for _, mt := range moladTimes {
+		dt := mt.fn(&z)
+		if dt.IsZero() {
+			continue
+		}
+		if roundMinute {
+			dt = mt.round(dt)
+		}
+		out = append(out, jsutil.KV{Key: mt.name, Val: formatISOWithTimeZone(dt)})
+	}
 	return out
 }
 
 // TimesForRange returns times for each date in [start, end] as an ordered
-// object of name -> {isoDate -> value}. Ported from TimesForRange().
+// object of name -> {isoDate -> value}. Ported from TimesForRange(). A molad
+// time lists only the dates it falls on, so it can be an empty object.
 func TimesForRange(start, end model.GregDate, loc *geodb.Location, roundMinute, useElevation bool) jsutil.OrderedObj {
-	inner := make(map[string]*jsutil.OrderedObj, len(allTimesOrder))
-	out := make(jsutil.OrderedObj, 0, len(allTimesOrder))
-	for _, name := range allTimesOrder {
+	names := append([]string{}, allTimesOrder...)
+	for _, mt := range moladTimes {
+		names = append(names, mt.name)
+	}
+	inner := make(map[string]*jsutil.OrderedObj, len(names))
+	out := make(jsutil.OrderedObj, 0, len(names))
+	for _, name := range names {
 		o := &jsutil.OrderedObj{}
 		inner[name] = o
 		out = append(out, jsutil.KV{Key: name, Val: o})
