@@ -316,11 +316,11 @@ func TestZmanimErrors(t *testing.T) {
 		path string
 		want int
 	}{
-		{"/zmanim?geonameid=281184", 400},                          // cfg missing
-		{"/zmanim?cfg=json", 400},                                  // location missing
-		{"/zmanim?cfg=json&geonameid=99999999", 404},               // unknown geonameid
-		{"/zmanim?cfg=json&zip=00000", 404},                        // unknown zip
-		{"/zmanim?cfg=json&latitude=99&longitude=0&tzid=UTC", 400}, // bad latitude
+		{"/zmanim?geonameid=281184", 400},                           // cfg missing
+		{"/zmanim?cfg=json", 400},                                   // location missing
+		{"/zmanim?cfg=json&geonameid=99999999", 404},                // unknown geonameid
+		{"/zmanim?cfg=json&zip=00000", 404},                         // unknown zip
+		{"/zmanim?cfg=json&latitude=99&longitude=0&tzid=UTC", 400},  // bad latitude
 		{"/zmanim?cfg=json&latitude=40&longitude=0&tzid=Fake", 400}, // bad tzid
 	}
 	for _, tc := range cases {
