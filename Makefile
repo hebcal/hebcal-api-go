@@ -4,7 +4,7 @@ PREFIX := /usr/local
 SVCUSER := www-data
 SVCGROUP := hebcal
 
-.PHONY: all build run test vet fmt clean install uninstall
+.PHONY: all build run test vet fmt fmtcheck clean install uninstall
 
 all: build
 
@@ -33,14 +33,22 @@ run: build
 		-geonames-db $(GEO_DIR)/geonames.sqlite3 \
 		-fonts fonts
 
-test:
+# Fails, listing the offending files, if anything needs gofmt -- the same
+# check CI runs -- so a forgotten `make fmt` breaks `make test` locally too.
+test: fmtcheck
 	go test -tags $(GOTAGS) ./...
 
 vet:
 	go vet -tags $(GOTAGS) ./...
 
 fmt:
-	gofmt -w cmd internal pkg
+	gofmt -w .
+
+fmtcheck:
+	@unformatted=$$(gofmt -l .); \
+	if [ -n "$$unformatted" ]; then \
+		echo "These files need gofmt (run make fmt):"; echo "$$unformatted"; exit 1; \
+	fi
 
 clean:
 	rm -f $(BIN)

@@ -478,9 +478,9 @@ queries work; the `Makefile` targets pass it for you.
 
 ```bash
 make build     # builds ./hebcal-api from ./cmd/hebcal-api (CGO_ENABLED=1)
-make test      # runs the unit tests
+make test      # checks gofmt, then runs the unit tests
 make vet       # go vet
-make fmt       # gofmt -w cmd internal pkg
+make fmt       # gofmt -w .
 ```
 
 If you invoke `go` directly rather than through the `Makefile`, add the
