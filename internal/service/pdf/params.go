@@ -256,6 +256,12 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 			o.CandleLighting = false
 		}
 	}
+	// A calendar with candle-lighting, Rosh Chodesh and Havdalah also shows the
+	// Kiddush Levana window (Maharil's 9th-to-15th-day reckoning). Decided after
+	// the early-year check above, which can switch candle-lighting off.
+	if o.CandleLighting && !o.NoRoshChodesh && !o.SuppressHavdalah {
+		o.KiddushLevanaMaharil = true
+	}
 	applyDailyLearning(msg, o)
 	// Resolved after applyLocation (which may have run applyIsraelCandleMins):
 	// an explicit b=0 survives that override as a literal zero, which
