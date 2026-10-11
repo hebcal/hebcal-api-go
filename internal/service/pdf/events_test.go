@@ -324,6 +324,97 @@ func TestMinorHolidaysKeptWhenRequested(t *testing.T) {
 	}
 }
 
+// A whole Hebrew-year calendar in Hebrew-month mode carries real events for
+// Tishrei of the following year too -- a head start for next year's printed
+// calendar -- rather than an empty trailing page. Mirrors hebcal-web's
+// makeHebrewCalendar. Gregorian-month mode has no Hebrew-month page to fill,
+// so the same request must carry none of this.
+func TestGenerateIncludesNextYearTishrei(t *testing.T) {
+	p := &Params{
+		MonthMode: HebrewArabic,
+		Opts:      hebcal.CalOptions{Year: 5787, IsHebrewYear: true},
+	}
+	evs, err := Generate(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var sawNextRoshHashana bool
+	for _, e := range evs {
+		if e.HD.Year() != 5788 {
+			continue
+		}
+		if e.HD.Month() != hdate.Tishrei {
+			t.Errorf("event %q on %d %v %d: next year's calendar should carry only Tishrei",
+				e.Subject, e.HD.Day(), e.HD.Month(), e.HD.Year())
+		}
+		if strings.Contains(e.Subject, "Rosh Hashana") {
+			sawNextRoshHashana = true
+		}
+	}
+	if !sawNextRoshHashana {
+		t.Error("expected next year's Rosh Hashana among the events, got none")
+	}
+
+	p.MonthMode = GregorianArabic
+	evs, err = Generate(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, e := range evs {
+		if e.HD.Year() == 5788 {
+			t.Errorf("Gregorian-month mode should not carry next year's events, got %q on %v %d, %d",
+				e.Subject, e.HD.Month(), e.HD.Day(), e.HD.Year())
+		}
+	}
+}
+
+// A multi-year request (NumYears > 1) must not duplicate a year the main
+// call already covers: the trailing Tishrei peek belongs after the whole
+// span (Year+NumYears), not Year+1, or it both repeats an already-generated
+// month and, appended out of date order, breaks SplitByHebrewMonth's
+// last-event-as-range-end logic into dropping real later pages.
+func TestGenerateNumYearsDoesNotDuplicateTishrei(t *testing.T) {
+	p := &Params{
+		MonthMode: HebrewArabic,
+		Opts:      hebcal.CalOptions{Year: 5787, IsHebrewYear: true, NumYears: 2},
+	}
+	evs, err := Generate(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Match the exact first-day subject ("Rosh Hashana 5788"/"...5789"), not
+	// a substring: a loose Contains also matches "Rosh Hashana II" (day 2 of
+	// the same, legitimate occurrence) and would over-count by design.
+	var roshHashana5788 int
+	var sawElul5788, sawTishrei5789 bool
+	for _, e := range evs {
+		if e.Subject == "Rosh Hashana 5788" {
+			roshHashana5788++
+		}
+		if e.HD.Year() == 5788 && e.HD.Month() == hdate.Elul {
+			sawElul5788 = true
+		}
+		if e.HD.Year() == 5789 {
+			if e.HD.Month() != hdate.Tishrei {
+				t.Errorf("event %q on %v %d, %d: the trailing peek should carry only Tishrei 5789",
+					e.Subject, e.HD.Month(), e.HD.Day(), e.HD.Year())
+			}
+			if e.Subject == "Rosh Hashana 5789" {
+				sawTishrei5789 = true
+			}
+		}
+	}
+	if roshHashana5788 != 1 {
+		t.Errorf("Rosh Hashana 5788 should appear exactly once (NumYears=2 already covers it), got %d", roshHashana5788)
+	}
+	if !sawElul5788 {
+		t.Error("Elul 5788, the true end of the requested 2-year span, should still be present")
+	}
+	if !sawTishrei5789 {
+		t.Error("expected the trailing peek into Tishrei 5789 (Year+NumYears), got none")
+	}
+}
+
 func TestYomTovOnlyKeepsOnlyChagim(t *testing.T) {
 	opts := hebcal.CalOptions{Year: 2026}
 	evs, _ := hebcal.HebrewCalendar(&opts)
