@@ -438,20 +438,9 @@ func moladObj(hd hdate.HDate) jsutil.OrderedObj {
 	}
 }
 
-// moladInstant renders the exact moment of the molad as a UTC timestamp. The
-// molad's wall clock is Jerusalem *mean solar* time, so the reading is taken
-// in fixed UTC+2 (never
-// Israel daylight time) and then shifted back by the local mean time offset
-// of Har Habayis: longitude 35.2354° is 5.2354° east of the meridian its
-// zone is named for, which at 4 minutes per degree is 20 minutes 56.496
-// seconds.
+// moladInstant renders the exact moment of the molad as a UTC timestamp.
 func moladInstant(m molad.Molad) string {
-	const lmtOffset = 1256496 * time.Millisecond
-	// chalakim are 10/3 of a second each
-	nanos := int64(m.Chalakim) * 10 * int64(time.Second) / 3
-	gy, gm, gd := m.Date.Greg()
-	t := time.Date(gy, gm, gd, m.Hours, m.Minutes, 0, 0, time.FixedZone("", 2*60*60)).
-		Add(time.Duration(nanos) - lmtOffset).UTC()
+	t := m.Instant()
 	// milliseconds are printed with trailing zeros trimmed, so ".170" comes
 	// out as ".17"
 	frac := strings.TrimRight(fmt.Sprintf("%03d", t.Nanosecond()/int(time.Millisecond)), "0")
