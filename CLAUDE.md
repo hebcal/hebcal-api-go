@@ -1277,6 +1277,13 @@ emitting `null` for a time that does not occur. `dates.go` `ParseMelachaDate` �
 JS `new Date(dateStr)` + the location-offset fixup (`im=1` branch). `StartAndEnd`
 ← `getStartAndEnd()` (`src/dateUtil.js`). `ExpiresTomorrow` ← `expires()` in
 `zmanim.js`.
+`moladTimes` ← `@hebcal/core` `Zmanim.getZmanMolad()`,
+`getTchilasZmanKidushLevana3Days()`/`7Days()`,
+`getSofZmanKidushLevanaBetweenMoldos()`, `getSofZmanKidushLevana15Days()`
+(called with no `alos`/`tzais`, so unadjusted), ported to hebcal-go's
+`zmanim` and `molad` packages; hebcal-web's `/zmanim` has no counterpart, so
+this is an addition rather than a parity target. `ceilMinute` /
+`floorMinute` ← `KiddushLevanaEvent.ts`'s rounding of the same times.
 
 ### `internal/service/shabbat/` — `shabbatApp` (`src/shabbat.js`)
 

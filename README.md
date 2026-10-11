@@ -68,6 +68,13 @@ solar calculations are backed by [hebcal/noaa-go](https://github.com/hebcal/noaa
   - `sec=1` returns seconds instead of rounding each time to the minute.
   - Times that do not occur on a given day (e.g. no astronomical dawn in
     the polar summer) are returned as `null`.
+  - **Molad and Kiddush Levana:** `molad`, `tchilasZmanKidushLevana3Days`,
+    `tchilasZmanKidushLevana7Days`, `sofZmanKidushLevanaBetweenMoldos`
+    (the Maharil) and `sofZmanKidushLevana15Days` follow the tzeit times,
+    each only on the date it falls on and omitted otherwise (in a range,
+    each lists just those dates, possibly `{}`). They are reported as
+    computed, even in daytime; rounded, the earliest Kiddush Levana times
+    round up to the minute and the latest round down.
 - `GET|HEAD /zmanim?cfg=json&im=1&…` — **Assur Melacha** check: whether
   melacha (work) is prohibited at a given instant (Shabbat or Yom Tov).
   Same location parameters as above.
