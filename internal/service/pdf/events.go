@@ -230,15 +230,6 @@ func keepEvent(ev event.CalEvent, flags event.HolidayFlags, p *Params) bool {
 	return true
 }
 
-// hour12Countries are the country codes that default to a 12-hour clock. Every
-// other country -- including Israel, which is deliberately absent -- defaults
-// to 24-hour, so a Ghana or Reykjavik calendar shows "17:49" where a US one
-// shows "5:49p".
-var hour12Countries = map[string]bool{
-	"US": true, "CA": true, "BR": true, "AU": true, "NZ": true, "DO": true,
-	"PR": true, "GR": true, "IN": true, "KR": true, "NP": true, "ZA": true,
-}
-
 // use12Hour reports whether clock times render in 12-hour form. hour12 forces it
 // either way (1 = force 12-hour, 2 = force 24-hour); otherwise it follows the
 // location's country, falling back to "IL" or "US" when no country is known.
@@ -260,7 +251,10 @@ func (p *Params) use12Hour() bool {
 			cc = "US"
 		}
 	}
-	return hour12Countries[cc]
+	// Every country outside the 12-hour set -- Israel included -- defaults to
+	// 24-hour, so a Ghana or Reykjavik calendar shows "17:49" where a US one
+	// shows "5:49p".
+	return event.Uses12HourClock(cc)
 }
 
 // timeStringOf formats the clock time for a timed event in the compact form the

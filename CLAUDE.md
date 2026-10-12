@@ -754,6 +754,15 @@ event, which is what closed the daily-learning link gap (see "Where things
 stand"). The empty URLs it returns for Schottenstein Yerushalmi and multi-reading
 Rambam 3-chapter days are deliberate and match @hebcal/core, not omissions.
 
+hebcal-go v0.25.0 adds `event.ReformatTimeStr` and `event.Uses12HourClock`
+(@hebcal/core's `reformatTimeStr` and its `hour12cc` table), and `TimedEvent.Render()`
+now carries an am/pm suffix or follows the country's 24-hour clock instead of
+dropping the suffix everywhere. Nothing here renders through it -- the PDF,
+`/shabbat` and the MCP tools all format `EventTime` themselves -- so the bump
+changes no output; it only replaced the two private copies of the country
+table (`pdf/events.go`, `shabbat/shabbat.go`) and the body of `/shabbat`'s
+`reformatTimeStr`.
+
 hebcal-go v0.23.0 adds `molad.Molad.Instant()` and the four Kiddush Levana
 times, plus their date-gated `zmanim.Zmanim` counterparts, which `/zmanim`
 reports (`moladTimes`). Checked against `@hebcal/core` 6.14.1: every month
@@ -808,7 +817,7 @@ test in `calendar_port_test.go`.
   `renderAltDateOnLine` and the event is skipped as a row (`Event.AltDate`).
   hebcal_2010_6, which also stops being ~2.4x too large.
 - **The 12/24-hour clock default follows the country**, not a blanket 12-hour:
-  only the dozen countries in `hour12Countries` (never Israel) default to
+  only the dozen countries `event.Uses12HourClock` names (never Israel) default to
   12-hour. Ghana showed `5:49p` where production shows `17:49`. `use12Hour`.
 - **`Tammuz` → `Tamuz` in event subjects**, not only month titles
   (`fixMonthSpelling` in events.go). "Rosh Chodesh Tammuz" was the giveaway.
@@ -1193,8 +1202,8 @@ passes to `renderPdfEvent`.
 `localeMap` in `src/lang.js` (dayjs `D MMM` vs `MMM D`). `gregorianAltText` ←
 `GregorianDateEvent.render()`. `eventCategories` ← `getEventCategories()`
 (`@hebcal/rest-api`). `keepEvent` ← the two post-generation filters in
-`src/calendar.js`. `hour12Countries` ← `hour12cc` in `reformatTimeStr.js`.
-`use12Hour` / `timeStringOf` ← `reformatTimeStr()`. `learningFlags` ←
+`src/calendar.js`. `use12Hour` / `timeStringOf` ← `reformatTimeStr()` (the country table is
+hebcal-go's `event.Uses12HourClock`, its `hour12cc`). `learningFlags` ←
 `LEARNING_MASK`. `renderSubject` ← `shouldRenderBrief()`'s render/renderBrief
 choice. `eventOrder` ← `@hebcal/core`'s per-day emission order.
 `SplitByGregorianMonth` ← `eventsToCells()`.
@@ -1324,7 +1333,7 @@ this is an addition rather than a parity target. `ceilMinute` /
 | `eventBasename` | `@hebcal/core` `basename()` |
 | `categoriesOf` | `@hebcal/rest-api` `getEventCategories` + `@hebcal/core` `getCategories` |
 | `baseCategory` | `@hebcal/core` `Event.getCategories`'s `flagToCategory` table |
-| `reformatTimeStr` | `@hebcal/core` `reformatTimeStr` |
+| `reformatTimeStr` | `@hebcal/core` `reformatTimeStr`, via hebcal-go `event.ReformatTimeStr` |
 | `stripMevarchimPrefix` | `MevarchimChodeshEvent.renderBrief` |
 | `itemLeyning` | the inverse of the `getLeyningForHoliday()` lookup |
 | `normMonth` | `hdate` `Tammuz` vs `@hebcal/core` `Tamuz`; keeps `Tzom Tammuz` |
