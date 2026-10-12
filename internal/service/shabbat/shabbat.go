@@ -771,40 +771,11 @@ func baseCategory(flags event.HolidayFlags) (string, string, bool) {
 // reformatTimeStr converts 24h "HH:MM" to 12h "h:MMpm" for countries that use
 // 12-hour clocks, else returns it unchanged. hour12 is the h12 query override
 // and wins over the country when set: false forces the 24-hour form, true
-// forces the 12-hour one.
+// forces the 12-hour one. With no country code, an Israel request is treated
+// as Israel and any other as the United States.
 func reformatTimeStr(timeStr, suffix, cc string, il bool, hour12 *bool) string {
-	if hour12 != nil && !*hour12 {
-		return timeStr
+	if cc == "" && il {
+		cc = "IL"
 	}
-	if cc == "" {
-		if il {
-			cc = "IL"
-		} else {
-			cc = "US"
-		}
-	}
-	if (hour12 == nil || !*hour12) && !hour12Countries[cc] {
-		return timeStr
-	}
-	hm := strings.SplitN(timeStr, ":", 2)
-	if len(hm) != 2 {
-		return timeStr
-	}
-	hour, _ := jsutil.ParseInt(hm[0])
-	if hour < 12 {
-		suffix = strings.NewReplacer("p", "a", "P", "A").Replace(suffix)
-		if hour == 0 {
-			hour = 12
-		}
-		return fmt.Sprintf("%d:%s%s", hour, hm[1], suffix)
-	}
-	if hour > 12 {
-		hour = hour % 12
-	}
-	return fmt.Sprintf("%d:%s%s", hour, hm[1], suffix)
-}
-
-var hour12Countries = map[string]bool{
-	"US": true, "CA": true, "BR": true, "AU": true, "NZ": true, "DO": true,
-	"PR": true, "GR": true, "IN": true, "KR": true, "NP": true, "ZA": true,
+	return event.ReformatTimeStr(timeStr, suffix, cc, hour12)
 }
