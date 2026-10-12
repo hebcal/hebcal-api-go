@@ -252,6 +252,16 @@ and only then the parsha and candle lighting. Sorting both to one position put
 (set from the untranslated `Desc` in `isFastEnds`, since the localized subject
 would not survive `lg=he`) gives it its own slot after the day.
 
+**Latest Kiddush Levana is a timed event too, but not a `hebcal.TimedEvent`.**
+`hebcal.KiddushLevanaEvent` embeds one, so a plain `ev.(hebcal.TimedEvent)`
+misses it; go through `asTimedEvent`. Before that, `timeStringOf` returned
+nothing for it, and the row drew hebcal-go's `Render()` text -- "Latest Kiddush
+Levana: 9:44", time baked into the subject with no a/p suffix -- where
+production draws a bold "9:44p" like every other timed row. In
+`@hebcal/core` it is pushed after the Molad and before candle lighting, so
+`eventOrder()` gives it the slot shared with Molad rather than the trailing
+timed slot.
+
 ### The legacy /v2/ URL is a query string, not a protobuf
 
 `/v2/h/<base64>/<name>.pdf` is the download URL hebcal.com emitted before the
