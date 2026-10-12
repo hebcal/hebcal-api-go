@@ -181,10 +181,25 @@ func untranslatedDesc(ev event.CalEvent) string {
 	switch e := ev.(type) {
 	case event.HolidayEvent:
 		return e.Desc
-	case hebcal.TimedEvent:
-		return e.Desc
+	}
+	if te, ok := asTimedEvent(ev); ok {
+		return te.Desc
 	}
 	return ev.Render("en")
+}
+
+// asTimedEvent returns the TimedEvent behind ev. KiddushLevanaEvent embeds a
+// TimedEvent but is a type of its own, so a plain type assertion misses it and
+// its time would stay baked into the subject instead of being drawn like every
+// other clock time.
+func asTimedEvent(ev event.CalEvent) (hebcal.TimedEvent, bool) {
+	switch e := ev.(type) {
+	case hebcal.TimedEvent:
+		return e, true
+	case hebcal.KiddushLevanaEvent:
+		return e.TimedEvent, true
+	}
+	return hebcal.TimedEvent{}, false
 }
 
 // eventCategories returns an event's [category, subcategory].
@@ -253,7 +268,7 @@ func (p *Params) use12Hour() bool {
 // comes from TimedEvent.EventTime rather than from parsing hebcal-go's
 // "Havdalah: 8:51" description back apart.
 func timeStringOf(ev event.CalEvent, p *Params) string {
-	te, ok := ev.(hebcal.TimedEvent)
+	te, ok := asTimedEvent(ev)
 	if !ok {
 		return ""
 	}
@@ -332,7 +347,7 @@ func isFastEnds(ev event.CalEvent) bool {
 // The published sequence walks the holidays that fall on a day and, for each,
 // places its related events around it: the Erev Pesach chametz deadlines, then
 // the fast start, then the holiday itself, then the fast end; afterwards come
-// the parsha, daily learning, the Omer, Molad, and finally candle lighting and
+// the parsha, daily learning, the Omer, Molad, Kiddush Levana, and finally candle lighting and
 // Havdalah. hebcal-go emits them in a different order, so a fast day that is
 // also Erev Pesach comes out with the chametz times above "Fast begins" unless
 // re-sorted.
@@ -374,6 +389,8 @@ func eventOrder(ev *Event) int {
 		return 6
 	case f.HasAny(event.MOLAD | event.SHABBAT_MEVARCHIM):
 		return 6
+	case f.Has(event.KIDDUSH_LEVANA):
+		return 6 // after the Molad, before candle lighting
 	case timed:
 		return 7 // candle lighting, Havdalah
 	}

@@ -8,6 +8,7 @@ import (
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
 	"github.com/hebcal/hebcal-go/hebcal"
+	"github.com/hebcal/hebcal-go/zmanim"
 )
 
 func ev(desc string, flags event.HolidayFlags, timeStr string) Event {
@@ -332,6 +333,67 @@ func TestYomTovOnlyKeepsOnlyChagim(t *testing.T) {
 		keep := keepEvent(ev, ev.GetFlags(), p)
 		if keep && !ev.GetFlags().Has(event.CHAG) {
 			t.Errorf("%q is not a chag but survived yomTovOnly", untranslatedDesc(ev))
+		}
+	}
+}
+
+// Latest Kiddush Levana is a timed event: its clock time is drawn separately,
+// with the a/p suffix in a 12-hour country and 24-hour elsewhere, and is not
+// left in the subject. KiddushLevanaEvent embeds TimedEvent rather than being
+// one, which once left "Latest Kiddush Levana: 9:44" in the subject with no
+// suffix and no separate time.
+func TestKiddushLevanaIsTimed(t *testing.T) {
+	tests := []struct {
+		city, locale          string
+		hour12                int32
+		wantSubject, wantTime string
+	}{
+		{"New York", "en", 0, "Latest Kiddush Levana", "9:44p"},
+		// The same instant, early on the following morning.
+		{"Jerusalem", "en", 0, "Latest Kiddush Levana", "03:44"},
+		{"Jerusalem", "en", 1, "Latest Kiddush Levana", "3:44a"},
+		{"New York", "he", 0, "סוֹף זְמַן קִדּוּשׁ לְבָנָה", "9:44p"},
+	}
+	for _, tt := range tests {
+		p := &Params{Locale: tt.locale, MonthMode: GregorianArabic, Hour12: tt.hour12}
+		p.Opts = hebcal.CalOptions{
+			Year: 2026, Month: 10, CandleLighting: true, KiddushLevanaMaharil: true,
+			Location: zmanim.LookupCity(tt.city),
+		}
+		events, err := Generate(p)
+		if err != nil {
+			t.Fatalf("Generate: %v", err)
+		}
+		found := false
+		for _, e := range events {
+			if !e.Flags.Has(event.KIDDUSH_LEVANA) {
+				continue
+			}
+			found = true
+			if e.Subject != tt.wantSubject || e.TimeStr != tt.wantTime {
+				t.Errorf("%s/%s: got subject %q time %q, want %q %q",
+					tt.city, tt.locale, e.Subject, e.TimeStr, tt.wantSubject, tt.wantTime)
+			}
+		}
+		if !found {
+			t.Errorf("%s/%s: no Kiddush Levana event", tt.city, tt.locale)
+		}
+	}
+}
+
+// Kiddush Levana follows the Molad and precedes candle lighting, even though it
+// carries a clock time like candle lighting does.
+func TestSortDayKiddushLevanaBeforeCandleLighting(t *testing.T) {
+	evs := []Event{
+		ev("Candle lighting", event.LIGHT_CANDLES, "5:44p"),
+		ev("Latest Kiddush Levana", event.KIDDUSH_LEVANA, "9:44p"),
+		ev("Parashat Noach", event.PARSHA_HASHAVUA, ""),
+	}
+	sortDay(evs)
+	want := []string{"Parashat Noach", "Latest Kiddush Levana", "Candle lighting"}
+	for i, w := range want {
+		if evs[i].Subject != w {
+			t.Errorf("position %d = %q, want %q", i, evs[i].Subject, w)
 		}
 	}
 }
