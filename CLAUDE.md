@@ -262,6 +262,16 @@ production draws a bold "9:44p" like every other timed row. In
 `eventOrder()` gives it the slot shared with Molad rather than the trailing
 timed slot.
 
+**Timed events are then put in chronological order** (2026-10). Slotting by
+kind put a later time above an earlier one -- Latest Kiddush Levana at 6:16p
+above Havdalah at 5:36p (Toronto, 13 Nov 2027), or "Fast ends" above Friday
+candle lighting on an Asara B'Tevet that falls on Friday. `sortDay` therefore
+re-sorts the timed events by `Event.Time` among the positions timed events
+already hold, leaving every untimed row where `eventOrder()` put it. This is a
+deliberate change from @hebcal/core's emission order; hebcal-web's
+`sortTimedEventsWithinDay()` in `src/calendar.js` does the same for the HTML,
+`.ics` and `.csv` calendars.
+
 ### The legacy /v2/ URL is a query string, not a protobuf
 
 `/v2/h/<base64>/<name>.pdf` is the download URL hebcal.com emitted before the

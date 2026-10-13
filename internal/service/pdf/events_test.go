@@ -15,6 +15,14 @@ func ev(desc string, flags event.HolidayFlags, timeStr string) Event {
 	return Event{Subject: desc, Flags: flags, TimeStr: timeStr}
 }
 
+// timedEv is ev with the instant behind timeStr, which sortDay uses to put a
+// day's timed events in chronological order.
+func timedEv(desc string, flags event.HolidayFlags, timeStr string, hour, min int) Event {
+	e := ev(desc, flags, timeStr)
+	e.Time = time.Date(2027, time.November, 13, hour, min, 0, 0, time.UTC)
+	return e
+}
+
 // The published sequence walks the holidays that fall on a day and places each
 // one's related events around it. This is the 14 Nisan case, which is both a
 // fast day and Erev Pesach: hebcal-go walks the two holidays in the opposite
@@ -381,19 +389,60 @@ func TestKiddushLevanaIsTimed(t *testing.T) {
 	}
 }
 
-// Kiddush Levana follows the Molad and precedes candle lighting, even though it
-// carries a clock time like candle lighting does.
-func TestSortDayKiddushLevanaBeforeCandleLighting(t *testing.T) {
-	evs := []Event{
-		ev("Candle lighting", event.LIGHT_CANDLES, "5:44p"),
-		ev("Latest Kiddush Levana", event.KIDDUSH_LEVANA, "9:44p"),
-		ev("Parashat Noach", event.PARSHA_HASHAVUA, ""),
+// Kiddush Levana sorts after the Molad, but timed events are drawn in
+// chronological order: a Latest Kiddush Levana at 6:16p goes below a Havdalah
+// at 5:36p (Toronto, 13 November 2027), and one at 9:44p below a 5:44p candle
+// lighting. Untimed rows keep their positions.
+func TestSortDayTimedEventsChronological(t *testing.T) {
+	tests := []struct {
+		in   []Event
+		want []string
+	}{
+		{
+			in: []Event{
+				ev("Parashat Lech-Lecha", event.PARSHA_HASHAVUA, ""),
+				timedEv("Latest Kiddush Levana", event.KIDDUSH_LEVANA, "6:16p", 18, 16),
+				timedEv("Havdalah", event.LIGHT_CANDLES_TZEIS, "5:36p", 17, 36),
+			},
+			want: []string{"Parashat Lech-Lecha", "Havdalah", "Latest Kiddush Levana"},
+		},
+		{
+			in: []Event{
+				timedEv("Candle lighting", event.LIGHT_CANDLES, "5:44p", 17, 44),
+				timedEv("Latest Kiddush Levana", event.KIDDUSH_LEVANA, "9:44p", 21, 44),
+				ev("Parashat Noach", event.PARSHA_HASHAVUA, ""),
+			},
+			want: []string{"Parashat Noach", "Candle lighting", "Latest Kiddush Levana"},
+		},
+		{
+			// An early Kiddush Levana deadline still precedes candle lighting.
+			in: []Event{
+				timedEv("Candle lighting", event.LIGHT_CANDLES, "5:44p", 17, 44),
+				timedEv("Latest Kiddush Levana", event.KIDDUSH_LEVANA, "3:02a", 3, 2),
+				ev("Parashat Noach", event.PARSHA_HASHAVUA, ""),
+			},
+			want: []string{"Parashat Noach", "Latest Kiddush Levana", "Candle lighting"},
+		},
+		{
+			// Asara B'Tevet on a Friday: the fast ends after candle lighting.
+			in: []Event{
+				func() Event {
+					e := timedEv("Fast ends", event.MINOR_FAST, "5:14p", 17, 14)
+					e.FastEnds = true
+					return e
+				}(),
+				ev("Parashat Vayechi", event.PARSHA_HASHAVUA, ""),
+				timedEv("Fast begins", event.MINOR_FAST, "6:01a", 6, 1),
+				timedEv("Candle lighting", event.LIGHT_CANDLES, "4:10p", 16, 10),
+				ev("Asara B'Tevet", event.MINOR_FAST, ""),
+			},
+			want: []string{"Fast begins", "Asara B'Tevet", "Candle lighting", "Parashat Vayechi", "Fast ends"},
+		},
 	}
-	sortDay(evs)
-	want := []string{"Parashat Noach", "Latest Kiddush Levana", "Candle lighting"}
-	for i, w := range want {
-		if evs[i].Subject != w {
-			t.Errorf("position %d = %q, want %q", i, evs[i].Subject, w)
+	for _, tt := range tests {
+		sortDay(tt.in)
+		if got := subjects(tt.in); got != strings.Join(tt.want, " | ") {
+			t.Errorf("sortDay() = %s\n          want %s", got, strings.Join(tt.want, " | "))
 		}
 	}
 }

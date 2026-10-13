@@ -28,6 +28,9 @@ type Event struct {
 	// TimeStr is the formatted clock time for timed events (candle lighting,
 	// havdalah, fast start/end), or empty for all-day events.
 	TimeStr string
+	// Time is the instant TimeStr was formatted from, zero for all-day events.
+	// It orders a day's timed events chronologically (sortDay).
+	Time time.Time
 	// Learning marks a daily-learning row fetched from the readings-svc sidecar
 	// because no Go schedule generates it. hebcal-go has no flag for these, so
 	// colour and ordering key off this instead of Flags.
@@ -90,6 +93,7 @@ func Generate(p *Params) ([]Event, error) {
 			Subject:  subject,
 			Flags:    flags,
 			TimeStr:  timeStr,
+			Time:     eventTimeOf(ev, timeStr),
 			URL:      event.URL(ev),
 			AltDate:  flags.Has(event.HEBREW_DATE),
 			FastEnds: isFastEnds(ev),
@@ -257,6 +261,16 @@ func (p *Params) use12Hour() bool {
 	return event.Uses12HourClock(cc)
 }
 
+// eventTimeOf returns the clock time of a timed event, or the zero time when
+// timeStr says the event is drawn without one.
+func eventTimeOf(ev event.CalEvent, timeStr string) time.Time {
+	if timeStr == "" {
+		return time.Time{}
+	}
+	te, _ := asTimedEvent(ev)
+	return te.EventTime
+}
+
 // timeStringOf formats the clock time for a timed event in the compact form the
 // PDF uses: "8:51p" in 12-hour countries, "20:51" in 24-hour ones. The time
 // comes from TimedEvent.EventTime rather than from parsing hebcal-go's
@@ -393,10 +407,36 @@ func eventOrder(ev *Event) int {
 
 // sortDay orders one day's events. The sort is stable so that events sharing a
 // position keep the order hebcal-go produced them in.
+//
+// eventOrder groups events by kind, which can put a later time above an
+// earlier one -- Latest Kiddush Levana above Havdalah, or "Fast ends" above
+// Friday candle lighting. So the timed events are then put in chronological
+// order among the positions timed events already occupy, leaving every
+// untimed row where eventOrder put it. Events at the same minute keep their
+// relative order.
 func sortDay(evs []Event) {
 	sort.SliceStable(evs, func(i, j int) bool {
 		return eventOrder(&evs[i]) < eventOrder(&evs[j])
 	})
+	var idx []int
+	for i := range evs {
+		if !evs[i].Time.IsZero() {
+			idx = append(idx, i)
+		}
+	}
+	if len(idx) < 2 {
+		return
+	}
+	timed := make([]Event, len(idx))
+	for j, i := range idx {
+		timed[j] = evs[i]
+	}
+	sort.SliceStable(timed, func(a, b int) bool {
+		return timed[a].Time.Before(timed[b].Time)
+	})
+	for j, i := range idx {
+		evs[i] = timed[j]
+	}
 }
 
 // SplitByGregorianMonth groups events into one bucket per Gregorian month, in
