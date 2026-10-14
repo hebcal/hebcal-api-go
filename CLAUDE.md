@@ -231,36 +231,36 @@ whole calendar.
 Months before the first event and after the last are omitted; gaps in between
 are kept and drawn empty.
 
-### Events within a day have a fixed order
+### Events within a day come from hebcal-go's order
 
-`@hebcal/core` walks the holidays falling on a date and pushes each one's
-related events around it: chametz deadlines, fast start, the holiday, fast end;
-then the parsha, daily learning, the Omer, Molad, and finally candle lighting
-and Havdalah. hebcal-go walks the same holidays in a different order, so 14
-Nisan — a fast day that is also Erev Pesach — came out with the chametz
-deadlines above "Fast begins".
+hebcal-go sorts each day's events by `hebcal.TimeOfDay()` (as `@hebcal/core`
+sorts by its `timeOfDay()`, and the two agree day for day): timed events
+before dawn ("Fast begins" for a minor fast, an early Latest Kiddush Levana),
+then the parsha, special Shabbatot and minor fasts, the Molad and Shabbat
+Mevarchim, other holidays and the Omer, the Erev Pesach chametz deadlines,
+daily learning, evening holidays (Erev holidays, Chanukah candles), and finally
+the evening's timed events -- candle lighting, Havdalah, "Fast ends", Erev
+Tish'a B'Av's "Fast begins", a late Kiddush Levana -- by time. So 14 Nisan on a
+weekday reads "Fast begins", "Ta'anit Bechorot", the two chametz deadlines,
+the learning rows, "Erev Pesach", "Candle lighting".
 
-`eventOrder()` sorts by kind to reproduce the published sequence. Note that a
-holiday can carry `LIGHT_CANDLES` itself (Erev Pesach does), so timed events are
-told apart by having a clock time, not by that flag.
-
-"Fast begins" and "Fast ends" are both timed and carry the same fast flag, but
-they straddle the fast day: `@hebcal/core` pushes the end event inside the fast
-holiday's block, so the sequence is "Fast begins", the fast day, "Fast ends",
-and only then the parsha and candle lighting. Sorting both to one position put
-"Fast ends" above the fast day (e.g. Asara B'Tevet, Tzom Gedaliah); `Event.FastEnds`
-(set from the untranslated `Desc` in `isFastEnds`, since the localized subject
-would not survive `lg=he`) gives it its own slot after the day.
+The PDF keeps that order rather than re-deriving it. `Event.rank` carries
+`TimeOfDay()` from `Generate`, and `sortDay` is a stable sort on it alone, so
+it changes nothing hebcal-go produced. What it is *for* is the learning rows
+`fallback.go` fetches from readings-svc: `mergeLearning` appends them at the end
+of the day, and with `rank` `TimeOfDayLearning` they move up to sit after the
+series hebcal-go generated and before the evening holiday. (Until October 2026
+this file had its own `eventOrder()` table reproducing `@hebcal/core`'s older
+emission order -- chametz above "Fast begins", "Fast ends" inside the fast's
+block, Kiddush Levana in the Molad's slot -- which the time-of-day ranking
+replaced in both libraries.)
 
 **Latest Kiddush Levana is a timed event too, but not a `hebcal.TimedEvent`.**
 `hebcal.KiddushLevanaEvent` embeds one, so a plain `ev.(hebcal.TimedEvent)`
 misses it; go through `asTimedEvent`. Before that, `timeStringOf` returned
 nothing for it, and the row drew hebcal-go's `Render()` text -- "Latest Kiddush
 Levana: 9:44", time baked into the subject with no a/p suffix -- where
-production draws a bold "9:44p" like every other timed row. In
-`@hebcal/core` it is pushed after the Molad and before candle lighting, so
-`eventOrder()` gives it the slot shared with Molad rather than the trailing
-timed slot.
+production draws a bold "9:44p" like every other timed row.
 
 ### The legacy /v2/ URL is a query string, not a protobuf
 
@@ -665,9 +665,10 @@ hebcal-mcp except three accepted divergences, each already known from the PDF
 port or approved above:
 1. the gematriya ב-prefix on "Date in Hebrew letters" (convert-gregorian and
    the yahrzeit table), described below;
-2. **same-day holiday ordering** in `jewish-holidays-year` — the identical
-   hebcal-go `byDate`-alphabetical vs @hebcal/core emission-order tie-break the
-   PDF section documents (e.g. Erev Purim / Shabbat Zachor on 13 Adar II);
+2. **same-day holiday ordering** in `jewish-holidays-year` -- hebcal-go's old
+   alphabetical tie-break (e.g. Erev Purim / Shabbat Zachor on 13 Adar II).
+   hebcal-go has since ordered same-day holidays like @hebcal/core (#42, in
+   v0.25.1), so this one should be gone; not re-measured against hebcal-mcp;
 3. a **~2-minute candle-lighting** difference in `shabbat-times` for Jerusalem —
    the noaa-go vs @hebcal/core sunset divergence (Chicago matches to the
    minute, so it is the zmanim lib, not the tool).
@@ -885,10 +886,10 @@ which compares positions rather than guessing at patterns.
 
 The port is complete. Rendering, links, event ordering, locales, alternate
 dates, daily learning, and the response headers all match production; every
-remaining difference is one of the accepted causes above (a Saturday-night
-Chanukah ordering choice, the ~1-minute zmanim offset from noaa-go vs
-@hebcal/core, the constant ~3.3pt day-number baseline, and the same-day holiday
-ordering below). www.hebcal.com's `/holidays/` calendars are served too, from
+remaining difference is one of the accepted causes above (the ~1-minute zmanim
+offset from noaa-go vs @hebcal/core, the constant ~3.3pt day-number baseline,
+and the within-day ordering below, which production picks up with the next
+`@hebcal/core`). www.hebcal.com's `/holidays/` calendars are served too, from
 `internal/service/holidaypdf`. What is left is operational, not rendering.
 
 ### Blocking a deployment
@@ -927,14 +928,19 @@ Latin/numeric agreement of **99.3%**, with a single calendar below 98%
 The `/holidays/` calendars (2026-08-11, against live www.hebcal.com) sample at
 **98.9–99.8%** across 1999, 2024–2031, 5787, 5788 and `i=on`, with `worst dx`
 0.00 and identical word counts; their link sets are identical, 86 of 86 with the
-same `uc=` campaigns. Every unmatched word in that sample is the same-day holiday
-ordering below -- two or three cells in the worst year (2025), none in the best.
+same `uc=` campaigns. Every unmatched word in that sample was the same-day holiday
+ordering (item 4 below, since fixed) -- two or three cells in the worst year
+(2025), none in the best.
 
-Every remaining difference is one of four known causes, none of them the
+Every remaining difference is one of the known causes below, none of them the
 calendar.js gap and none a missing or extra event:
 
-1. **Chanukah candle-lighting order on Saturday night** (below) — a within-cell
-   ordering difference, not an extra or missing row. Deliberately left as-is.
+1. **Within-day order follows the time-of-day ranking** (see "Events within a
+   day come from hebcal-go's order"). Production runs a `@hebcal/core` older
+   than that ranking until hebcal-web is upgraded, so until then cells that mix
+   learning with an evening holiday or a fast's end ("Fast ends" above the
+   learning rows, "Erev Purim" below "Fast ends"), and the Saturday-night
+   Chanukah row, are drawn in a different order there. Same rows, same times.
 2. **Zmanim differ by about a minute.** hebcal_1953_new_york_city shows a
    *systematic* one-minute offset on every candle/havdalah time (production
    `4:23p`, here `4:22p`); for that era the noaa-go vs @hebcal/core sunset
@@ -947,20 +953,12 @@ calendar.js gap and none a missing or extra event:
    horizontal alignment (`worst dx`) is unaffected. Against the *deployed*
    download.hebcal.com there is no offset at all (`worst dy` 0.00 over 2,131
    words), so this is one more symptom of the two-build skew above.
-4. **Two holidays on one day can come out in the other order.** hebcal-go's
-   `byDate` breaks a tie on the same date by comparing `Desc` alphabetically;
-   @hebcal/core keeps the order `getHolidaysForYear_()` created them in --
-   static table, then the variable-date holidays, then the modern ones, then
-   Rosh Chodesh, then Yom Kippur Katan, then Shabbat Shirah -- with one twist:
-   its `add()` *unshifts* rather than pushes when the date's first event
-   carries `EREV`. So production draws "Shabbat Zachor" above "Erev Purim",
-   "Shabbat Shekalim" above "Rosh Chodesh Adar" and "Rosh Hashana LaBehemot"
-   above "Rosh Chodesh Elul", while `eventOrder()` -- which files all of them
-   in one slot and leaves hebcal-go's alphabetical order intact -- draws each
-   pair the other way round. One or two cells a year on a full holiday
-   calendar, no row missing, added or retimed. Fixing it means ranking the
-   holiday slot by that emission order, which needs the untranslated `Desc` on
-   `Event`; not attempted, since it changes `/v4/` output too.
+4. Formerly: **two holidays on one day came out in the other order.**
+   hebcal-go broke a same-date tie by comparing `Desc` alphabetically, where
+   @hebcal/core keeps the order `getHolidaysForYear_()` created them in, so
+   production drew "Shabbat Zachor" above "Erev Purim" and here the reverse.
+   hebcal-go #42 (v0.25.1) fixed that upstream, verified against @hebcal/core
+   for 5600-6000 on both schedules.
 
 Also formerly on that list, and worth knowing because the earlier link
 verification missed all three: **the tracked link on every event carried three
@@ -1002,13 +1000,9 @@ ZIPs 20001 and 94303 -- now have **link sets identical to hebcal-web's**, 145
 to 152 links each, none only on one side.
 
 Formerly on that list: **event order within a day when a fast fell on the
-date**.
-"Fast ends" carried the fast flag and sorted to the same slot as "Fast begins",
-landing above the fast day instead of below it (Asara B'Tevet, Tzom Gedaliah, and
-the Shabbat Chazon / Erev Tish'a B'Av cell). `Event.FastEnds` gives it its own
-slot after the fast day, matching @hebcal/core's begins/holiday/ends sequence; a
-bbox-level ordering diff of a full-year NY 2026 calendar (special Shabbatot and
-Rosh Chodesh included) now finds zero cells out of order.
+date** -- "Fast ends" sorted above the fast day. hebcal-go's time-of-day
+ranking puts it in the evening's timed events, after the fast and the learning
+rows.
 
 Localized `/v4/` calendars are handled: the Hebrew-month subtitle is translated
 per locale (es "Jeshvan", de "Cheschwan"/"Tammus", fr "Tammouz"), and es/de/fr
@@ -1021,36 +1015,19 @@ the calendar.js section above. Sampling real `mm=1`/`mm=2` URLs gives 99.5–100
 Latin agreement, worst dx 0.14–0.40pt, with only the shared trio above
 remaining.
 
-**Chanukah candle-lighting order on Saturday night** is the only remaining
-difference on an English `/v4/` calendar with candle-lighting, and it is a
-within-cell ordering difference, not a missing, extra, or merged row. This was long misdiagnosed here as "we emit both
-where production merges" — a cell-by-cell bbox comparison of December 2026 shows
-otherwise:
-
-- Erev Shabbat (Friday, e.g. 4 Dec 2026) is byte-identical: both draw
-  "Chanukah: 1 Candle" *and* "Candle lighting", same order. Neither merges.
-- Motzei Shabbat (Saturday, e.g. 5 and 12 Dec) has the same rows and the same
-  times, but the "Chanukah: N Candles" candle-lighting row sits at the *bottom*
-  of the cell here and at the *top* (holiday position) in production.
-
-The cause is @hebcal/core's `TimedChanukahEvent`: on Saturday night the Chanukah
-lighting *is* the holiday event carrying a Havdalah-time, emitted at the holiday
-position, so it sorts before the parsha and Shabbat Mevarchim. hebcal-go returns
-the same merged event as a plain `TimedEvent` with `CHANUKAH_CANDLES`, and
-`eventOrder()` files every timed event with candle-lighting (last), so it lands
-after the parsha and Mevarchim. hebcal-go's own emission order is already
-correct; only our re-sort moves it, so a one-line `eventOrder()` case (timed
-`CHANUKAH_CANDLES` → holiday slot) would match production.
-
-**Deliberately not done:** we prefer the Chanukah candle-lighting time grouped
-with the day's other timed rows at the foot of the Saturday cell. Every event is
-present, correct and identically timed; only the vertical order within that one
-cell differs. Left as an accepted divergence.
+**Chanukah candle-lighting order on Saturday night** used to be a deliberate
+divergence: production's `@hebcal/core` emitted the Saturday-night
+`TimedChanukahEvent` at the holiday position, above the parsha and Shabbat
+Mevarchim, while this service drew it at the foot of the cell with the timed
+rows, which we preferred. Both libraries now rank Chanukah candles with the
+evening holidays -- after the parsha, Mevarchim and learning, just before
+Havdalah -- which is that preference, so the two agree once production is on
+the new `@hebcal/core`.
 
 The daily-learning **rows sort into one slot in the order the request listed
 them** -- which they did not until 2026-08-14. Only four of the thirteen schedules have a flag of their own;
-the rest carry the generic `DAILY_LEARNING`, and `eventOrder()` tested only the
-four, so the other nine fell through to the *holiday* slot and sorted above Daf
+the rest carry the generic `DAILY_LEARNING`, and the `eventOrder()` this file
+had then tested only the four, so the other nine fell through to the *holiday* slot and sorted above Daf
 Yomi and Mishna Yomi. A Boston 2027 calendar with `F`+`myomi`+`dps`+`dr3` drew
 every cell as Psalms / Rambam / Daf Yomi / Mishna Yomi where hebcal-web draws
 Daf Yomi / Mishna Yomi / Psalms / Rambam.
@@ -1072,9 +1049,9 @@ common with none.
 
 The lesson for the next one of these: a link-set difference is not evidence
 about the *rows*. Dump the schedule from both libraries and diff it before
-concluding anything about the data (`internal/service/pdf/events_test.go` now
-pins the ordering, and the flag to key on is `DAILY_LEARNING`, not the four
-named ones).
+concluding anything about the data (hebcal-go's `TimeOfDay()` now keys on
+`DAILY_LEARNING` as well as the four named flags, and
+`internal/service/pdf/events_test.go` pins the resulting order).
 
 One daily-learning schedule is still **rendered differently**, found by that
 same day-by-day dump and not yet fixed: **`tanakhYomi` renders the verse
@@ -1205,7 +1182,8 @@ passes to `renderPdfEvent`.
 `src/calendar.js`. `use12Hour` / `timeStringOf` ← `reformatTimeStr()` (the country table is
 hebcal-go's `event.Uses12HourClock`, its `hour12cc`). `learningFlags` ←
 `LEARNING_MASK`. `renderSubject` ← `shouldRenderBrief()`'s render/renderBrief
-choice. `eventOrder` ← `@hebcal/core`'s per-day emission order.
+choice. `sortDay` / `Event.rank` ← hebcal-go's `TimeOfDay()`, the counterpart
+of `@hebcal/core`'s `timeOfDay()`.
 `SplitByGregorianMonth` ← `eventsToCells()`.
 
 ### `internal/service/pdf/pdf.go`

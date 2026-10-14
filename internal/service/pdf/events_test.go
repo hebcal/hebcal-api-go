@@ -15,160 +15,81 @@ func ev(desc string, flags event.HolidayFlags, timeStr string) Event {
 	return Event{Subject: desc, Flags: flags, TimeStr: timeStr}
 }
 
-// The published sequence walks the holidays that fall on a day and places each
-// one's related events around it. This is the 14 Nisan case, which is both a
-// fast day and Erev Pesach: hebcal-go walks the two holidays in the opposite
-// order, so without sorting the chametz deadlines came out above
-// "Fast begins" instead of below it.
-func TestSortDayErevPesachOnAFastDay(t *testing.T) {
-	// The order hebcal-go produces.
-	evs := []Event{
-		ev("Finish eating chametz", 0, "11:00a"),
-		ev("Biur Chametz", 0, "12:05p"),
-		ev("Erev Pesach", event.EREV|event.LIGHT_CANDLES|event.CHUL_ONLY, ""),
-		ev("Fast begins", event.MINOR_FAST, "5:19a"),
-		ev("Ta'anit Bechorot", event.MINOR_FAST, ""),
-		ev("Candle lighting", event.LIGHT_CANDLES, "7:22p"),
+// generateDay renders one day in Toronto with candle-lighting, Kiddush
+// Levana and Mishna Yomi, as subjects in the order sortDay leaves them.
+func generateDay(t *testing.T, year int, month time.Month, day int, learning []Event) string {
+	t.Helper()
+	d := hdate.FromGregorian(year, month, day)
+	toronto := zmanim.NewLocation("Toronto", "CA", 43.70011, -79.4163, 0, "America/Toronto")
+	p := &Params{Locale: "en", MonthMode: GregorianArabic}
+	p.Opts = hebcal.CalOptions{
+		Start: d, End: d, Location: &toronto, CandleLighting: true, HavdalahMins: 42,
+		Sedrot: true, KiddushLevanaMaharil: true, MishnaYomi: true,
 	}
-	sortDay(evs)
-	want := []string{
-		"Fast begins",
-		"Ta'anit Bechorot",
-		"Finish eating chametz",
-		"Biur Chametz",
-		"Erev Pesach",
-		"Candle lighting",
+	events, err := Generate(p)
+	if err != nil {
+		t.Fatalf("Generate: %v", err)
 	}
-	for i, w := range want {
-		if evs[i].Subject != w {
-			t.Errorf("position %d = %q, want %q\nfull order: %s", i, evs[i].Subject, w, subjects(evs))
-			return
+	for i := range learning {
+		learning[i].HD, learning[i].Greg = d, d.Gregorian()
+	}
+	events = mergeLearning(events, learning)
+	pages := SplitByGregorianMonth(events)
+	if len(pages) != 1 {
+		t.Fatalf("got %d pages, want 1", len(pages))
+	}
+	return subjects(pages[0].Days[day])
+}
+
+// A day is drawn in hebcal-go's order, which ranks events by time of day:
+// timed events before dawn, the morning's fast, the chametz deadlines, daily
+// learning, the evening's holiday and then the evening's timed events.
+func TestSortDayKeepsHebcalTimeOfDayOrder(t *testing.T) {
+	tests := []struct {
+		year  int
+		month time.Month
+		day   int
+		want  string
+	}{
+		{2027, time.October, 4,
+			"Fast begins | Tzom Gedaliah | Berakhot 5:1-2 | Fast ends"},
+		{2027, time.October, 15,
+			"Latest Kiddush Levana | Berakhot 8:5-6 | Erev Sukkot | Candle lighting"},
+		{2028, time.April, 10,
+			"Fast begins | Ta’anit Bechorot | Finish eating chametz | Biur Chametz | " +
+				"Terumot 7:7-8:1 | Erev Pesach | Candle lighting"},
+	}
+	for _, tt := range tests {
+		if got := generateDay(t, tt.year, tt.month, tt.day, nil); got != tt.want {
+			t.Errorf("%d-%02d-%02d = %s\n           want %s", tt.year, tt.month, tt.day, got, tt.want)
 		}
 	}
 }
 
-// "Fast ends" carries the same fast flag as "Fast begins" but sorts after the
-// fast day itself, matching the published begins/holiday/ends sequence -- e.g.
-// on Asara B'Tevet. It still sorts before the parsha and candle lighting, since
-// the fast end belongs inside the holiday block. Regression for the order that
-// put "Fast ends" above the fast day.
-func TestSortDayFastEndsAfterFastDay(t *testing.T) {
-	fastEnds := ev("Fast ends", event.MINOR_FAST, "5:14p")
-	fastEnds.FastEnds = true
-	evs := []Event{
-		fastEnds,
-		ev("Parashat Vayechi", event.PARSHA_HASHAVUA, ""),
-		ev("Fast begins", event.MINOR_FAST, "6:01a"),
-		ev("Candle lighting", event.LIGHT_CANDLES, "4:10p"),
-		ev("Asara B'Tevet", event.MINOR_FAST, ""),
-	}
-	sortDay(evs)
-	want := []string{
-		"Fast begins",
-		"Asara B'Tevet",
-		"Fast ends",
-		"Parashat Vayechi",
-		"Candle lighting",
-	}
-	for i, w := range want {
-		if evs[i].Subject != w {
-			t.Errorf("position %d = %q, want %q\nfull order: %s", i, evs[i].Subject, w, subjects(evs))
-			return
-		}
+// A learning row fetched from the sidecar is appended to the end of the day by
+// mergeLearning, and sortDay moves it up to the learning slot: after the
+// series hebcal-go generated, ahead of the evening's holiday and timed events.
+func TestSortDayPutsFetchedLearningInTheLearningSlot(t *testing.T) {
+	psalms := Event{Subject: "Psalms 60-65", Learning: true, rank: hebcal.TimeOfDayLearning}
+	got := generateDay(t, 2027, time.October, 15, []Event{psalms})
+	want := "Latest Kiddush Levana | Berakhot 8:5-6 | Psalms 60-65 | Erev Sukkot | Candle lighting"
+	if got != want {
+		t.Errorf("got  %s\nwant %s", got, want)
 	}
 }
 
-// A holiday can carry LIGHT_CANDLES itself -- Erev Pesach does -- so timed
-// events have to be told apart by having a clock time, not by that flag.
-// Classifying Erev Pesach as timed pushed it to the bottom of the cell.
-func TestErevPesachIsNotTreatedAsATimedEvent(t *testing.T) {
-	erev := ev("Erev Pesach", event.EREV|event.LIGHT_CANDLES|event.CHUL_ONLY, "")
-	candles := ev("Candle lighting", event.LIGHT_CANDLES, "7:22p")
-	if eventOrder(&erev) >= eventOrder(&candles) {
-		t.Errorf("Erev Pesach (order %d) should sort before candle lighting (order %d)",
-			eventOrder(&erev), eventOrder(&candles))
-	}
-}
-
-// A Shabbat carrying a minor holiday, a special Shabbat and a parsha lists the
-// holidays first and the parsha after them.
-func TestSortDayHolidaysBeforeParsha(t *testing.T) {
-	evs := []Event{
-		ev("Parashat Beshalach", event.PARSHA_HASHAVUA, ""),
-		ev("Shabbat Shirah", event.SPECIAL_SHABBAT, ""),
-		ev("Tu BiShvat", event.MINOR_HOLIDAY, ""),
-		ev("Havdalah", event.YOM_TOV_ENDS, "5:57p"),
-	}
-	sortDay(evs)
-	if evs[len(evs)-1].Subject != "Havdalah" {
-		t.Errorf("Havdalah should be last, got %s", subjects(evs))
-	}
-	parsha, hol := -1, -1
-	for i, e := range evs {
-		if e.Flags.Has(event.PARSHA_HASHAVUA) {
-			parsha = i
-		}
-		if e.Flags.HasAny(event.MINOR_HOLIDAY|event.SPECIAL_SHABBAT) && hol < i {
-			hol = i
-		}
-	}
-	if parsha < hol {
-		t.Errorf("parsha at %d should follow the holidays (last at %d): %s", parsha, hol, subjects(evs))
-	}
-}
-
-// Every daily-learning schedule sorts into one slot, in the order hebcal-go
-// emitted them -- which is the order the request listed them in. Only four of
-// the thirteen have a flag of their own; the rest carry the generic
-// DAILY_LEARNING, and testing only the four dropped them into the holiday slot,
-// where they came out above Daf Yomi and Mishna Yomi rather than beside them.
-//
-// A Boston 2027 calendar with F+myomi+dps+dr3 drew every cell as Psalms,
-// Rambam, Daf Yomi, Mishna Yomi where production draws Daf Yomi, Mishna Yomi,
-// Psalms, Rambam. That also cost 30 Mishna Yomi links, because on a crowded day
-// the row that overflows the cell is whichever one is last.
-func TestSortDayKeepsAllDailyLearningTogether(t *testing.T) {
-	evs := []Event{
-		ev("Temurah 12", event.DAF_YOMI, ""),
-		ev("Negaim 12:7-13:1", event.MISHNA_YOMI, ""),
-		ev("Psalms 106-107", event.DAILY_LEARNING, ""),
-		ev("Mourning 6-8", event.DAILY_LEARNING, ""),
-		ev("Rosh Chodesh Tevet", event.ROSH_CHODESH, ""),
-		ev("Candle lighting", event.LIGHT_CANDLES, "3:59p"),
-	}
-	sortDay(evs)
-	want := "Rosh Chodesh Tevet | Temurah 12 | Negaim 12:7-13:1 | " +
-		"Psalms 106-107 | Mourning 6-8 | Candle lighting"
-	if got := subjects(evs); got != want {
-		t.Errorf("sortDay() = %s\n          want %s", got, want)
-	}
-}
-
-// The generic flag must not sort a learning row into the holiday slot, which is
-// the specific regression above.
-func TestDailyLearningIsNotAHoliday(t *testing.T) {
-	learning := eventOrder(&Event{Flags: event.DAILY_LEARNING})
-	holiday := eventOrder(&Event{Flags: event.ROSH_CHODESH})
-	dafYomi := eventOrder(&Event{Flags: event.DAF_YOMI})
-	if learning == holiday {
-		t.Errorf("DAILY_LEARNING sorts to the holiday slot %d", learning)
-	}
-	if learning != dafYomi {
-		t.Errorf("DAILY_LEARNING sorts to %d, Daf Yomi to %d; the two must share a slot",
-			learning, dafYomi)
-	}
-}
-
-// Events sharing a position keep the order hebcal-go produced them in, so a
-// stable sort is required.
+// Events of equal rank keep the order hebcal-go produced them in, so a stable
+// sort is required.
 func TestSortDayIsStable(t *testing.T) {
 	evs := []Event{
-		ev("Tu BiShvat", event.MINOR_HOLIDAY, ""),
-		ev("Shabbat Shirah", event.SPECIAL_SHABBAT, ""),
+		{Subject: "Tu BiShvat", rank: hebcal.TimeOfDayDay},
+		{Subject: "Shabbat Shirah", rank: hebcal.TimeOfDayDay},
+		{Subject: "Psalms 1-2", rank: hebcal.TimeOfDayLearning},
+		{Subject: "Daf Yomi", rank: hebcal.TimeOfDayLearning},
 	}
 	sortDay(evs)
-	if evs[0].Subject != "Tu BiShvat" || evs[1].Subject != "Shabbat Shirah" {
-		t.Errorf("stable order not preserved: %s", subjects(evs))
+	if got, want := subjects(evs), "Tu BiShvat | Shabbat Shirah | Psalms 1-2 | Daf Yomi"; got != want {
+		t.Errorf("stable order not preserved: %s", got)
 	}
 }
 
@@ -377,23 +298,6 @@ func TestKiddushLevanaIsTimed(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("%s/%s: no Kiddush Levana event", tt.city, tt.locale)
-		}
-	}
-}
-
-// Kiddush Levana follows the Molad and precedes candle lighting, even though it
-// carries a clock time like candle lighting does.
-func TestSortDayKiddushLevanaBeforeCandleLighting(t *testing.T) {
-	evs := []Event{
-		ev("Candle lighting", event.LIGHT_CANDLES, "5:44p"),
-		ev("Latest Kiddush Levana", event.KIDDUSH_LEVANA, "9:44p"),
-		ev("Parashat Noach", event.PARSHA_HASHAVUA, ""),
-	}
-	sortDay(evs)
-	want := []string{"Parashat Noach", "Latest Kiddush Levana", "Candle lighting"}
-	for i, w := range want {
-		if evs[i].Subject != w {
-			t.Errorf("position %d = %q, want %q", i, evs[i].Subject, w)
 		}
 	}
 }

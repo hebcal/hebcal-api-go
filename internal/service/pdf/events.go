@@ -36,10 +36,11 @@ type Event struct {
 	// not drawn as an event row; the renderer prints its brief form on the
 	// day-number line via renderAltDateOnLine.
 	AltDate bool
-	// FastEnds marks the "Fast ends" timed event, which carries the same fast
-	// flag as "Fast begins" but sorts after the fast day itself rather than
-	// before it (eventOrder). The published sequence is begins, holiday, ends.
-	FastEnds bool
+	// rank is the event's position within its day, hebcal.TimeOfDay for the
+	// events hebcal-go generates. sortDay orders a day by it alone, which keeps
+	// hebcal-go's order and puts the fetched learning rows in the learning
+	// slot.
+	rank int
 	// URL is the canonical hebcal.com page for this event, or empty. The
 	// renderer turns it into the short, tracked form and attaches a link
 	// annotation over the drawn text.
@@ -85,14 +86,17 @@ func Generate(p *Params) ([]Event, error) {
 			}
 		}
 		e := Event{
-			HD:       hd,
-			Greg:     hd.Gregorian(),
-			Subject:  subject,
-			Flags:    flags,
-			TimeStr:  timeStr,
-			URL:      event.URL(ev),
-			AltDate:  flags.Has(event.HEBREW_DATE),
-			FastEnds: isFastEnds(ev),
+			HD:      hd,
+			Greg:    hd.Gregorian(),
+			Subject: subject,
+			Flags:   flags,
+			TimeStr: timeStr,
+			URL:     event.URL(ev),
+			AltDate: flags.Has(event.HEBREW_DATE),
+			rank:    hebcal.TimeOfDay(ev),
+		}
+		if e.AltDate {
+			e.rank = altDateRank
 		}
 		// The Hebrew name drawn after the transliteration (lg=ah / lg=sh). It
 		// is the brief Hebrew rendering, computed here because the renderer only
@@ -327,75 +331,20 @@ func stripEmoji(s string) string {
 	return strings.TrimSpace(out)
 }
 
-// isFastEnds reports whether ev is the "Fast ends" timed event. hebcal-go emits
-// "Fast begins" and "Fast ends" as TimedEvents carrying the same fast flag, so
-// only the untranslated description tells them apart; the localized Subject
-// would not survive a non-English locale.
-func isFastEnds(ev event.CalEvent) bool {
-	te, ok := ev.(hebcal.TimedEvent)
-	return ok && te.Desc == "Fast ends"
-}
+// altDateRank puts an alternate-date event ahead of a day's other events, as
+// hebcal-go emits it. It is drawn on the day-number line rather than as a row,
+// so only consistency depends on it.
+const altDateRank = -1
 
-// eventOrder gives the sort position of an event within a single day.
-//
-// The published sequence walks the holidays that fall on a day and, for each,
-// places its related events around it: the Erev Pesach chametz deadlines, then
-// the fast start, then the holiday itself, then the fast end; afterwards come
-// the parsha, daily learning, the Omer, Molad, Kiddush Levana, and finally candle lighting and
-// Havdalah. hebcal-go emits them in a different order, so a fast day that is
-// also Erev Pesach comes out with the chametz times above "Fast begins" unless
-// re-sorted.
-//
-// The fast end lands after the fast day itself but still before the parsha,
-// learning and candle lighting -- e.g. on Asara B'Tevet the sequence is "Fast
-// begins", "Asara B'Tevet", "Fast ends". "Fast begins" and "Fast ends" share
-// the fast flag, so FastEnds tells them apart (isFastEnds).
-//
-// Ordering by kind reproduces that sequence without depending on either
-// library's internal walk. Note that a holiday can carry LIGHT_CANDLES itself
-// -- Erev Pesach does -- so the timed events are told apart by having a clock
-// time, not by that flag.
-func eventOrder(ev *Event) int {
-	timed := ev.Timed()
-	f := ev.Flags
-	isFast := f.HasAny(event.MINOR_FAST | event.MAJOR_FAST)
-	switch {
-	case ev.Learning:
-		return 6 // alongside the daily-learning series generated locally
-	case timed && isFast && !ev.FastEnds:
-		return 0 // "Fast begins"
-	case !timed && isFast:
-		return 1 // the fast day itself
-	case timed && isFast && ev.FastEnds:
-		return 2 // "Fast ends" -- after the fast day, before parsha/candles
-	case timed && f == 0:
-		return 3 // the Erev Pesach chametz deadlines carry no flags
-	case f.Has(event.PARSHA_HASHAVUA):
-		return 5
-	// DAILY_LEARNING is the generic flag; only four schedules have one of their
-	// own. Testing just those four left the other nine -- Psalms, both Rambam
-	// cycles, Daf-a-Week, Perek Yomi, Tanakh Yomi, 929 and Pirkei Avot -- to
-	// fall through to the holiday slot below, where they sorted *above* Daf
-	// Yomi and Mishna Yomi instead of beside them.
-	case f.HasAny(learningFlags):
-		return 6
-	case f.Has(event.OMER_COUNT):
-		return 6
-	case f.HasAny(event.MOLAD | event.SHABBAT_MEVARCHIM):
-		return 6
-	case f.Has(event.KIDDUSH_LEVANA):
-		return 6 // after the Molad, before candle lighting
-	case timed:
-		return 7 // candle lighting, Havdalah
-	}
-	return 4 // holidays, Rosh Chodesh, special Shabbatot
-}
-
-// sortDay orders one day's events. The sort is stable so that events sharing a
-// position keep the order hebcal-go produced them in.
+// sortDay orders one day's events by rank. hebcal-go already orders each day
+// by time of day, so this changes nothing but the daily-learning rows
+// mergeLearning appended at the end of the day, which move up to the learning
+// slot, after any learning series hebcal-go generated itself. The sort is
+// stable so that events of equal rank keep the order hebcal-go produced them
+// in.
 func sortDay(evs []Event) {
 	sort.SliceStable(evs, func(i, j int) bool {
-		return eventOrder(&evs[i]) < eventOrder(&evs[j])
+		return evs[i].rank < evs[j].rank
 	})
 }
 

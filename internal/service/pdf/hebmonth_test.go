@@ -5,6 +5,7 @@ import (
 
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
+	"github.com/hebcal/hebcal-go/hebcal"
 )
 
 func hebEvent(hy int, hm hdate.HMonth, hd int, subject string) Event {
@@ -106,16 +107,11 @@ func TestLeapYearHasBothAdars(t *testing.T) {
 }
 
 // Each page's events are ordered the same way the Gregorian pages order theirs.
-//
-// The flags matter: eventOrder reserves the flagless-timed slot for the Erev
-// Pesach chametz deadlines, which are the only timed events with no flags, so a
-// candle-lighting event built without LIGHT_CANDLES would be sorted as one of
-// those.
 func TestHebrewPagesSortTheirDays(t *testing.T) {
 	d := hdate.New(5787, hdate.Tishrei, 15)
 	timed := Event{HD: d, Greg: d.Gregorian(), Subject: "Candle lighting",
-		TimeStr: "6:00p", Flags: event.LIGHT_CANDLES}
-	holiday := Event{HD: d, Greg: d.Gregorian(), Subject: "Sukkot I", Flags: event.CHAG}
+		TimeStr: "6:00p", Flags: event.LIGHT_CANDLES, rank: hebcal.TimeOfDayNight}
+	holiday := Event{HD: d, Greg: d.Gregorian(), Subject: "Sukkot I", Flags: event.CHAG, rank: hebcal.TimeOfDayDay}
 	pages := SplitByHebrewMonth([]Event{timed, holiday})
 	got := pages[0].Days[15]
 	if len(got) != 2 {
