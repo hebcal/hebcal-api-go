@@ -81,7 +81,7 @@ func TestGenerateRetimesFasts(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, e := range events {
-			if e.FastEnds && e.Greg.Month() == time.September && e.Greg.Day() == 14 {
+			if e.Subject == "Fast ends" && e.Greg.Month() == time.September && e.Greg.Day() == 14 {
 				return e.TimeStr
 			}
 		}

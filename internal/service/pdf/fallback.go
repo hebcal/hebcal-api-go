@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/hebcal/hdate"
+	"github.com/hebcal/hebcal-go/hebcal"
 
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
@@ -89,6 +90,7 @@ func (f *LearningFetcher) Fetch(ctx context.Context, series []string, lg string,
 			Subject:  jsutil.SmartApostrophe(title),
 			Learning: true,
 			URL:      canonicalLearningURL(it.Link),
+			rank:     hebcal.TimeOfDayLearning,
 		})
 	}
 	return out, nil
