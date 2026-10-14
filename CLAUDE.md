@@ -755,6 +755,10 @@ event, which is what closed the daily-learning link gap (see "Where things
 stand"). The empty URLs it returns for Schottenstein Yerushalmi and multi-reading
 Rambam 3-chapter days are deliberate and match @hebcal/core, not omissions.
 
+hebcal-go v0.25.2 sorts each day's events by time of day and exports the
+rank as `hebcal.TimeOfDay()` (see "Events within a day come from hebcal-go's
+order"), which is what let the PDF's own `eventOrder()` table go.
+
 hebcal-go v0.25.0 adds `event.ReformatTimeStr` and `event.Uses12HourClock`
 (@hebcal/core's `reformatTimeStr` and its `hour12cc` table), and `TimedEvent.Render()`
 now carries an am/pm suffix or follows the country's 24-hour clock instead of
