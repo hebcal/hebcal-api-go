@@ -269,9 +269,8 @@ candle lighting on an Asara B'Tevet that falls on Friday. `sortDay` therefore
 re-sorts the timed events by `Event.Time` among the positions timed events
 already hold, leaving every untimed row where `eventOrder()` put it. This is a
 deliberate change from @hebcal/core's emission order; hebcal-web's
-`sortTimedEvents()` in `src/hebcalResults.js` does the same client-side for the
-`/hebcal` HTML calendar (its `.ics` and `.csv` output keep @hebcal/core's
-order).
+`sortTimedEventsWithinDay()` in `src/calendar.js` does the same for the HTML,
+`.ics` and `.csv` calendars.
 
 ### The legacy /v2/ URL is a query string, not a protobuf
 
