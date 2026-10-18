@@ -630,15 +630,15 @@ func TestRange(t *testing.T) {
 
 func TestRangeEdgeCases(t *testing.T) {
 	_, srv := testServer(t)
-	// truncated to 399 days
+	// truncated to 179 days
 	_, body := get(t, srv, "/converter?cfg=json&start=2025-01-01&end=2026-12-31")
 	var obj struct {
 		End    string                     `json:"end"`
 		Hdates map[string]json.RawMessage `json:"hdates"`
 	}
 	json.Unmarshal([]byte(body), &obj)
-	if obj.End != "2026-02-04" || len(obj.Hdates) != 400 {
-		t.Errorf("end=%s len=%d, want 2026-02-04/400", obj.End, len(obj.Hdates))
+	if obj.End != "2025-06-29" || len(obj.Hdates) != 180 {
+		t.Errorf("end=%s len=%d, want 2025-06-29/180", obj.End, len(obj.Hdates))
 	}
 	// end before start collapses to a single conversion
 	_, body = get(t, srv, "/converter?cfg=json&start=2025-01-01&end=2024-01-05")
@@ -669,11 +669,11 @@ func TestNdays(t *testing.T) {
 	if len(obj.Hdates) != 3 {
 		t.Errorf("len(hdates) = %d, want 3", len(obj.Hdates))
 	}
-	// ndays are capped at 399 days total
+	// ndays are capped at 179 days total
 	_, body = get(t, srv, "/converter?cfg=json&h2g=1&ndays=500&hy=5785&hm=Av&hd=1")
 	json.Unmarshal([]byte(body), &obj)
-	if len(obj.Hdates) != 399 {
-		t.Errorf("len(hdates) = %d, want 399", len(obj.Hdates))
+	if len(obj.Hdates) != 179 {
+		t.Errorf("len(hdates) = %d, want 179", len(obj.Hdates))
 	}
 }
 
@@ -758,7 +758,7 @@ func TestETag304(t *testing.T) {
 func TestCompression(t *testing.T) {
 	_, srv := testServer(t)
 	// large batch response is gzipped
-	resp, body := get(t, srv, "/converter?cfg=json&start=2025-01-01&end=2025-06-30",
+	resp, body := get(t, srv, "/converter?cfg=json&start=2025-01-01&end=2025-06-29",
 		"Accept-Encoding", "gzip")
 	if resp.Header.Get("Content-Encoding") != "gzip" {
 		t.Fatalf("Content-Encoding = %q", resp.Header.Get("Content-Encoding"))
@@ -774,7 +774,7 @@ func TestCompression(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(plain), `"2025-06-30"`) {
+	if !strings.Contains(string(plain), `"2025-06-29"`) {
 		t.Error("bad gzip payload")
 	}
 	// small single-date response is not compressed and has no Vary

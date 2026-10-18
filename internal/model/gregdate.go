@@ -15,7 +15,7 @@ import (
 )
 
 // MaxRangeDays caps a date-range request on /converter and /zmanim.
-const MaxRangeDays = 399
+const MaxRangeDays = 179
 
 // GregDate is a proleptic Gregorian calendar date.
 type GregDate struct {
