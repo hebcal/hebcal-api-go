@@ -26,7 +26,6 @@ func (s *Server) csvDownload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Cache-Control", httpx.CacheControl14Days)
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	if s.writeETag(w, r) {
 		return

@@ -455,9 +455,14 @@ comes into range); the no-events 400 drops it.
 and on the 410, and not on the 400. The unknown-location 404 is a **deliberate divergence** — hebcal-web
 lets the 14-day Cache-Control survive onto it too, but a missing location may be
 added later, so pinning the 404 in Varnish for two weeks is worse than a cache
-miss. `Access-Control-Allow-Origin` and `X-Content-Type-Options` come free from
-Go's `http.Error` on the error paths but are set explicitly on the 200, which
-uses `w.Write`.
+miss. `X-Content-Type-Options` comes free from Go's `http.Error` on the error
+paths but is set explicitly on the 200, which uses `w.Write`.
+
+**CORS differs by format.** The PDF 200 sends `Access-Control-Allow-Origin: *`
+because www.hebcal.com's `print-iframe.ejs` loads the PDF cross-origin from
+download.hebcal.com. The `.csv` 200 sends none, matching production -- hebcal-web
+never set it there, and nothing needs a page to `fetch()` a CSV. (`http.Error`
+does not set ACAO on either format's error paths.)
 
 The `ETag` (`httpx.MakeETag`) is a weak FNV-1a hash of the
 request path, query, encoding class and library versions — not a hash of the

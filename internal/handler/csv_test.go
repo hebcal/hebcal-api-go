@@ -28,15 +28,17 @@ func TestCSVResponse(t *testing.T) {
 		t.Fatalf("status = %d, want 200: %s", resp.StatusCode, body)
 	}
 	for header, want := range map[string]string{
-		"Content-Type":                "text/x-csv; charset=utf-8",
-		"Content-Disposition":         `attachment; filename="hebcal_2026_new_york.csv"`,
-		"Cache-Control":               httpx.CacheControl14Days,
-		"Access-Control-Allow-Origin": "*",
-		"X-Content-Type-Options":      "nosniff",
+		"Content-Type":           "text/x-csv; charset=utf-8",
+		"Content-Disposition":    `attachment; filename="hebcal_2026_new_york.csv"`,
+		"Cache-Control":          httpx.CacheControl14Days,
+		"X-Content-Type-Options": "nosniff",
 	} {
 		if got := resp.Header.Get(header); got != want {
 			t.Errorf("%s = %q, want %q", header, got, want)
 		}
+	}
+	if got := resp.Header.Get("Access-Control-Allow-Origin"); got != "" {
+		t.Errorf("Access-Control-Allow-Origin = %q, want none: production sends no CORS header on a CSV", got)
 	}
 	if !strings.HasPrefix(body, "\xEF\xBB\xBF\"Subject\",") {
 		t.Errorf("body does not begin with the BOM and header: %.40q", body)
