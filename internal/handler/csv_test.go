@@ -82,7 +82,9 @@ func TestCSVErrors(t *testing.T) {
 }
 
 func TestCSVLearningFallback(t *testing.T) {
+	var span string
 	up := readingstest.Serve(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		span = r.URL.Query().Get("start") + ".." + r.URL.Query().Get("end")
 		w.Write([]byte(`{"items":[{"title":"Yoma 49a","date":"2026-08-01",` +
 			`"category":"dirshuAmudYomi","memo":"first line\nsecond, line"}]}`))
 	}))
@@ -96,5 +98,10 @@ func TestCSVLearningFallback(t *testing.T) {
 	want := `"Yoma 49a","8/1/2026",,,,"true","first line / second; line","3","Jewish Holidays"` + "\r\n"
 	if !strings.Contains(body, want) {
 		t.Errorf("missing fetched row %q in\n%s", want, body)
+	}
+	// One month asked for, one month fetched, not the two years numYears
+	// gives a calendar with no month.
+	if want := "2026-08-01..2026-08-31"; span != want {
+		t.Errorf("readings-svc asked for %s, want %s", span, want)
 	}
 }

@@ -195,3 +195,34 @@ func TestNumYears(t *testing.T) {
 		})
 	}
 }
+
+func TestLearningRange(t *testing.T) {
+	s := testService(t)
+	tests := []struct {
+		name string
+		msg  *downloadpb.Download
+		want string
+	}{
+		{"one month", &downloadpb.Download{Year: 2026, Month: 2}, "2026-02-01..2026-02-28"},
+		{"Gregorian years", &downloadpb.Download{Year: 2026, NumYears: 2}, "2026-01-01..2027-12-31"},
+		// from Erev Rosh Hashana, as hebcal-go generates
+		{"Hebrew year", &downloadpb.Download{Year: 5787, IsHebrewYear: true}, "2026-09-11..2027-10-01"},
+		// a Hebrew-month calendar carries the next Tishrei too
+		{"Hebrew months", &downloadpb.Download{Year: 5787, IsHebrewYear: true, MonthMode: downloadpb.Download_HEBREW_ARABIC},
+			"2026-09-11..2027-10-31"},
+		{"start and end", &downloadpb.Download{StartOneof: &downloadpb.Download_StartStr{StartStr: "2026-03-05"},
+			EndOneof: &downloadpb.Download_EndStr{EndStr: "2026-04-10"}}, "2026-03-05..2026-04-10"},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			p, err := download.ParamsFromMessage(tc.msg, s.Geo)
+			if err != nil {
+				t.Fatal(err)
+			}
+			first, last := learningRange(p)
+			if got := first.Format("2006-01-02") + ".." + last.Format("2006-01-02"); got != tc.want {
+				t.Errorf("got %s, want %s", got, tc.want)
+			}
+		})
+	}
+}

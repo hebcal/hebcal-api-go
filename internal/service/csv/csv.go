@@ -87,10 +87,7 @@ func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
 		if s.Learning == nil {
 			return nil, &download.UnsupportedSeriesError{Series: missing}
 		}
-		start, end, ok := learningRange(params, events)
-		if !ok {
-			return nil, model.Internal("render: cannot determine the calendar's date range")
-		}
+		start, end := learningRange(params)
 		items, err := s.Learning.FetchItems(ctx, missing, params.LG, start, end)
 		if err != nil {
 			return nil, &download.UnsupportedSeriesError{Series: missing, Retryable: true, Err: err}
@@ -149,29 +146,44 @@ func numYears(msg *downloadpb.Download, p *download.Params, numUnsupported int) 
 	return n
 }
 
-// learningRange is the span to fetch daily learning for: from the first
-// generated event to the last, or the requested calendar's span when nothing
-// was generated locally.
-func learningRange(p *download.Params, events []event.CalEvent) (time.Time, time.Time, bool) {
-	if len(events) > 0 {
-		return events[0].GetDate().Gregorian(), events[len(events)-1].GetDate().Gregorian(), true
-	}
+// learningRange is the span to fetch daily learning for: the calendar's own
+// date range, the same days hebcal-go generates the other series over. A
+// whole Hebrew year starts on Erev Rosh Hashana, a Gregorian one may be a
+// single month, and a Hebrew-month calendar also carries the following
+// Tishrei.
+func learningRange(p *download.Params) (time.Time, time.Time) {
 	o := &p.Opts
 	if o.Start.Abs() != 0 && o.End.Abs() != 0 {
-		return o.Start.Gregorian(), o.End.Gregorian(), true
+		return o.Start.Gregorian(), o.End.Gregorian()
 	}
-	if o.Year == 0 {
-		return time.Time{}, time.Time{}, false
+	year := o.Year
+	if year == 0 {
+		now := time.Now()
+		if o.IsHebrewYear {
+			year = hdate.FromTime(now).Year()
+		} else {
+			year = now.Year()
+		}
 	}
 	n := max(o.NumYears, 1)
 	if o.IsHebrewYear {
-		first := hdate.New(o.Year, hdate.Tishrei, 1).Gregorian()
-		last := hdate.New(o.Year+n, hdate.Tishrei, 1).Gregorian().AddDate(0, 0, -1)
-		return first, last, true
+		first := hdate.New(year, hdate.Tishrei, 1).Gregorian()
+		if year > 1 {
+			first = first.AddDate(0, 0, -1)
+		}
+		last := hdate.New(year+n, hdate.Tishrei, 1).Gregorian().AddDate(0, 0, -1)
+		if p.MonthMode != download.GregorianArabic {
+			last = hdate.New(year+n, hdate.Tishrei, 30).Gregorian()
+		}
+		return first, last
 	}
-	first := time.Date(o.Year, time.January, 1, 0, 0, 0, 0, time.UTC)
-	last := time.Date(o.Year+n-1, time.December, 31, 0, 0, 0, 0, time.UTC)
-	return first, last, true
+	if o.Month >= time.January && o.Month <= time.December {
+		first := time.Date(year, o.Month, 1, 0, 0, 0, 0, time.UTC)
+		return first, first.AddDate(0, 1, -1)
+	}
+	first := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
+	last := time.Date(year+n-1, time.December, 31, 0, 0, 0, 0, time.UTC)
+	return first, last
 }
 
 // row is one rendered line, with the keys that put it in calendar order.
@@ -197,26 +209,11 @@ func Render(cal *Calendar) []byte {
 			line: eventToCSV(ev, p),
 		})
 	}
-	if len(cal.Learning) > 0 && len(cal.Events) > 0 {
-		first, last := cal.Events[0].GetDate().Abs(), cal.Events[len(cal.Events)-1].GetDate().Abs()
-		for i := range cal.Learning {
-			it := &cal.Learning[i]
-			day, err := time.Parse("2006-01-02", it.Date)
-			if err != nil {
-				continue // a timed event, which no learning series produces
-			}
+	for i := range cal.Learning {
+		it := &cal.Learning[i]
+		if day, err := time.Parse("2006-01-02", it.Date); err == nil {
 			hd := hdate.FromTime(day)
-			if a := hd.Abs(); a >= first && a <= last {
-				rows = append(rows, row{abs: a, rank: hebcal.TimeOfDayLearning, line: learningToCSV(it, hd, p)})
-			}
-		}
-	} else {
-		for i := range cal.Learning {
-			it := &cal.Learning[i]
-			if day, err := time.Parse("2006-01-02", it.Date); err == nil {
-				hd := hdate.FromTime(day)
-				rows = append(rows, row{abs: hd.Abs(), rank: hebcal.TimeOfDayLearning, line: learningToCSV(it, hd, p)})
-			}
+			rows = append(rows, row{abs: hd.Abs(), rank: hebcal.TimeOfDayLearning, line: learningToCSV(it, hd, p)})
 		}
 	}
 	// A Hebrew-month calendar shows the Gregorian date as its alternate date,
