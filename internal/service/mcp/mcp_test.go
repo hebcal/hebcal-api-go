@@ -192,14 +192,14 @@ func TestTorahPortionChagNameOnly(t *testing.T) {
 	}
 }
 
-// TestTorahPortionChagNoSidecar falls back to hebcal-go's coarser chag label
-// when no sidecar is wired.
+// TestTorahPortionChagNoSidecar falls back to sedra's name for the holiday
+// reading when no sidecar is wired.
 func TestTorahPortionChagNoSidecar(t *testing.T) {
 	tl := &tools{rd: nil}
 	got := tt{t}.text(tl.torahPortion(context.Background(), nil,
 		torahPortionArgs{Date: "2024-04-27", IL: false}))
-	if !strings.Contains(got, "Torah portion: ") {
-		t.Errorf("expected a fallback portion name:\n%s", got)
+	if !strings.Contains(got, "Torah portion: Pesach Shabbat Chol ha-Moed\n") {
+		t.Errorf("expected sedra's chag reading name:\n%s", got)
 	}
 	if !strings.Contains(got, "Date read: 2024-04-27") {
 		t.Errorf("missing date read:\n%s", got)

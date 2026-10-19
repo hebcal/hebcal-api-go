@@ -734,8 +734,9 @@ chag lookup lands on the Saturday); it is its own request, **not** the
 `summary` there would diverge `/shabbat` from production, which carries no such
 key). `/shabbat` output is therefore untouched. torah-portion soft-depends on
 the sidecar the way PDF daily-learning does: without it (nil client, or an
-error) the chag branch falls back to hebcal-go's coarser label
-(`chagReadingName`) with no Hebrew-name or `Reading:` line, rather than the tool
+error) the chag branch falls back to the name hebcal-go's `sedra` gives the
+holiday reading (`Parsha.Name` with `Chag` set, e.g. "Pesach Shabbat Chol
+ha-Moed"), with no Hebrew-name or `Reading:` line, rather than the tool
 failing.
 
 **On a chag the Go tool deliberately says more than the original hebcal-mcp.**
@@ -771,8 +772,9 @@ The **chag `torah-portion` output is no longer a divergence, and is now richer
 than hebcal-mcp's**: the label reads `name.en` from `/shabbatTorahReading`
 ("Shmini Atzeret (on Shabbat)"), and the branch also emits `Name in Hebrew:`
 (`name.he`) and `Reading:` (`summary`) -- lines the Node original omits on a
-chag. It falls back to hebcal-go's coarser `chagReadingName` ("Pesach V
-(CH''M)"), label only, when the sidecar is unavailable. Whatever
+chag. It falls back to `sedra`'s chag reading name ("Pesach Shabbat Chol
+ha-Moed", "Shmini Atzeret" without the sidecar's "(on Shabbat)"), label only,
+when the sidecar is unavailable. Whatever
 `/shabbatTorahReading` returns is taken as correct.
 
 Wiring: `main.go` sets `app.MCP = mcp.Handler(app.Readings)`; `server.go`'s
@@ -1449,8 +1451,8 @@ more than the Node original** (`Name in Hebrew:` and `Reading:`). `reISODate` /
 `render` + smart apostrophe + one-m Tamuz. `daf-yomi`'s brief render ← hebcal-go's
 `dafYomiEvent.Render` (already the brief form, no `Daf Yomi:` prefix, ==
 Node `renderBrief`). `errorCard` ← Node `errorCard` (non-`IsError` text).
-`lines` ← Node `results.join('\n')`. `chagReadingName` is a fallback: hebcal-go's
-`sedra` returns no name for a chag week, unlike `@hebcal/core`.
+`lines` ← Node `results.join('\n')`. The sidecar-less chag label ← hebcal-go
+`sedra`'s chag-week `Parsha.Name`, the counterpart of `@hebcal/core`'s.
 
 ### `internal/repository/readings/` — the readings-svc sidecar
 
