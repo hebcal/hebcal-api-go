@@ -68,7 +68,8 @@ The service follows the repository's usual direction — `handler` → `service`
 
 | file | role |
 |---|---|
-| `internal/handler/pdf.go` | both routes' transport: methods, headers, ETag/304, the status each error maps to |
+| `internal/handler/download.go` | transport shared with the CSV route: the `/v4/` dispatch by extension, methods, ETag/304, the status each error maps to |
+| `internal/handler/pdf.go` | both PDF routes' headers and the holiday route's error mapping |
 | `internal/service/download/request.go` | `Decode`: any of the three download URL shapes → the `Download` protobuf; the 501/503 learning error |
 | `internal/service/download/params.go` | protobuf → `hebcal.CalOptions`; port of `deserializeDownload.js` |
 | `internal/service/download/v2.go` | the legacy `/v2/h/` URL: query string → protobuf; port of `downloadHref2()` |
@@ -1363,7 +1364,7 @@ linkedEvent.render()`. `ownMemo` ← `MevarchimChodeshEvent`'s and
 `chagReadingName` ← the chag strings of `@hebcal/core` `sedra.js`.
 `learningToCSV` renders readings-svc's classic-API items.
 
-### `internal/handler/pdf.go`
+### `internal/handler/pdf.go`, `download.go`
 
 `pdfDownload` headers ← `src/app-download.js`'s 14-day `cacheControl` + the
 `.pdf` branch of `src/hebcal-download.js`. `pdfHoliday` headers ←
@@ -1371,7 +1372,7 @@ linkedEvent.render()`. `ownMemo` ← `MevarchimChodeshEvent`'s and
 `writeDownloadError` ← hebcal-web's status mapping (shared by `csvDownload`,
 whose `Content-Disposition` ← Koa's `ctx.attachment()`);
 the 404-drops-Cache-Control is a **deliberate divergence**. `writeHolidayError`
-← `holidayPdf.js`'s three throws. `writeCommonPDFError` ←
+← `holidayPdf.js`'s three throws. `writeCalendarError` ←
 `getLocationFromQuery`'s 404/400 split.
 
 ### `internal/handler/` (JSON routes)

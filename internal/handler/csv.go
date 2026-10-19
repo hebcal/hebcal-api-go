@@ -4,23 +4,10 @@ import (
 	"mime"
 	"net/http"
 	"path"
-	"strings"
 
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
 	csvsvc "github.com/hebcal/hebcal-api-go/internal/service/csv"
 )
-
-// v4Download sends a /v4/<data>/<name>.csv request to csvDownload and
-// everything else to pdf, the PDF handler.
-func (s *Server) v4Download(pdf http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasSuffix(r.URL.Path, ".csv") {
-			s.csvDownload(w, r)
-			return
-		}
-		pdf(w, r)
-	}
-}
 
 // csvDownload renders one /v4/ calendar as an Outlook-compatible CSV file.
 //

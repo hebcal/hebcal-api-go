@@ -394,7 +394,7 @@ func TestPDFV4Lowercased(t *testing.T) {
 // answers with a 301 to the /v4/ form. This service renders them directly, so
 // the test that matters is that the two spellings of one request draw the same
 // calendar; that they decode to the same protobuf as production's redirect is
-// internal/service/pdf/v2_test.go's business.
+// internal/service/download/v2_test.go's business.
 func TestPDFLegacyV2(t *testing.T) {
 	// The shape of a real request from a download.hebcal.com access log, moved
 	// onto a city the trimmed test database has, and the /v4/ payload
