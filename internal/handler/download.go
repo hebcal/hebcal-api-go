@@ -16,9 +16,10 @@ import (
 // accepted methods, the conditional request, and the status each service error
 // maps to. pdf.go and csv.go hold what differs.
 
-// v4Download sends a /v4/<data>/<name>.csv request to csvDownload and
-// everything else to pdf, the PDF handler.
-func (s *Server) v4Download(pdf http.HandlerFunc) http.HandlerFunc {
+// byExtension sends a download request whose path ends in .csv to csvDownload
+// and everything else to pdf, the PDF handler. All three download URL shapes
+// -- /v4/, /v2/h/ and /hebcal/index.cgi/ -- serve both formats.
+func (s *Server) byExtension(pdf http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasSuffix(r.URL.Path, ".csv") {
 			s.csvDownload(w, r)

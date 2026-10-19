@@ -106,28 +106,27 @@ func (s *Server) Routes() http.Handler {
 	// The Model Context Protocol server. Stateless streamable-HTTP: the SDK
 	// answers non-POST with 405 itself.
 	mux.HandleFunc("/mcp", mw.Serve(s.mcp))
-	// The PDF calendars: download.hebcal.com's /v4/ downloads and
+	// The PDF and CSV calendars: download.hebcal.com's downloads and
 	// www.hebcal.com's /holidays/ holiday calendars, both routed here by
 	// Varnish. Nothing else under /holidays/ belongs to this service -- the
 	// HTML pages there are served elsewhere, and pdfHoliday answers them 404.
 	//
-	// /v2/ is the legacy download URL, which production answers with a 301 to
-	// the /v4/ form; this service renders it instead. Only /v2/h/<...>.pdf is
-	// ours -- the other /v2/ families are .ics feeds and yahrzeit calendars,
-	// and pdfDownload answers them 404.
-	// The three PDF routes share one renderer and one memory pool, so they
-	// share one concurrency limiter: the cap is on total simultaneous renders,
-	// not per route. Wrapped inside mw.Serve so a shed 503 is still logged and
-	// counted like any other response.
-	mux.HandleFunc("/v2/", mw.Serve(s.PDFLimiter.Wrap(s.pdfDownload)))
-	// /v4/ also serves the .csv form of the same calendar, which is cheap
-	// enough to need no limiter.
-	mux.HandleFunc("/v4/", mw.Serve(s.v4Download(s.PDFLimiter.Wrap(s.pdfDownload))))
-	// The classic /hebcal/index.cgi/<name>.pdf?<query> download URL, older than
-	// both /v2/ and /v4/ and still crawled. Only its .pdf is ours (the .ics and
-	// yahrzeit calendars this path also serves are handled elsewhere), so
-	// pdfDownload answers everything else 404.
-	mux.HandleFunc("/hebcal/index.cgi/", mw.Serve(s.PDFLimiter.Wrap(s.pdfDownload)))
+	// A download comes in three URL shapes, each serving .pdf and .csv:
+	// /v4/<protobuf>/<name>, the legacy /v2/h/<base64 query>/<name> (which
+	// production answers with a 301 to the /v4/ form; this service renders it
+	// instead), and the classic /hebcal/index.cgi/<name>?<query>, older than
+	// both and still crawled. The other /v2/ families (.ics feeds, yahrzeit
+	// calendars) and the .ics form of each shape are handled elsewhere and
+	// answered 404 here.
+	//
+	// The PDF routes share one renderer and one memory pool, so they share one
+	// concurrency limiter: the cap is on total simultaneous renders, not per
+	// route. Wrapped inside mw.Serve so a shed 503 is still logged and counted
+	// like any other response. A CSV is cheap enough to need no limiter.
+	download := mw.Serve(s.byExtension(s.PDFLimiter.Wrap(s.pdfDownload)))
+	mux.HandleFunc("/v2/", download)
+	mux.HandleFunc("/v4/", download)
+	mux.HandleFunc("/hebcal/index.cgi/", download)
 	mux.HandleFunc("/holidays/", mw.Serve(s.PDFLimiter.Wrap(s.pdfHoliday)))
 	mux.HandleFunc("/", mw.Serve(s.notFound))
 	return s.withBackend(mux)

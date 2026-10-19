@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/base64"
 	"net/http"
 	"strings"
 	"testing"
@@ -103,5 +104,36 @@ func TestCSVLearningFallback(t *testing.T) {
 	// gives a calendar with no month.
 	if want := "2026-08-01..2026-08-31"; span != want {
 		t.Errorf("readings-svc asked for %s, want %s", span, want)
+	}
+}
+
+// The legacy /v2/h/ and /hebcal/index.cgi/ URLs serve the CSV too, and with no
+// fonts: the same calendar, byte for byte, as the /v4/ URL it converts to.
+func TestCSVLegacyURLs(t *testing.T) {
+	app, srv := testServer(t)
+	app.CSV.Geo = testGeoDB(t)
+	const qs = "v=1&geonameid=5128581&year=2026&c=on&maj=on&ny=1"
+	// A legacy URL naming no Havdalah rule means tzeit.
+	_, want := get(t, srv, "/v4/"+encode(t, &pb.Download{Year: 2026, Major: true,
+		Candlelighting: true, Geonameid: 5128581, NumYears: 1, HavdalahTzeit: true})+"/hebcal.csv")
+	if !strings.Contains(want, `,"New York"`+"\r\n") {
+		t.Fatalf("the /v4/ reference has no New York times:\n%.300s", want)
+	}
+	for _, path := range []string{
+		"/v2/h/" + strings.TrimRight(base64.StdEncoding.EncodeToString([]byte(qs)), "=") + "/hebcal.csv",
+		"/hebcal/index.cgi/hebcal.csv?" + qs,
+		"/hebcal/index.cgi/hebcal.csv?" + strings.ReplaceAll(qs, "&", ";"),
+	} {
+		resp, body := get(t, srv, path)
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("%s: status = %d, want 200: %s", path, resp.StatusCode, body)
+			continue
+		}
+		if cd := resp.Header.Get("Content-Disposition"); cd != `attachment; filename="hebcal.csv"` {
+			t.Errorf("%s: Content-Disposition = %q", path, cd)
+		}
+		if body != want {
+			t.Errorf("%s: body differs from the /v4/ calendar", path)
+		}
 	}
 }

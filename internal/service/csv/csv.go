@@ -1,5 +1,6 @@
 // Package csv renders the Outlook-compatible CSV calendars served from
-// download.hebcal.com/v4/<data>/<name>.csv.
+// download.hebcal.com/v4/<data>/<name>.csv, and from its legacy /v2/h/ and
+// /hebcal/index.cgi/ spellings.
 //
 // A request is the same base64 protobuf a PDF download carries, decoded by the
 // download package into the same Params and the same hebcal-go events; only the
@@ -62,11 +63,12 @@ type Calendar struct {
 	Learning []readings.Item
 }
 
-// Prepare decodes a /v4/<data>/<name>.csv path and generates the calendar's
-// events. Its errors carry the same statuses as pdf.Service.Prepare's: a
-// *download.NotFoundError is 404, *download.OutOfRangeError 410,
-// *download.UnsupportedSeriesError 501 or 503, and anything else 400. Unlike a PDF,
-// a calendar with no events is not an error: it is a header row alone.
+// Prepare decodes a .csv download URL in any of its three shapes and
+// generates the calendar's events. Its errors carry the same statuses as
+// pdf.Service.Prepare's: a *download.NotFoundError is 404,
+// *download.OutOfRangeError 410, *download.UnsupportedSeriesError 501 or 503,
+// and anything else 400. Unlike a PDF, a calendar with no events is not an
+// error: it is a header row alone.
 func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
 	msg, err := download.Decode(ctx, u, ".csv")
 	if err != nil {

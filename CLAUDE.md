@@ -342,7 +342,7 @@ fields last), and `start`/`end`, which travel as the ISO string the message can
 also carry rather than as epoch seconds — the same date, without a trip through
 the server's local timezone.
 
-Only `/v2/h/` and only `.pdf` is ours. The `.ics` feeds and the yahrzeit
+Only `/v2/h/` and only `.pdf` and `.csv` are ours. The `.ics` feeds and the yahrzeit
 calendars under `/v2/` are still hebcal-web's, so those are 404, as is a URL
 with no `v=`; a `v=` naming another kind of calendar is 400, which is what the
 download dispatcher answers.
@@ -376,7 +376,7 @@ leaves `+` alone, not `decodeURIComponent` -- before splitting. Production
 answers that second form with a 301 to the `&` spelling and renders the redirect;
 this service does the `unescape` inline (`unescapeLatin1`) and renders in one hop.
 
-The status codes match the router: only `.pdf` is ours (a `.ics` is 404), a URL
+The status codes match the router: only `.pdf` and `.csv` are ours (a `.ics` is 404), a URL
 naming no `v=` is 404 (which is why `hebcal_2028_may.pdf` with no query string is
 404, not a calendar), and a `v=` naming another kind of calendar is 400. The
 finite `redirectDownload.json` map of specific no-query legacy URLs that
@@ -518,15 +518,17 @@ Do not "fix" these without checking production first.
 
 ## The CSV calendars (`/v4/…csv`)
 
-`internal/service/csv` serves `download.hebcal.com/v4/<data>/<name>.csv`, the
+`internal/service/csv` serves `download.hebcal.com/v4/<data>/<name>.csv` (and
+the `/v2/h/` and `/hebcal/index.cgi/` spellings of it), the
 Outlook-compatible export of the same `/v4/` calendar the PDF draws. It is a
 port of `@hebcal/rest-api`'s `src/csv.ts` (`eventToCsv()`) and of hebcal-web's
 `eventsWithParshaToCsv()` / `getCsvParshaMemo()` (`src/parshaCommon.js`), and
 it shares everything up to the event list with the PDF through
 `internal/service/download`: `Decode(ctx, u, ".csv")`, `ParamsFromMessage`,
 and `GenerateCalEvents` (the raw, category-filtered hebcal-go events that
-`pdf.Generate` flattens into cells). `handler.v4Download` sends `.csv` to
-`csvDownload` and everything else to `pdfDownload`; the CSV path skips the PDF
+`pdf.Generate` flattens into cells). `handler.byExtension`, mounted on all three
+download URL shapes, sends `.csv` to `csvDownload` and everything else to
+`pdfDownload`; the CSV path skips the PDF
 limiter and needs no fonts.
 
 The bar is the same as for the PDFs -- the same bytes production serves -- and
@@ -1024,7 +1026,8 @@ and the within-day ordering below, which production picks up with the next
   `download.hebcal.com/hebcal/index.cgi/*.pdf` can be routed here too, which
   serves what hebcal-web would (a 301 to /v4/ for the first, a direct render for
   the second) as a 200; leaving them with Node keeps the current behaviour, so
-  both are a choice rather than a requirement.
+  both are a choice rather than a requirement. The same goes for the `.csv`
+  form of all three shapes.
 
 ### Known differences from production
 

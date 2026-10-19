@@ -9,7 +9,7 @@ import (
 	csvsvc "github.com/hebcal/hebcal-api-go/internal/service/csv"
 )
 
-// csvDownload renders one /v4/ calendar as an Outlook-compatible CSV file.
+// csvDownload renders one download calendar as an Outlook-compatible CSV file.
 //
 // Its headers are the PDF's -- a 14-day Cache-Control, CORS, nosniff and a weak
 // ETag answered before the calendar is generated -- plus a Content-Disposition

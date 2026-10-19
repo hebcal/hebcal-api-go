@@ -247,8 +247,9 @@ APIs are unaffected.
   status codes and headers, plus a `Content-Disposition` naming the file,
   except that a calendar with no events is a header row rather than a `400`.
   Fonts are not needed, so this route keeps working when the PDF ones are
-  disabled.
-- `GET|HEAD /v2/h/<base64>/<filename>.pdf` — the same calendar from the
+  disabled. The legacy `/v2/h/<base64>/<filename>.csv` and
+  `/hebcal/index.cgi/<filename>.csv?<query>` forms are served the same way.
+- `GET|HEAD /v2/h/<base64>/<filename>.pdf` (or `.csv`) — the same calendar from the
   older URL form, still linked from a decade of pages and still crawled.
   Here the `<base64>` segment is a query string rather than a protobuf
   (`v=1&geonameid=5128581&year=2026&c=on&…`). hebcal-web answers these with
@@ -259,7 +260,7 @@ APIs are unaffected.
   identifier and the `ladeg`/`lamin`/`ladir` degrees-and-minutes form — are
   resolved rather than dropped, which is what these URLs rendered before
   hebcal-web's redirect was added. Only
-  `.pdf` under `/v2/h/` is served: the `.ics` feeds and the yahrzeit
+  `.pdf` and `.csv` under `/v2/h/` are served: the `.ics` feeds and the yahrzeit
   calendars sharing that prefix get `404`, as does a URL with no `v=`.
 - `GET|HEAD /holidays/hebcal-<year>.pdf` — render a year of Jewish
   holidays, the calendar www.hebcal.com links from its holiday pages. A
@@ -548,6 +549,7 @@ uses), rotated daily; logrotate signals the service with `SIGUSR1` to
 reopen the file after rotation.
 
 Varnish decides which URLs reach this service. `download.hebcal.com/v4/**.csv`
+(and its legacy `/v2/h/**.csv` and `/hebcal/index.cgi/*.csv` spellings)
 can be routed here too; until it is, hebcal-web keeps serving it. Alongside
 the JSON APIs, two PDF families now belong here rather than to the Node.js
 service:
