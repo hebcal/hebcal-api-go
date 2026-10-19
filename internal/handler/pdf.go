@@ -27,7 +27,7 @@ import (
 // 400), CORS and nosniff. Without these Varnish and browsers do not cache the
 // PDF.
 func (s *Server) pdfDownload(w http.ResponseWriter, r *http.Request) {
-	if !pdfMethodAllowed(w, r) || !s.pdfAvailable(w) {
+	if !downloadMethodAllowed(w, r) || !s.pdfAvailable(w) {
 		return
 	}
 	cal, err := s.PDF.Prepare(r.Context(), r.URL)
@@ -59,7 +59,7 @@ func (s *Server) pdfDownload(w http.ResponseWriter, r *http.Request) {
 // the URL has been accepted, so the 404, 400 and 410 are not cached.
 func (s *Server) pdfHoliday(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Content-Type-Options", "nosniff")
-	if !pdfMethodAllowed(w, r) {
+	if !downloadMethodAllowed(w, r) {
 		return
 	}
 	// Only the PDFs are routed here; the HTML pages under /holidays/ are served
@@ -98,8 +98,8 @@ func (s *Server) pdfHoliday(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// pdfMethodAllowed rejects the methods a calendar has no answer for.
-func pdfMethodAllowed(w http.ResponseWriter, r *http.Request) bool {
+// downloadMethodAllowed rejects the methods a calendar has no answer for.
+func downloadMethodAllowed(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != http.MethodGet && r.Method != http.MethodHead {
 		httpx.MethodNotAllowed(w, r.Method, "GET, HEAD")
 		return false

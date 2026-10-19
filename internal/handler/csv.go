@@ -29,7 +29,7 @@ func (s *Server) v4Download(pdf http.HandlerFunc) http.HandlerFunc {
 // that saves the file under the name in the URL. Its errors are the PDF's too,
 // except that a calendar with no events is a header row rather than a 400.
 func (s *Server) csvDownload(w http.ResponseWriter, r *http.Request) {
-	if !pdfMethodAllowed(w, r) {
+	if !downloadMethodAllowed(w, r) {
 		return
 	}
 	cal, err := s.CSV.Prepare(r.Context(), r.URL)
