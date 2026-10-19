@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/andybalholm/brotli"
+	"github.com/klauspost/compress/zstd"
 
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
 	"github.com/hebcal/hebcal-api-go/internal/logger"
@@ -823,6 +824,39 @@ func TestBrotli(t *testing.T) {
 	// brotli requests carry a different ETag class than gzip requests
 	if resp.Header.Get("ETag") == resp2.Header.Get("ETag") {
 		t.Error("ETag should differ between br and gzip clients")
+	}
+}
+
+func TestZstd(t *testing.T) {
+	_, srv := testServer(t)
+	const u = "/converter?cfg=json&start=2025-01-01&end=2025-01-31"
+	// zstd preferred when the client offers everything
+	resp, body := get(t, srv, u, "Accept-Encoding", "gzip, deflate, br, zstd")
+	if resp.Header.Get("Content-Encoding") != "zstd" {
+		t.Fatalf("Content-Encoding = %q, want zstd", resp.Header.Get("Content-Encoding"))
+	}
+	if !strings.Contains(resp.Header.Get("Vary"), "Accept-Encoding") {
+		t.Error("missing Vary")
+	}
+	zr, err := zstd.NewReader(strings.NewReader(body))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer zr.Close()
+	plain, err := io.ReadAll(zr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(plain), `"2025-01-31"`) {
+		t.Error("bad zstd payload")
+	}
+	// brotli-only clients still get brotli
+	resp2, _ := get(t, srv, u, "Accept-Encoding", "gzip, br")
+	if resp2.Header.Get("Content-Encoding") != "br" {
+		t.Errorf("Content-Encoding = %q, want br", resp2.Header.Get("Content-Encoding"))
+	}
+	if resp.Header.Get("ETag") == resp2.Header.Get("ETag") {
+		t.Error("ETag should differ between zstd and br clients")
 	}
 }
 
