@@ -24,6 +24,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/config"
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 )
 
 // Page geometry. US Letter, landscape.
@@ -97,7 +98,7 @@ func NewRenderer(fonts *FontSet) *Renderer {
 }
 
 // Render writes a complete PDF calendar to w.
-func (r *Renderer) Render(w io.Writer, p *Params, events []Event, title string) error {
+func (r *Renderer) Render(w io.Writer, p *download.Params, events []Event, title string) error {
 	if r == nil || r.fonts == nil {
 		return fmt.Errorf("no fonts loaded")
 	}
@@ -119,7 +120,7 @@ func (r *Renderer) Render(w io.Writer, p *Params, events []Event, title string) 
 		Producer: pdflib.TextString(config.PDFProducer),
 	}
 
-	if p.MonthMode != GregorianArabic {
+	if p.MonthMode != download.GregorianArabic {
 		hpages := SplitByHebrewMonth(events)
 		if len(hpages) == 0 {
 			return fmt.Errorf("no events to render")
@@ -210,6 +211,12 @@ func (r *Renderer) drawRightAligned(page *document.Page, inst *Instances, fontNa
 	r.draw(page, inst, fontName, size, col, x-r.width(inst, fontName, size, s), yTopDown, s)
 }
 
+// useGematriya reports whether day numbers and years are written in Hebrew
+// numerals, which is what mm=2 (HEBREW_HEBREW) asks for.
+func useGematriya(p *download.Params) bool {
+	return p.MonthMode == download.HebrewHebrew
+}
+
 // rowsFor returns 5 or 6 week rows. It is a fixed rule rather than a computed
 // ceiling: the grid stays five rows unless the month genuinely cannot fit,
 // which keeps cell heights consistent from page to page.
@@ -221,7 +228,7 @@ func rowsFor(daysInMonth, startDayOfWeek int) int {
 }
 
 // renderMonth draws one page.
-func (r *Renderer) renderMonth(doc *document.MultiPage, inst *Instances, p *Params, mp MonthPage, campaign string) error {
+func (r *Renderer) renderMonth(doc *document.MultiPage, inst *Instances, p *download.Params, mp MonthPage, campaign string) error {
 	page := doc.AddPage()
 
 	first := time.Date(mp.Year, mp.Month, 1, 0, 0, 0, 0, time.UTC)
@@ -240,7 +247,7 @@ func (r *Renderer) renderMonth(doc *document.MultiPage, inst *Instances, p *Para
 
 // drawMonthTitle writes the centred month title and the Hebrew-month subtitle:
 // 26pt at TMARGIN-24 and 14pt at TMARGIN+4.
-func (r *Renderer) drawMonthTitle(page *document.Page, inst *Instances, p *Params, mp MonthPage) {
+func (r *Renderer) drawMonthTitle(page *document.Page, inst *Instances, p *download.Params, mp MonthPage) {
 	titleFont, subFont := FontSemi, FontPlain
 	if p.RTL {
 		titleFont, subFont = FontHebrew, FontHebrew
@@ -254,7 +261,7 @@ func (r *Renderer) drawMonthTitle(page *document.Page, inst *Instances, p *Param
 // drawGrid draws the calendar rectangle, its rules and the weekday headings.
 // The rectangle runs from BMARGIN down to HEIGHT-TMARGIN in top-down
 // coordinates.
-func (r *Renderer) drawGrid(page *document.Page, inst *Instances, p *Params, rows int, rowHeight float64) {
+func (r *Renderer) drawGrid(page *document.Page, inst *Instances, p *download.Params, rows int, rowHeight float64) {
 	gridW := pdfWidth - pdfLMargin - pdfRMargin
 	top, bottom := pdfBMargin, pdfHeight-pdfTMargin
 
@@ -292,7 +299,7 @@ func (r *Renderer) drawGrid(page *document.Page, inst *Instances, p *Params, row
 }
 
 // drawDays fills each cell with its right-aligned day number and its events.
-func (r *Renderer) drawDays(page *document.Page, inst *Instances, p *Params, mp MonthPage, daysInMonth, startDow int, rowHeight float64, campaign string) {
+func (r *Renderer) drawDays(page *document.Page, inst *Instances, p *download.Params, mp MonthPage, daysInMonth, startDow int, rowHeight float64, campaign string) {
 	// xpos is the right edge of the current cell less a 4pt inset, which is
 	// what the day number is right-aligned against; xposNewRow is that position
 	// for the first column of a row. RTL walks the columns in reverse.
@@ -349,14 +356,14 @@ func (r *Renderer) drawDays(page *document.Page, inst *Instances, p *Params, mp 
 
 // renderEvent draws one event line and returns the next top-down y
 // (`y + numLines * fontSize * 1.4`).
-func (r *Renderer) renderEvent(page *document.Page, inst *Instances, p *Params, ev *Event, x, y float64, campaign string) float64 {
+func (r *Renderer) renderEvent(page *document.Page, inst *Instances, p *download.Params, ev *Event, x, y float64, campaign string) float64 {
 	return r.renderEventColored(page, inst, p, ev, x, y, campaign, nil)
 }
 
 // renderEventColored draws one event line, optionally forcing a colour. The
 // Elul days folded onto a Tishrei page are drawn entirely in grey, so they
 // read as belonging to the previous month.
-func (r *Renderer) renderEventColored(page *document.Page, inst *Instances, p *Params, ev *Event, x, y float64, campaign string, override color.Color) float64 {
+func (r *Renderer) renderEventColored(page *document.Page, inst *Instances, p *download.Params, ev *Event, x, y float64, campaign string, override color.Color) float64 {
 	rtl := p.RTL
 	col := eventColor(ev.Flags)
 	if ev.Learning {
@@ -439,7 +446,7 @@ func (r *Renderer) renderEventColored(page *document.Page, inst *Instances, p *P
 		r.draw(page, inst, fontName, fontSize, col, lnX, textY+float64(i)*fontSize*1.4, ln)
 	}
 	// A link over the whole event line.
-	if href := eventLink(ev.URL, ev.HD.Year(), p.campaignFor(campaign, ev), p.Opts.IL); href != "" {
+	if href := eventLink(ev.URL, ev.HD.Year(), campaignFor(p, campaign, ev), p.Opts.IL); href != "" {
 		h := float64(numLines) * fontSize * 1.4
 		r.addLink(page, href, textX-timedWidth, y-fontSize*0.25, timedWidth+width, h)
 	}
@@ -503,31 +510,6 @@ func splitInTwo(s string, rtl bool) []string {
 	}
 }
 
-// altDateBrief renders a HEBREW_DATE alternate date without its year. hebcal-go's
-// hebrewDateEvent only renders the full form (with year), so the brief is that
-// form with the trailing year trimmed. Rosh Hashana (1 Tishrei) keeps its year.
-//
-// The apostrophe is smartened here as it is on an event subject, since hebcal-go
-// does not: without this a day line reads "1st of Sh'vat" rather than "1st of
-// Sh’vat". The ordinal for a locale that is neither English nor Spanish comes
-// out as "12 Tewet" where a current reference draws "12. Tewet"; that
-// difference belongs in hebcal-go rather than in a second date formatter here.
-func altDateBrief(hd hdate.HDate, locale string) string {
-	full := jsutil.SmartApostrophe(model.FixMonthSpelling(event.NewHebrewDateEvent(hd).Render(locale)))
-	if hd.Month() == hdate.Tishrei && hd.Day() == 1 {
-		return full
-	}
-	switch strings.ToLower(locale) {
-	case "he", "he-x-nonikud":
-		return strings.TrimSuffix(full, " "+gematriya.Gematriya(hd.Year()))
-	case "", "en", "sephardic", "ashkenazi",
-		"ashkenazi_litvish", "ashkenazi_poylish", "ashkenazi_standard":
-		return strings.TrimSuffix(full, ", "+strconv.Itoa(hd.Year()))
-	default:
-		return strings.TrimSuffix(full, " "+strconv.Itoa(hd.Year()))
-	}
-}
-
 // firstAltDate returns the day's alternate-date event, or nil. There is at most
 // one per day.
 func firstAltDate(evs []Event) *Event {
@@ -543,7 +525,7 @@ func firstAltDate(evs []Event) *Event {
 // left-aligned near the cell's left edge: xpos is the day number's right edge,
 // the date sits 3pt below the number's top, in the plain face (or the Hebrew
 // face in an RTL calendar) at 10pt and in grey.
-func (r *Renderer) renderAltDateOnLine(page *document.Page, inst *Instances, p *Params, alt *Event, xpos, ypos float64, override color.Color) {
+func (r *Renderer) renderAltDateOnLine(page *document.Page, inst *Instances, p *download.Params, alt *Event, xpos, ypos float64, override color.Color) {
 	if alt == nil {
 		return
 	}
@@ -559,9 +541,9 @@ func (r *Renderer) renderAltDateOnLine(page *document.Page, inst *Instances, p *
 	}
 	// Gregorian-month calendars show the Hebrew date; Hebrew-month calendars show
 	// the Gregorian date. Both go through the same left-aligned placement.
-	text := altDateBrief(alt.HD, p.Locale)
-	if p.MonthMode != GregorianArabic {
-		text = gregorianAltText(alt.HD, p.Locale)
+	text := download.HebrewDateBrief(alt.HD, p.Locale)
+	if p.MonthMode != download.GregorianArabic {
+		text = download.GregorianDateText(alt.HD, p.Locale)
 	}
 	if p.RTL {
 		// A Hebrew-month Gregorian alt date ("25 אוק") starts with a number, and
@@ -580,7 +562,7 @@ func (r *Renderer) renderAltDateOnLine(page *document.Page, inst *Instances, p *
 const ccLine = "Provided by Hebcal.com with a Creative Commons Attribution 4.0 International License"
 
 // drawFooter writes the location/settings line and the licence line.
-func (r *Renderer) drawFooter(page *document.Page, inst *Instances, p *Params) {
+func (r *Renderer) drawFooter(page *document.Page, inst *Instances, p *download.Params) {
 	const y = pdfHeight - 28
 	r.draw(page, inst, FontPlain, 8, colorBlack, pdfLMargin, y, leftFooterText(p))
 	r.drawRightAligned(page, inst, FontPlain, 8, colorBlack, pdfWidth-pdfRMargin, y, ccLine)
@@ -588,7 +570,7 @@ func (r *Renderer) drawFooter(page *document.Page, inst *Instances, p *Params) {
 
 // leftFooterText builds the bottom-left footer line: the location and its
 // candle-lighting offset when there is one, otherwise the calendar subtitle.
-func leftFooterText(p *Params) string {
+func leftFooterText(p *download.Params) string {
 	loc := p.Opts.Location
 	if loc == nil || loc.Name == "" {
 		if p.Opts.IL {
@@ -613,7 +595,7 @@ func leftFooterText(p *Params) string {
 // documentKeywords builds the PDF Keywords metadata. The full location name is
 // used here, not the short form the title carries, so a search for the ZIP
 // code finds the file.
-func documentKeywords(p *Params) string {
+func documentKeywords(p *download.Params) string {
 	kw := "Hebrew calendar, Jewish holidays"
 	name := p.LocationName
 	if name == "" && p.Opts.Location != nil {
@@ -652,7 +634,7 @@ func hebMonthName(hd hdate.HDate, locale string) string {
 // title, e.g. "Av – Elul 5786": the start year is only shown when the month
 // spans a Hebrew year boundary, and the end month only when it differs from
 // the start month.
-func hebMonthRange(mp MonthPage, p *Params) string {
+func hebMonthRange(mp MonthPage, p *download.Params) string {
 	firstG := time.Date(mp.Year, mp.Month, 1, 0, 0, 0, 0, time.UTC)
 	lastG := firstG.AddDate(0, 1, -1)
 	start := hdate.FromTime(firstG)
@@ -691,7 +673,7 @@ func (r *Renderer) addLink(page *document.Page, href string, x, yTopDown, w, h f
 // The grid is the same as the Gregorian one; what changes is the pagination,
 // the titles (the Hebrew month is primary and the Gregorian range becomes the
 // subtitle) and, for mm=2, the day numbers, which are written in gematriya.
-func (r *Renderer) renderHebMonth(doc *document.MultiPage, inst *Instances, p *Params, hp HebMonthPage, campaign string) error {
+func (r *Renderer) renderHebMonth(doc *document.MultiPage, inst *Instances, p *download.Params, hp HebMonthPage, campaign string) error {
 	page := doc.AddPage()
 
 	first := hdate.New(hp.Year, hp.Month, 1)
@@ -714,7 +696,7 @@ func (r *Renderer) renderHebMonth(doc *document.MultiPage, inst *Instances, p *P
 // gematriya. Keying it on useGematriya() instead put the Hebrew year letters
 // into the Latin FontSemi used for a non-RTL title, rendering them as tofu
 // boxes.
-func hebTitleYear(p *Params, year int) string {
+func hebTitleYear(p *download.Params, year int) string {
 	if p.RTL {
 		return gematriya.Gematriya(year)
 	}
@@ -723,7 +705,7 @@ func hebTitleYear(p *Params, year int) string {
 
 // drawHebMonthTitle writes the Hebrew month and year, with the Gregorian range
 // beneath.
-func (r *Renderer) drawHebMonthTitle(page *document.Page, inst *Instances, p *Params, hp HebMonthPage, first hdate.HDate, daysInMonth int) {
+func (r *Renderer) drawHebMonthTitle(page *document.Page, inst *Instances, p *download.Params, hp HebMonthPage, first hdate.HDate, daysInMonth int) {
 	titleFont, subFont := FontSemi, FontPlain
 	if p.RTL {
 		titleFont, subFont = FontHebrew, FontHebrew
@@ -756,7 +738,7 @@ func gregRange(start, end time.Time, names model.CalendarNames) string {
 
 // drawHebDays fills the cells for a Hebrew month, including the grey Elul days
 // folded onto the Tishrei page.
-func (r *Renderer) drawHebDays(page *document.Page, inst *Instances, p *Params, hp HebMonthPage, daysInMonth, startDow int, rowHeight float64, campaign string) {
+func (r *Renderer) drawHebDays(page *document.Page, inst *Instances, p *download.Params, hp HebMonthPage, daysInMonth, startDow int, rowHeight float64, campaign string) {
 	xposNewRow := pdfLMargin + pdfColWidth - 4
 	mult := 1.0
 	if p.RTL {
@@ -767,7 +749,7 @@ func (r *Renderer) drawHebDays(page *document.Page, inst *Instances, p *Params, 
 		return cellOrigin(p.RTL, dow)
 	}
 	numFont := FontSemi
-	if p.useGematriya() {
+	if useGematriya(p) {
 		numFont = FontHebrew
 	}
 	ypos := pdfTMargin + 40.0
@@ -828,8 +810,8 @@ func (r *Renderer) drawHebDays(page *document.Page, inst *Instances, p *Params, 
 }
 
 // dayNumber renders a day of the month, in gematriya when mm=2 asked for it.
-func (r *Renderer) dayNumber(p *Params, day int) string {
-	if p.useGematriya() {
+func (r *Renderer) dayNumber(p *download.Params, day int) string {
+	if useGematriya(p) {
 		return gematriya.Gematriya(day)
 	}
 	return strconv.Itoa(day)

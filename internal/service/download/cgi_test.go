@@ -1,4 +1,4 @@
-package pdf
+package download
 
 import (
 	"testing"
@@ -12,7 +12,7 @@ import (
 // query string, as they arrive on /hebcal/index.cgi/<filename>?<rawQuery>.
 func decodeCGI(t *testing.T, filename, rawQuery string) *pb.Download {
 	t.Helper()
-	q, err := ParseCGIPath(cgiPrefix+filename, rawQuery)
+	q, err := ParseCGIPath(cgiPrefix+filename, rawQuery, ".pdf")
 	if err != nil {
 		t.Fatalf("ParseCGIPath(%q, %q): %v", filename, rawQuery, err)
 	}
@@ -137,14 +137,14 @@ func TestCGIGeoForms(t *testing.T) {
 // at all -- both are errors the handler maps to 404.
 func TestCGIPathErrors(t *testing.T) {
 	t.Run("not a pdf", func(t *testing.T) {
-		if _, err := ParseCGIPath(cgiPrefix+"hebcal.ics", "v=1&year=2026"); err == nil {
+		if _, err := ParseCGIPath(cgiPrefix+"hebcal.ics", "v=1&year=2026", ".pdf"); err == nil {
 			t.Error("a .ics request was accepted")
 		}
 	})
 	t.Run("no query is not a download", func(t *testing.T) {
 		// hebcal_2028_may.pdf with no query: v is absent, which DecodeV2 reports
 		// as the 404 the router answers (ctx.throw(404) for v===undefined).
-		q, err := ParseCGIPath(cgiPrefix+"hebcal_2028_may.pdf", "")
+		q, err := ParseCGIPath(cgiPrefix+"hebcal_2028_may.pdf", "", ".pdf")
 		if err != nil {
 			t.Fatalf("ParseCGIPath: %v", err)
 		}

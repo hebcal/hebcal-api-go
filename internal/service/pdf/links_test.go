@@ -6,8 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-go/hebcal"
+
+	"github.com/hebcal/hebcal-api-go/internal/jsutil"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 )
 
 // eventLink turns the canonical URL from hebcal-go into the short, tracked
@@ -272,7 +274,7 @@ func TestCampaignPrefersTheAsciiName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &Params{CityName: tt.city, CityNameAscii: tt.ascii, Opts: hebcal.CalOptions{Year: 2026}}
+			p := &download.Params{CityName: tt.city, CityNameAscii: tt.ascii, Opts: hebcal.CalOptions{Year: 2026}}
 			if got := CalendarTitle(p, events); got != tt.wantTitle {
 				t.Errorf("CalendarTitle() = %q, want %q", got, tt.wantTitle)
 			}

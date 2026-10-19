@@ -57,6 +57,9 @@ type Item struct {
 	Category  string `json:"category"`
 	Hebrew    string `json:"hebrew"`
 	Link      string `json:"link"`
+	// Memo is the event's longer description, present only for the events
+	// that carry one (several daily-learning series do).
+	Memo string `json:"memo"`
 	// Leyning is the formatted reading, or nil when the event has none.
 	Leyning json.RawMessage `json:"leyning"`
 }

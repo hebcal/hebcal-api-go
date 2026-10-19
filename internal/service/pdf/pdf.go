@@ -6,9 +6,9 @@
 // real time to work out (the top-down coordinate system, hhea baselines,
 // shaping at a reference size) before changing layout or shaping.
 //
-// A request arrives as a base64 protobuf in the URL path. DecodeParams turns it
-// into Params, Generate produces the calendar's events, and Renderer.Render
-// draws them; Service.Prepare and Service.Render bundle those steps in the
+// The download package decodes the request into download.Params and its
+// events; Generate flattens those into calendar cells, and Renderer.Render
+// draws them. Service.Prepare and Service.Render bundle those steps in the
 // order the handler needs them.
 package pdf
 
@@ -21,8 +21,7 @@ import (
 
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
-	"github.com/hebcal/hebcal-api-go/internal/reqlog"
-	"github.com/hebcal/hebcal-api-go/pkg/downloadpb"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 )
 
@@ -38,7 +37,7 @@ type Service struct {
 	// Learning fetches the daily-learning series no Go schedule generates. Nil
 	// when no readings-svc is configured, in which case those requests are
 	// refused rather than rendered incomplete.
-	Learning *LearningFetcher
+	Learning *download.LearningFetcher
 }
 
 // Available reports whether calendars can be rendered at all, i.e. whether the
@@ -48,36 +47,10 @@ func (s *Service) Available() bool { return s != nil && s.Renderer != nil }
 // Calendar is a decoded request together with the events it generated and the
 // document title derived from both.
 type Calendar struct {
-	Params *Params
+	Params *download.Params
 	Events []Event
 	Title  string
 }
-
-// UnsupportedSeriesError reports daily-learning series this build cannot
-// generate. The two cases are deliberately different: with no readings-svc
-// configured the calendar can never be rendered (501, retrying cannot help),
-// while a configured readings-svc that did not answer is transient (503).
-type UnsupportedSeriesError struct {
-	// Series names the schedules that could not be produced.
-	Series []string
-	// Retryable is true when a readings-svc fetch failed, false when no
-	// readings-svc is configured at all.
-	Retryable bool
-	// Err is the underlying fetch failure, if there was one.
-	Err error
-}
-
-func (e *UnsupportedSeriesError) Error() string {
-	if e.Retryable {
-		return "daily-learning fetch failed: " + e.Err.Error()
-	}
-	return "daily-learning series not supported by this service"
-}
-
-func (e *UnsupportedSeriesError) Unwrap() error { return e.Err }
-
-// Header is the X-Unsupported-Series value naming what was missing.
-func (e *UnsupportedSeriesError) Header() string { return strings.Join(e.Series, ", ") }
 
 // Prepare decodes a /v4/<data>/<name>.pdf path and generates the calendar's
 // events: decode, generate, fill in the daily-learning series hebcal-go cannot
@@ -88,18 +61,11 @@ func (e *UnsupportedSeriesError) Header() string { return strings.Join(e.Series,
 // *OutOfRangeError 410, *UnsupportedSeriesError 501 or 503, a *model.HTTPError
 // whatever it says, and anything else is a malformed request (400).
 func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
-	msg, err := decodeRequest(u)
+	msg, err := download.Decode(ctx, u, ".pdf")
 	if err != nil {
 		return nil, err
 	}
-	// The /v4/ base64 protobuf and the /v2/h/ base64 query string are both opaque
-	// in the access log; record the query string the message decodes to so the
-	// request is readable and reproducible under the log's "qs" key. The classic
-	// /hebcal/index.cgi/ form already carries its query in the logged URL.
-	if isOpaquePath(u.Path) {
-		reqlog.FromContext(ctx).SetQuery(MessageToQuery(msg))
-	}
-	params, err := ParamsFromMessage(msg, s.Geo)
+	params, err := download.ParamsFromMessage(msg, s.Geo)
 	if err != nil {
 		return nil, err
 	}
@@ -108,17 +74,17 @@ func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
 		return nil, model.Internal("render: %s", err.Error())
 	}
 
-	if missing := unsupportedSeries(msg); len(missing) > 0 {
+	if missing := download.UnsupportedSeries(msg); len(missing) > 0 {
 		if s.Learning == nil {
-			return nil, &UnsupportedSeriesError{Series: missing}
+			return nil, &download.UnsupportedSeriesError{Series: missing}
 		}
 		start, end, ok := learningRange(params, events)
 		if !ok {
 			return nil, model.Internal("render: cannot determine the calendar's date range")
 		}
-		extra, err := s.Learning.Fetch(ctx, missing, params.LG, start, end)
+		extra, err := fetchLearning(ctx, s.Learning, missing, params.LG, start, end)
 		if err != nil {
-			return nil, &UnsupportedSeriesError{Series: missing, Retryable: true, Err: err}
+			return nil, &download.UnsupportedSeriesError{Series: missing, Retryable: true, Err: err}
 		}
 		events = mergeLearning(events, extra)
 	}
@@ -149,60 +115,13 @@ func (s *Service) Render(cal *Calendar) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// decodeRequest turns any of the three download URL shapes into the Download
-// message it carries: the current /v4/<base64-protobuf>/<name>.pdf, the legacy
-// /v2/h/<base64-querystring>/<name>.pdf (see v2.go), and the classic
-// /hebcal/index.cgi/<name>.pdf?<query> older than both (see cgi.go). From here
-// on all three are the same request.
-//
-// isOpaquePath reports whether a download URL hides its calendar options behind
-// a base64 payload -- the /v4/ protobuf and the /v2/h/ query string both do, so
-// the logged URL is unreadable for either. The classic /hebcal/index.cgi/ form
-// carries its query in the URL already, so its options are visible in the log's
-// "url" without a "qs" field.
-func isOpaquePath(path string) bool {
-	return !strings.HasPrefix(path, cgiPrefix)
-}
-
-// A URL that is none of these is 404.
-func decodeRequest(u *url.URL) (*downloadpb.Download, error) {
-	switch path := u.Path; {
-	case strings.HasPrefix(path, cgiPrefix):
-		q, err := ParseCGIPath(path, u.RawQuery)
-		if err != nil {
-			return nil, NotFoundf("%s", err.Error())
-		}
-		return DecodeV2(q)
-	case strings.HasPrefix(path, "/v2/"):
-		q, err := ParseV2Path(path)
-		if err != nil {
-			return nil, NotFoundf("%s", err.Error())
-		}
-		return DecodeV2(q)
-	default:
-		payload, err := ParsePath(path)
-		if err != nil {
-			return nil, NotFoundf("%s", err.Error())
-		}
-		msg, err := DecodeMessage(payload)
-		if err != nil {
-			// Several crawlers (bingbot among them) fetch /v4/ URLs with the
-			// path lowercased, which breaks the mixed-case base64 and the
-			// protobuf it decodes to. An undecodable payload names no
-			// calendar, so it is 404, the same as an unparseable path.
-			return nil, NotFoundf("%s", err.Error())
-		}
-		return msg, nil
-	}
-}
-
 // CalendarTitle builds the document title, e.g. "Hebcal Palo Alto 2028",
 // "Hebcal Diaspora August 2026" or "Hebcal Palo Alto 2026-2027".
 //
 // CampaignName builds the link-tracking campaign from the same code, so the
 // date range the two show can never drift apart -- only the location name
 // differs, deliberately.
-func CalendarTitle(p *Params, events []Event) string {
+func CalendarTitle(p *download.Params, events []Event) string {
 	return calendarTitle(p, events, false)
 }
 
@@ -218,13 +137,13 @@ func CalendarTitle(p *Params, events []Event) string {
 // campaignFromTitle(document title) for a location whose asciiname differs from
 // its short name -- which is every accented city, and a few whose geonames row
 // is longer than their display name.
-func CampaignName(p *Params, events []Event) string {
+func CampaignName(p *download.Params, events []Event) string {
 	return campaignFromTitle(calendarTitle(p, events, true))
 }
 
 // calendarTitle builds the document title; preferAscii uses the location's
 // plain-ASCII name and is set only by the campaign.
-func calendarTitle(p *Params, events []Event, preferAscii bool) string {
+func calendarTitle(p *download.Params, events []Event, preferAscii bool) string {
 	title := "Hebcal"
 	cityName := p.CityName
 	if preferAscii && p.CityNameAscii != "" {
@@ -284,7 +203,7 @@ func campaignFromTitle(title string) string {
 // campaignFor returns the campaign one event's link is tagged with: a download
 // names the whole document, while a /holidays/ calendar, which sets no
 // campaign, names each event's own Hebrew year.
-func (p *Params) campaignFor(document string, ev *Event) string {
+func campaignFor(p *download.Params, document string, ev *Event) string {
 	if p.PerEventCampaign {
 		return "pdf-" + strconv.Itoa(ev.HD.Year())
 	}

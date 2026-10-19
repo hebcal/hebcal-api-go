@@ -9,6 +9,8 @@ import (
 	"github.com/hebcal/hebcal-go/event"
 	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/hebcal-go/zmanim"
+
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 )
 
 func ev(desc string, flags event.HolidayFlags, timeStr string) Event {
@@ -21,7 +23,7 @@ func generateDay(t *testing.T, year int, month time.Month, day int, learning []E
 	t.Helper()
 	d := hdate.FromGregorian(year, month, day)
 	toronto := zmanim.NewLocation("Toronto", "CA", 43.70011, -79.4163, 0, "America/Toronto")
-	p := &Params{Locale: "en", MonthMode: GregorianArabic}
+	p := &download.Params{Locale: "en", MonthMode: download.GregorianArabic}
 	p.Opts = hebcal.CalOptions{
 		Start: d, End: d, Location: &toronto, CandleLighting: true, HavdalahMins: 42,
 		Sedrot: true, KiddushLevanaMaharil: true, MishnaYomi: true,
@@ -196,64 +198,14 @@ func TestSplitByGregorianMonthEmptyInput(t *testing.T) {
 	}
 }
 
-// The minor-holiday filter goes by category, not by flag: Purim and Chanukah
-// are filed as major even though their flags say MINOR_HOLIDAY. That is what
-// keeps them in a calendar asking only for major holidays, while Tu BiShvat and
-// Rosh Hashana LaBehemot drop out -- all four carry the same flag.
-func TestMinorHolidayFilterUsesCategories(t *testing.T) {
-	opts := hebcal.CalOptions{Year: 2026}
-	evs, err := hebcal.HebrewCalendar(&opts)
-	if err != nil {
-		t.Fatal(err)
-	}
-	majorOnly := &Params{NoMinorHolidays: true}
-	seen := map[string]bool{}
-	for _, ev := range evs {
-		if keepEvent(ev, ev.GetFlags(), majorOnly) {
-			seen[untranslatedDesc(ev)] = true
-		}
-	}
-	for _, want := range []string{"Purim", "Erev Purim"} {
-		if !seen[want] {
-			t.Errorf("%q should survive the minor-holiday filter", want)
-		}
-	}
-	var chanukah bool
-	for d := range seen {
-		if strings.HasPrefix(d, "Chanukah: ") {
-			chanukah = true
-		}
-	}
-	if !chanukah {
-		t.Error("Chanukah should survive the minor-holiday filter")
-	}
-	for _, unwanted := range []string{"Tu BiShvat", "Rosh Hashana LaBehemot"} {
-		if seen[unwanted] {
-			t.Errorf("%q carries the same flag but should be filtered out", unwanted)
-		}
-	}
-}
-
-// Asking for minor holidays keeps all of them.
-func TestMinorHolidaysKeptWhenRequested(t *testing.T) {
-	opts := hebcal.CalOptions{Year: 2026}
-	evs, _ := hebcal.HebrewCalendar(&opts)
-	all := &Params{}
-	for _, ev := range evs {
-		if untranslatedDesc(ev) == "Tu BiShvat" && !keepEvent(ev, ev.GetFlags(), all) {
-			t.Error("Tu BiShvat should be kept when minor holidays were requested")
-		}
-	}
-}
-
 // A whole Hebrew-year calendar in Hebrew-month mode carries real events for
 // Tishrei of the following year too -- a head start for next year's printed
 // calendar -- rather than an empty trailing page. Mirrors hebcal-web's
 // makeHebrewCalendar. Gregorian-month mode has no Hebrew-month page to fill,
 // so the same request must carry none of this.
 func TestGenerateIncludesNextYearTishrei(t *testing.T) {
-	p := &Params{
-		MonthMode: HebrewArabic,
+	p := &download.Params{
+		MonthMode: download.HebrewArabic,
 		Opts:      hebcal.CalOptions{Year: 5787, IsHebrewYear: true},
 	}
 	evs, err := Generate(p)
@@ -277,7 +229,7 @@ func TestGenerateIncludesNextYearTishrei(t *testing.T) {
 		t.Error("expected next year's Rosh Hashana among the events, got none")
 	}
 
-	p.MonthMode = GregorianArabic
+	p.MonthMode = download.GregorianArabic
 	evs, err = Generate(p)
 	if err != nil {
 		t.Fatal(err)
@@ -296,8 +248,8 @@ func TestGenerateIncludesNextYearTishrei(t *testing.T) {
 // month and, appended out of date order, breaks SplitByHebrewMonth's
 // last-event-as-range-end logic into dropping real later pages.
 func TestGenerateNumYearsDoesNotDuplicateTishrei(t *testing.T) {
-	p := &Params{
-		MonthMode: HebrewArabic,
+	p := &download.Params{
+		MonthMode: download.HebrewArabic,
 		Opts:      hebcal.CalOptions{Year: 5787, IsHebrewYear: true, NumYears: 2},
 	}
 	evs, err := Generate(p)
@@ -337,18 +289,6 @@ func TestGenerateNumYearsDoesNotDuplicateTishrei(t *testing.T) {
 	}
 }
 
-func TestYomTovOnlyKeepsOnlyChagim(t *testing.T) {
-	opts := hebcal.CalOptions{Year: 2026}
-	evs, _ := hebcal.HebrewCalendar(&opts)
-	p := &Params{YomTovOnly: true}
-	for _, ev := range evs {
-		keep := keepEvent(ev, ev.GetFlags(), p)
-		if keep && !ev.GetFlags().Has(event.CHAG) {
-			t.Errorf("%q is not a chag but survived yomTovOnly", untranslatedDesc(ev))
-		}
-	}
-}
-
 // Latest Kiddush Levana is a timed event: its clock time is drawn separately,
 // with the a/p suffix in a 12-hour country and 24-hour elsewhere, and is not
 // left in the subject. KiddushLevanaEvent embeds TimedEvent rather than being
@@ -367,7 +307,7 @@ func TestKiddushLevanaIsTimed(t *testing.T) {
 		{"New York", "he", 0, "סוֹף זְמַן קִדּוּשׁ לְבָנָה", "9:44p"},
 	}
 	for _, tt := range tests {
-		p := &Params{Locale: tt.locale, MonthMode: GregorianArabic, Hour12: tt.hour12}
+		p := &download.Params{Locale: tt.locale, MonthMode: download.GregorianArabic, Hour12: tt.hour12}
 		p.Opts = hebcal.CalOptions{
 			Year: 2026, Month: 10, CandleLighting: true, KiddushLevanaMaharil: true,
 			Location: zmanim.LookupCity(tt.city),

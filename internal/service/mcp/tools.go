@@ -190,9 +190,9 @@ func (t *tools) torahPortion(ctx context.Context, _ *mcpsdk.CallToolRequest, in 
 				out = append(out, "Reading: "+reading.Summary)
 			}
 		} else {
-			// Sidecar unavailable: hebcal-go's sedra has no chag reading name,
-			// so fall back to the holiday on that Saturday, name only.
-			out = append(out, "Torah portion: "+chagReadingName(shabbat, il))
+			// Sidecar unavailable: sedra names the holiday reading itself
+			// ("Pesach Shabbat Chol ha-Moed"), name only.
+			out = append(out, "Torah portion: "+strings.Join(parsha.Name, "-"))
 		}
 	} else {
 		out = append(out, "Torah portion: Parashat "+strings.Join(parsha.Name, "-"))
@@ -210,18 +210,6 @@ func (t *tools) torahPortion(ctx context.Context, _ *mcpsdk.CallToolRequest, in 
 	}
 	out = append(out, "Date read: "+isoGreg(shabbat))
 	return textResult(strings.Join(out, "\n")), nil, nil
-}
-
-// chagReadingName is the fallback name for the holiday reading that displaces
-// the parsha on a chag Shabbat, used only when readings-svc is unavailable.
-// hebcal-go's sedra returns no name for a chag week, so the name comes from the
-// holiday on that Saturday -- a coarser label ("Pesach V (CH”M)") than the
-// sidecar's ("Pesach Shabbat Chol ha-Moed").
-func chagReadingName(shabbat hdate.HDate, il bool) string {
-	if hols := hebcal.GetHolidaysOnDate(shabbat, il); len(hols) > 0 {
-		return renderEn(hols[0])
-	}
-	return ""
 }
 
 // jewish-holidays-year

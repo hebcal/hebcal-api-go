@@ -10,6 +10,7 @@ import (
 	"github.com/hebcal/hebcal-go/zmanim"
 	"google.golang.org/protobuf/proto"
 
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 )
 
@@ -42,7 +43,7 @@ func TestEarlyYearDisablesCandleLighting(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p, err := DecodeParams(encode(t, tt.msg), nil)
+			p, err := download.ParamsFromMessage(tt.msg, nil)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -76,7 +77,7 @@ func TestIsraelLocationForcesILAndOffset(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p, err := DecodeParams(encode(t, tt.msg), nil)
+			p, err := download.ParamsFromMessage(tt.msg, nil)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -99,7 +100,7 @@ func TestIsraelLocationKeepsCustomOffset(t *testing.T) {
 		Tzid:      "Asia/Jerusalem", CityName: "Jerusalem",
 		CandleLightingMins: proto.Int32(30),
 	}
-	p, err := DecodeParams(encode(t, msg), nil)
+	p, err := download.ParamsFromMessage(msg, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -125,7 +126,7 @@ func TestSuppressHavdalah(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p, err := DecodeParams(encode(t, tt.msg), nil)
+			p, err := download.ParamsFromMessage(tt.msg, nil)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -142,8 +143,8 @@ func TestSuppressHavdalah(t *testing.T) {
 // The 12/24-hour default follows the location's country: only the dozen listed
 // countries default to 12-hour, and hour12 overrides either way.
 func TestUse12Hour(t *testing.T) {
-	mk := func(cc string, il bool, hour12 int32) *Params {
-		p := &Params{Hour12: hour12}
+	mk := func(cc string, il bool, hour12 int32) *download.Params {
+		p := &download.Params{Hour12: hour12}
 		p.Opts.IL = il
 		if cc != "" {
 			p.Opts.Location = &zmanim.Location{CountryCode: cc}
@@ -152,7 +153,7 @@ func TestUse12Hour(t *testing.T) {
 	}
 	tests := []struct {
 		name string
-		p    *Params
+		p    *download.Params
 		want bool
 	}{
 		{"US defaults 12h", mk("US", false, 0), true},
@@ -165,7 +166,7 @@ func TestUse12Hour(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.p.use12Hour(); got != tt.want {
+			if got := use12Hour(tt.p); got != tt.want {
 				t.Errorf("use12Hour() = %v, want %v", got, tt.want)
 			}
 		})
@@ -179,7 +180,7 @@ func TestAppendHebrewLocales(t *testing.T) {
 		"a": false, "s": false, "h": false, "de": false, "": false,
 	}
 	for lg, want := range tests {
-		p, err := DecodeParams(encode(t, &pb.Download{Year: 2026, Major: true, Locale: lg}), nil)
+		p, err := download.ParamsFromMessage(&pb.Download{Year: 2026, Major: true, Locale: lg}, nil)
 		if err != nil {
 			t.Fatalf("lg=%q: %v", lg, err)
 		}
@@ -203,12 +204,12 @@ func TestAltDateBrief(t *testing.T) {
 		{"rosh hashana keeps year", hdate.New(5770, hdate.Tishrei, 1), "en", "1st of Tishrei, 5770"},
 		{"spanish ordinal", hdate.New(5786, hdate.Tevet, 12), "es", "12º Tevet"},
 		{"hebrew gematriya", hdate.New(5786, hdate.Tevet, 12), "he", "י״ב טֵבֵת"},
-		{"german keeps hebcal-go's ordinal", hdate.New(5786, hdate.Tevet, 12), "de", "12 Tewet"},
+		{"german ordinal", hdate.New(5786, hdate.Tevet, 12), "de", "12. Tewet"},
 		{"smart apostrophe", hdate.New(5786, hdate.Shvat, 1), "en", "1st of Sh’vat"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := altDateBrief(tt.hd, tt.locale); got != tt.want {
+			if got := download.HebrewDateBrief(tt.hd, tt.locale); got != tt.want {
 				t.Errorf("altDateBrief = %q, want %q", got, tt.want)
 			}
 		})
@@ -232,11 +233,11 @@ func TestYearRange(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := DecodeParams(encode(t, tt.msg), nil)
-			var oor *OutOfRangeError
+			_, err := download.ParamsFromMessage(tt.msg, nil)
+			var oor *download.OutOfRangeError
 			if tt.wantErr {
 				if !errors.As(err, &oor) {
-					t.Errorf("err = %v, want an OutOfRangeError", err)
+					t.Errorf("err = %v, want an download.OutOfRangeError", err)
 				}
 			} else if err != nil {
 				t.Errorf("unexpected error: %v", err)
@@ -256,8 +257,8 @@ func TestGregorianAltText(t *testing.T) {
 		"he":        "23 אוק",
 	}
 	for locale, want := range tests {
-		if got := gregorianAltText(hd, locale); got != want {
-			t.Errorf("gregorianAltText(%q) = %q, want %q", locale, got, want)
+		if got := download.GregorianDateText(hd, locale); got != want {
+			t.Errorf("download.GregorianDateText(%q) = %q, want %q", locale, got, want)
 		}
 	}
 }
@@ -273,12 +274,12 @@ func TestAddGregorianAltDates(t *testing.T) {
 	}
 	events := []Event{mk(1), mk(1), mk(4)} // two events on the 1st, one on the 4th
 
-	forEvents := addGregorianAltDates(events, &Params{MonthMode: HebrewArabic, AddAltDatesForEvents: true})
+	forEvents := addGregorianAltDates(events, &download.Params{MonthMode: download.HebrewArabic, AddAltDatesForEvents: true})
 	if got := countAlt(forEvents); got != 2 {
 		t.Errorf("addAltDatesForEvents: %d alt dates, want 2 (one per event-day)", got)
 	}
 
-	all := addGregorianAltDates(events, &Params{MonthMode: HebrewArabic, AddAltDates: true})
+	all := addGregorianAltDates(events, &download.Params{MonthMode: download.HebrewArabic, AddAltDates: true})
 	if got := countAlt(all); got != 4 {
 		t.Errorf("addAltDates: %d alt dates, want 4 (Cheshvan 1-4)", got)
 	}
@@ -309,7 +310,7 @@ func TestDiasporaLocationDefaults(t *testing.T) {
 		LongOneof: &pb.Download_Longitude{Longitude: -2.14},
 		Tzid:      "Africa/Accra", CityName: "Prestea",
 	}
-	p, err := DecodeParams(encode(t, msg), nil)
+	p, err := download.ParamsFromMessage(msg, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -329,7 +330,7 @@ func TestDiasporaLocationDefaults(t *testing.T) {
 func TestHolidaySubsetWithoutMajor(t *testing.T) {
 	descs := func(msg *pb.Download) map[string]bool {
 		t.Helper()
-		p, err := ParamsFromMessage(msg, nil)
+		p, err := download.ParamsFromMessage(msg, nil)
 		if err != nil {
 			t.Fatal(err)
 		}

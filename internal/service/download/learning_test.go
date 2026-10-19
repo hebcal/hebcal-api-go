@@ -1,4 +1,4 @@
-package pdf
+package download
 
 import (
 	"testing"
@@ -96,8 +96,8 @@ func TestLearningFieldsMapToTheRightSchedules(t *testing.T) {
 			if len(p.Opts.DailyLearning) != 1 || p.Opts.DailyLearning[0] != tt.want {
 				t.Errorf("DailyLearning = %v, want [%s]", p.Opts.DailyLearning, tt.want)
 			}
-			if got := unsupportedSeries(tt.msg); len(got) != 0 {
-				t.Errorf("should be supported, but unsupportedSeries() = %v", got)
+			if got := UnsupportedSeries(tt.msg); len(got) != 0 {
+				t.Errorf("should be supported, but UnsupportedSeries() = %v", got)
 			}
 		})
 	}
@@ -112,7 +112,26 @@ func TestRemainingUnsupportedSeries(t *testing.T) {
 		ArukhHaShulchanYomi: true, SeferHaMitzvot: true,
 		KitzurShulchanAruch: true, DirshuAmudYomi: true,
 	}
-	if got := unsupportedSeries(msg); len(got) != 6 {
-		t.Errorf("unsupportedSeries() = %v, want all six", got)
+	if got := UnsupportedSeries(msg); len(got) != 6 {
+		t.Errorf("UnsupportedSeries() = %v, want all six", got)
+	}
+}
+
+// The series with no Go schedule are fetched from readings-svc rather than
+// refusing the calendar, so every one needs a query parameter.
+func TestEveryUnsupportedSeriesHasAQueryParameter(t *testing.T) {
+	msg := &pb.Download{
+		ChofetzChaim: true, ShemiratHaLashon: true, ArukhHaShulchanYomi: true,
+		SeferHaMitzvot: true, KitzurShulchanAruch: true, DirshuAmudYomi: true,
+		DirshuDafHalacha: true,
+	}
+	for _, s := range UnsupportedSeries(msg) {
+		if _, ok := fallbackSeries[s]; !ok {
+			t.Errorf("series %q has no query parameter, so it could never be fetched", s)
+		}
+	}
+	if len(fallbackSeries) != len(UnsupportedSeries(msg)) {
+		t.Errorf("fallbackSeries has %d entries but %d series are unsupported; "+
+			"the two lists have drifted", len(fallbackSeries), len(UnsupportedSeries(msg)))
 	}
 }

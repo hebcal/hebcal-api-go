@@ -19,6 +19,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
 	"github.com/hebcal/hebcal-api-go/internal/logger"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings/readingstest"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
@@ -229,7 +230,7 @@ func TestFallbackStatusCodes(t *testing.T) {
 			http.Error(w, "down", http.StatusBadGateway)
 		}))
 		app, srv := pdfServer(t)
-		app.PDF.Learning = pdf.NewLearningFetcher(down)
+		app.PDF.Learning = download.NewLearningFetcher(down)
 		resp, _ := get(t, srv, path)
 		if resp.StatusCode != http.StatusServiceUnavailable {
 			t.Errorf("status = %d, want 503", resp.StatusCode)
@@ -245,7 +246,7 @@ func TestFallbackStatusCodes(t *testing.T) {
 				`"category":"dirshuAmudYomi"}]}`))
 		}))
 		app, srv := pdfServer(t)
-		app.PDF.Learning = pdf.NewLearningFetcher(up)
+		app.PDF.Learning = download.NewLearningFetcher(up)
 		resp, body := get(t, srv, path)
 		if resp.StatusCode != http.StatusOK {
 			t.Fatalf("status = %d, want 200: %s", resp.StatusCode, body)
@@ -393,7 +394,7 @@ func TestPDFV4Lowercased(t *testing.T) {
 // answers with a 301 to the /v4/ form. This service renders them directly, so
 // the test that matters is that the two spellings of one request draw the same
 // calendar; that they decode to the same protobuf as production's redirect is
-// internal/service/pdf/v2_test.go's business.
+// internal/service/download/v2_test.go's business.
 func TestPDFLegacyV2(t *testing.T) {
 	// The shape of a real request from a download.hebcal.com access log, moved
 	// onto a city the trimmed test database has, and the /v4/ payload

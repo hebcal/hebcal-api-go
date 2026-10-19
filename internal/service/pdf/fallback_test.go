@@ -10,27 +10,8 @@ import (
 	"time"
 
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings/readingstest"
-	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 )
-
-// The series with no Go schedule are fetched from readings-svc rather than
-// refusing the calendar, so every one needs a query parameter.
-func TestEveryUnsupportedSeriesHasAQueryParameter(t *testing.T) {
-	msg := &pb.Download{
-		ChofetzChaim: true, ShemiratHaLashon: true, ArukhHaShulchanYomi: true,
-		SeferHaMitzvot: true, KitzurShulchanAruch: true, DirshuAmudYomi: true,
-		DirshuDafHalacha: true,
-	}
-	for _, s := range unsupportedSeries(msg) {
-		if _, ok := fallbackSeries[s]; !ok {
-			t.Errorf("series %q has no query parameter, so it could never be fetched", s)
-		}
-	}
-	if len(fallbackSeries) != len(unsupportedSeries(msg)) {
-		t.Errorf("fallbackSeries has %d entries but %d series are unsupported; "+
-			"the two lists have drifted", len(fallbackSeries), len(unsupportedSeries(msg)))
-	}
-}
 
 func TestFetchBuildsTheExpectedQuery(t *testing.T) {
 	var got url.Values
@@ -42,8 +23,8 @@ func TestFetchBuildsTheExpectedQuery(t *testing.T) {
 		json.NewEncoder(w).Encode(map[string]any{"items": []any{}})
 	}))
 
-	f := NewLearningFetcher(client)
-	_, err := f.Fetch(context.Background(),
+	f := download.NewLearningFetcher(client)
+	_, err := fetchLearning(context.Background(), f,
 		[]string{"dirshuAmudYomi", "chofetzChaim"}, "es",
 		time.Date(2026, 8, 1, 0, 0, 0, 0, time.UTC),
 		time.Date(2026, 8, 31, 0, 0, 0, 0, time.UTC))
@@ -79,8 +60,8 @@ func TestFetchParsesItems(t *testing.T) {
     ]}`))
 	}))
 
-	f := NewLearningFetcher(client)
-	evs, err := f.Fetch(context.Background(), []string{"dirshuAmudYomi"}, "",
+	f := download.NewLearningFetcher(client)
+	evs, err := fetchLearning(context.Background(), f, []string{"dirshuAmudYomi"}, "",
 		time.Date(2026, 8, 1, 0, 0, 0, 0, time.UTC),
 		time.Date(2026, 8, 31, 0, 0, 0, 0, time.UTC))
 	if err != nil {
@@ -112,8 +93,8 @@ func TestFetchReportsFailures(t *testing.T) {
 	client := readingstest.Serve(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "nope", http.StatusInternalServerError)
 	}))
-	f := NewLearningFetcher(client)
-	if _, err := f.Fetch(context.Background(), []string{"dirshuAmudYomi"}, "",
+	f := download.NewLearningFetcher(client)
+	if _, err := fetchLearning(context.Background(), f, []string{"dirshuAmudYomi"}, "",
 		time.Now(), time.Now()); err == nil {
 		t.Error("expected an error for a 500 response")
 	}
@@ -125,7 +106,7 @@ func TestLearningRangeCoversWholeMonths(t *testing.T) {
 	mk := func(y int, m time.Month, d int) Event {
 		return Event{Greg: time.Date(y, m, d, 0, 0, 0, 0, time.UTC)}
 	}
-	start, end, ok := learningRange(&Params{},
+	start, end, ok := learningRange(&download.Params{},
 		[]Event{mk(2026, time.August, 3), mk(2026, time.October, 12)})
 	if !ok {
 		t.Fatal("no range")
@@ -142,7 +123,7 @@ func TestLearningRangeCoversWholeMonths(t *testing.T) {
 // the range comes from the request instead. The fetched rows are then the
 // whole calendar.
 func TestLearningRangeFallsBackToTheRequest(t *testing.T) {
-	p := &Params{}
+	p := &download.Params{}
 	p.Opts.Year = 2026
 	p.Opts.Month = time.August
 	start, end, ok := learningRange(p, nil)
@@ -160,7 +141,7 @@ func TestLearningRangeFallsBackToTheRequest(t *testing.T) {
 // whole Gregorian months. Without this the fetch has nothing to anchor to and the
 // request 500s ("cannot determine the calendar's date range").
 func TestLearningRangeHebrewYear(t *testing.T) {
-	p := &Params{}
+	p := &download.Params{}
 	p.Opts.Year = 5787
 	p.Opts.IsHebrewYear = true
 	start, end, ok := learningRange(p, nil)

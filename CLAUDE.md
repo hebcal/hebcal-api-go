@@ -56,24 +56,34 @@ Keep that lineage **out of the `*.go` doc comments** and **in this file**:
 
 ## Architecture of the PDF half
 
+Everything up to the event list is shared with the CSV calendars and lives in
+`internal/service/download`: decoding the request (the `/v4/` protobuf and its
+two legacy spellings), resolving it into `download.Params`, generating the
+events, and fetching the learning series no Go schedule covers. Neither
+format package depends on the other.
+
 The service follows the repository's usual direction — `handler` → `service` →
 `model`/`pkg`, and nothing in a service package writes to an
 `http.ResponseWriter`.
 
 | file | role |
 |---|---|
-| `internal/handler/pdf.go` | both routes' transport: methods, headers, ETag/304, the status each error maps to |
-| `internal/service/pdf/pdf.go` | `Service.Prepare`/`Render`, the document title, the 501/503 learning error |
-| `internal/service/pdf/params.go` | protobuf → `hebcal.CalOptions`; port of `deserializeDownload.js` |
-| `internal/service/pdf/v2.go` | the legacy `/v2/h/` URL: query string → protobuf; port of `downloadHref2()` |
-| `internal/service/pdf/cgi.go` | the classic `/hebcal/index.cgi/…pdf?query` URL: its two query encodings → `v2Query`, then `DecodeV2` |
-| `internal/service/pdf/events.go` | event generation via hebcal-go, ordering within a day |
+| `internal/handler/download.go` | transport shared with the CSV route: the `/v4/` dispatch by extension, methods, ETag/304, the status each error maps to |
+| `internal/handler/pdf.go` | both PDF routes' headers and the holiday route's error mapping |
+| `internal/service/download/request.go` | `Decode`: any of the three download URL shapes → the `Download` protobuf; the 501/503 learning error |
+| `internal/service/download/params.go` | protobuf → `hebcal.CalOptions`; port of `deserializeDownload.js` |
+| `internal/service/download/v2.go` | the legacy `/v2/h/` URL: query string → protobuf; port of `downloadHref2()` |
+| `internal/service/download/cgi.go` | the classic `/hebcal/index.cgi/…pdf?query` URL: its two query encodings → `v2Query`, then `DecodeV2` |
+| `internal/service/download/events.go` | `GenerateCalEvents`: event generation via hebcal-go and the category filters |
+| `internal/service/download/learning.go` | the readings-svc `/learning` fetch for unsupported learning series |
+| `internal/service/pdf/pdf.go` | `Service.Prepare`/`Render`, the document title |
+| `internal/service/pdf/events.go` | flattening events into cells, ordering within a day |
 | `internal/service/pdf/hebmonth.go` | Hebrew-month pagination (`mm=1`, `mm=2`) |
 | `internal/service/pdf/render.go` | page layout; port of `renderPdf()` |
 | `internal/service/pdf/text.go` | bidi and shaping |
 | `internal/service/pdf/fonts.go` | font loading, metrics, per-document embedding |
 | `internal/service/pdf/links.go` | URL shortening and tracking |
-| `internal/service/pdf/fallback.go` | the readings-svc `/learning` fetch for unsupported learning series |
+| `internal/service/pdf/fallback.go` | merging the fetched learning rows into the cells |
 | `internal/service/holidaypdf/` | `/holidays/hebcal-<year>.pdf` URL parsing; port of `holidayPdf.js` |
 | `internal/model/calendarnames.go` | month and weekday names, generated |
 | `pkg/downloadpb/` | the `Download` protobuf a `/v4/` URL carries |
@@ -273,7 +283,7 @@ hebcal-web answers it with a **301** to the `/v4/` form: `redirV2` in
 `src/app-download.js` decodes the path, and `downloadHref2()` in
 `src/makeDownloadProps.js` re-encodes the query as the protobuf. This service
 answers **200** instead, by running that same conversion in `v2.go` and handing
-the message to `ParamsFromMessage` — so from `pdf.go`'s `decodeRequest` onward a
+the message to `ParamsFromMessage` — so from `download.Decode` onward a
 `/v2/` request *is* a `/v4/` request, and there is no second decoding path to
 keep in step. The three sample URLs in `v2_test.go` are checked against the
 exact payloads production's 301 points at, and a 41-case sweep of hand-written
@@ -332,7 +342,7 @@ fields last), and `start`/`end`, which travel as the ISO string the message can
 also carry rather than as epoch seconds — the same date, without a trip through
 the server's local timezone.
 
-Only `/v2/h/` and only `.pdf` is ours. The `.ics` feeds and the yahrzeit
+Only `/v2/h/` and only `.pdf` and `.csv` are ours. The `.ics` feeds and the yahrzeit
 calendars under `/v2/` are still hebcal-web's, so those are 404, as is a URL
 with no `v=`; a `v=` naming another kind of calendar is 400, which is what the
 download dispatcher answers.
@@ -353,7 +363,7 @@ building the same `v2Query` and running it through `DecodeV2`, after the two
 `mod`/`mf`/`ss`, every negative option but Rosh Chodesh, and overrides an
 explicit one beside it), and lowercase `m=on` as the old spelling of `M=on`.
 `tag` and `set` are ancient and ignored -- `set` only ever suppressed a cookie
-on www, never on download. From `decodeRequest` onward a CGI request *is* a
+on www, never on download. From `download.Decode` onward a CGI request *is* a
 `/v4/` request, the same collapse `/v2/` makes.
 
 **The query arrives in two encodings, both handled by `normalizeCGIQuery`
@@ -366,7 +376,7 @@ leaves `+` alone, not `decodeURIComponent` -- before splitting. Production
 answers that second form with a 301 to the `&` spelling and renders the redirect;
 this service does the `unescape` inline (`unescapeLatin1`) and renders in one hop.
 
-The status codes match the router: only `.pdf` is ours (a `.ics` is 404), a URL
+The status codes match the router: only `.pdf` and `.csv` are ours (a `.ics` is 404), a URL
 naming no `v=` is 404 (which is why `hebcal_2028_may.pdf` with no query string is
 404, not a calendar), and a `v=` naming another kind of calendar is 400. The
 finite `redirectDownload.json` map of specific no-query legacy URLs that
@@ -378,7 +388,7 @@ handful of curated redirects.
 `internal/service/holidaypdf` serves `www.hebcal.com`'s
 `/holidays/hebcal-<year>.pdf`, a port of `src/holidayPdf.js`. It is a small
 request -- a year and `i=on` -- feeding the same generator and renderer as
-`/v4/`, so the whole package is URL parsing: `Parse` hands back a `pdf.Params`
+`/v4/`, so the whole package is URL parsing: `Parse` hands back a `download.Params`
 and `pdfHoliday` does the rest. Four things about it are not obvious:
 
 - **The year string keeps its extension.** `holidayPdf.js` parses
@@ -409,24 +419,16 @@ and `pdfHoliday` does the rest. Four things about it are not obvious:
   mappings (`writeDownloadError` and `writeHolidayError`): the download path's
   410 is cacheable and names the year, the holiday path's is neither.
 
-### The alternate date is hebcal-go's, and it lags @hebcal/hdate
+### The alternate date is hebcal-go's brief Hebrew date
 
-`altDateBrief` renders the day line through
-`event.NewHebrewDateEvent(hd).Render(locale)` and trims the year, rather than
-formatting the date here. hebcal-go's `hebrewDateEvent.Render()` is a little
-behind `@hebcal/hdate`'s `HDate.render()`, in two ways:
-
-- **the apostrophe.** `HDate.render()` finishes with
-  `monthName.replace(/'/g, '’')`. That one is patched over locally with
-  `smartApostrophe`, the same call `Generate` already makes on every event
-  subject, so the day line reads "1st of Sh’vat".
-- **the ordinal for a locale that is neither English nor Spanish.**
-  `Locale.ordinal()` gives "12.", and `HDate.render()` separates the year with a
-  comma; hebcal-go gives "12" and a space. A `/v4/` download with `lg=de` and
-  `d=on` therefore draws "12 Tewet" where a current hebcal-web draws
-  "12. Tewet". **This belongs in hebcal-go**, not in a second date formatter
-  here -- fixing it upstream also fixes every other hebcal-go consumer. The
-  `/holidays/` calendars never see it, being English only.
+`download.HebrewDateBrief` draws the day line as
+`event.RenderBrief(event.NewHebrewDateEvent(hd), locale)`. Until hebcal-go
+v0.26.0 the Hebrew date rendered behind `@hebcal/hdate`'s `HDate.render()` --
+a typewriter apostrophe ("Sh'vat"), "12 Tewet" where `lg=de` wants "12.
+Tewet", hdate's own Hebrew month spellings, and no brief form, so this
+service trimmed the year off the full one and patched the rest. v0.26.0
+renders the month from the locale catalog with a typographic apostrophe and
+the locale's ordinal, and adds the brief form, so all of that went.
 
 While chasing that, note that **the two production hosts are not running the
 same hebcal-web build** (measured 2026-08-11): www draws "12. Tewet" and a smart
@@ -514,6 +516,100 @@ Do not "fix" these without checking production first.
 - **The `ft` ligature is absent from both documents' ToUnicode maps**, so
   `Shoftim` extracts oddly from either. A pdftotext artifact, not a regression.
 
+## The CSV calendars (`/v4/…csv`)
+
+`internal/service/csv` serves `download.hebcal.com/v4/<data>/<name>.csv` (and
+the `/v2/h/` and `/hebcal/index.cgi/` spellings of it), the
+Outlook-compatible export of the same `/v4/` calendar the PDF draws. It is a
+port of `@hebcal/rest-api`'s `src/csv.ts` (`eventToCsv()`) and of hebcal-web's
+`eventsWithParshaToCsv()` / `getCsvParshaMemo()` (`src/parshaCommon.js`), and
+it shares everything up to the event list with the PDF through
+`internal/service/download`: `Decode(ctx, u, ".csv")`, `ParamsFromMessage`,
+and `GenerateCalEvents` (the raw, category-filtered hebcal-go events that
+`pdf.Generate` flattens into cells). `handler.byExtension`, mounted on all three
+download URL shapes, sends `.csv` to `csvDownload` and everything else to
+`pdfDownload`; the CSV path skips the PDF
+limiter and needs no fonts.
+
+The bar is the same as for the PDFs -- the same bytes production serves -- and
+it was measured that way: a scratch harness ran hebcal-web's own
+`deserializeDownload` → `makeHebcalOptions` → `makeHebrewCalendar` →
+`eventsWithParshaToCsv` against the handler test databases and diffed the
+result row by row with this service's output. Across about 40 URLs (the samples
+from the access log, every locale family, euro dates, `h12`, Israel, ZIP and
+lat/long locations, alternate dates in both month modes, omer, Yom Kippur
+Katan, Shabbat Mevarchim, fast-time options, yom-tov-only, no-minor) every row
+matched except the cases listed below. It is worth re-running that harness
+before changing anything here.
+
+Things that are not obvious:
+
+- **Rows are built by hand, not with `encoding/csv`.** Every field is quoted,
+  commas are deleted from the subject and turned into `;` in the description,
+  and `"` becomes `''` -- so no row ever needs the escaping a CSV writer would
+  add, and a writer would quote differently. Keeping the legacy escaping is
+  what makes byte-for-byte comparison possible; switching to `encoding/csv`
+  (and dropping the comma rewriting) is an acceptable later change.
+- **Every document starts with a UTF-8 BOM** -- a deliberate divergence.
+  hebcal-web writes one only for a non-English locale, but an English
+  calendar is not ASCII either ("Sukkot III (CH’’M)", "Sh’vat"), and without
+  the BOM Excel reads it as Windows-1252. Lines end in CRLF, the last one
+  included.
+- **A CSV spans several years, a PDF one.** hebcal-web applies
+  `getNumYears()` to `.ics`/`.csv` only: 7 by default, capped by candle-lighting
+  (4), sedrot or omer (5), omer+sedrot (4), alternate dates (2–4) and any daily
+  learning (2), and 1 with two or more daily series. `numYears` ports it.
+- **The description's priority** is: the special-Shabbat / Rosh Chodesh names
+  for a weekly portion (`" + "`-joined, or "Machar Chodesh" before a new month);
+  then the event's own memo -- the molad for Shabbat Mevarchim (via
+  `shabbat.MevarchimMoladMemo`), "Minor Day of Atonement on the day preceeding
+  Rosh Chodesh <month>" (sic, untranslated) for Yom Kippur Katan, the coming
+  portion for erev-Shabbat candle-lighting; then the first sentence of the
+  `MEMO:` catalog entry (Hebrew for Hebrew locales, English otherwise); then,
+  for a timed event, its linked event rendered in full ("Fast begins" →
+  "Tzom Gedaliah", erev-Yom-Tov candles → "Erev Sukkot").
+- **Erev-Shabbat candle-lighting in a festival week names the festival
+  reading** ("Sukkot Shabbat Chol ha-Moed", "Pesach I" -- but plain "Pesach" in
+  Israel), which hebcal-go's `sedra` reports as the chag week's name.
+- **Yizkor's description is the holiday it is recited on** ("Yom Kippur"), as
+  for a timed event's linked event.
+- **Kiddush Levana carries no description**, deliberately: hebcal-web's memo
+  for it is going away, so the CSV starts without it.
+- **Brief vs full subjects** follow `shouldRenderBrief()`: timed events,
+  Hebrew dates other than the 1st, daily learning, Shabbat Mevarchim and Yom
+  Kippur Katan are brief, through hebcal-go's `event.RenderBrief` and the
+  learning events' own `RenderBrief`; descriptions come from their `Memo`. The
+  appended Hebrew (`lg=ah`/`sh`) is always the brief form. Rosh Hashana is the
+  one exception to both: its year is a number in every locale, Hebrew
+  included, where hebcal-go writes gematriya.
+- **Daily-learning subjects keep typewriter apostrophes** ("Fourth Year's
+  Fruit"); every other subject is smartened.
+- **A Hebrew date leads its day**, and the readings-svc learning rows sit in
+  the learning slot after the series hebcal-go generated. The order within the
+  slot is `learningSchedules`': the download form's, with **929 first** --
+  hebcal-web keeps the selected series in a JavaScript object, whose
+  integer-like key `929` iterates before every other. That order fixed the
+  same cells in the PDF.
+
+Known differences from production (re-measured after hebcal-go v0.26.0 and
+learning v0.6.0, which closed Yizkor, the learning brief renders and memos,
+the Hebrew date's nikud, and the chag-week names -- every other row of the
+sweep is byte-identical):
+
+1. Zmanim about a minute off on some times (noaa-go vs @hebcal/core), as in
+   the PDFs.
+2. Hebrew Nach Yomi spells Amos "עָמוּס" where production writes "עָמוֹס":
+   `@hebcal/learning` and `@hebcal/leyning` translate it differently, the
+   website loads leyning's catalog last, and the generated
+   github.com/hebcal/locales kept learning's. A catalog-precedence question for
+   that generator.
+3. `lg=ah` Shabbat Mevarchim: production appends "מְבָרְכִים חוֹדֶשׁ Teves",
+   because `MevarchimChodeshEvent` translates the month into the calendar's
+   locale in its constructor; this service writes "טֵבֵת". Not reproduced.
+4. Hebrew-month (`mm=1`/`mm=2`) multi-year calendars: production appends the
+   next Tishrei from `year+1` rather than `year+numYears`, duplicating that
+   month's rows; this service inherits the PDF's corrected anchoring.
+
 ## The readings-svc sidecar
 
 Two things this service cannot do in Go come from
@@ -528,7 +624,7 @@ packages and answers HTTP **over a unix domain socket**
 
 `internal/repository/readings` is the whole client: the socket transport, the
 `Item` type, the LRU, and the two request builders. Both callers -- `/shabbat`
-and `internal/service/pdf/fallback.go` -- share one `*readings.Client`, so
+and `internal/service/download/learning.go` -- share one `*readings.Client`, so
 there is one socket, one connection pool and one place that knows the
 transport. Keep it that way, the same rule the `httpx` note above states.
 
@@ -640,8 +736,9 @@ chag lookup lands on the Saturday); it is its own request, **not** the
 `summary` there would diverge `/shabbat` from production, which carries no such
 key). `/shabbat` output is therefore untouched. torah-portion soft-depends on
 the sidecar the way PDF daily-learning does: without it (nil client, or an
-error) the chag branch falls back to hebcal-go's coarser label
-(`chagReadingName`) with no Hebrew-name or `Reading:` line, rather than the tool
+error) the chag branch falls back to the name hebcal-go's `sedra` gives the
+holiday reading (`Parsha.Name` with `Chag` set, e.g. "Pesach Shabbat Chol
+ha-Moed"), with no Hebrew-name or `Reading:` line, rather than the tool
 failing.
 
 **On a chag the Go tool deliberately says more than the original hebcal-mcp.**
@@ -677,8 +774,9 @@ The **chag `torah-portion` output is no longer a divergence, and is now richer
 than hebcal-mcp's**: the label reads `name.en` from `/shabbatTorahReading`
 ("Shmini Atzeret (on Shabbat)"), and the branch also emits `Name in Hebrew:`
 (`name.he`) and `Reading:` (`summary`) -- lines the Node original omits on a
-chag. It falls back to hebcal-go's coarser `chagReadingName` ("Pesach V
-(CH''M)"), label only, when the sidecar is unavailable. Whatever
+chag. It falls back to `sedra`'s chag reading name ("Pesach Shabbat Chol
+ha-Moed", "Shmini Atzeret" without the sidecar's "(on Shabbat)"), label only,
+when the sidecar is unavailable. Whatever
 `/shabbatTorahReading` returns is taken as correct.
 
 Wiring: `main.go` sets `app.MCP = mcp.Handler(app.Readings)`; `server.go`'s
@@ -705,7 +803,7 @@ Schedules are not selected through the four dedicated `CalOptions` booleans but
 through its generic `DailyLearning []string`, resolved against hebcal-go's
 `dailylearning` registry. The registry is populated by importing
 `github.com/hebcal/learning` **for its side effects** — each schedule registers
-itself in an `init()`. `internal/service/pdf/params.go` carries that blank import, next to the list it
+itself in an `init()`. `internal/service/download/params.go` carries that blank import, next to the list it
 feeds; dropping it silently reduces the service to the four hard-wired series.
 (It sat in `main.go` while this was its own repository, which is one import
 away from a consumer that forgets it.)
@@ -754,6 +852,14 @@ github.com/hebcal/learning v0.5.0 adds the `URL()` method to every schedule
 event, which is what closed the daily-learning link gap (see "Where things
 stand"). The empty URLs it returns for Schottenstein Yerushalmi and multi-reading
 Rambam 3-chapter days are deliberate and match @hebcal/core, not omissions.
+
+hebcal-go v0.26.0 and github.com/hebcal/learning v0.6.0 came out of the CSV
+port: Yizkor (`CalOptions.Yizkor`, `YizkorEvent`), `event.RenderBrief` and the
+brief forms of timed events, Yom Kippur Katan, the Hebrew date and the Omer,
+the Hebrew date rendered like `@hebcal/hdate`, chag-week names in `sedra`, no
+linked event on the chametz deadlines, and the learning events' `RenderBrief`
+and `Memo`. Each was verified against `@hebcal/core` / `@hebcal/learning`
+before release, and removed a workaround here.
 
 hebcal-go v0.25.2 sorts each day's events by time of day and exports the
 rank as `hebcal.TimeOfDay()` (see "Events within a day come from hebcal-go's
@@ -920,7 +1026,8 @@ and the within-day ordering below, which production picks up with the next
   `download.hebcal.com/hebcal/index.cgi/*.pdf` can be routed here too, which
   serves what hebcal-web would (a 301 to /v4/ for the first, a direct render for
   the second) as a 200; leaving them with Node keeps the current behaviour, so
-  both are a choice rather than a requirement.
+  both are a choice rather than a requirement. The same goes for the `.csv`
+  form of all three shapes.
 
 ### Known differences from production
 
@@ -1057,11 +1164,9 @@ concluding anything about the data (hebcal-go's `TimeOfDay()` now keys on
 `DAILY_LEARNING` as well as the four named flags, and
 `internal/service/pdf/events_test.go` pins the resulting order).
 
-One daily-learning schedule is still **rendered differently**, found by that
-same day-by-day dump and not yet fixed: **`tanakhYomi` renders the verse
-range.** hebcal-go draws "Kings Seder 6 (I Kings 7:21-8:10)" where @hebcal/core
-draws "Kings Seder 6". Same day, same URL, longer row. That belongs in
-github.com/hebcal/learning.
+`tanakhYomi` once rendered differently here ("Kings Seder 6 (I Kings
+7:21-8:10)" against "Kings Seder 6"); `@hebcal/learning` has since added the
+verse range too, and the two agree.
 
 Also open: a `mm=2` Hebrew-year calendar draws five fewer links than hebcal-web
 at the very end of the year (Sukkot/Yom Kippur/Shmini Atzeret 2027 and two 5788
@@ -1110,7 +1215,7 @@ Where each Go symbol came from. `src/*` is `hebcal-web`; `@hebcal/*` is the npm
 package. This is the lineage that used to live in the doc comments. Add rows as
 more code is ported.
 
-### `internal/service/pdf/params.go` — `deserializeDownload.js` + the PDF parts of `makeDownloadProps.js`
+### `internal/service/download/params.go` — `deserializeDownload.js` + the PDF parts of `makeDownloadProps.js`
 
 | Go | JS source |
 |---|---|
@@ -1135,7 +1240,7 @@ more code is ported.
 | `fastTimeFields` / `setFastTimes` | `deserializeDownload.js`'s fast fields + `floatToString()` (`toPrecision(6)`), then `getFastTimeOpts()` |
 | `unsupportedSeries` | the seven series with no `github.com/hebcal/learning` schedule |
 
-### `internal/service/pdf/v2.go` — `downloadHref2()` (`src/makeDownloadProps.js`)
+### `internal/service/download/v2.go` — `downloadHref2()` (`src/makeDownloadProps.js`)
 
 Whole file = `parseV2Path()` (`src/app-download.js`) + `downloadHref2()`, minus
 the base64 encode. `v2Query.on/off/empty/truthy/getInt/getFloat` ←
@@ -1148,7 +1253,7 @@ from the 301**. `applyV2DailyLearning` ← `downloadHref2`'s `dailyLearningConfi
 loop. The fast fields ← `downloadHref2`'s `getFastTimeOpts(q)` block; the
 fast keys in `geoKeysToRemove("none")` ← `fastTimeKeys` in `getGeoKeysToRemove()`. `checkISODate` ← `isoDateStringToDate()` 400 guard.
 
-### `internal/service/pdf/cgi.go` — `makeHebcalOptions(query)` path
+### `internal/service/download/cgi.go` — `makeHebcalOptions(query)` path
 
 `makeHebcalOptions(query)` ≡ `ParamsFromMessage(downloadHref2(query))` (the
 equivalence `v2.go` was measured to hold), so `ParseCGIPath` builds the same
@@ -1167,9 +1272,8 @@ ascender down). `width` ← `doc.widthOfString()`. `rowsFor` ← the 5/6-row rul
 `drawGrid` ← `renderPdfMonthGrid()`. `renderEvent`/`renderEventColored` ←
 `renderPdfEvent()`. `appendHebrew` ← its `appendHebrewToSubject` branch.
 `splitInTwo` ← its two-line fallback (`/(\s)/` split); the RTL side reproduces
-`reverseHebrewWords()`'s two-space rejoin. `altDateBrief` ← `@hebcal/core`
-`HebrewDateEvent.renderBrief()` + `@hebcal/hdate` `HDate.render()`'s smart
-apostrophe. `renderAltDateOnLine` ← `renderAlternateDateOnLine()`.
+`reverseHebrewWords()`'s two-space rejoin. `download.HebrewDateBrief` ← `@hebcal/core`
+`HebrewDateEvent.renderBrief()`, via hebcal-go's `event.RenderBrief`. `renderAltDateOnLine` ← `renderAlternateDateOnLine()`.
 `leftFooterText` ← `makeLeftText()`. `documentKeywords` ← the Keywords line of
 `createPdfDoc()`. `hebMonthName` ← `Locale.gettext(getMonthName(), locale)`.
 `hebMonthRange` ← `makeHebMonthStr()`. `hebTitleYear` / `drawHebMonthTitle` /
@@ -1194,7 +1298,7 @@ of `@hebcal/core`'s `timeOfDay()`.
 
 `Service` flow ← `src/pdf.js` + `src/hebcal-download.js` run order. `Prepare` ←
 `src/hebcal-download.js` (decode → generate → learning fetch → empty check).
-empty-events 400 ← `src/hebcal-download.js`. `decodeRequest` 404 default ←
+empty-events 400 ← `src/hebcal-download.js`. `download.Decode` 404 default ←
 hebcal-web download router. The undecodable-payload 404 generalizes
 `app-download.js`'s `isBingBot` special case (part of `fixup2`'s `/v4/`
 handling) to every user agent -- a **deliberate divergence**. `CalendarTitle`
@@ -1220,16 +1324,16 @@ two-space rejoin, which fontkit then re-reverses. `shapeRefSize` (1000pt) exists
 because fontkit scales linearly from font units while HarfBuzz quantises to the
 ppem grid — pdfkit's widths are the unrounded ones.
 
-### `internal/service/pdf/querylog.go`
+### `internal/service/download/querylog.go`
 
 `MessageToQuery`, `learningQueryParams`, `queryBuilder` ← `deserializeDownload.js`
 field-for-field, in `dailyLearningConfig.json` order. `formatFloat` ← JS
 `String(number)`. `queryBuilder.set()` encoding ← `encodeURIComponent` (spaces
 as `%20`, not `+`).
 
-### `internal/service/pdf/fallback.go`, `links.go`, `hebmonth.go`
+### `internal/service/download/learning.go`, `pdf/fallback.go`, `links.go`, `hebmonth.go`
 
-`fallbackSeries` codes ← readings-svc's documented codes (also hebcal-web's
+`fallbackSeries` (download) codes ← readings-svc's documented codes (also hebcal-web's
 `/hebcal` query params). `canonicalLearningURL` ← strips `@hebcal/rest-api`'s
 `utm_*` tracking. `links.go` UTM defaults ← `renderPdfEvent()` /
 `appendIsraelAndTracking`. `shortenSedrot`'s trim-to-`/s/` fallthrough ←
@@ -1246,14 +1350,30 @@ emission order for a clean link-by-link comparison. `SplitByHebrewMonth` ←
 hard-codes `addHebrewDates`, leaves `utmCampaign` unset. The `-il` filename
 suffix ← `applyIsraelSuffix` (newer spelling of `?i=on`).
 
-### `internal/handler/pdf.go`
+### `internal/service/csv/` — `src/csv.ts` (`@hebcal/rest-api`) + `src/parshaCommon.js`
+
+`Header` ← `CSV_HEADER`. `category` ← `CATEGORY`. `eventToCSV` / `formatRow` ←
+`eventToCsv()`. `formatTime` ← `reformatTimeStr(ev.eventTimeStr, ' PM', options)`.
+`shouldRenderBrief` ← `shouldRenderBrief()` (`common.ts`). `eventCategories` ←
+`getEventCategories()`. `holidayDescription` ← `getHolidayDescription(ev, true,
+locale)`. `memo` ← `options.memo || ev.memo || getHolidayDescription() ||
+linkedEvent.render()`. `ownMemo` ← `MevarchimChodeshEvent`'s and
+`YomKippurKatanEvent`'s `memo`, and `@hebcal/core` `calendar.js`'s erev-Shabbat
+`candlesEv.memo`. `parshaMemo` ← `getCsvParshaMemo()`. `Render` ←
+`eventsWithParshaToCsv()` + `byteOrderMark()` (now unconditional).
+`numYears` ← `getNumYears()` + `maxNumYear` (`src/calendar.js`).
+`addGregorianDates` ← `makeHebrewCalendar()`'s `GregorianDateEvent` loop.
+`learningToCSV` renders readings-svc's classic-API items.
+
+### `internal/handler/pdf.go`, `download.go`
 
 `pdfDownload` headers ← `src/app-download.js`'s 14-day `cacheControl` + the
 `.pdf` branch of `src/hebcal-download.js`. `pdfHoliday` headers ←
 `holidayPdf.js` (60-day cache, no CORS, nosniff, cache set after URL accepted).
-`writeDownloadError` ← hebcal-web's status mapping;
+`writeDownloadError` ← hebcal-web's status mapping (shared by `csvDownload`,
+whose `Content-Disposition` ← Koa's `ctx.attachment()`);
 the 404-drops-Cache-Control is a **deliberate divergence**. `writeHolidayError`
-← `holidayPdf.js`'s three throws. `writeCommonPDFError` ←
+← `holidayPdf.js`'s three throws. `writeCalendarError` ←
 `getLocationFromQuery`'s 404/400 split.
 
 ### `internal/handler/` (JSON routes)
@@ -1334,8 +1454,8 @@ more than the Node original** (`Name in Hebrew:` and `Reading:`). `reISODate` /
 `render` + smart apostrophe + one-m Tamuz. `daf-yomi`'s brief render ← hebcal-go's
 `dafYomiEvent.Render` (already the brief form, no `Daf Yomi:` prefix, ==
 Node `renderBrief`). `errorCard` ← Node `errorCard` (non-`IsError` text).
-`lines` ← Node `results.join('\n')`. `chagReadingName` is a fallback: hebcal-go's
-`sedra` returns no name for a chag week, unlike `@hebcal/core`.
+`lines` ← Node `results.join('\n')`. The sidecar-less chag label ← hebcal-go
+`sedra`'s chag-week `Parsha.Name`, the counterpart of `@hebcal/core`'s.
 
 ### `internal/repository/readings/` — the readings-svc sidecar
 
@@ -1403,7 +1523,7 @@ of the Hebcal.com fleet's.
 ### `internal/service/location/` — `getLocationFromQuery` (`src/location.js`)
 
 `package` / `FromQuery` ← `getLocationFromQuery`, the four query methods only
-(no GeoIP, no `ladeg`/`lamin` here — those live in `pdf/v2.go`). `geoposLegacy`
+(no GeoIP, no `ladeg`/`lamin` here — those live in `download/v2.go`). `geoposLegacy`
 ← `src/urlArgs.js`. `fromLatLongLegacy` ← the `hasLatLongLegacy` branch.
 `legacyTzToTzid` ← `@hebcal/core` `Location.legacyTzToTzid`. `makeGeoCityName` ←
 the `37°25′N 122°5′W America/Los_Angeles` name. `tz.go` `TimezoneAt` ←

@@ -264,6 +264,13 @@ func fromLatLong(q url.Values, cityTypeahead string) (*geodb.Location, error) {
 	}, nil
 }
 
+// MakeGeoCityName formats a latitude/longitude/tzid as a human-readable name
+// like "37°25′N 122°5′W America/Los_Angeles", the name a lat/long location
+// carries when the request did not label it.
+func MakeGeoCityName(latitude, longitude float64, tzid string) string {
+	return makeGeoCityName(latitude, longitude, tzid)
+}
+
 // makeGeoCityName formats a latitude/longitude/tzid as a human-readable name
 // like "37°25′N 122°5′W America/Los_Angeles".
 func makeGeoCityName(latitude, longitude float64, tzid string) string {
