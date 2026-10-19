@@ -2,14 +2,11 @@ package download
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
-	"github.com/hebcal/gematriya"
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
 
-	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 )
 
@@ -34,27 +31,9 @@ func GregorianDateText(hd hdate.HDate, locale string) string {
 	return fmt.Sprintf("%s %d", mon, g.Day())
 }
 
-// HebrewDateBrief renders a HEBREW_DATE alternate date without its year. hebcal-go's
-// hebrewDateEvent only renders the full form (with year), so the brief is that
-// form with the trailing year trimmed. Rosh Hashana (1 Tishrei) keeps its year.
-//
-// The apostrophe is smartened here as it is on an event subject, since hebcal-go
-// does not: without this a day line reads "1st of Sh'vat" rather than "1st of
-// Sh’vat". The ordinal for a locale that is neither English nor Spanish comes
-// out as "12 Tewet" where a current reference draws "12. Tewet"; that
-// difference belongs in hebcal-go rather than in a second date formatter here.
+// HebrewDateBrief renders a Hebrew date without its year, as the alternate
+// date drawn beside a Gregorian one: "1st of Sh’vat", "12. Tewet", "י״ב טֵבֵת".
+// 1 Tishrei keeps its year.
 func HebrewDateBrief(hd hdate.HDate, locale string) string {
-	full := jsutil.SmartApostrophe(model.FixMonthSpelling(event.NewHebrewDateEvent(hd).Render(locale)))
-	if hd.Month() == hdate.Tishrei && hd.Day() == 1 {
-		return full
-	}
-	switch strings.ToLower(locale) {
-	case "he", "he-x-nonikud":
-		return strings.TrimSuffix(full, " "+gematriya.Gematriya(hd.Year()))
-	case "", "en", "sephardic", "ashkenazi",
-		"ashkenazi_litvish", "ashkenazi_poylish", "ashkenazi_standard":
-		return strings.TrimSuffix(full, ", "+strconv.Itoa(hd.Year()))
-	default:
-		return strings.TrimSuffix(full, " "+strconv.Itoa(hd.Year()))
-	}
+	return event.RenderBrief(event.NewHebrewDateEvent(hd), locale)
 }

@@ -419,24 +419,16 @@ and `pdfHoliday` does the rest. Four things about it are not obvious:
   mappings (`writeDownloadError` and `writeHolidayError`): the download path's
   410 is cacheable and names the year, the holiday path's is neither.
 
-### The alternate date is hebcal-go's, and it lags @hebcal/hdate
+### The alternate date is hebcal-go's brief Hebrew date
 
-`altDateBrief` renders the day line through
-`event.NewHebrewDateEvent(hd).Render(locale)` and trims the year, rather than
-formatting the date here. hebcal-go's `hebrewDateEvent.Render()` is a little
-behind `@hebcal/hdate`'s `HDate.render()`, in two ways:
-
-- **the apostrophe.** `HDate.render()` finishes with
-  `monthName.replace(/'/g, '’')`. That one is patched over locally with
-  `smartApostrophe`, the same call `Generate` already makes on every event
-  subject, so the day line reads "1st of Sh’vat".
-- **the ordinal for a locale that is neither English nor Spanish.**
-  `Locale.ordinal()` gives "12.", and `HDate.render()` separates the year with a
-  comma; hebcal-go gives "12" and a space. A `/v4/` download with `lg=de` and
-  `d=on` therefore draws "12 Tewet" where a current hebcal-web draws
-  "12. Tewet". **This belongs in hebcal-go**, not in a second date formatter
-  here -- fixing it upstream also fixes every other hebcal-go consumer. The
-  `/holidays/` calendars never see it, being English only.
+`download.HebrewDateBrief` draws the day line as
+`event.RenderBrief(event.NewHebrewDateEvent(hd), locale)`. Until hebcal-go
+v0.26.0 the Hebrew date rendered behind `@hebcal/hdate`'s `HDate.render()` --
+a typewriter apostrophe ("Sh'vat"), "12 Tewet" where `lg=de` wants "12.
+Tewet", hdate's own Hebrew month spellings, and no brief form, so this
+service trimmed the year off the full one and patched the rest. v0.26.0
+renders the month from the locale catalog with a typographic apostrophe and
+the locale's ordinal, and adds the brief form, so all of that went.
 
 While chasing that, note that **the two production hosts are not running the
 same hebcal-web build** (measured 2026-08-11): www draws "12. Tewet" and a smart
@@ -574,45 +566,45 @@ Things that are not obvious:
   `MEMO:` catalog entry (Hebrew for Hebrew locales, English otherwise); then,
   for a timed event, its linked event rendered in full ("Fast begins" →
   "Tzom Gedaliah", erev-Yom-Tov candles → "Erev Sukkot").
-- **The two chametz deadlines get no linked-event fallback.** hebcal-go links
-  them to Erev Pesach; `@hebcal/core` links them to nothing, so their Hebrew
-  description (which has no `MEMO:` entry) is empty.
 - **Erev-Shabbat candle-lighting in a festival week names the festival
   reading** ("Sukkot Shabbat Chol ha-Moed", "Pesach I" -- but plain "Pesach" in
-  Israel). hebcal-go's `sedra` returns a chag week with no name, so
-  `chagReadingName` derives it from the Saturday's holiday; checked against
-  every chag Shabbat `@hebcal/core`'s `getSedra` reports for 5650–5899 on both
-  schedules, 1,587 of 1,587.
+  Israel), which hebcal-go's `sedra` reports as the chag week's name.
+- **Yizkor's description is the holiday it is recited on** ("Yom Kippur"), as
+  for a timed event's linked event.
 - **Kiddush Levana carries no description**, deliberately: hebcal-web's memo
   for it is going away, so the CSV starts without it.
 - **Brief vs full subjects** follow `shouldRenderBrief()`: timed events,
   Hebrew dates other than the 1st, daily learning, Shabbat Mevarchim and Yom
-  Kippur Katan are brief. hebcal-go has no `RenderBrief` beyond
-  `MevarchimChodeshEvent`, so the brief forms are rebuilt here, but an event
-  type that gains a `RenderBrief(locale)` or `Memo(locale)` method is picked up
-  automatically. The appended Hebrew (`lg=ah`/`sh`) is always the brief form.
+  Kippur Katan are brief, through hebcal-go's `event.RenderBrief` and the
+  learning events' own `RenderBrief`; descriptions come from their `Memo`. The
+  appended Hebrew (`lg=ah`/`sh`) is always the brief form. Rosh Hashana is the
+  one exception to both: its year is a number in every locale, Hebrew
+  included, where hebcal-go writes gematriya.
+- **Daily-learning subjects keep typewriter apostrophes** ("Fourth Year's
+  Fruit"); every other subject is smartened.
 - **A Hebrew date leads its day**, and the readings-svc learning rows sit in
-  the learning slot after the series hebcal-go generated (one series order
-  within the slot comes from `learningSchedules`, now in the download form's
-  order, which fixed the same order in the PDF cells).
+  the learning slot after the series hebcal-go generated. The order within the
+  slot is `learningSchedules`': the download form's, with **929 first** --
+  hebcal-web keeps the selected series in a JavaScript object, whose
+  integer-like key `929` iterates before every other. That order fixed the
+  same cells in the PDF.
 
-Known differences from production, all upstream gaps or deliberate:
+Known differences from production (re-measured after hebcal-go v0.26.0 and
+learning v0.6.0, which closed Yizkor, the learning brief renders and memos,
+the Hebrew date's nikud, and the chag-week names -- every other row of the
+sweep is byte-identical):
 
 1. Zmanim about a minute off on some times (noaa-go vs @hebcal/core), as in
    the PDFs.
-2. **Yizkor rows are missing** -- hebcal-go has no Yizkor, so the PDFs drop
-   it too.
-3. Daily-learning brief renders in github.com/hebcal/learning: 929 keeps its
-   "(271)" cycle-day suffix, Yerushalmi keeps its "Yerushalmi " prefix, Tanakh
-   Yomi says "Seder 9" where @hebcal/learning's brief says "S9"; and the
-   learning memos (Tanakh Yomi's verses, multi-reading Rambam's list) are
-   absent. Each wants a `RenderBrief`/`Memo` upstream.
-4. Hebrew-locale Hebrew dates spell some months without the dagesh
-   ("תִשְׁרֵי" for "תִּשְׁרֵי"), hebcal-go's and hdate's spelling.
-5. `lg=ah` Shabbat Mevarchim: production appends "מְבָרְכִים חוֹדֶשׁ Teves",
+2. Hebrew Nach Yomi spells Amos "עָמוּס" where production writes "עָמוֹס":
+   `@hebcal/learning` and `@hebcal/leyning` translate it differently, the
+   website loads leyning's catalog last, and the generated
+   github.com/hebcal/locales kept learning's. A catalog-precedence question for
+   that generator.
+3. `lg=ah` Shabbat Mevarchim: production appends "מְבָרְכִים חוֹדֶשׁ Teves",
    because `MevarchimChodeshEvent` translates the month into the calendar's
    locale in its constructor; this service writes "טֵבֵת". Not reproduced.
-6. Hebrew-month (`mm=1`/`mm=2`) multi-year calendars: production appends the
+4. Hebrew-month (`mm=1`/`mm=2`) multi-year calendars: production appends the
    next Tishrei from `year+1` rather than `year+numYears`, duplicating that
    month's rows; this service inherits the PDF's corrected anchoring.
 
@@ -856,6 +848,14 @@ github.com/hebcal/learning v0.5.0 adds the `URL()` method to every schedule
 event, which is what closed the daily-learning link gap (see "Where things
 stand"). The empty URLs it returns for Schottenstein Yerushalmi and multi-reading
 Rambam 3-chapter days are deliberate and match @hebcal/core, not omissions.
+
+hebcal-go v0.26.0 and github.com/hebcal/learning v0.6.0 came out of the CSV
+port: Yizkor (`CalOptions.Yizkor`, `YizkorEvent`), `event.RenderBrief` and the
+brief forms of timed events, Yom Kippur Katan, the Hebrew date and the Omer,
+the Hebrew date rendered like `@hebcal/hdate`, chag-week names in `sedra`, no
+linked event on the chametz deadlines, and the learning events' `RenderBrief`
+and `Memo`. Each was verified against `@hebcal/core` / `@hebcal/learning`
+before release, and removed a workaround here.
 
 hebcal-go v0.25.2 sorts each day's events by time of day and exports the
 rank as `hebcal.TimeOfDay()` (see "Events within a day come from hebcal-go's
@@ -1159,11 +1159,9 @@ concluding anything about the data (hebcal-go's `TimeOfDay()` now keys on
 `DAILY_LEARNING` as well as the four named flags, and
 `internal/service/pdf/events_test.go` pins the resulting order).
 
-One daily-learning schedule is still **rendered differently**, found by that
-same day-by-day dump and not yet fixed: **`tanakhYomi` renders the verse
-range.** hebcal-go draws "Kings Seder 6 (I Kings 7:21-8:10)" where @hebcal/core
-draws "Kings Seder 6". Same day, same URL, longer row. That belongs in
-github.com/hebcal/learning.
+`tanakhYomi` once rendered differently here ("Kings Seder 6 (I Kings
+7:21-8:10)" against "Kings Seder 6"); `@hebcal/learning` has since added the
+verse range too, and the two agree.
 
 Also open: a `mm=2` Hebrew-year calendar draws five fewer links than hebcal-web
 at the very end of the year (Sukkot/Yom Kippur/Shmini Atzeret 2027 and two 5788
@@ -1269,9 +1267,8 @@ ascender down). `width` ← `doc.widthOfString()`. `rowsFor` ← the 5/6-row rul
 `drawGrid` ← `renderPdfMonthGrid()`. `renderEvent`/`renderEventColored` ←
 `renderPdfEvent()`. `appendHebrew` ← its `appendHebrewToSubject` branch.
 `splitInTwo` ← its two-line fallback (`/(\s)/` split); the RTL side reproduces
-`reverseHebrewWords()`'s two-space rejoin. `altDateBrief` ← `@hebcal/core`
-`HebrewDateEvent.renderBrief()` + `@hebcal/hdate` `HDate.render()`'s smart
-apostrophe. `renderAltDateOnLine` ← `renderAlternateDateOnLine()`.
+`reverseHebrewWords()`'s two-space rejoin. `download.HebrewDateBrief` ← `@hebcal/core`
+`HebrewDateEvent.renderBrief()`, via hebcal-go's `event.RenderBrief`. `renderAltDateOnLine` ← `renderAlternateDateOnLine()`.
 `leftFooterText` ← `makeLeftText()`. `documentKeywords` ← the Keywords line of
 `createPdfDoc()`. `hebMonthName` ← `Locale.gettext(getMonthName(), locale)`.
 `hebMonthRange` ← `makeHebMonthStr()`. `hebTitleYear` / `drawHebMonthTitle` /
@@ -1361,7 +1358,6 @@ linkedEvent.render()`. `ownMemo` ← `MevarchimChodeshEvent`'s and
 `eventsWithParshaToCsv()` + `byteOrderMark()` (now unconditional).
 `numYears` ← `getNumYears()` + `maxNumYear` (`src/calendar.js`).
 `addGregorianDates` ← `makeHebrewCalendar()`'s `GregorianDateEvent` loop.
-`chagReadingName` ← the chag strings of `@hebcal/core` `sedra.js`.
 `learningToCSV` renders readings-svc's classic-API items.
 
 ### `internal/handler/pdf.go`, `download.go`

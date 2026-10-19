@@ -22,7 +22,6 @@ import (
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
 	"github.com/hebcal/hebcal-go/hebcal"
-	"github.com/hebcal/hebcal-go/omer"
 	"github.com/hebcal/hebcal-go/sedra"
 	"github.com/hebcal/locales"
 
@@ -333,7 +332,7 @@ func learningToCSV(it *readings.Item, hd hdate.HDate, p *download.Params) string
 	if p.AppendHebrew {
 		hebrew = it.Hebrew
 	}
-	return formatRow(hd, jsutil.SmartApostrophe(subj), hebrew, "", false, it.Memo, 3, "Jewish Holidays", p)
+	return formatRow(hd, subj, hebrew, "", false, it.Memo, 3, "Jewish Holidays", p)
 }
 
 // formatRow assembles the nine columns. A timed event starts and ends at the
@@ -438,69 +437,26 @@ func shouldRenderBrief(ev event.CalEvent, flags event.HolidayFlags, timed bool) 
 }
 
 // renderSubject renders an event's title in locale, in its brief or full form.
+// Rosh Hashana renders the year as a number in every locale, Hebrew included.
 func renderSubject(ev event.CalEvent, locale string, brief bool) string {
-	flags := ev.GetFlags()
 	var s string
-	if timed, ok := download.AsTimedEvent(ev); ok {
-		// hebcal-go renders "Candle lighting: 6:56pm"; the time has its own
-		// column. The time is last and never contains ": ", so a Chanukah
-		// candle event ("Chanukah: 8 Candles: 4:37pm") splits correctly too.
-		s = timed.Render(locale)
-		if i := strings.LastIndex(s, ": "); i >= 0 {
-			s = s[:i]
-		}
-	} else {
-		s = renderUntimed(ev, flags, locale, brief)
+	hd := ev.GetDate()
+	switch he, isHoliday := ev.(event.HolidayEvent); {
+	case isHoliday && hd.Month() == hdate.Tishrei && hd.Day() == 1 &&
+		strings.HasPrefix(he.Desc, "Rosh Hashana"):
+		s = model.Gettext("Rosh Hashana", locale) + " " + strconv.Itoa(hd.Year())
+	case brief:
+		s = event.RenderBrief(ev, locale)
+	default:
+		s = ev.Render(locale)
 	}
 	s = stripEmoji(s)
-	if isHebrew(locale) {
+	// Daily-learning readings keep their typewriter apostrophes ("Fourth
+	// Year's Fruit"); only the calendar's own names are typeset.
+	if isHebrew(locale) || ev.GetFlags().HasAny(learningFlags) {
 		return model.FixMonthSpelling(s)
 	}
 	return model.FixMonthSpelling(jsutil.SmartApostrophe(s))
-}
-
-func renderUntimed(ev event.CalEvent, flags event.HolidayFlags, locale string, brief bool) string {
-	hd := ev.GetDate()
-	if b, ok := ev.(interface{ RenderBrief(string) string }); ok && brief {
-		return b.RenderBrief(locale)
-	}
-	switch {
-	case flags.Has(event.HEBREW_DATE):
-		if brief {
-			return download.HebrewDateBrief(hd, locale)
-		}
-		return ev.Render(locale)
-	case flags.HasAny(learningFlags):
-		// The daily-learning series may render as "Daf Yomi: Berakhot 2";
-		// the brief form is only the reading.
-		s := ev.Render(locale)
-		if i := strings.Index(s, ": "); brief && i >= 0 {
-			return s[i+2:]
-		}
-		return s
-	case flags.Has(event.SHABBAT_MEVARCHIM):
-		// "Shabbat Mevarchim Chodesh Sh'vat" -> "Mevarchim Chodesh Sh'vat"
-		s := ev.Render(locale)
-		if i := strings.Index(s, " "); brief && i >= 0 {
-			return s[i+1:]
-		}
-		return s
-	case flags.Has(event.OMER_COUNT):
-		if oe, ok := ev.(omer.OmerEvent); ok && brief {
-			return model.Gettext("Omer", locale) + " " + model.Gettext("day", locale) + " " + strconv.Itoa(oe.OmerDay)
-		}
-	case flags.Has(event.YOM_KIPPUR_KATAN):
-		if brief {
-			return model.Gettext("Yom Kippur Katan", locale)
-		}
-	}
-	// Rosh Hashana renders the year as a number in every locale, rather than
-	// hebcal-go's gematriya.
-	if he, ok := ev.(event.HolidayEvent); ok && hd.Month() == hdate.Tishrei && hd.Day() == 1 &&
-		strings.HasPrefix(he.Desc, "Rosh Hashana") {
-		return model.Gettext("Rosh Hashana", locale) + " " + strconv.Itoa(hd.Year())
-	}
-	return ev.Render(locale)
 }
 
 // memo is the Description column.
@@ -524,17 +480,10 @@ func memo(ev event.CalEvent, flags event.HolidayFlags, p *download.Params) strin
 	if s := holidayDescription(ev, flags, p.Locale); s != "" {
 		return s
 	}
-	if timed, ok := ev.(hebcal.TimedEvent); ok && timed.LinkedEvent != nil && !isChametz(timed.Desc) {
-		return renderLinked(timed.LinkedEvent, p.Locale)
+	if linked := linkedEvent(ev); linked != nil {
+		return renderSubject(linked, p.Locale, false)
 	}
 	return ""
-}
-
-// isChametz reports the two Erev Pesach chametz deadlines. They are linked to
-// Erev Pesach, but a deadline is not part of the day the way a fast's start
-// and end are, so the holiday's name does not stand in for its description.
-func isChametz(desc string) bool {
-	return desc == "Finish eating chametz" || desc == "Biur Chametz"
 }
 
 // ownMemo is the memo an event carries by itself.
@@ -565,10 +514,10 @@ func ownMemo(ev event.CalEvent, flags event.HolidayFlags, p *download.Params) st
 			sy := sedra.New(hd.Year(), p.Opts.IL)
 			parsha := sy.LookupByRD(hd.Abs())
 			if parsha.Chag {
-				return model.Gettext(chagReadingName(hd.OnOrAfter(time.Saturday), p.Opts.IL), p.Locale)
+				return model.Gettext(parsha.Name[0], p.Locale)
 			}
 			if timed.LinkedEvent != nil {
-				return renderLinked(timed.LinkedEvent, p.Locale)
+				return renderSubject(timed.LinkedEvent, p.Locale, false)
 			}
 		}
 	}
@@ -578,33 +527,15 @@ func ownMemo(ev event.CalEvent, flags event.HolidayFlags, p *download.Params) st
 	return ""
 }
 
-// chagReadingName names the festival reading that displaces the weekly
-// portion on a Shabbat, e.g. "Sukkot Shabbat Chol ha-Moed". sedra reports such
-// a week only as a chag, so the name comes from the festival day itself.
-// Pesach I is "Pesach" in Israel, where it is the only day of the festival.
-func chagReadingName(sat hdate.HDate, il bool) string {
-	for _, h := range hebcal.GetHolidaysOnDate(sat, il) {
-		if !h.Flags.HasAny(event.CHAG|event.CHOL_HAMOED) && h.CholHaMoedDay == 0 {
-			continue
-		}
-		d := h.Desc
-		switch {
-		case strings.HasPrefix(d, "Rosh Hashana"):
-			return "Rosh Hashana"
-		case h.CholHaMoedDay > 0 && strings.HasPrefix(d, "Sukkot"):
-			return "Sukkot Shabbat Chol ha-Moed"
-		case h.CholHaMoedDay > 0 && strings.HasPrefix(d, "Pesach"):
-			return "Pesach Shabbat Chol ha-Moed"
-		case d == "Sukkot I":
-			return "Sukkot"
-		case d == "Pesach I" && il:
-			return "Pesach"
-		case strings.HasPrefix(d, "Shavuot"):
-			return "Shavuot"
-		}
-		return d
+// linkedEvent returns the event a timed event or Yizkor belongs to, or nil.
+func linkedEvent(ev event.CalEvent) event.CalEvent {
+	switch e := ev.(type) {
+	case hebcal.TimedEvent:
+		return e.LinkedEvent
+	case hebcal.YizkorEvent:
+		return e.LinkedEvent
 	}
-	return ""
+	return nil
 }
 
 func isTimedEv(ev event.CalEvent) bool {
@@ -619,15 +550,6 @@ func isParsha(ev event.CalEvent) bool {
 func isKiddushLevana(ev event.CalEvent) bool {
 	_, ok := ev.(hebcal.KiddushLevanaEvent)
 	return ok
-}
-
-// renderLinked renders the event a timed event belongs to, in full.
-func renderLinked(ev event.CalEvent, locale string) string {
-	s := renderUntimed(ev, ev.GetFlags(), locale, false)
-	if isHebrew(locale) {
-		return model.FixMonthSpelling(s)
-	}
-	return model.FixMonthSpelling(jsutil.SmartApostrophe(s))
 }
 
 // parshaMemo names what else is read on a Shabbat with a weekly portion: the

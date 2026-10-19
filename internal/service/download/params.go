@@ -198,6 +198,7 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 	o.Omer = msg.GetOmer()
 	o.YomKippurKatan = msg.GetYomKippurKatan()
 	o.ShabbatMevarchim = msg.GetShabbatMevarchim()
+	o.Yizkor = msg.GetYizkor()
 
 	// Asking for Rosh Chodesh, the special Shabbatot and the weekly Torah
 	// reading together implies Shabbat Mevarchim, the Shabbat that announces
@@ -633,7 +634,9 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 // under in hebcal-go's dailylearning registry.
 //
 // The order is the order the series appear in within a day: the download
-// form's, so keep it in step with the form when adding a series.
+// form's, so keep it in step with the form when adding a series -- except that
+// 929 comes first. The website keeps the selected series in a JavaScript
+// object, whose integer-like keys iterate before all others.
 //
 // The registry is populated by importing github.com/hebcal/learning for its
 // side effects, which every schedule's init() uses to register itself. Four of
@@ -643,13 +646,13 @@ var learningSchedules = []struct {
 	name string
 	on   func(*downloadpb.Download) bool
 }{
+	{"929", func(m *downloadpb.Download) bool { return m.GetNine29() }},
 	{"dafYomi", func(m *downloadpb.Download) bool { return m.GetDafyomi() }},
 	{"mishnaYomi", func(m *downloadpb.Download) bool { return m.GetMishnaYomi() }},
 	{"perekYomi", func(m *downloadpb.Download) bool { return m.GetPerekYomi() }},
 	{"nachYomi", func(m *downloadpb.Download) bool { return m.GetNachYomi() }},
 	{"tanakhYomi", func(m *downloadpb.Download) bool { return m.GetTanakhYomi() }},
 	{"psalms", func(m *downloadpb.Download) bool { return m.GetPsalms() }},
-	{"929", func(m *downloadpb.Download) bool { return m.GetNine29() }},
 	{"rambam1", func(m *downloadpb.Download) bool { return m.GetRambam1() }},
 	{"rambam3", func(m *downloadpb.Download) bool { return m.GetRambam3() }},
 	{"yerushalmi-vilna", func(m *downloadpb.Download) bool { return m.GetYerushalmiYomi() }},

@@ -8,8 +8,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hebcal/hdate"
-
 	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	"github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
@@ -104,6 +102,14 @@ func TestRenderMemos(t *testing.T) {
 			},
 		},
 		{
+			name: "Yizkor and daily learning, 5787",
+			path: "/v4/KAFAAUgBYJstagFzyAEB4AEBqAIB8AIBwAMB/x.csv",
+			rows: []string{
+				// Yizkor's description is the holiday it is recited on
+				`"Yizkor","9/21/2026",,,,"true","Yom Kippur","3","Jewish Holidays"`,
+			},
+		},
+		{
 			name: "London 2024, day/month",
 			path: "/v4/CAEYAVifrqEBYOgPcDKIAQHYAQE/x.csv",
 			rows: []string{
@@ -187,26 +193,5 @@ func TestNumYears(t *testing.T) {
 				t.Errorf("got %d, want %d", got, tc.want)
 			}
 		})
-	}
-}
-
-func TestChagReadingName(t *testing.T) {
-	tests := []struct {
-		hd   hdate.HDate
-		il   bool
-		want string
-	}{
-		{hdate.New(5787, hdate.Tishrei, 1), false, "Rosh Hashana"},
-		{hdate.New(5785, hdate.Tishrei, 10), false, "Yom Kippur"},
-		{hdate.New(5785, hdate.Tishrei, 22), false, "Shmini Atzeret"},
-		{hdate.New(5777, hdate.Tishrei, 19), true, "Sukkot Shabbat Chol ha-Moed"},
-		{hdate.New(5781, hdate.Nisan, 15), false, "Pesach I"},
-		{hdate.New(5781, hdate.Nisan, 15), true, "Pesach"},
-		{hdate.New(5784, hdate.Nisan, 22), false, "Pesach VIII"},
-	}
-	for _, tc := range tests {
-		if got := chagReadingName(tc.hd, tc.il); got != tc.want {
-			t.Errorf("chagReadingName(%v, il=%v) = %q, want %q", tc.hd, tc.il, got, tc.want)
-		}
 	}
 }

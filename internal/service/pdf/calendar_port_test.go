@@ -204,7 +204,7 @@ func TestAltDateBrief(t *testing.T) {
 		{"rosh hashana keeps year", hdate.New(5770, hdate.Tishrei, 1), "en", "1st of Tishrei, 5770"},
 		{"spanish ordinal", hdate.New(5786, hdate.Tevet, 12), "es", "12º Tevet"},
 		{"hebrew gematriya", hdate.New(5786, hdate.Tevet, 12), "he", "י״ב טֵבֵת"},
-		{"german keeps hebcal-go's ordinal", hdate.New(5786, hdate.Tevet, 12), "de", "12 Tewet"},
+		{"german ordinal", hdate.New(5786, hdate.Tevet, 12), "de", "12. Tewet"},
 		{"smart apostrophe", hdate.New(5786, hdate.Shvat, 1), "en", "1st of Sh’vat"},
 	}
 	for _, tt := range tests {
