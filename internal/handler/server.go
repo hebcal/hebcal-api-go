@@ -15,6 +15,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/logger"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
+	csvsvc "github.com/hebcal/hebcal-api-go/internal/service/csv"
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 	"github.com/hebcal/hebcal-api-go/pkg/geoip"
@@ -45,6 +46,8 @@ type Server struct {
 	// not be loaded, in which case the PDF routes answer 503 and the rest of
 	// the API keeps working.
 	PDF *pdf.Service
+	// CSV renders the Outlook CSV calendars served from the same /v4/ URLs.
+	CSV *csvsvc.Service
 	// PDFLimiter caps how many PDF calendars render at once, shedding the
 	// overflow with 503 so a flood cannot grow the heap into swap. Nil (the
 	// zero value) leaves the routes unlimited; main sets it from the config.
@@ -64,6 +67,7 @@ func New(lg *logger.AccessLogger) *Server {
 		Hostname: hostname,
 		Readings: readings.New(readings.DefaultSocket),
 		PDF:      &pdf.Service{},
+		CSV:      &csvsvc.Service{},
 	}
 }
 
@@ -116,7 +120,9 @@ func (s *Server) Routes() http.Handler {
 	// not per route. Wrapped inside mw.Serve so a shed 503 is still logged and
 	// counted like any other response.
 	mux.HandleFunc("/v2/", mw.Serve(s.PDFLimiter.Wrap(s.pdfDownload)))
-	mux.HandleFunc("/v4/", mw.Serve(s.PDFLimiter.Wrap(s.pdfDownload)))
+	// /v4/ also serves the .csv form of the same calendar, which is cheap
+	// enough to need no limiter.
+	mux.HandleFunc("/v4/", mw.Serve(s.v4Download(s.PDFLimiter.Wrap(s.pdfDownload))))
 	// The classic /hebcal/index.cgi/<name>.pdf?<query> download URL, older than
 	// both /v2/ and /v4/ and still crawled. Only its .pdf is ours (the .ics and
 	// yahrzeit calendars this path also serves are handled elsewhere), so

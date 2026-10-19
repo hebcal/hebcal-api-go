@@ -50,6 +50,35 @@ func NewLearningFetcher(client *readings.Client) *LearningFetcher {
 // accepts several at once and returns them interleaved, and each item names its
 // own series in its category.
 func (f *LearningFetcher) Fetch(ctx context.Context, series []string, lg string, start, end time.Time) ([]Event, error) {
+	items, err := f.FetchItems(ctx, series, lg, start, end)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]Event, 0, len(items))
+	for _, it := range items {
+		day, err := time.Parse("2006-01-02", it.Date)
+		if err != nil {
+			continue // a timed event, which no learning series produces
+		}
+		title := it.Title
+		if title == "" {
+			title = it.Hebrew
+		}
+		out = append(out, Event{
+			HD:       hdate.FromTime(day),
+			Greg:     day,
+			Subject:  jsutil.SmartApostrophe(title),
+			Learning: true,
+			URL:      canonicalLearningURL(it.Link),
+			rank:     hebcal.TimeOfDayLearning,
+		})
+	}
+	return out, nil
+}
+
+// FetchItems returns the readings-svc items for the named series over
+// [start, end], keeping only the series asked for.
+func (f *LearningFetcher) FetchItems(ctx context.Context, series []string, lg string, start, end time.Time) ([]readings.Item, error) {
 	if len(series) == 0 {
 		return nil, nil
 	}
@@ -69,29 +98,13 @@ func (f *LearningFetcher) Fetch(ctx context.Context, series []string, lg string,
 		return nil, fmt.Errorf("fetching daily learning: %w", err)
 	}
 
-	out := make([]Event, 0, len(items))
+	out := items[:0]
 	for _, it := range items {
 		// The response can carry other rows if the sidecar decides to add
 		// something by default; take only what was asked for.
-		if !wanted[it.Category] {
-			continue
+		if wanted[it.Category] {
+			out = append(out, it)
 		}
-		day, err := time.Parse("2006-01-02", it.Date)
-		if err != nil {
-			continue // a timed event, which no learning series produces
-		}
-		title := it.Title
-		if title == "" {
-			title = it.Hebrew
-		}
-		out = append(out, Event{
-			HD:       hdate.FromTime(day),
-			Greg:     day,
-			Subject:  jsutil.SmartApostrophe(title),
-			Learning: true,
-			URL:      canonicalLearningURL(it.Link),
-			rank:     hebcal.TimeOfDayLearning,
-		})
 	}
 	return out, nil
 }

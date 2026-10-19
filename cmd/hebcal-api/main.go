@@ -88,6 +88,7 @@ func main() {
 	} else {
 		app.DB = db
 		app.PDF.Geo = db
+		app.CSV.Geo = db
 		defer db.Close()
 	}
 
@@ -128,6 +129,7 @@ func main() {
 	// rendered without the rows the user asked for.
 	if cfg.ReadingsSocket != "" {
 		app.PDF.Learning = pdf.NewLearningFetcher(app.Readings)
+		app.CSV.Learning = app.PDF.Learning
 	}
 
 	// Cap concurrent PDF renders so a flood cannot grow the heap into swap (each

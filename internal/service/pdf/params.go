@@ -74,6 +74,10 @@ type Params struct {
 	// empty for the locations that have none -- lat/long and ZIP -- and CityName
 	// stands in. See CampaignName.
 	CityNameAscii string
+	// LocationShortName is the location's short display name ("Palo Alto",
+	// "Washington, DC"), or empty when the calendar has no location. The CSV
+	// export puts it in the Location column of every timed event.
+	LocationShortName string
 	// Subscribe marks the calendar as a subscription (affects the footer only).
 	Subscribe bool
 	// YomTovOnly suppresses non-yom-tov holidays.
@@ -114,13 +118,20 @@ func (p *Params) useGematriya() bool {
 // ParsePath extracts the base64url protobuf payload from a download URL of the
 // form /v4/<base64>/<filename>.pdf. It returns an error for any other shape.
 func ParsePath(path string) (string, error) {
+	return ParseDownloadPath(path, ".pdf")
+}
+
+// ParseDownloadPath extracts the base64url protobuf payload from a download URL
+// of the form /v4/<base64>/<filename><ext>, where ext is ".pdf" or ".csv". It
+// returns an error for any other shape.
+func ParseDownloadPath(path, ext string) (string, error) {
 	p := strings.TrimPrefix(path, "/")
 	parts := strings.Split(p, "/")
 	if len(parts) != 3 || parts[0] != "v4" {
-		return "", fmt.Errorf("expected /v4/<data>/<filename>.pdf, got %q", path)
+		return "", fmt.Errorf("expected /v4/<data>/<filename>%s, got %q", ext, path)
 	}
-	if !strings.HasSuffix(parts[2], ".pdf") {
-		return "", errors.New("not a .pdf request")
+	if !strings.HasSuffix(parts[2], ext) {
+		return "", fmt.Errorf("not a %s request", ext)
 	}
 	if parts[1] == "" {
 		return "", errors.New("empty payload")
@@ -360,6 +371,7 @@ func setLocation(p *Params, loc *geodb.Location, msg *downloadpb.Download) error
 	}
 	p.Opts.Location = &zl
 	p.LocationName = zl.Name
+	p.LocationShortName = loc.ShortName()
 	if p.CityName == "" {
 		p.CityName = loc.ShortName()
 	}
@@ -572,6 +584,11 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 		if elevation < 0 {
 			elevation = 0
 		}
+		shortName := name
+		if shortName == "" {
+			shortName = location.MakeGeoCityName(lat, long, tzid)
+		}
+		p.LocationShortName = (&geodb.Location{Name: shortName, CC: cc}).ShortName()
 		p.Opts.Location = &zmanim.Location{
 			Name:        name,
 			Latitude:    lat,
@@ -627,6 +644,9 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 // learningSchedules maps each protobuf field to the name it is registered
 // under in hebcal-go's dailylearning registry.
 //
+// The order is the order the series appear in within a day: the download
+// form's, so keep it in step with the form when adding a series.
+//
 // The registry is populated by importing github.com/hebcal/learning for its
 // side effects, which every schedule's init() uses to register itself. Four of
 // these also have dedicated CalOptions booleans; going through the registry
@@ -637,19 +657,19 @@ var learningSchedules = []struct {
 }{
 	{"dafYomi", func(m *downloadpb.Download) bool { return m.GetDafyomi() }},
 	{"mishnaYomi", func(m *downloadpb.Download) bool { return m.GetMishnaYomi() }},
+	{"perekYomi", func(m *downloadpb.Download) bool { return m.GetPerekYomi() }},
 	{"nachYomi", func(m *downloadpb.Download) bool { return m.GetNachYomi() }},
+	{"tanakhYomi", func(m *downloadpb.Download) bool { return m.GetTanakhYomi() }},
+	{"psalms", func(m *downloadpb.Download) bool { return m.GetPsalms() }},
+	{"929", func(m *downloadpb.Download) bool { return m.GetNine29() }},
+	{"rambam1", func(m *downloadpb.Download) bool { return m.GetRambam1() }},
+	{"rambam3", func(m *downloadpb.Download) bool { return m.GetRambam3() }},
 	{"yerushalmi-vilna", func(m *downloadpb.Download) bool { return m.GetYerushalmiYomi() }},
 	{"yerushalmi-schottenstein", func(m *downloadpb.Download) bool { return m.GetYySchottenstein() }},
-	{"perekYomi", func(m *downloadpb.Download) bool { return m.GetPerekYomi() }},
 	// The dw checkbox resolves to dafWeeklySunday (one row each Sunday), not
 	// dafWeekly (the same daf drawn all seven days). The protobuf field keeps
 	// its dw-derived name.
 	{"dafWeeklySunday", func(m *downloadpb.Download) bool { return m.GetDafWeekly() }},
-	{"929", func(m *downloadpb.Download) bool { return m.GetNine29() }},
-	{"psalms", func(m *downloadpb.Download) bool { return m.GetPsalms() }},
-	{"rambam1", func(m *downloadpb.Download) bool { return m.GetRambam1() }},
-	{"rambam3", func(m *downloadpb.Download) bool { return m.GetRambam3() }},
-	{"tanakhYomi", func(m *downloadpb.Download) bool { return m.GetTanakhYomi() }},
 	{"pirkeiAvotSummer", func(m *downloadpb.Download) bool { return m.GetPirkeiAvotSummer() }},
 }
 
@@ -663,7 +683,7 @@ func applyDailyLearning(msg *downloadpb.Download, o *hebcal.CalOptions) {
 	}
 }
 
-// unsupportedSeries reports the daily-learning series a request asked for that
+// UnsupportedSeries reports the daily-learning series a request asked for that
 // hebcal-go cannot generate. Rendering anyway would silently drop rows the user
 // explicitly selected, so their rows are fetched from the readings-svc sidecar
 // and merged instead (see fallback.go).
@@ -671,7 +691,7 @@ func applyDailyLearning(msg *downloadpb.Download, o *hebcal.CalOptions) {
 // These seven have no schedule in github.com/hebcal/learning. Keep this list and
 // learningSchedules together: anything the learning package gains should move
 // from here to there.
-func unsupportedSeries(msg *downloadpb.Download) []string {
+func UnsupportedSeries(msg *downloadpb.Download) []string {
 	var out []string
 	for _, s := range []struct {
 		name string

@@ -108,7 +108,7 @@ func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
 		return nil, model.Internal("render: %s", err.Error())
 	}
 
-	if missing := unsupportedSeries(msg); len(missing) > 0 {
+	if missing := UnsupportedSeries(msg); len(missing) > 0 {
 		if s.Learning == nil {
 			return nil, &UnsupportedSeriesError{Series: missing}
 		}

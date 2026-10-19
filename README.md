@@ -21,6 +21,9 @@ Currently implemented:
   from `src/pdf.js`) and `www.hebcal.com/holidays/hebcal-<year>.pdf`
   (ported from `src/holidayPdf.js`). These came from the separate
   hebcal-pdf-go service, which this repository replaces.
+- **CSV calendars** — the `download.hebcal.com/v4/…csv` Outlook-compatible
+  exports of the same calendars (ported from `@hebcal/rest-api`'s
+  `eventToCsv()` and hebcal-web's `eventsWithParshaToCsv()`)
 - **MCP server** (`/mcp`) — a Model Context Protocol server with seven
   Hebrew-calendar tools, ported from the separate
   [hebcal-mcp](https://github.com/hebcal/hebcal-mcp) service.
@@ -235,6 +238,16 @@ APIs are unaffected.
   rendered PDF is served with a 14-day `Cache-Control` and a weak `ETag`; a
   conditional request whose `If-None-Match` still matches gets `304 Not
   Modified`.
+- `GET|HEAD /v4/<base64>/<filename>.csv` — the same calendar as an
+  Outlook-compatible CSV file: a header row and one row per event (subject,
+  start and end date and time, all-day flag, description, "show time as",
+  location), UTF-8 with a byte order mark and CRLF line endings. A download
+  that names no number of years spans several — 7 by default, fewer as the
+  options add events per year — where a PDF draws one. It shares the PDF's
+  status codes and headers, plus a `Content-Disposition` naming the file,
+  except that a calendar with no events is a header row rather than a `400`.
+  Fonts are not needed, so this route keeps working when the PDF ones are
+  disabled.
 - `GET|HEAD /v2/h/<base64>/<filename>.pdf` — the same calendar from the
   older URL form, still linked from a decade of pages and still crawled.
   Here the `<base64>` segment is a query string rather than a protobuf
@@ -437,6 +450,7 @@ internal/
     pdf/                   /v4/ and /v2/ PDF calendars: protobuf -> options,
                            event generation, page layout, shaping, fonts, links
     holidaypdf/            /holidays/hebcal-<year>.pdf URL parsing
+    csv/                   /v4/ CSV calendars: rows and their descriptions
   repository/
     readings/              client for the readings-svc sidecar (/leyning
                            for /shabbat, /learning for the PDF calendars)
@@ -531,8 +545,10 @@ its access log to `/var/log/hebcal/api.log` (same directory hebcal-web
 uses), rotated daily; logrotate signals the service with `SIGUSR1` to
 reopen the file after rotation.
 
-Varnish decides which URLs reach this service. Alongside the JSON APIs, two
-PDF families now belong here rather than to the Node.js service:
+Varnish decides which URLs reach this service. `download.hebcal.com/v4/**.csv`
+can be routed here too; until it is, hebcal-web keeps serving it. Alongside
+the JSON APIs, two PDF families now belong here rather than to the Node.js
+service:
 `download.hebcal.com/v4/**.pdf` (with its legacy `/v2/h/**.pdf` spelling)
 and `www.hebcal.com/holidays/hebcal-*.pdf` (and nothing else under
 `/holidays/`). Both used to be served by the

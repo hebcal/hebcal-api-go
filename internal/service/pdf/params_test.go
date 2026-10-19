@@ -323,15 +323,15 @@ func TestDailyLearning(t *testing.T) {
 	if len(p.Opts.DailyLearning) != 7 {
 		t.Errorf("DailyLearning = %v, want all seven", p.Opts.DailyLearning)
 	}
-	if got := unsupportedSeries(supported); len(got) != 0 {
-		t.Errorf("unsupportedSeries() = %v, want none", got)
+	if got := UnsupportedSeries(supported); len(got) != 0 {
+		t.Errorf("UnsupportedSeries() = %v, want none", got)
 	}
 
 	// These have no schedule in github.com/hebcal/learning.
 	unsupported := &pb.Download{Year: 2026, ChofetzChaim: true, SeferHaMitzvot: true}
-	got := unsupportedSeries(unsupported)
+	got := UnsupportedSeries(unsupported)
 	if len(got) != 2 {
-		t.Errorf("unsupportedSeries() = %v, want two entries", got)
+		t.Errorf("UnsupportedSeries() = %v, want two entries", got)
 	}
 }
 

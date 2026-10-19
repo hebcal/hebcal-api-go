@@ -844,3 +844,15 @@ func cellOrigin(rtl bool, dow int) float64 {
 	}
 	return pdfLMargin + float64(dow)*pdfColWidth - pdfCellMargin
 }
+
+// HebrewDateBrief renders a Hebrew date without its year, in locale -- the
+// brief form of a HEBREW_DATE event. 1 Tishrei keeps its year.
+func HebrewDateBrief(hd hdate.HDate, locale string) string {
+	return altDateBrief(hd, locale)
+}
+
+// GregorianDateText renders the Gregorian alternate date a Hebrew-month
+// calendar shows ("Jun 12" in English, "12 Jun" elsewhere), with no year.
+func GregorianDateText(hd hdate.HDate, locale string) string {
+	return gregorianAltText(hd, locale)
+}

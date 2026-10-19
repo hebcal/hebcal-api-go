@@ -283,7 +283,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 	title := renderBriefLike(ev, locale)
 	if flags.Has(event.MOLAD) {
 		// the announcement and the Shabbat Mevarchim memo are the same string
-		title = mevarchimMoladMemo(hd, locale, loc.CC, il, hour12)
+		title = MevarchimMoladMemo(hd, locale, loc.CC, il, hour12)
 	}
 	if isTimed {
 		// candle-lighting and havdalah are rounded to the whole minute.
@@ -354,7 +354,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 	//   || (for timed events) the linked event's rendering
 	memo := ""
 	if flags.Has(event.SHABBAT_MEVARCHIM) {
-		memo = mevarchimMoladMemo(hd, locale, loc.CC, il, hour12)
+		memo = MevarchimMoladMemo(hd, locale, loc.CC, il, hour12)
 	}
 	if memo == "" {
 		memo = holidayMemo(desc, eventBasename(holiday), memoLocaleName(locale))
@@ -450,10 +450,10 @@ func moladInstant(m molad.Molad) string {
 	return t.Format("2006-01-02T15:04:05") + frac + "Z"
 }
 
-// mevarchimMoladMemo renders the Shabbat Mevarchim memo: the molad of the
+// MevarchimMoladMemo renders the Shabbat Mevarchim memo: the molad of the
 // announced (next) month. locale is the aliased request locale (e.g. "he",
 // "ru", "en").
-func mevarchimMoladMemo(hd hdate.HDate, locale, cc string, il bool, hour12 *bool) string {
+func MevarchimMoladMemo(hd hdate.HDate, locale, cc string, il bool, hour12 *bool) string {
 	m, monthEn := announcedMolad(hd)
 	// Hebrew uses a distinct sentence structure; hebcal-go's moladEvent renders
 	// it, so reuse it.

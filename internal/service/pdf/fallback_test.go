@@ -21,14 +21,14 @@ func TestEveryUnsupportedSeriesHasAQueryParameter(t *testing.T) {
 		SeferHaMitzvot: true, KitzurShulchanAruch: true, DirshuAmudYomi: true,
 		DirshuDafHalacha: true,
 	}
-	for _, s := range unsupportedSeries(msg) {
+	for _, s := range UnsupportedSeries(msg) {
 		if _, ok := fallbackSeries[s]; !ok {
 			t.Errorf("series %q has no query parameter, so it could never be fetched", s)
 		}
 	}
-	if len(fallbackSeries) != len(unsupportedSeries(msg)) {
+	if len(fallbackSeries) != len(UnsupportedSeries(msg)) {
 		t.Errorf("fallbackSeries has %d entries but %d series are unsupported; "+
-			"the two lists have drifted", len(fallbackSeries), len(unsupportedSeries(msg)))
+			"the two lists have drifted", len(fallbackSeries), len(UnsupportedSeries(msg)))
 	}
 }
 

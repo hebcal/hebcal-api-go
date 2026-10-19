@@ -514,6 +514,98 @@ Do not "fix" these without checking production first.
 - **The `ft` ligature is absent from both documents' ToUnicode maps**, so
   `Shoftim` extracts oddly from either. A pdftotext artifact, not a regression.
 
+## The CSV calendars (`/v4/…csv`)
+
+`internal/service/csv` serves `download.hebcal.com/v4/<data>/<name>.csv`, the
+Outlook-compatible export of the same `/v4/` calendar the PDF draws. It is a
+port of `@hebcal/rest-api`'s `src/csv.ts` (`eventToCsv()`) and of hebcal-web's
+`eventsWithParshaToCsv()` / `getCsvParshaMemo()` (`src/parshaCommon.js`), and
+it reuses the PDF package for everything up to the event list:
+`pdf.ParseDownloadPath(path, ".csv")`, `DecodeMessage`, `ParamsFromMessage`,
+and `GenerateCalEvents` (the raw, category-filtered hebcal-go events that
+`Generate` flattens for the PDF). `handler.v4Download` sends `.csv` to
+`csvDownload` and everything else to `pdfDownload`; the CSV path skips the PDF
+limiter and needs no fonts.
+
+The bar is the same as for the PDFs -- the same bytes production serves -- and
+it was measured that way: a scratch harness ran hebcal-web's own
+`deserializeDownload` → `makeHebcalOptions` → `makeHebrewCalendar` →
+`eventsWithParshaToCsv` against the handler test databases and diffed the
+result row by row with this service's output. Across about 40 URLs (the samples
+from the access log, every locale family, euro dates, `h12`, Israel, ZIP and
+lat/long locations, alternate dates in both month modes, omer, Yom Kippur
+Katan, Shabbat Mevarchim, fast-time options, yom-tov-only, no-minor) every row
+matched except the cases listed below. It is worth re-running that harness
+before changing anything here.
+
+Things that are not obvious:
+
+- **Rows are built by hand, not with `encoding/csv`.** Every field is quoted,
+  commas are deleted from the subject and turned into `;` in the description,
+  and `"` becomes `''` -- so no row ever needs the escaping a CSV writer would
+  add, and a writer would quote differently. Keeping the legacy escaping is
+  what makes byte-for-byte comparison possible; switching to `encoding/csv`
+  (and dropping the comma rewriting) is an acceptable later change.
+- **Every document starts with a UTF-8 BOM** -- a deliberate divergence.
+  hebcal-web writes one only for a non-English locale, but an English
+  calendar is not ASCII either ("Sukkot III (CH’’M)", "Sh’vat"), and without
+  the BOM Excel reads it as Windows-1252. Lines end in CRLF, the last one
+  included.
+- **A CSV spans several years, a PDF one.** hebcal-web applies
+  `getNumYears()` to `.ics`/`.csv` only: 7 by default, capped by candle-lighting
+  (4), sedrot or omer (5), omer+sedrot (4), alternate dates (2–4) and any daily
+  learning (2), and 1 with two or more daily series. `numYears` ports it.
+- **The description's priority** is: the special-Shabbat / Rosh Chodesh names
+  for a weekly portion (`" + "`-joined, or "Machar Chodesh" before a new month);
+  then the event's own memo -- the molad for Shabbat Mevarchim (via
+  `shabbat.MevarchimMoladMemo`), "Minor Day of Atonement on the day preceeding
+  Rosh Chodesh <month>" (sic, untranslated) for Yom Kippur Katan, the coming
+  portion for erev-Shabbat candle-lighting; then the first sentence of the
+  `MEMO:` catalog entry (Hebrew for Hebrew locales, English otherwise); then,
+  for a timed event, its linked event rendered in full ("Fast begins" →
+  "Tzom Gedaliah", erev-Yom-Tov candles → "Erev Sukkot").
+- **The two chametz deadlines get no linked-event fallback.** hebcal-go links
+  them to Erev Pesach; `@hebcal/core` links them to nothing, so their Hebrew
+  description (which has no `MEMO:` entry) is empty.
+- **Erev-Shabbat candle-lighting in a festival week names the festival
+  reading** ("Sukkot Shabbat Chol ha-Moed", "Pesach I" -- but plain "Pesach" in
+  Israel). hebcal-go's `sedra` returns a chag week with no name, so
+  `chagReadingName` derives it from the Saturday's holiday; checked against
+  every chag Shabbat `@hebcal/core`'s `getSedra` reports for 5650–5899 on both
+  schedules, 1,587 of 1,587.
+- **Kiddush Levana carries no description**, deliberately: hebcal-web's memo
+  for it is going away, so the CSV starts without it.
+- **Brief vs full subjects** follow `shouldRenderBrief()`: timed events,
+  Hebrew dates other than the 1st, daily learning, Shabbat Mevarchim and Yom
+  Kippur Katan are brief. hebcal-go has no `RenderBrief` beyond
+  `MevarchimChodeshEvent`, so the brief forms are rebuilt here, but an event
+  type that gains a `RenderBrief(locale)` or `Memo(locale)` method is picked up
+  automatically. The appended Hebrew (`lg=ah`/`sh`) is always the brief form.
+- **A Hebrew date leads its day**, and the readings-svc learning rows sit in
+  the learning slot after the series hebcal-go generated (one series order
+  within the slot comes from `learningSchedules`, now in the download form's
+  order, which fixed the same order in the PDF cells).
+
+Known differences from production, all upstream gaps or deliberate:
+
+1. Zmanim about a minute off on some times (noaa-go vs @hebcal/core), as in
+   the PDFs.
+2. **Yizkor rows are missing** -- hebcal-go has no Yizkor, so the PDFs drop
+   it too.
+3. Daily-learning brief renders in github.com/hebcal/learning: 929 keeps its
+   "(271)" cycle-day suffix, Yerushalmi keeps its "Yerushalmi " prefix, Tanakh
+   Yomi says "Seder 9" where @hebcal/learning's brief says "S9"; and the
+   learning memos (Tanakh Yomi's verses, multi-reading Rambam's list) are
+   absent. Each wants a `RenderBrief`/`Memo` upstream.
+4. Hebrew-locale Hebrew dates spell some months without the dagesh
+   ("תִשְׁרֵי" for "תִּשְׁרֵי"), hebcal-go's and hdate's spelling.
+5. `lg=ah` Shabbat Mevarchim: production appends "מְבָרְכִים חוֹדֶשׁ Teves",
+   because `MevarchimChodeshEvent` translates the month into the calendar's
+   locale in its constructor; this service writes "טֵבֵת". Not reproduced.
+6. Hebrew-month (`mm=1`/`mm=2`) multi-year calendars: production appends the
+   next Tishrei from `year+1` rather than `year+numYears`, duplicating that
+   month's rows; this service inherits the PDF's corrected anchoring.
+
 ## The readings-svc sidecar
 
 Two things this service cannot do in Go come from
@@ -1246,12 +1338,29 @@ emission order for a clean link-by-link comparison. `SplitByHebrewMonth` ←
 hard-codes `addHebrewDates`, leaves `utmCampaign` unset. The `-il` filename
 suffix ← `applyIsraelSuffix` (newer spelling of `?i=on`).
 
+### `internal/service/csv/` — `src/csv.ts` (`@hebcal/rest-api`) + `src/parshaCommon.js`
+
+`Header` ← `CSV_HEADER`. `category` ← `CATEGORY`. `eventToCSV` / `formatRow` ←
+`eventToCsv()`. `formatTime` ← `reformatTimeStr(ev.eventTimeStr, ' PM', options)`.
+`shouldRenderBrief` ← `shouldRenderBrief()` (`common.ts`). `eventCategories` ←
+`getEventCategories()`. `holidayDescription` ← `getHolidayDescription(ev, true,
+locale)`. `memo` ← `options.memo || ev.memo || getHolidayDescription() ||
+linkedEvent.render()`. `ownMemo` ← `MevarchimChodeshEvent`'s and
+`YomKippurKatanEvent`'s `memo`, and `@hebcal/core` `calendar.js`'s erev-Shabbat
+`candlesEv.memo`. `parshaMemo` ← `getCsvParshaMemo()`. `Render` ←
+`eventsWithParshaToCsv()` + `byteOrderMark()` (now unconditional).
+`numYears` ← `getNumYears()` + `maxNumYear` (`src/calendar.js`).
+`addGregorianDates` ← `makeHebrewCalendar()`'s `GregorianDateEvent` loop.
+`chagReadingName` ← the chag strings of `@hebcal/core` `sedra.js`.
+`learningToCSV` renders readings-svc's classic-API items.
+
 ### `internal/handler/pdf.go`
 
 `pdfDownload` headers ← `src/app-download.js`'s 14-day `cacheControl` + the
 `.pdf` branch of `src/hebcal-download.js`. `pdfHoliday` headers ←
 `holidayPdf.js` (60-day cache, no CORS, nosniff, cache set after URL accepted).
-`writeDownloadError` ← hebcal-web's status mapping;
+`writeDownloadError` ← hebcal-web's status mapping (shared by `csvDownload`,
+whose `Content-Disposition` ← Koa's `ctx.attachment()`);
 the 404-drops-Cache-Control is a **deliberate divergence**. `writeHolidayError`
 ← `holidayPdf.js`'s three throws. `writeCommonPDFError` ←
 `getLocationFromQuery`'s 404/400 split.

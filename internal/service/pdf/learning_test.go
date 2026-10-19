@@ -96,8 +96,8 @@ func TestLearningFieldsMapToTheRightSchedules(t *testing.T) {
 			if len(p.Opts.DailyLearning) != 1 || p.Opts.DailyLearning[0] != tt.want {
 				t.Errorf("DailyLearning = %v, want [%s]", p.Opts.DailyLearning, tt.want)
 			}
-			if got := unsupportedSeries(tt.msg); len(got) != 0 {
-				t.Errorf("should be supported, but unsupportedSeries() = %v", got)
+			if got := UnsupportedSeries(tt.msg); len(got) != 0 {
+				t.Errorf("should be supported, but UnsupportedSeries() = %v", got)
 			}
 		})
 	}
@@ -112,7 +112,7 @@ func TestRemainingUnsupportedSeries(t *testing.T) {
 		ArukhHaShulchanYomi: true, SeferHaMitzvot: true,
 		KitzurShulchanAruch: true, DirshuAmudYomi: true,
 	}
-	if got := unsupportedSeries(msg); len(got) != 6 {
-		t.Errorf("unsupportedSeries() = %v, want all six", got)
+	if got := UnsupportedSeries(msg); len(got) != 6 {
+		t.Errorf("UnsupportedSeries() = %v, want all six", got)
 	}
 }
