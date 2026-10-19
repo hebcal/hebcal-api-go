@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/andybalholm/brotli"
+	"github.com/klauspost/compress/zstd"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 
@@ -55,11 +56,19 @@ const CompressThreshold = 512
 // brotliQuality 6 matches the setting used by www.hebcal.com.
 const brotliQuality = 6
 
+// zstdEncoder compresses whole buffered bodies with EncodeAll, which is safe
+// for concurrent use. The default level is comparable to gzip -6 in speed and
+// beats it on size.
+var zstdEncoder, _ = zstd.NewWriter(nil, zstd.WithEncoderLevel(zstd.SpeedDefault))
+
 // negotiateEncoding picks the response encoding from Accept-Encoding,
-// preferring brotli, with the same simple substring matching the ETag
-// classing uses.
+// preferring zstd, then brotli, with the same simple substring matching the
+// ETag classing uses.
 func negotiateEncoding(r *http.Request) string {
 	ae := r.Header.Get("Accept-Encoding")
+	if strings.Contains(ae, "zstd") {
+		return "zstd"
+	}
 	if strings.Contains(ae, "br") {
 		return "br"
 	}
@@ -104,7 +113,7 @@ func (m *Middleware) callHandler(bw *bufWriter, r *http.Request, h http.HandlerF
 	h(bw, r)
 }
 
-// Serve runs the handler with buffering, then applies gzip/brotli compression,
+// Serve runs the handler with buffering, then applies zstd/brotli/gzip compression,
 // response-time and length headers, Prometheus metrics, and access logging.
 func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -123,16 +132,20 @@ func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 			compressed := false
 			enc := negotiateEncoding(r)
 			if uncompressedLen > CompressThreshold && enc != "" {
-				var zbuf bytes.Buffer
-				var zw io.WriteCloser
-				if enc == "br" {
-					zw = brotli.NewWriterLevel(&zbuf, brotliQuality)
+				if enc == "zstd" {
+					body = zstdEncoder.EncodeAll(body, nil)
 				} else {
-					zw = gzip.NewWriter(&zbuf)
+					var zbuf bytes.Buffer
+					var zw io.WriteCloser
+					if enc == "br" {
+						zw = brotli.NewWriterLevel(&zbuf, brotliQuality)
+					} else {
+						zw = gzip.NewWriter(&zbuf)
+					}
+					zw.Write(body)
+					zw.Close()
+					body = zbuf.Bytes()
 				}
-				zw.Write(body)
-				zw.Close()
-				body = zbuf.Bytes()
 				bw.header.Set("Content-Encoding", enc)
 				compressed = true
 			}
