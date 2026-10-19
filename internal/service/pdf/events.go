@@ -12,6 +12,7 @@ import (
 
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 )
 
 // Event is one rendered line in a calendar cell: the flattened form of a
@@ -59,8 +60,8 @@ func (e *Event) Timed() bool { return e.TimeStr != "" }
 // Everything comes from hebcal-go in-process. Requests naming a daily-learning
 // series hebcal-go cannot generate are rejected upstream in the handler rather
 // than silently rendered without those rows.
-func Generate(p *Params) ([]Event, error) {
-	events, err := GenerateCalEvents(p)
+func Generate(p *download.Params) ([]Event, error) {
+	events, err := download.GenerateCalEvents(p)
 	if err != nil {
 		return nil, err
 	}
@@ -113,51 +114,8 @@ func Generate(p *Params) ([]Event, error) {
 	}
 	// Hebrew-month calendars show the Gregorian date as the alternate date, which
 	// hebcal-go does not generate; synthesize it here.
-	if p.MonthMode != GregorianArabic && (p.AddAltDates || p.AddAltDatesForEvents) {
+	if p.MonthMode != download.GregorianArabic && (p.AddAltDates || p.AddAltDatesForEvents) {
 		out = addGregorianAltDates(out, p)
-	}
-	return out, nil
-}
-
-// GenerateCalEvents produces the hebcal-go events for a calendar, in date
-// order, after the category filters (yom-tov only, no minor holidays). It is
-// the part of Generate every download format shares: the PDF flattens these
-// into cells, the CSV export renders each one as a row.
-func GenerateCalEvents(p *Params) ([]event.CalEvent, error) {
-	opts := p.Opts
-	events, err := hebcal.HebrewCalendar(&opts)
-	if err != nil {
-		return nil, fmt.Errorf("hebcal: %w", err)
-	}
-	// A whole-Hebrew-year calendar in Hebrew-month mode intentionally carries
-	// Tishrei of the year after the requested span too, a head start for next
-	// year's calendar. Mirrors hebcal-web's makeHebrewCalendar. Anchored at
-	// Year+NumYears, not Year+1: NumYears>1 already covers later years in the
-	// main call, and duplicating one of those months here -- out of date
-	// order, since it's appended -- would make SplitByHebrewMonth's
-	// last-event-as-range-end logic stop short and drop real later pages.
-	if p.MonthMode != GregorianArabic && opts.IsHebrewYear && opts.Year != 0 &&
-		opts.Start.Abs() == 0 && opts.End.Abs() == 0 {
-		nextYear := opts.Year + 1
-		if opts.NumYears > 1 {
-			nextYear = opts.Year + opts.NumYears
-		}
-		extraOpts := opts
-		extraOpts.IsHebrewYear = false
-		extraOpts.NumYears = 0
-		extraOpts.Start = hdate.New(nextYear, hdate.Tishrei, 1)
-		extraOpts.End = hdate.New(nextYear, hdate.Tishrei, 30) // Tishrei always has 30 days
-		extra, err := hebcal.HebrewCalendar(&extraOpts)
-		if err != nil {
-			return nil, fmt.Errorf("hebcal: next Tishrei: %w", err)
-		}
-		events = append(events, extra...)
-	}
-	out := events[:0]
-	for _, ev := range events {
-		if keepEvent(ev, ev.GetFlags(), p) {
-			out = append(out, ev)
-		}
 	}
 	return out, nil
 }
@@ -167,7 +125,7 @@ func GenerateCalEvents(p *Params) ([]event.CalEvent, error) {
 // first event to the last; AddAltDatesForEvents covers only days that already
 // have events. The events carry AltDate so the renderer prints them on the day
 // line, not as rows.
-func addGregorianAltDates(events []Event, p *Params) []Event {
+func addGregorianAltDates(events []Event, p *download.Params) []Event {
 	if len(events) == 0 {
 		return events
 	}
@@ -197,86 +155,10 @@ func addGregorianAltDates(events []Event, p *Params) []Event {
 	return out
 }
 
-// nonEnglishDateLocales are the resolved locales that format a short date as
-// "D MMM" rather than the English "MMM D". Anything not listed falls through to
-// the English template.
-var nonEnglishDateLocales = map[string]bool{
-	"de": true, "es": true, "fi": true, "fr": true, "he": true,
-	"he-x-nonikud": true, "hu": true, "nl": true, "pl": true, "pt": true,
-	"ru": true, "ro": true, "uk": true,
-}
-
-// gregorianAltText renders the Gregorian date shown on a Hebrew-month calendar's
-// day-number line: "Jun 12" in English, "12 Jun" (localized month) elsewhere.
-// No year.
-func gregorianAltText(hd hdate.HDate, locale string) string {
-	g := hd.Gregorian()
-	mon := model.NamesFor(locale).MonthsShort[int(g.Month())-1]
-	if nonEnglishDateLocales[strings.ToLower(locale)] {
-		return fmt.Sprintf("%d %s", g.Day(), mon)
-	}
-	return fmt.Sprintf("%s %d", mon, g.Day())
-}
-
-// untranslatedDesc returns the event's English description, which is what the
-// category rules key on.
-func untranslatedDesc(ev event.CalEvent) string {
-	switch e := ev.(type) {
-	case event.HolidayEvent:
-		return e.Desc
-	}
-	if te, ok := asTimedEvent(ev); ok {
-		return te.Desc
-	}
-	return ev.Render("en")
-}
-
-// asTimedEvent returns the TimedEvent behind ev. KiddushLevanaEvent embeds a
-// TimedEvent but is a type of its own, so a plain type assertion misses it and
-// its time would stay baked into the subject instead of being drawn like every
-// other clock time.
-func asTimedEvent(ev event.CalEvent) (hebcal.TimedEvent, bool) {
-	switch e := ev.(type) {
-	case hebcal.TimedEvent:
-		return e, true
-	case hebcal.KiddushLevanaEvent:
-		return e.TimedEvent, true
-	}
-	return hebcal.TimedEvent{}, false
-}
-
-// eventCategories returns an event's [category, subcategory].
-//
-// Purim and Chanukah are filed as major even though their flags say
-// MINOR_HOLIDAY, which is what keeps them in a calendar that asked only for
-// major holidays while Tu BiShvat and Rosh Hashana LaBehemot drop out.
-func eventCategories(ev event.CalEvent) []string {
-	d := untranslatedDesc(ev)
-	if d == "Purim" || d == "Erev Purim" || strings.HasPrefix(d, "Chanukah: ") {
-		return []string{"holiday", "major"}
-	}
-	return ev.GetCategories()
-}
-
-// keepEvent applies the two post-generation filters (yom-tov-only and
-// no-minor-holidays). Both work on categories rather than flags, which is what
-// makes the Purim and Chanukah special case above take effect.
-func keepEvent(ev event.CalEvent, flags event.HolidayFlags, p *Params) bool {
-	switch {
-	case p.YomTovOnly:
-		cats := eventCategories(ev)
-		return len(cats) > 0 && cats[0] == "holiday" && flags.Has(event.CHAG)
-	case p.NoMinorHolidays:
-		cats := eventCategories(ev)
-		return len(cats) < 2 || cats[1] != "minor"
-	}
-	return true
-}
-
 // use12Hour reports whether clock times render in 12-hour form. hour12 forces it
 // either way (1 = force 12-hour, 2 = force 24-hour); otherwise it follows the
 // location's country, falling back to "IL" or "US" when no country is known.
-func (p *Params) use12Hour() bool {
+func use12Hour(p *download.Params) bool {
 	switch p.Hour12 {
 	case 1:
 		return true
@@ -304,8 +186,8 @@ func (p *Params) use12Hour() bool {
 // PDF uses: "8:51p" in 12-hour countries, "20:51" in 24-hour ones. The time
 // comes from TimedEvent.EventTime rather than from parsing hebcal-go's
 // "Havdalah: 8:51" description back apart.
-func timeStringOf(ev event.CalEvent, p *Params) string {
-	te, ok := asTimedEvent(ev)
+func timeStringOf(ev event.CalEvent, p *download.Params) string {
+	te, ok := download.AsTimedEvent(ev)
 	if !ok {
 		return ""
 	}
@@ -313,7 +195,7 @@ func timeStringOf(ev event.CalEvent, p *Params) string {
 	if t.IsZero() {
 		return ""
 	}
-	if !p.use12Hour() {
+	if !use12Hour(p) {
 		return t.Format("15:04")
 	}
 	h, m := t.Hour(), t.Minute()

@@ -7,7 +7,7 @@ import (
 
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings/readingstest"
-	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 )
 
@@ -87,7 +87,7 @@ func TestCSVLearningFallback(t *testing.T) {
 			`"category":"dirshuAmudYomi","memo":"first line\nsecond, line"}]}`))
 	}))
 	app, srv := testServer(t)
-	app.CSV.Learning = pdf.NewLearningFetcher(up)
+	app.CSV.Learning = download.NewLearningFetcher(up)
 	msg := &pb.Download{Year: 2026, Month: 8, DirshuAmudYomi: true}
 	resp, body := get(t, srv, "/v4/"+encode(t, msg)+"/hebcal.csv")
 	if resp.StatusCode != http.StatusOK {

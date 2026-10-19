@@ -56,6 +56,12 @@ Keep that lineage **out of the `*.go` doc comments** and **in this file**:
 
 ## Architecture of the PDF half
 
+Everything up to the event list is shared with the CSV calendars and lives in
+`internal/service/download`: decoding the request (the `/v4/` protobuf and its
+two legacy spellings), resolving it into `download.Params`, generating the
+events, and fetching the learning series no Go schedule covers. Neither
+format package depends on the other.
+
 The service follows the repository's usual direction — `handler` → `service` →
 `model`/`pkg`, and nothing in a service package writes to an
 `http.ResponseWriter`.
@@ -63,17 +69,20 @@ The service follows the repository's usual direction — `handler` → `service`
 | file | role |
 |---|---|
 | `internal/handler/pdf.go` | both routes' transport: methods, headers, ETag/304, the status each error maps to |
-| `internal/service/pdf/pdf.go` | `Service.Prepare`/`Render`, the document title, the 501/503 learning error |
-| `internal/service/pdf/params.go` | protobuf → `hebcal.CalOptions`; port of `deserializeDownload.js` |
-| `internal/service/pdf/v2.go` | the legacy `/v2/h/` URL: query string → protobuf; port of `downloadHref2()` |
-| `internal/service/pdf/cgi.go` | the classic `/hebcal/index.cgi/…pdf?query` URL: its two query encodings → `v2Query`, then `DecodeV2` |
-| `internal/service/pdf/events.go` | event generation via hebcal-go, ordering within a day |
+| `internal/service/download/request.go` | `Decode`: any of the three download URL shapes → the `Download` protobuf; the 501/503 learning error |
+| `internal/service/download/params.go` | protobuf → `hebcal.CalOptions`; port of `deserializeDownload.js` |
+| `internal/service/download/v2.go` | the legacy `/v2/h/` URL: query string → protobuf; port of `downloadHref2()` |
+| `internal/service/download/cgi.go` | the classic `/hebcal/index.cgi/…pdf?query` URL: its two query encodings → `v2Query`, then `DecodeV2` |
+| `internal/service/download/events.go` | `GenerateCalEvents`: event generation via hebcal-go and the category filters |
+| `internal/service/download/learning.go` | the readings-svc `/learning` fetch for unsupported learning series |
+| `internal/service/pdf/pdf.go` | `Service.Prepare`/`Render`, the document title |
+| `internal/service/pdf/events.go` | flattening events into cells, ordering within a day |
 | `internal/service/pdf/hebmonth.go` | Hebrew-month pagination (`mm=1`, `mm=2`) |
 | `internal/service/pdf/render.go` | page layout; port of `renderPdf()` |
 | `internal/service/pdf/text.go` | bidi and shaping |
 | `internal/service/pdf/fonts.go` | font loading, metrics, per-document embedding |
 | `internal/service/pdf/links.go` | URL shortening and tracking |
-| `internal/service/pdf/fallback.go` | the readings-svc `/learning` fetch for unsupported learning series |
+| `internal/service/pdf/fallback.go` | merging the fetched learning rows into the cells |
 | `internal/service/holidaypdf/` | `/holidays/hebcal-<year>.pdf` URL parsing; port of `holidayPdf.js` |
 | `internal/model/calendarnames.go` | month and weekday names, generated |
 | `pkg/downloadpb/` | the `Download` protobuf a `/v4/` URL carries |
@@ -273,7 +282,7 @@ hebcal-web answers it with a **301** to the `/v4/` form: `redirV2` in
 `src/app-download.js` decodes the path, and `downloadHref2()` in
 `src/makeDownloadProps.js` re-encodes the query as the protobuf. This service
 answers **200** instead, by running that same conversion in `v2.go` and handing
-the message to `ParamsFromMessage` — so from `pdf.go`'s `decodeRequest` onward a
+the message to `ParamsFromMessage` — so from `download.Decode` onward a
 `/v2/` request *is* a `/v4/` request, and there is no second decoding path to
 keep in step. The three sample URLs in `v2_test.go` are checked against the
 exact payloads production's 301 points at, and a 41-case sweep of hand-written
@@ -353,7 +362,7 @@ building the same `v2Query` and running it through `DecodeV2`, after the two
 `mod`/`mf`/`ss`, every negative option but Rosh Chodesh, and overrides an
 explicit one beside it), and lowercase `m=on` as the old spelling of `M=on`.
 `tag` and `set` are ancient and ignored -- `set` only ever suppressed a cookie
-on www, never on download. From `decodeRequest` onward a CGI request *is* a
+on www, never on download. From `download.Decode` onward a CGI request *is* a
 `/v4/` request, the same collapse `/v2/` makes.
 
 **The query arrives in two encodings, both handled by `normalizeCGIQuery`
@@ -378,7 +387,7 @@ handful of curated redirects.
 `internal/service/holidaypdf` serves `www.hebcal.com`'s
 `/holidays/hebcal-<year>.pdf`, a port of `src/holidayPdf.js`. It is a small
 request -- a year and `i=on` -- feeding the same generator and renderer as
-`/v4/`, so the whole package is URL parsing: `Parse` hands back a `pdf.Params`
+`/v4/`, so the whole package is URL parsing: `Parse` hands back a `download.Params`
 and `pdfHoliday` does the rest. Four things about it are not obvious:
 
 - **The year string keeps its extension.** `holidayPdf.js` parses
@@ -520,10 +529,10 @@ Do not "fix" these without checking production first.
 Outlook-compatible export of the same `/v4/` calendar the PDF draws. It is a
 port of `@hebcal/rest-api`'s `src/csv.ts` (`eventToCsv()`) and of hebcal-web's
 `eventsWithParshaToCsv()` / `getCsvParshaMemo()` (`src/parshaCommon.js`), and
-it reuses the PDF package for everything up to the event list:
-`pdf.ParseDownloadPath(path, ".csv")`, `DecodeMessage`, `ParamsFromMessage`,
+it shares everything up to the event list with the PDF through
+`internal/service/download`: `Decode(ctx, u, ".csv")`, `ParamsFromMessage`,
 and `GenerateCalEvents` (the raw, category-filtered hebcal-go events that
-`Generate` flattens for the PDF). `handler.v4Download` sends `.csv` to
+`pdf.Generate` flattens into cells). `handler.v4Download` sends `.csv` to
 `csvDownload` and everything else to `pdfDownload`; the CSV path skips the PDF
 limiter and needs no fonts.
 
@@ -620,7 +629,7 @@ packages and answers HTTP **over a unix domain socket**
 
 `internal/repository/readings` is the whole client: the socket transport, the
 `Item` type, the LRU, and the two request builders. Both callers -- `/shabbat`
-and `internal/service/pdf/fallback.go` -- share one `*readings.Client`, so
+and `internal/service/download/learning.go` -- share one `*readings.Client`, so
 there is one socket, one connection pool and one place that knows the
 transport. Keep it that way, the same rule the `httpx` note above states.
 
@@ -797,7 +806,7 @@ Schedules are not selected through the four dedicated `CalOptions` booleans but
 through its generic `DailyLearning []string`, resolved against hebcal-go's
 `dailylearning` registry. The registry is populated by importing
 `github.com/hebcal/learning` **for its side effects** — each schedule registers
-itself in an `init()`. `internal/service/pdf/params.go` carries that blank import, next to the list it
+itself in an `init()`. `internal/service/download/params.go` carries that blank import, next to the list it
 feeds; dropping it silently reduces the service to the four hard-wired series.
 (It sat in `main.go` while this was its own repository, which is one import
 away from a consumer that forgets it.)
@@ -1202,7 +1211,7 @@ Where each Go symbol came from. `src/*` is `hebcal-web`; `@hebcal/*` is the npm
 package. This is the lineage that used to live in the doc comments. Add rows as
 more code is ported.
 
-### `internal/service/pdf/params.go` — `deserializeDownload.js` + the PDF parts of `makeDownloadProps.js`
+### `internal/service/download/params.go` — `deserializeDownload.js` + the PDF parts of `makeDownloadProps.js`
 
 | Go | JS source |
 |---|---|
@@ -1227,7 +1236,7 @@ more code is ported.
 | `fastTimeFields` / `setFastTimes` | `deserializeDownload.js`'s fast fields + `floatToString()` (`toPrecision(6)`), then `getFastTimeOpts()` |
 | `unsupportedSeries` | the seven series with no `github.com/hebcal/learning` schedule |
 
-### `internal/service/pdf/v2.go` — `downloadHref2()` (`src/makeDownloadProps.js`)
+### `internal/service/download/v2.go` — `downloadHref2()` (`src/makeDownloadProps.js`)
 
 Whole file = `parseV2Path()` (`src/app-download.js`) + `downloadHref2()`, minus
 the base64 encode. `v2Query.on/off/empty/truthy/getInt/getFloat` ←
@@ -1240,7 +1249,7 @@ from the 301**. `applyV2DailyLearning` ← `downloadHref2`'s `dailyLearningConfi
 loop. The fast fields ← `downloadHref2`'s `getFastTimeOpts(q)` block; the
 fast keys in `geoKeysToRemove("none")` ← `fastTimeKeys` in `getGeoKeysToRemove()`. `checkISODate` ← `isoDateStringToDate()` 400 guard.
 
-### `internal/service/pdf/cgi.go` — `makeHebcalOptions(query)` path
+### `internal/service/download/cgi.go` — `makeHebcalOptions(query)` path
 
 `makeHebcalOptions(query)` ≡ `ParamsFromMessage(downloadHref2(query))` (the
 equivalence `v2.go` was measured to hold), so `ParseCGIPath` builds the same
@@ -1286,7 +1295,7 @@ of `@hebcal/core`'s `timeOfDay()`.
 
 `Service` flow ← `src/pdf.js` + `src/hebcal-download.js` run order. `Prepare` ←
 `src/hebcal-download.js` (decode → generate → learning fetch → empty check).
-empty-events 400 ← `src/hebcal-download.js`. `decodeRequest` 404 default ←
+empty-events 400 ← `src/hebcal-download.js`. `download.Decode` 404 default ←
 hebcal-web download router. The undecodable-payload 404 generalizes
 `app-download.js`'s `isBingBot` special case (part of `fixup2`'s `/v4/`
 handling) to every user agent -- a **deliberate divergence**. `CalendarTitle`
@@ -1312,16 +1321,16 @@ two-space rejoin, which fontkit then re-reverses. `shapeRefSize` (1000pt) exists
 because fontkit scales linearly from font units while HarfBuzz quantises to the
 ppem grid — pdfkit's widths are the unrounded ones.
 
-### `internal/service/pdf/querylog.go`
+### `internal/service/download/querylog.go`
 
 `MessageToQuery`, `learningQueryParams`, `queryBuilder` ← `deserializeDownload.js`
 field-for-field, in `dailyLearningConfig.json` order. `formatFloat` ← JS
 `String(number)`. `queryBuilder.set()` encoding ← `encodeURIComponent` (spaces
 as `%20`, not `+`).
 
-### `internal/service/pdf/fallback.go`, `links.go`, `hebmonth.go`
+### `internal/service/download/learning.go`, `pdf/fallback.go`, `links.go`, `hebmonth.go`
 
-`fallbackSeries` codes ← readings-svc's documented codes (also hebcal-web's
+`fallbackSeries` (download) codes ← readings-svc's documented codes (also hebcal-web's
 `/hebcal` query params). `canonicalLearningURL` ← strips `@hebcal/rest-api`'s
 `utm_*` tracking. `links.go` UTM defaults ← `renderPdfEvent()` /
 `appendIsraelAndTracking`. `shortenSedrot`'s trim-to-`/s/` fallthrough ←
@@ -1512,7 +1521,7 @@ of the Hebcal.com fleet's.
 ### `internal/service/location/` — `getLocationFromQuery` (`src/location.js`)
 
 `package` / `FromQuery` ← `getLocationFromQuery`, the four query methods only
-(no GeoIP, no `ladeg`/`lamin` here — those live in `pdf/v2.go`). `geoposLegacy`
+(no GeoIP, no `ladeg`/`lamin` here — those live in `download/v2.go`). `geoposLegacy`
 ← `src/urlArgs.js`. `fromLatLongLegacy` ← the `hasLatLongLegacy` branch.
 `legacyTzToTzid` ← `@hebcal/core` `Location.legacyTzToTzid`. `makeGeoCityName` ←
 the `37°25′N 122°5′W America/Los_Angeles` name. `tz.go` `TimezoneAt` ←

@@ -7,6 +7,7 @@ import (
 
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
 	"github.com/hebcal/hebcal-api-go/internal/model"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	"github.com/hebcal/hebcal-api-go/internal/service/holidaypdf"
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 )
@@ -154,8 +155,8 @@ func writeDownloadError(w http.ResponseWriter, err error) {
 	// Record the underlying error (not the possibly-terser body some cases
 	// write) for the access log's "msg" field.
 	httpx.RecordError(w, err)
-	var oor *pdf.OutOfRangeError
-	var unsup *pdf.UnsupportedSeriesError
+	var oor *download.OutOfRangeError
+	var unsup *download.UnsupportedSeriesError
 	switch {
 	case errors.As(err, &oor):
 		w.Header().Set("Cache-Control", httpx.CacheControl14Days)
@@ -190,7 +191,7 @@ func writeDownloadError(w http.ResponseWriter, err error) {
 func writeHolidayError(w http.ResponseWriter, err error) {
 	// The holiday 410 body is only "Gone"; log the richer error naming the year.
 	httpx.RecordError(w, err)
-	var oor *pdf.OutOfRangeError
+	var oor *download.OutOfRangeError
 	if errors.As(err, &oor) {
 		http.Error(w, "Gone", http.StatusGone)
 		return
@@ -203,7 +204,7 @@ func writeHolidayError(w http.ResponseWriter, err error) {
 // a year outside 1..32000 is 400, an error that carries its own status keeps
 // it, and anything else is a malformed request.
 func writeCommonPDFError(w http.ResponseWriter, err error) {
-	var nf *pdf.NotFoundError
+	var nf *download.NotFoundError
 	var bad *holidaypdf.BadRequestError
 	var herr *model.HTTPError
 	switch {

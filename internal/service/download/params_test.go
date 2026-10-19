@@ -1,4 +1,4 @@
-package pdf
+package download
 
 import (
 	"encoding/base64"
@@ -38,7 +38,7 @@ func TestParsePath(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ParsePath(tt.path)
+			got, err := ParsePath(tt.path, ".pdf")
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("ParsePath(%q) error = %v, wantErr %v", tt.path, err, tt.wantErr)
 			}
@@ -117,13 +117,12 @@ func TestSuppressionFlagsAreInverted(t *testing.T) {
 
 func TestMonthMode(t *testing.T) {
 	tests := []struct {
-		mm        pb.Download_MonthMode
-		want      MonthMode
-		gematriya bool
+		mm   pb.Download_MonthMode
+		want MonthMode
 	}{
-		{pb.Download_GREGORIAN_ARABIC, GregorianArabic, false},
-		{pb.Download_HEBREW_ARABIC, HebrewArabic, false},
-		{pb.Download_HEBREW_HEBREW, HebrewHebrew, true},
+		{pb.Download_GREGORIAN_ARABIC, GregorianArabic},
+		{pb.Download_HEBREW_ARABIC, HebrewArabic},
+		{pb.Download_HEBREW_HEBREW, HebrewHebrew},
 	}
 	for _, tt := range tests {
 		p, err := DecodeParams(encode(t, &pb.Download{MonthMode: tt.mm, Year: 2026}), nil)
@@ -132,9 +131,6 @@ func TestMonthMode(t *testing.T) {
 		}
 		if p.MonthMode != tt.want {
 			t.Errorf("MonthMode = %v, want %v", p.MonthMode, tt.want)
-		}
-		if p.useGematriya() != tt.gematriya {
-			t.Errorf("mm=%v: useGematriya() = %v, want %v", tt.mm, p.useGematriya(), tt.gematriya)
 		}
 	}
 }
@@ -431,20 +427,5 @@ func TestLocationImpliesCandleLighting(t *testing.T) {
 	}
 	if p.CityName != "Prestea" {
 		t.Errorf("CityName = %q, want Prestea", p.CityName)
-	}
-}
-
-// A calendar with no location at all is still valid, and names itself by
-// schedule.
-func TestNoLocationIsFineWithoutCandleLighting(t *testing.T) {
-	p, err := DecodeParams(encode(t, &pb.Download{Year: 2026, Major: true}), nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if p.Opts.Location != nil {
-		t.Error("no location was given, so none should be set")
-	}
-	if got := leftFooterText(p); got != "Diaspora holiday schedule" {
-		t.Errorf("footer = %q", got)
 	}
 }

@@ -5,8 +5,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-go/sedra"
+
+	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 )
 
 // Link tracking defaults.

@@ -10,7 +10,7 @@ import (
 
 	"github.com/hebcal/hdate"
 
-	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	"github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 )
@@ -127,7 +127,7 @@ func TestRenderEmpty(t *testing.T) {
 	// A calendar with nothing selected is a header alone, not an error.
 	s := testService(t)
 	msg := &downloadpb.Download{Year: 2026}
-	params, err := pdf.ParamsFromMessage(msg, s.Geo)
+	params, err := download.ParamsFromMessage(msg, s.Geo)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -147,7 +147,7 @@ func TestPrepareErrors(t *testing.T) {
 		"/v4/x.csv",
 	} {
 		u, _ := url.Parse(path)
-		var nf *pdf.NotFoundError
+		var nf *download.NotFoundError
 		if _, err := s.Prepare(context.Background(), u); !errors.As(err, &nf) {
 			t.Errorf("%s: got %v, want a NotFoundError", path, err)
 		}
@@ -179,7 +179,7 @@ func TestNumYears(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			p, err := pdf.ParamsFromMessage(tc.msg, s.Geo)
+			p, err := download.ParamsFromMessage(tc.msg, s.Geo)
 			if err != nil {
 				t.Fatal(err)
 			}

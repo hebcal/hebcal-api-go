@@ -1,7 +1,6 @@
-package pdf
+package download
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -23,20 +22,21 @@ import (
 // cgiPrefix is the classic CGI download path this service answers.
 const cgiPrefix = "/hebcal/index.cgi/"
 
-// ParseCGIPath decodes a /hebcal/index.cgi/<name>.pdf request into the query
+// ParseCGIPath decodes a /hebcal/index.cgi/<name><ext> request into the query
 // map that carries it: querystring normalization (normalizeCGIQuery) followed
 // by two legacy-parameter rewrites (applyCGILegacyParams).
 //
-// Only .pdf is ours; the .ics feeds and the yahrzeit calendars this same path
-// also serves are handled elsewhere, so anything else is an error the handler
-// maps to 404, as it does for the equivalent /v2/ shapes.
-func ParseCGIPath(path, rawQuery string) (v2Query, error) {
+// Only the caller's extension is accepted; the .ics feeds and the yahrzeit
+// calendars this same path also serves are handled elsewhere, so anything else
+// is an error the handler maps to 404, as it does for the equivalent /v2/
+// shapes.
+func ParseCGIPath(path, rawQuery, ext string) (v2Query, error) {
 	if !strings.HasPrefix(path, cgiPrefix) {
-		return nil, fmt.Errorf("expected /hebcal/index.cgi/<name>.pdf, got %q", path)
+		return nil, fmt.Errorf("expected /hebcal/index.cgi/<name>%s, got %q", ext, path)
 	}
 	filename := path[len(cgiPrefix):]
-	if !strings.HasSuffix(filename, ".pdf") {
-		return nil, errors.New("not a .pdf request")
+	if !strings.HasSuffix(filename, ext) {
+		return nil, fmt.Errorf("not a %s request", ext)
 	}
 	// The error is ignored for the same reason ParseV2Path ignores it: a stray
 	// percent sign has to leave the other parameters intact rather than fail

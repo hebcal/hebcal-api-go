@@ -19,6 +19,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
 	"github.com/hebcal/hebcal-api-go/internal/logger"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings/readingstest"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
@@ -229,7 +230,7 @@ func TestFallbackStatusCodes(t *testing.T) {
 			http.Error(w, "down", http.StatusBadGateway)
 		}))
 		app, srv := pdfServer(t)
-		app.PDF.Learning = pdf.NewLearningFetcher(down)
+		app.PDF.Learning = download.NewLearningFetcher(down)
 		resp, _ := get(t, srv, path)
 		if resp.StatusCode != http.StatusServiceUnavailable {
 			t.Errorf("status = %d, want 503", resp.StatusCode)
@@ -245,7 +246,7 @@ func TestFallbackStatusCodes(t *testing.T) {
 				`"category":"dirshuAmudYomi"}]}`))
 		}))
 		app, srv := pdfServer(t)
-		app.PDF.Learning = pdf.NewLearningFetcher(up)
+		app.PDF.Learning = download.NewLearningFetcher(up)
 		resp, body := get(t, srv, path)
 		if resp.StatusCode != http.StatusOK {
 			t.Fatalf("status = %d, want 200: %s", resp.StatusCode, body)

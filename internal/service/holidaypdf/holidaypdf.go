@@ -5,7 +5,7 @@
 // location and no daily learning, only a year and an Israel flag. Everything
 // after those is the same generator and the same renderer as the /v4/
 // calendars, so this package is URL parsing plus a handful of CalOptions --
-// Parse hands back a *pdf.Params and the service/pdf package does the rest.
+// Parse hands back a *download.Params and the service/pdf package does the rest.
 package holidaypdf
 
 import (
@@ -16,7 +16,7 @@ import (
 	"strings"
 
 	"github.com/hebcal/hebcal-api-go/internal/model"
-	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 )
 
 // hebrewYearOffset converts a Gregorian year to the Hebrew year that begins in
@@ -52,9 +52,9 @@ func leadingInt(s string) (n int, ok bool) {
 // Parse turns a /holidays/hebcal-<year>.pdf request into the Params the
 // generator and renderer take.
 //
-// It returns three kinds of error: pdf.NotFoundError for a URL that is not a
+// It returns three kinds of error: download.NotFoundError for a URL that is not a
 // holiday calendar (404), BadRequestError for a year outside 1..32000 (400),
-// and pdf.OutOfRangeError for a year with no calendar (410).
+// and download.OutOfRangeError for a year with no calendar (410).
 //
 // The Israel schedule is linked as a "-il" filename suffix (hebcal-2999-il.pdf)
 // rather than a "?i=on" query parameter, so a browser bookmark or a shared link
@@ -62,10 +62,10 @@ func leadingInt(s string) (n int, ok bool) {
 // manager or link-preview tool tends to drop. The "?i=on" spelling still
 // reaches this handler from links published before that change, so it keeps
 // setting IL too -- either one is enough.
-func Parse(rpath string, query url.Values) (*pdf.Params, error) {
+func Parse(rpath string, query url.Values) (*download.Params, error) {
 	base := path.Base(rpath)
 	if !strings.HasPrefix(base, "hebcal-") {
-		return nil, pdf.NotFoundf("Invalid PDF URL format: %s", base)
+		return nil, download.NotFoundf("Invalid PDF URL format: %s", base)
 	}
 	// Deliberately keeps the ".pdf" on the string: the year is read with
 	// leadingInt, which stops at the dot, and the hyphen test below is
@@ -83,7 +83,7 @@ func Parse(rpath string, query url.Values) (*pdf.Params, error) {
 	}
 	yearNum, ok := leadingInt(year)
 	if !ok {
-		return nil, pdf.NotFoundf("Invalid holiday year: %s", year)
+		return nil, download.NotFoundf("Invalid holiday year: %s", year)
 	}
 	if yearNum < 1 || yearNum > 32000 {
 		return nil, &BadRequestError{msg: fmt.Sprintf("Invalid year number: %d", yearNum)}
@@ -97,14 +97,14 @@ func Parse(rpath string, query url.Values) (*pdf.Params, error) {
 		calendarYear = yearNum + hebrewYearOffset
 	}
 	if !model.YearIsSupported(calendarYear, isHebrewYear) {
-		return nil, &pdf.OutOfRangeError{Year: calendarYear, IsHebrewYear: isHebrewYear}
+		return nil, &download.OutOfRangeError{Year: calendarYear, IsHebrewYear: isHebrewYear}
 	}
 
-	p := &pdf.Params{
+	p := &download.Params{
 		// One page per Gregorian month even for a Hebrew year, so a 5787
 		// calendar paginates from Rosh Hashana through Elul across Gregorian
 		// pages.
-		MonthMode: pdf.GregorianArabic,
+		MonthMode: download.GregorianArabic,
 		// Always English. Nothing on www.hebcal.com links a localized holiday
 		// calendar -- the holiday and year-index pages emit `hebcal-<year>.pdf`
 		// with at most `?i=on` -- so `lg` is ignored here rather than carried

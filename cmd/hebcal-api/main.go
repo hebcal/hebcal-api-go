@@ -24,6 +24,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/logger"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	mcpsvc "github.com/hebcal/hebcal-api-go/internal/service/mcp"
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
@@ -128,7 +129,7 @@ func main() {
 	// With no socket configured those requests are refused with 501 rather than
 	// rendered without the rows the user asked for.
 	if cfg.ReadingsSocket != "" {
-		app.PDF.Learning = pdf.NewLearningFetcher(app.Readings)
+		app.PDF.Learning = download.NewLearningFetcher(app.Readings)
 		app.CSV.Learning = app.PDF.Learning
 	}
 

@@ -9,11 +9,13 @@ import (
 
 	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/hebcal-go/zmanim"
+
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 )
 
 // renderCalendar builds a real PDF the way the handler does, so the assertions
 // below run against the same path production would take.
-func renderCalendar(t *testing.T, p *Params) []byte {
+func renderCalendar(t *testing.T, p *download.Params) []byte {
 	t.Helper()
 	fs := testFonts(t)
 	events, err := Generate(p)
@@ -39,8 +41,8 @@ func paloAlto() *zmanim.Location {
 	}
 }
 
-func gregorianParams() *Params {
-	p := &Params{Locale: "en", MonthMode: GregorianArabic}
+func gregorianParams() *download.Params {
+	p := &download.Params{Locale: "en", MonthMode: download.GregorianArabic}
 	p.Opts = hebcal.CalOptions{
 		Year: 2026, Sedrot: true, CandleLighting: true, Location: paloAlto(),
 	}
@@ -89,7 +91,7 @@ func TestRenderProducesAValidPDF(t *testing.T) {
 func TestNoEmptyToUnicodeDestinations(t *testing.T) {
 	for _, tc := range []struct {
 		name string
-		p    *Params
+		p    *download.Params
 	}{
 		{"english", gregorianParams()},
 		{"hebrew", hebrewParams()},
@@ -109,8 +111,8 @@ func TestNoEmptyToUnicodeDestinations(t *testing.T) {
 	}
 }
 
-func hebrewParams() *Params {
-	p := &Params{Locale: "he", RTL: true, MonthMode: GregorianArabic}
+func hebrewParams() *download.Params {
+	p := &download.Params{Locale: "he", RTL: true, MonthMode: download.GregorianArabic}
 	p.Opts = hebcal.CalOptions{
 		Year: 2026, Sedrot: true, CandleLighting: true, Location: paloAlto(),
 	}
@@ -154,7 +156,7 @@ func TestHebrewCalendarEmbedsTheHebrewFont(t *testing.T) {
 
 // mm=1 and mm=2 paginate by Hebrew month instead of Gregorian.
 func TestHebrewMonthModesRender(t *testing.T) {
-	for _, mm := range []MonthMode{HebrewArabic, HebrewHebrew} {
+	for _, mm := range []download.MonthMode{download.HebrewArabic, download.HebrewHebrew} {
 		p := hebrewParams()
 		p.MonthMode = mm
 		p.Opts.IsHebrewYear = true

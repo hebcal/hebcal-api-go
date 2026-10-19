@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/hebcal/hebcal-go/hebcal"
+
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 )
 
 func benchFonts(b *testing.B) *FontSet {
@@ -23,8 +25,8 @@ func benchFonts(b *testing.B) *FontSet {
 // benchParams mirrors the traffic in the access log: a Spanish, full-holiday,
 // candle-lighting, sedrot single-year Gregorian calendar for a geoname
 // location.
-func benchParams() *Params {
-	p := &Params{Locale: "es", MonthMode: GregorianArabic}
+func benchParams() *download.Params {
+	p := &download.Params{Locale: "es", MonthMode: download.GregorianArabic}
 	p.Opts = hebcal.CalOptions{
 		Year:           2026,
 		Sedrot:         true,

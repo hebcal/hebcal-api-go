@@ -447,8 +447,10 @@ internal/
     shabbat/               /shabbat calendar, candle options, item rendering
     complete/              /complete result serialization
     location/              query -> location, and the two location JSON shapes
-    pdf/                   /v4/ and /v2/ PDF calendars: protobuf -> options,
-                           event generation, page layout, shaping, fonts, links
+    download/              download URLs (/v4/, /v2/h/, CGI) -> protobuf ->
+                           options -> events, shared by pdf/ and csv/
+    pdf/                   /v4/ and /v2/ PDF calendars: cells, page layout,
+                           shaping, fonts, links
     holidaypdf/            /holidays/hebcal-<year>.pdf URL parsing
     csv/                   /v4/ CSV calendars: rows and their descriptions
   repository/

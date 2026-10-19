@@ -1,4 +1,4 @@
-package pdf
+package download
 
 import (
 	"errors"
@@ -145,17 +145,16 @@ func (q v2Query) normalize() {
 	delete(q, "vis")
 }
 
-// ParseV2Path decodes a legacy /v2/h/<base64>/<filename>.pdf path into the
+// ParseV2Path decodes a legacy /v2/h/<base64>/<filename><ext> path into the
 // query string it carries.
-func ParseV2Path(path string) (v2Query, error) {
+func ParseV2Path(path, ext string) (v2Query, error) {
 	if !strings.HasPrefix(path, v2Prefix) {
-		return nil, fmt.Errorf("expected /v2/h/<data>/<filename>.pdf, got %q", path)
+		return nil, fmt.Errorf("expected /v2/h/<data>/<filename>%s, got %q", ext, path)
 	}
 	data, filename, ok := strings.Cut(path[len(v2Prefix):], "/")
-	// A path with no filename defaults to hebcal.ics, which is not a PDF
-	// request at all.
-	if !ok || !strings.HasSuffix(filename, ".pdf") {
-		return nil, errors.New("not a .pdf request")
+	// A path with no filename defaults to hebcal.ics.
+	if !ok || !strings.HasSuffix(filename, ext) {
+		return nil, fmt.Errorf("not a %s request", ext)
 	}
 	if data == "" {
 		return nil, errors.New("empty payload")

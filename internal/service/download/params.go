@@ -1,4 +1,4 @@
-package pdf
+package download
 
 import (
 	"encoding/base64"
@@ -109,22 +109,10 @@ var hebrewLocales = map[string]bool{
 // capped at 10, which also bounds the work a scanner can ask for.
 const maxNumYears = 10
 
-// useGematriya reports whether day numbers and years are written in Hebrew
-// numerals, which is what mm=2 (HEBREW_HEBREW) asks for.
-func (p *Params) useGematriya() bool {
-	return p.MonthMode == HebrewHebrew
-}
-
 // ParsePath extracts the base64url protobuf payload from a download URL of the
-// form /v4/<base64>/<filename>.pdf. It returns an error for any other shape.
-func ParsePath(path string) (string, error) {
-	return ParseDownloadPath(path, ".pdf")
-}
-
-// ParseDownloadPath extracts the base64url protobuf payload from a download URL
-// of the form /v4/<base64>/<filename><ext>, where ext is ".pdf" or ".csv". It
-// returns an error for any other shape.
-func ParseDownloadPath(path, ext string) (string, error) {
+// form /v4/<base64>/<filename><ext>, where ext is ".pdf" or ".csv". It returns
+// an error for any other shape.
+func ParsePath(path, ext string) (string, error) {
 	p := strings.TrimPrefix(path, "/")
 	parts := strings.Split(p, "/")
 	if len(parts) != 3 || parts[0] != "v4" {

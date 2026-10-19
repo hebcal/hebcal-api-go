@@ -1,4 +1,4 @@
-package pdf
+package download
 
 import (
 	"encoding/base64"
@@ -35,7 +35,7 @@ func v2Path(qs, filename string) string {
 // decodeV2 is the whole legacy path in one call, for the table tests below.
 func decodeV2(t *testing.T, qs string) *pb.Download {
 	t.Helper()
-	q, err := ParseV2Path(v2Path(qs, "hebcal.pdf"))
+	q, err := ParseV2Path(v2Path(qs, "hebcal.pdf"), ".pdf")
 	if err != nil {
 		t.Fatalf("ParseV2Path(%q): %v", qs, err)
 	}
@@ -78,7 +78,7 @@ func TestDecodeV2MatchesProductionRedirect(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			q, err := ParseV2Path(tt.path)
+			q, err := ParseV2Path(tt.path, ".pdf")
 			if err != nil {
 				t.Fatalf("ParseV2Path: %v", err)
 			}
@@ -120,7 +120,7 @@ func TestParseV2Path(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			q, err := ParseV2Path(tt.path)
+			q, err := ParseV2Path(tt.path, ".pdf")
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("ParseV2Path(%q) error = %v, wantErr %v", tt.path, err, tt.wantErr)
 			}
@@ -145,7 +145,7 @@ func TestDecodeV2RequiresV1(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			q, err := ParseV2Path(v2Path(tt.qs, "hebcal.pdf"))
+			q, err := ParseV2Path(v2Path(tt.qs, "hebcal.pdf"), ".pdf")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -364,7 +364,7 @@ func TestDecodeV2LocationFormsTheRedirectDrops(t *testing.T) {
 
 	t.Run("an out-of-range degree is a 400", func(t *testing.T) {
 		q, err := ParseV2Path(v2Path("v=1&ladeg=99&lamin=42&ladir=n&lodeg=74&lomin=0&"+
-			"lodir=w&tzid=America/New_York", "hebcal.pdf"))
+			"lodir=w&tzid=America/New_York", "hebcal.pdf"), ".pdf")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -420,7 +420,7 @@ func TestDecodeV2YearBeatsRange(t *testing.T) {
 }
 
 func TestDecodeV2RejectsBadDate(t *testing.T) {
-	q, err := ParseV2Path(v2Path("v=1&start=March&end=2026-05-31", "hebcal.pdf"))
+	q, err := ParseV2Path(v2Path("v=1&start=March&end=2026-05-31", "hebcal.pdf"), ".pdf")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -437,7 +437,7 @@ func TestDecodeV2RejectsOutOfRangeInt(t *testing.T) {
 		"v=1&year=99999999999",
 		"v=1&year=2026&ny=99999999999",
 	} {
-		q, err := ParseV2Path(v2Path(qs, "hebcal.pdf"))
+		q, err := ParseV2Path(v2Path(qs, "hebcal.pdf"), ".pdf")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -510,7 +510,7 @@ func TestDecodeV2StringTruthiness(t *testing.T) {
 // A repeated parameter keeps its last value in these legacy URLs, where a
 // later entry overwrites an earlier one. url.Values.Get would keep the first.
 func TestParseV2PathLastValueWins(t *testing.T) {
-	q, err := ParseV2Path(v2Path("v=1&year=2020&year=2026", "hebcal.pdf"))
+	q, err := ParseV2Path(v2Path("v=1&year=2020&year=2026", "hebcal.pdf"), ".pdf")
 	if err != nil {
 		t.Fatal(err)
 	}

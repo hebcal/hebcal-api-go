@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 )
 
 // The URL shapes Parse accepts, and the three ways it refuses one. Note that
@@ -68,7 +68,7 @@ func TestParseHolidayPDF(t *testing.T) {
 			}
 			// Every one of these calendars carries the Hebrew date on the day
 			// line and paginates by Gregorian month, whatever the year is.
-			if !p.Opts.AddHebrewDates || p.MonthMode != pdf.GregorianArabic {
+			if !p.Opts.AddHebrewDates || p.MonthMode != download.GregorianArabic {
 				t.Errorf("AddHebrewDates = %v, MonthMode = %v", p.Opts.AddHebrewDates, p.MonthMode)
 			}
 		})
@@ -76,7 +76,7 @@ func TestParseHolidayPDF(t *testing.T) {
 }
 
 func isNotFound(err error) bool {
-	var e *pdf.NotFoundError
+	var e *download.NotFoundError
 	return errors.As(err, &e)
 }
 
@@ -86,7 +86,7 @@ func isBadRequest(err error) bool {
 }
 
 func isOutOfRange(err error) bool {
-	var e *pdf.OutOfRangeError
+	var e *download.OutOfRangeError
 	return errors.As(err, &e)
 }
 

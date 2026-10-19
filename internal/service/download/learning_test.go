@@ -1,4 +1,4 @@
-package pdf
+package download
 
 import (
 	"testing"
@@ -114,5 +114,24 @@ func TestRemainingUnsupportedSeries(t *testing.T) {
 	}
 	if got := UnsupportedSeries(msg); len(got) != 6 {
 		t.Errorf("UnsupportedSeries() = %v, want all six", got)
+	}
+}
+
+// The series with no Go schedule are fetched from readings-svc rather than
+// refusing the calendar, so every one needs a query parameter.
+func TestEveryUnsupportedSeriesHasAQueryParameter(t *testing.T) {
+	msg := &pb.Download{
+		ChofetzChaim: true, ShemiratHaLashon: true, ArukhHaShulchanYomi: true,
+		SeferHaMitzvot: true, KitzurShulchanAruch: true, DirshuAmudYomi: true,
+		DirshuDafHalacha: true,
+	}
+	for _, s := range UnsupportedSeries(msg) {
+		if _, ok := fallbackSeries[s]; !ok {
+			t.Errorf("series %q has no query parameter, so it could never be fetched", s)
+		}
+	}
+	if len(fallbackSeries) != len(UnsupportedSeries(msg)) {
+		t.Errorf("fallbackSeries has %d entries but %d series are unsupported; "+
+			"the two lists have drifted", len(fallbackSeries), len(UnsupportedSeries(msg)))
 	}
 }

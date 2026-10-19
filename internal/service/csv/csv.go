@@ -2,7 +2,7 @@
 // download.hebcal.com/v4/<data>/<name>.csv.
 //
 // A request is the same base64 protobuf a PDF download carries, decoded by the
-// pdf package into the same Params and the same hebcal-go events; only the
+// download package into the same Params and the same hebcal-go events; only the
 // last step differs. Each event becomes one CSV row of nine quoted columns,
 // built by hand rather than with encoding/csv: commas are dropped from the
 // subject and turned into semicolons in the description, double quotes become
@@ -29,8 +29,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
-	"github.com/hebcal/hebcal-api-go/internal/reqlog"
-	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	"github.com/hebcal/hebcal-api-go/internal/service/shabbat"
 	"github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
@@ -52,12 +51,12 @@ type Service struct {
 	// Learning fetches the daily-learning series no Go schedule generates. Nil
 	// when no readings-svc is configured, in which case those requests are
 	// refused rather than rendered incomplete.
-	Learning *pdf.LearningFetcher
+	Learning *download.LearningFetcher
 }
 
 // Calendar is a decoded request together with the events it generated.
 type Calendar struct {
-	Params *pdf.Params
+	Params *download.Params
 	Events []event.CalEvent
 	// Learning holds the daily-learning rows fetched from readings-svc for the
 	// series hebcal-go cannot generate.
@@ -66,33 +65,28 @@ type Calendar struct {
 
 // Prepare decodes a /v4/<data>/<name>.csv path and generates the calendar's
 // events. Its errors carry the same statuses as pdf.Service.Prepare's: a
-// *pdf.NotFoundError is 404, *pdf.OutOfRangeError 410,
-// *pdf.UnsupportedSeriesError 501 or 503, and anything else 400. Unlike a PDF,
+// *download.NotFoundError is 404, *download.OutOfRangeError 410,
+// *download.UnsupportedSeriesError 501 or 503, and anything else 400. Unlike a PDF,
 // a calendar with no events is not an error: it is a header row alone.
 func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
-	payload, err := pdf.ParseDownloadPath(u.Path, ".csv")
-	if err != nil {
-		return nil, pdf.NotFoundf("%s", err.Error())
-	}
-	msg, err := pdf.DecodeMessage(payload)
-	if err != nil {
-		return nil, pdf.NotFoundf("%s", err.Error())
-	}
-	reqlog.FromContext(ctx).SetQuery(pdf.MessageToQuery(msg))
-	params, err := pdf.ParamsFromMessage(msg, s.Geo)
+	msg, err := download.Decode(ctx, u, ".csv")
 	if err != nil {
 		return nil, err
 	}
-	missing := pdf.UnsupportedSeries(msg)
+	params, err := download.ParamsFromMessage(msg, s.Geo)
+	if err != nil {
+		return nil, err
+	}
+	missing := download.UnsupportedSeries(msg)
 	params.Opts.NumYears = numYears(msg, params, len(missing))
-	events, err := pdf.GenerateCalEvents(params)
+	events, err := download.GenerateCalEvents(params)
 	if err != nil {
 		return nil, model.Internal("render: %s", err.Error())
 	}
 	cal := &Calendar{Params: params, Events: events}
 	if len(missing) > 0 {
 		if s.Learning == nil {
-			return nil, &pdf.UnsupportedSeriesError{Series: missing}
+			return nil, &download.UnsupportedSeriesError{Series: missing}
 		}
 		start, end, ok := learningRange(params, events)
 		if !ok {
@@ -100,7 +94,7 @@ func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
 		}
 		items, err := s.Learning.FetchItems(ctx, missing, params.LG, start, end)
 		if err != nil {
-			return nil, &pdf.UnsupportedSeriesError{Series: missing, Retryable: true, Err: err}
+			return nil, &download.UnsupportedSeriesError{Series: missing, Retryable: true, Err: err}
 		}
 		cal.Learning = items
 	}
@@ -114,7 +108,7 @@ func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
 // learning, and 1 with two or more daily series. An explicit span is honoured
 // up to 10 years. The PDF calendars do not do this; they draw one year unless
 // asked for more.
-func numYears(msg *downloadpb.Download, p *pdf.Params, numUnsupported int) int {
+func numYears(msg *downloadpb.Download, p *download.Params, numUnsupported int) int {
 	if n := msg.GetNumYears(); n > 0 {
 		return min(int(n), 10)
 	}
@@ -159,7 +153,7 @@ func numYears(msg *downloadpb.Download, p *pdf.Params, numUnsupported int) int {
 // learningRange is the span to fetch daily learning for: from the first
 // generated event to the last, or the requested calendar's span when nothing
 // was generated locally.
-func learningRange(p *pdf.Params, events []event.CalEvent) (time.Time, time.Time, bool) {
+func learningRange(p *download.Params, events []event.CalEvent) (time.Time, time.Time, bool) {
 	if len(events) > 0 {
 		return events[0].GetDate().Gregorian(), events[len(events)-1].GetDate().Gregorian(), true
 	}
@@ -228,7 +222,7 @@ func Render(cal *Calendar) []byte {
 	}
 	// A Hebrew-month calendar shows the Gregorian date as its alternate date,
 	// which hebcal-go does not generate, ahead of each day's other events.
-	if p.MonthMode != pdf.GregorianArabic && (p.AddAltDates || p.AddAltDatesForEvents) && len(rows) > 0 {
+	if p.MonthMode != download.GregorianArabic && (p.AddAltDates || p.AddAltDatesForEvents) && len(rows) > 0 {
 		rows = addGregorianDates(rows, p)
 	}
 	// hebcal-go already orders each day by time of day; the stable sort keeps
@@ -254,7 +248,7 @@ func Render(cal *Calendar) []byte {
 // addGregorianDates adds a Gregorian-date row on every day from the first row
 // to the last (AddAltDates), or on every day that has a row
 // (AddAltDatesForEvents).
-func addGregorianDates(rows []row, p *pdf.Params) []row {
+func addGregorianDates(rows []row, p *download.Params) []row {
 	days := make(map[int64]bool, len(rows))
 	lo, hi := rows[0].abs, rows[0].abs
 	for _, r := range rows {
@@ -264,10 +258,10 @@ func addGregorianDates(rows []row, p *pdf.Params) []row {
 	for abs := lo; abs <= hi; abs++ {
 		if p.AddAltDates || days[abs] {
 			hd := hdate.FromRD(abs)
-			subj := pdf.GregorianDateText(hd, p.Locale)
+			subj := download.GregorianDateText(hd, p.Locale)
 			hebrew := ""
 			if p.AppendHebrew {
-				hebrew = pdf.GregorianDateText(hd, "he")
+				hebrew = download.GregorianDateText(hd, "he")
 			}
 			rows = append(rows, row{abs: abs, rank: -1, line: formatRow(hd, subj, hebrew, "", false, "", 3, "Jewish Holidays", p)})
 		}
@@ -295,9 +289,9 @@ var category = map[string]string{
 }
 
 // eventToCSV renders one event as a CSV row, without the line ending.
-func eventToCSV(ev event.CalEvent, p *pdf.Params) string {
+func eventToCSV(ev event.CalEvent, p *download.Params) string {
 	flags := ev.GetFlags()
-	timed, isTimed := asTimedEvent(ev)
+	timed, isTimed := download.AsTimedEvent(ev)
 	subj := renderSubject(ev, p.Locale, shouldRenderBrief(ev, flags, isTimed))
 	hebrew := ""
 	if p.AppendHebrew {
@@ -312,7 +306,7 @@ func eventToCSV(ev event.CalEvent, p *pdf.Params) string {
 			loc = p.LocationShortName
 		}
 	} else {
-		for _, cat := range eventCategories(ev) {
+		for _, cat := range download.EventCategories(ev) {
 			if l, ok := category[cat]; ok {
 				loc = l
 				break
@@ -330,7 +324,7 @@ func eventToCSV(ev event.CalEvent, p *pdf.Params) string {
 // learningToCSV renders a daily-learning row fetched from readings-svc. Its
 // title is already the brief form, its category names the series (never one
 // the Location column maps), and its memo is the sidecar's.
-func learningToCSV(it *readings.Item, hd hdate.HDate, p *pdf.Params) string {
+func learningToCSV(it *readings.Item, hd hdate.HDate, p *download.Params) string {
 	subj := it.Title
 	if subj == "" {
 		subj = it.Hebrew
@@ -346,7 +340,7 @@ func learningToCSV(it *readings.Item, hd hdate.HDate, p *pdf.Params) string {
 // same minute on the same day; an all-day event leaves the time and end date
 // columns empty.
 func formatRow(hd hdate.HDate, subj, hebrew, timeStr string, timed bool, memo string,
-	showTimeAs int, loc string, p *pdf.Params) string {
+	showTimeAs int, loc string, p *download.Params) string {
 	y, m, d := hd.Greg()
 	year := strconv.Itoa(y)
 	if len(year) < 4 {
@@ -391,13 +385,13 @@ func formatRow(hd hdate.HDate, subj, hebrew, timeStr string, timed bool, memo st
 // formatTime renders a clock time with a " PM" / " AM" suffix in a 12-hour
 // country ("6:56 PM") and as-is elsewhere ("18:56"). The request's hour12
 // choice overrides the country.
-func formatTime(t time.Time, p *pdf.Params) string {
+func formatTime(t time.Time, p *download.Params) string {
 	return event.ReformatTimeStr(t.Format("15:04"), " PM", countryCode(p), hour12(p))
 }
 
 // countryCode is the location's country, or Israel or the United States by
 // schedule when the calendar has none.
-func countryCode(p *pdf.Params) string {
+func countryCode(p *download.Params) string {
 	if p.Opts.Location != nil && p.Opts.Location.CountryCode != "" {
 		return p.Opts.Location.CountryCode
 	}
@@ -409,7 +403,7 @@ func countryCode(p *pdf.Params) string {
 
 // hour12 turns the protobuf's 0/1/2 into the override ReformatTimeStr takes:
 // nil follows the country, true forces 12-hour, false 24-hour.
-func hour12(p *pdf.Params) *bool {
+func hour12(p *download.Params) *bool {
 	var b bool
 	switch p.Hour12 {
 	case 1:
@@ -420,18 +414,6 @@ func hour12(p *pdf.Params) *bool {
 		return nil
 	}
 	return &b
-}
-
-// asTimedEvent returns the TimedEvent behind ev. KiddushLevanaEvent embeds one
-// but is a type of its own, so a plain type assertion misses it.
-func asTimedEvent(ev event.CalEvent) (hebcal.TimedEvent, bool) {
-	switch e := ev.(type) {
-	case hebcal.TimedEvent:
-		return e, true
-	case hebcal.KiddushLevanaEvent:
-		return e.TimedEvent, true
-	}
-	return hebcal.TimedEvent{}, false
 }
 
 // learningFlags are the daily-learning series flags.
@@ -459,7 +441,7 @@ func shouldRenderBrief(ev event.CalEvent, flags event.HolidayFlags, timed bool) 
 func renderSubject(ev event.CalEvent, locale string, brief bool) string {
 	flags := ev.GetFlags()
 	var s string
-	if timed, ok := asTimedEvent(ev); ok {
+	if timed, ok := download.AsTimedEvent(ev); ok {
 		// hebcal-go renders "Candle lighting: 6:56pm"; the time has its own
 		// column. The time is last and never contains ": ", so a Chanukah
 		// candle event ("Chanukah: 8 Candles: 4:37pm") splits correctly too.
@@ -485,7 +467,7 @@ func renderUntimed(ev event.CalEvent, flags event.HolidayFlags, locale string, b
 	switch {
 	case flags.Has(event.HEBREW_DATE):
 		if brief {
-			return pdf.HebrewDateBrief(hd, locale)
+			return download.HebrewDateBrief(hd, locale)
 		}
 		return ev.Render(locale)
 	case flags.HasAny(learningFlags):
@@ -530,7 +512,7 @@ func renderUntimed(ev event.CalEvent, flags event.HolidayFlags, locale string, b
 // holiday's description; and for a timed event, the event it belongs to
 // ("Fast begins" belongs to "Tzom Gedaliah", erev-Yom-Tov candle-lighting to
 // "Erev Sukkot").
-func memo(ev event.CalEvent, flags event.HolidayFlags, p *pdf.Params) string {
+func memo(ev event.CalEvent, flags event.HolidayFlags, p *download.Params) string {
 	if flags.Has(event.PARSHA_HASHAVUA) {
 		if s := parshaMemo(ev.GetDate(), p); s != "" {
 			return s
@@ -559,7 +541,7 @@ func isChametz(desc string) bool {
 //
 // The Kiddush Levana times are deliberately left out: that event's memo is on
 // its way out of the website, so the CSV starts without it.
-func ownMemo(ev event.CalEvent, flags event.HolidayFlags, p *pdf.Params) string {
+func ownMemo(ev event.CalEvent, flags event.HolidayFlags, p *download.Params) string {
 	hd := ev.GetDate()
 	switch {
 	case flags.Has(event.SHABBAT_MEVARCHIM):
@@ -626,7 +608,7 @@ func chagReadingName(sat hdate.HDate, il bool) string {
 }
 
 func isTimedEv(ev event.CalEvent) bool {
-	_, ok := asTimedEvent(ev)
+	_, ok := download.AsTimedEvent(ev)
 	return ok
 }
 
@@ -653,7 +635,7 @@ func renderLinked(ev event.CalEvent, locale string) string {
 // ("Shabbat Shekalim + Rosh Chodesh Adar"), or -- when the next day begins a
 // month -- "Machar Chodesh". It is far shorter than the portion's prose
 // summary an iCalendar feed carries, which would not fit a spreadsheet cell.
-func parshaMemo(hd hdate.HDate, p *pdf.Params) string {
+func parshaMemo(hd hdate.HDate, p *download.Params) string {
 	var names []string
 	for _, h := range hebcal.GetHolidaysOnDate(hd, p.Opts.IL) {
 		if h.Flags.HasAny(event.SPECIAL_SHABBAT | event.ROSH_CHODESH) {
@@ -720,20 +702,10 @@ func untranslatedDesc(ev event.CalEvent) string {
 	if he, ok := ev.(event.HolidayEvent); ok {
 		return model.FixMonthSpelling(he.Desc)
 	}
-	if te, ok := asTimedEvent(ev); ok {
+	if te, ok := download.AsTimedEvent(ev); ok {
 		return te.Desc
 	}
 	return model.FixMonthSpelling(ev.Render("en"))
-}
-
-// eventCategories returns an event's categories. Purim, Erev Purim and the
-// Chanukah days are filed as major holidays whatever their flags say.
-func eventCategories(ev event.CalEvent) []string {
-	d := untranslatedDesc(ev)
-	if d == "Purim" || d == "Erev Purim" || strings.HasPrefix(d, "Chanukah: ") {
-		return []string{"holiday", "major"}
-	}
-	return ev.GetCategories()
 }
 
 func isHebrew(locale string) bool {

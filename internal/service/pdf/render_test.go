@@ -7,6 +7,8 @@ import (
 	"github.com/hebcal/hebcal-go/event"
 
 	"github.com/hebcal/hebcal-api-go/internal/model"
+	"github.com/hebcal/hebcal-api-go/internal/service/download"
+	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 )
 
 // rowsFor is a fixed rule, not a computed ceiling: the grid stays five rows
@@ -100,7 +102,7 @@ func TestHebMonthRange(t *testing.T) {
 	}
 	for _, tt := range tests {
 		mp := MonthPage{Year: tt.year, Month: tt.month}
-		got := hebMonthRange(mp, &Params{Locale: "en"})
+		got := hebMonthRange(mp, &download.Params{Locale: "en"})
 		if got != tt.want {
 			t.Errorf("hebMonthRange(%d-%02d) = %q, want %q", tt.year, tt.month, got, tt.want)
 		}
@@ -110,7 +112,7 @@ func TestHebMonthRange(t *testing.T) {
 // Sh'vat is spelled with a typewriter apostrophe in the tables and a right
 // single quote in the rendered calendar.
 func TestHebMonthRangeUsesSmartApostrophe(t *testing.T) {
-	got := hebMonthRange(MonthPage{Year: 2027, Month: time.January}, &Params{Locale: "en"})
+	got := hebMonthRange(MonthPage{Year: 2027, Month: time.January}, &download.Params{Locale: "en"})
 	for _, bad := range []string{"'"} {
 		if contains(got, bad) {
 			t.Errorf("hebMonthRange() = %q, should not contain a typewriter apostrophe", got)
@@ -125,14 +127,14 @@ func TestHebMonthRangeUsesSmartApostrophe(t *testing.T) {
 // year changed.
 func TestHebTitleYear(t *testing.T) {
 	// mm=2 with lg=s: gematriya day numbers, but a plain-digit title year.
-	if got := hebTitleYear(&Params{MonthMode: HebrewHebrew, RTL: false}, 5788); got != "5788" {
+	if got := hebTitleYear(&download.Params{MonthMode: download.HebrewHebrew, RTL: false}, 5788); got != "5788" {
 		t.Errorf("hebTitleYear(mm=2, non-RTL) = %q, want %q", got, "5788")
 	}
-	if !(&Params{MonthMode: HebrewHebrew}).useGematriya() {
+	if !useGematriya(&download.Params{MonthMode: download.HebrewHebrew}) {
 		t.Fatal("mm=2 should still request gematriya day numbers")
 	}
 	// A Hebrew locale renders the year in gematriya: 5788 = תשפ״ח.
-	if got := hebTitleYear(&Params{MonthMode: HebrewHebrew, RTL: true}, 5788); got != "תשפ״ח" {
+	if got := hebTitleYear(&download.Params{MonthMode: download.HebrewHebrew, RTL: true}, 5788); got != "תשפ״ח" {
 		t.Errorf("hebTitleYear(RTL) = %q, want gematriya תשפ״ח", got)
 	}
 }
@@ -238,11 +240,11 @@ func TestSplitInTwo(t *testing.T) {
 // The footer names the location and its candle-lighting offset, or the
 // schedule when there is no location.
 func TestLeftFooterText(t *testing.T) {
-	none := leftFooterText(&Params{})
+	none := leftFooterText(&download.Params{})
 	if none != "Diaspora holiday schedule" {
 		t.Errorf("no location: %q", none)
 	}
-	var ilParams Params
+	var ilParams download.Params
 	ilParams.Opts.IL = true
 	if il := leftFooterText(&ilParams); il != "Israel holiday schedule" {
 		t.Errorf("Israel: %q", il)
@@ -253,8 +255,23 @@ func TestLeftFooterText(t *testing.T) {
 // which use "Tamuz".
 func TestTamuzSpelling(t *testing.T) {
 	// July 2027 spans Tamuz-Av 5787.
-	got := hebMonthRange(MonthPage{Year: 2027, Month: time.July}, &Params{Locale: "en"})
+	got := hebMonthRange(MonthPage{Year: 2027, Month: time.July}, &download.Params{Locale: "en"})
 	if !contains(got, "Tamuz") || contains(got, "Tammuz") {
 		t.Errorf("hebMonthRange() = %q, want it to say Tamuz with one m", got)
+	}
+}
+
+// A calendar with no location at all is still valid, and names itself by
+// schedule.
+func TestNoLocationIsFineWithoutCandleLighting(t *testing.T) {
+	p, err := download.ParamsFromMessage(&pb.Download{Year: 2026, Major: true}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p.Opts.Location != nil {
+		t.Error("no location was given, so none should be set")
+	}
+	if got := leftFooterText(p); got != "Diaspora holiday schedule" {
+		t.Errorf("footer = %q", got)
 	}
 }
