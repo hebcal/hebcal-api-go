@@ -5,11 +5,11 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"runtime/debug"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/andybalholm/brotli"
@@ -55,6 +55,69 @@ const CompressThreshold = 512
 
 // brotliQuality 6 matches the setting used by www.hebcal.com.
 const brotliQuality = 6
+
+// gzipWriters holds gzip.Writers for reuse. A new one allocates about 800 KB
+// of compressor state, which dwarfs a typical body; Reset keeps that state.
+var gzipWriters = sync.Pool{New: func() any { return gzip.NewWriter(nil) }}
+
+// Brotli window sizes, in bits. brotliMaxLGWin is the library's default, so a
+// large body compresses exactly as an unsized writer would. At 16 bits and
+// below brotli switches to a weaker match finder, which costs a few percent on
+// small bodies, so windows start at 17 (128 KB).
+const (
+	brotliMinLGWin = 17
+	brotliMaxLGWin = 22
+)
+
+// brotliWriters holds brotli.Writers for reuse, one pool per window size,
+// since a writer's window is fixed when it is created.
+var brotliWriters [brotliMaxLGWin + 1]sync.Pool
+
+func init() {
+	for lg := brotliMinLGWin; lg <= brotliMaxLGWin; lg++ {
+		opts := brotli.WriterOptions{Quality: brotliQuality, LGWin: lg}
+		brotliWriters[lg].New = func() any { return brotli.NewWriterOptions(nil, opts) }
+	}
+}
+
+// brotliLGWin returns the smallest window that holds a body of n bytes, so a
+// short response does not need a writer with the default 4 MB ring buffer.
+// Brotli reserves 16 bytes of each window. Only the stream header differs from
+// a default-window encoding.
+func brotliLGWin(n int) int {
+	lg := brotliMinLGWin
+	for lg < brotliMaxLGWin && (1<<lg)-16 < n {
+		lg++
+	}
+	return lg
+}
+
+// compress encodes body with enc ("zstd", "br" or "gzip").
+func compress(enc string, body []byte) []byte {
+	if enc == "zstd" {
+		return zstdEncoder.EncodeAll(body, nil)
+	}
+	// JSON, XML and CSV compress to well under half, so this sizes the buffer
+	// without regrowing it in the common case.
+	zbuf := bytes.NewBuffer(make([]byte, 0, len(body)/2))
+	if enc == "br" {
+		pool := &brotliWriters[brotliLGWin(len(body))]
+		zw := pool.Get().(*brotli.Writer)
+		zw.Reset(zbuf)
+		zw.Write(body)
+		zw.Close()
+		zw.Reset(nil)
+		pool.Put(zw)
+	} else {
+		zw := gzipWriters.Get().(*gzip.Writer)
+		zw.Reset(zbuf)
+		zw.Write(body)
+		zw.Close()
+		zw.Reset(nil)
+		gzipWriters.Put(zw)
+	}
+	return zbuf.Bytes()
+}
 
 // zstdEncoder compresses whole buffered bodies with EncodeAll, which is safe
 // for concurrent use. The default level is comparable to gzip -6 in speed and
@@ -132,20 +195,7 @@ func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 			compressed := false
 			enc := negotiateEncoding(r)
 			if uncompressedLen > CompressThreshold && enc != "" {
-				if enc == "zstd" {
-					body = zstdEncoder.EncodeAll(body, nil)
-				} else {
-					var zbuf bytes.Buffer
-					var zw io.WriteCloser
-					if enc == "br" {
-						zw = brotli.NewWriterLevel(&zbuf, brotliQuality)
-					} else {
-						zw = gzip.NewWriter(&zbuf)
-					}
-					zw.Write(body)
-					zw.Close()
-					body = zbuf.Bytes()
-				}
+				body = compress(enc, body)
 				bw.header.Set("Content-Encoding", enc)
 				compressed = true
 			}
