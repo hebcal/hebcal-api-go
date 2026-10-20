@@ -40,10 +40,10 @@ func TestCSVResponse(t *testing.T) {
 	if got := resp.Header.Get("Access-Control-Allow-Origin"); got != "" {
 		t.Errorf("Access-Control-Allow-Origin = %q, want none: production sends no CORS header on a CSV", got)
 	}
-	if !strings.HasPrefix(body, "\xEF\xBB\xBF\"Subject\",") {
+	if !strings.HasPrefix(body, "\xEF\xBB\xBFSubject,") {
 		t.Errorf("body does not begin with the BOM and header: %.40q", body)
 	}
-	if !strings.Contains(body, `,"New York"`+"\r\n") {
+	if !strings.Contains(body, `,New York`+"\r\n") {
 		t.Error("timed events should carry the location")
 	}
 
@@ -98,7 +98,7 @@ func TestCSVLearningFallback(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("status = %d, want 200: %s", resp.StatusCode, body)
 	}
-	want := `"Yoma 49a","8/1/2026",,,,"true","first line / second; line","3","Jewish Holidays"` + "\r\n"
+	want := `Yoma 49a,8/1/2026,,,,true,"first line / second, line",3,Jewish Holidays` + "\r\n"
 	if !strings.Contains(body, want) {
 		t.Errorf("missing fetched row %q in\n%s", want, body)
 	}
@@ -118,7 +118,7 @@ func TestCSVLegacyURLs(t *testing.T) {
 	// A legacy URL naming no Havdalah rule means tzeit.
 	_, want := get(t, srv, "/v4/"+encode(t, &pb.Download{Year: 2026, Major: true,
 		Candlelighting: true, Geonameid: 5128581, NumYears: 1, HavdalahTzeit: true})+"/hebcal.csv")
-	if !strings.Contains(want, `,"New York"`+"\r\n") {
+	if !strings.Contains(want, `,New York`+"\r\n") {
 		t.Fatalf("the /v4/ reference has no New York times:\n%.300s", want)
 	}
 	for _, path := range []string{

@@ -549,12 +549,12 @@ before changing anything here.
 
 Things that are not obvious:
 
-- **Rows are built by hand, not with `encoding/csv`.** Every field is quoted,
-  commas are deleted from the subject and turned into `;` in the description,
-  and `"` becomes `''` -- so no row ever needs the escaping a CSV writer would
-  add, and a writer would quote differently. Keeping the legacy escaping is
-  what makes byte-for-byte comparison possible; switching to `encoding/csv`
-  (and dropping the comma rewriting) is an acceptable later change.
+- **Rows are written with `encoding/csv`** (`UseCRLF`). A field is quoted only
+  when it needs to be (a comma, a quote, a leading space), `"` is doubled, and
+  commas are no longer deleted from the subject or turned into `;` in the
+  description -- a deliberate divergence from production's always-quoted,
+  comma-rewritten rows. Newlines in a description are still flattened to
+  `" / "`, which a CSV writer would otherwise have to quote.
 - **Every document starts with a UTF-8 BOM** -- a deliberate divergence.
   hebcal-web writes one only for a non-English locale, but an English
   calendar is not ASCII either ("Sukkot III (CH’’M)", "Sh’vat"), and without

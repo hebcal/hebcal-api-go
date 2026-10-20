@@ -42,7 +42,7 @@ func TestRenderDocument(t *testing.T) {
 	s := testService(t)
 	// every holiday option, Hebrew year 5787, no location
 	doc := render(t, s, "/v4/CAEQARgBIAEoATABQAFIAWCbLWoBcw/hebcal_5787h_usa.csv")
-	if !strings.HasPrefix(doc, bom+Header+"\r\n") {
+	if !strings.HasPrefix(doc, bom+strings.Join(Header, ",")+"\r\n") {
 		t.Fatalf("document does not begin with the BOM and header: %q", doc[:min(len(doc), 140)])
 	}
 	if !strings.HasSuffix(doc, "\r\n") || strings.Contains(strings.ReplaceAll(doc, "\r\n", ""), "\n") {
@@ -53,12 +53,12 @@ func TestRenderDocument(t *testing.T) {
 		t.Errorf("got %d lines, want 617", n)
 	}
 	for _, want := range []string{
-		`"Erev Rosh Hashana","9/11/2026",,,,"true","The Jewish New Year","3","Jewish Holidays"`,
-		`"Rosh Hashana 5787","9/12/2026",,,,"true","The Jewish New Year","4","Jewish Holidays"`,
-		`"Sukkot III (CH’’M)","9/28/2026",,,,"true","Feast of Booths","3","Jewish Holidays"`,
-		// commas in a description become semicolons
-		`"Swords of Iron War Memorial Day","10/5/2026",,,,"true","Israeli national memorial day commemorating the fallen victims of the October 7 attacks; and the soldiers of the Israel Defense Forces","3","Jewish Holidays"`,
-		`"Rosh Chodesh Cheshvan","10/11/2026",,,,"true","Start of month of Cheshvan on the Hebrew calendar","3","Jewish Holidays"`,
+		`Erev Rosh Hashana,9/11/2026,,,,true,The Jewish New Year,3,Jewish Holidays`,
+		`Rosh Hashana 5787,9/12/2026,,,,true,The Jewish New Year,4,Jewish Holidays`,
+		`Sukkot III (CH’’M),9/28/2026,,,,true,Feast of Booths,3,Jewish Holidays`,
+		// a comma in a description is quoted, not rewritten
+		`Swords of Iron War Memorial Day,10/5/2026,,,,true,"Israeli national memorial day commemorating the fallen victims of the October 7 attacks, and the soldiers of the Israel Defense Forces",3,Jewish Holidays`,
+		`Rosh Chodesh Cheshvan,10/11/2026,,,,true,Start of month of Cheshvan on the Hebrew calendar,3,Jewish Holidays`,
 	} {
 		if !strings.Contains(doc, "\r\n"+want+"\r\n") {
 			t.Errorf("missing row\n%s", want)
@@ -78,19 +78,19 @@ func TestRenderMemos(t *testing.T) {
 			path: "/v4/CAEQARgBIAEoATABQAFIAVABWIWDuQJgnS1qAXN4EogBAQ/x.csv",
 			rows: []string{
 				// a fast's start and end name the fast
-				`"Fast begins","9/24/2028","5:25 AM","9/24/2028","5:25 AM","false","Tzom Gedaliah","4","New York"`,
-				`"Fast ends","9/24/2028","7:22 PM","9/24/2028","7:22 PM","false","Tzom Gedaliah","4","New York"`,
+				`Fast begins,9/24/2028,5:25 AM,9/24/2028,5:25 AM,false,Tzom Gedaliah,4,New York`,
+				`Fast ends,9/24/2028,7:22 PM,9/24/2028,7:22 PM,false,Tzom Gedaliah,4,New York`,
 				// erev-Yom-Tov candle-lighting names the holiday
-				`"Candle lighting","9/29/2028","6:22 PM","9/29/2028","6:22 PM","false","Erev Yom Kippur","4","New York"`,
+				`Candle lighting,9/29/2028,6:22 PM,9/29/2028,6:22 PM,false,Erev Yom Kippur,4,New York`,
 				// Saturday-night Havdalah has nothing to name
-				`"Havdalah","9/23/2028","7:31 PM","9/23/2028","7:31 PM","false","","4","New York"`,
+				`Havdalah,9/23/2028,7:31 PM,9/23/2028,7:31 PM,false,,4,New York`,
 				// Shabbat Mevarchim announces the molad
-				`"Mevarchim Chodesh Cheshvan","10/14/2028",,,,"true","Molad Cheshvan: Wednesday; 4:04pm and 9 chalakim","3",""`,
+				`Mevarchim Chodesh Cheshvan,10/14/2028,,,,true,"Molad Cheshvan: Wednesday, 4:04pm and 9 chalakim",3,`,
 				// a portion read on the eve of a new month
-				`"Parashat Toldot","11/18/2028",,,,"true","Machar Chodesh","3","Torah Reading"`,
+				`Parashat Toldot,11/18/2028,,,,true,Machar Chodesh,3,Torah Reading`,
 				// a portion read with a special Shabbat and Rosh Chodesh
-				`"Parashat Vayikra","3/17/2029",,,,"true","Shabbat HaChodesh + Rosh Chodesh Nisan","3","Torah Reading"`,
-				`"Parashat Mishpatim","2/10/2029",,,,"true","Shabbat Shekalim","3","Torah Reading"`,
+				`Parashat Vayikra,3/17/2029,,,,true,Shabbat HaChodesh + Rosh Chodesh Nisan,3,Torah Reading`,
+				`Parashat Mishpatim,2/10/2029,,,,true,Shabbat Shekalim,3,Torah Reading`,
 			},
 		},
 		{
@@ -98,7 +98,7 @@ func TestRenderMemos(t *testing.T) {
 			path: "/v4/CAEQARgBIAEoATABOAFAAUgBUAFY4JQRYJEteBSIAQE/x.csv",
 			rows: []string{
 				// a festival displaces the coming Shabbat's portion
-				`"Candle lighting","10/21/2016","17:40","10/21/2016","17:40","false","Sukkot Shabbat Chol ha-Moed","4","Jerusalem"`,
+				`Candle lighting,10/21/2016,17:40,10/21/2016,17:40,false,Sukkot Shabbat Chol ha-Moed,4,Jerusalem`,
 			},
 		},
 		{
@@ -106,14 +106,14 @@ func TestRenderMemos(t *testing.T) {
 			path: "/v4/KAFAAUgBYJstagFzyAEB4AEBqAIB8AIBwAMB/x.csv",
 			rows: []string{
 				// Yizkor's description is the holiday it is recited on
-				`"Yizkor","9/21/2026",,,,"true","Yom Kippur","3","Jewish Holidays"`,
+				`Yizkor,9/21/2026,,,,true,Yom Kippur,3,Jewish Holidays`,
 			},
 		},
 		{
 			name: "London 2024, day/month",
 			path: "/v4/CAEYAVifrqEBYOgPcDKIAQHYAQE/x.csv",
 			rows: []string{
-				`"Parashat Terumah","1/3/2025",,,,"true","Shabbat Shekalim + Rosh Chodesh Adar","3","Torah Reading"`,
+				`Parashat Terumah,1/3/2025,,,,true,Shabbat Shekalim + Rosh Chodesh Adar,3,Torah Reading`,
 			},
 		},
 	}
@@ -140,7 +140,7 @@ func TestRenderEmpty(t *testing.T) {
 	params.Opts.Mask = 0
 	params.Opts.NoHolidays = true
 	got := Render(&Calendar{Params: params})
-	if want := bom + Header + "\r\n"; !bytes.Equal(got, []byte(want)) {
+	if want := bom + strings.Join(Header, ",") + "\r\n"; !bytes.Equal(got, []byte(want)) {
 		t.Errorf("got %q, want %q", got, want)
 	}
 }

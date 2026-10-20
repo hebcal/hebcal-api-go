@@ -4,16 +4,14 @@
 //
 // A request is the same base64 protobuf a PDF download carries, decoded by the
 // download package into the same Params and the same hebcal-go events; only the
-// last step differs. Each event becomes one CSV row of nine quoted columns,
-// built by hand rather than with encoding/csv: commas are dropped from the
-// subject and turned into semicolons in the description, double quotes become
-// two single quotes, and every field is quoted, so no row ever needs the
-// escaping a CSV writer would add.
+// last step differs. Each event becomes one CSV row of nine columns, written
+// with encoding/csv; newlines in a description are flattened to " / " first.
 package csv
 
 import (
 	"bytes"
 	"context"
+	"encoding/csv"
 	"net/url"
 	"sort"
 	"strconv"
@@ -36,7 +34,7 @@ import (
 )
 
 // Header is the header row of an Outlook-compatible CSV document.
-const Header = `"Subject","Start Date","Start Time","End Date","End Time","All day event","Description","Show time as","Location"`
+var Header = []string{"Subject", "Start Date", "Start Time", "End Date", "End Time", "All day event", "Description", "Show time as", "Location"}
 
 // bom is the UTF-8 byte order mark every document starts with. Without it
 // Excel decodes the file as Windows-1252, and even an English calendar is not
@@ -192,7 +190,7 @@ func learningRange(p *download.Params) (time.Time, time.Time) {
 type row struct {
 	abs  int64
 	rank int
-	line string
+	line []string
 }
 
 // Render writes the whole CSV document: the byte order mark, the header row,
@@ -234,12 +232,13 @@ func Render(cal *Calendar) []byte {
 
 	var buf bytes.Buffer
 	buf.WriteString(bom)
-	buf.WriteString(Header)
-	buf.WriteString("\r\n")
+	w := csv.NewWriter(&buf)
+	w.UseCRLF = true
+	w.Write(Header)
 	for _, r := range rows {
-		buf.WriteString(r.line)
-		buf.WriteString("\r\n")
+		w.Write(r.line)
 	}
+	w.Flush()
 	return buf.Bytes()
 }
 
@@ -286,8 +285,8 @@ var category = map[string]string{
 	"zmanim":      "",
 }
 
-// eventToCSV renders one event as a CSV row, without the line ending.
-func eventToCSV(ev event.CalEvent, p *download.Params) string {
+// eventToCSV renders one event as the fields of a CSV row.
+func eventToCSV(ev event.CalEvent, p *download.Params) []string {
 	flags := ev.GetFlags()
 	timed, isTimed := download.AsTimedEvent(ev)
 	subj := renderSubject(ev, p.Locale, shouldRenderBrief(ev, flags, isTimed))
@@ -322,7 +321,7 @@ func eventToCSV(ev event.CalEvent, p *download.Params) string {
 // learningToCSV renders a daily-learning row fetched from readings-svc. Its
 // title is already the brief form, its category names the series (never one
 // the Location column maps), and its memo is the sidecar's.
-func learningToCSV(it *readings.Item, hd hdate.HDate, p *download.Params) string {
+func learningToCSV(it *readings.Item, hd hdate.HDate, p *download.Params) []string {
 	subj := it.Title
 	if subj == "" {
 		subj = it.Hebrew
@@ -338,7 +337,7 @@ func learningToCSV(it *readings.Item, hd hdate.HDate, p *download.Params) string
 // same minute on the same day; an all-day event leaves the time and end date
 // columns empty.
 func formatRow(hd hdate.HDate, subj, hebrew, timeStr string, timed bool, memo string,
-	showTimeAs int, loc string, p *download.Params) string {
+	showTimeAs int, loc string, p *download.Params) []string {
 	y, m, d := hd.Greg()
 	year := strconv.Itoa(y)
 	if len(year) < 4 {
@@ -346,38 +345,25 @@ func formatRow(hd hdate.HDate, subj, hebrew, timeStr string, timed bool, memo st
 	}
 	var date string
 	if p.Euro {
-		date = `"` + strconv.Itoa(d) + "/" + strconv.Itoa(int(m)) + "/" + year + `"`
+		date = strconv.Itoa(d) + "/" + strconv.Itoa(int(m)) + "/" + year
 	} else {
-		date = `"` + strconv.Itoa(int(m)) + "/" + strconv.Itoa(d) + "/" + year + `"`
+		date = strconv.Itoa(int(m)) + "/" + strconv.Itoa(d) + "/" + year
 	}
 
-	startTime, endDate, endTime, allDay := "", "", "", `"true"`
+	startTime, endDate, endTime, allDay := "", "", "", "true"
 	if timed {
-		startTime = `"` + timeStr + `"`
-		endTime = startTime
+		startTime = timeStr
+		endTime = timeStr
 		endDate = date
-		allDay = `"false"`
+		allDay = "false"
 	}
 
-	subj = strings.ReplaceAll(strings.ReplaceAll(subj, ",", ""), `"`, "''")
 	if hebrew != "" {
 		subj += " / " + hebrew
 	}
-	memo = strings.ReplaceAll(memo, ",", ";")
-	memo = strings.ReplaceAll(memo, `"`, "''")
 	memo = strings.ReplaceAll(memo, "\n", " / ")
 
-	var b strings.Builder
-	b.WriteString(`"` + subj + `",`)
-	b.WriteString(date + ",")
-	b.WriteString(startTime + ",")
-	b.WriteString(endDate + ",")
-	b.WriteString(endTime + ",")
-	b.WriteString(allDay + ",")
-	b.WriteString(`"` + memo + `",`)
-	b.WriteString(`"` + strconv.Itoa(showTimeAs) + `",`)
-	b.WriteString(`"` + loc + `"`)
-	return b.String()
+	return []string{subj, date, startTime, endDate, endTime, allDay, memo, strconv.Itoa(showTimeAs), loc}
 }
 
 // formatTime renders a clock time with a " PM" / " AM" suffix in a 12-hour
