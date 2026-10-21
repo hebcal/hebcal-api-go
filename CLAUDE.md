@@ -1394,6 +1394,7 @@ the 404-drops-Cache-Control is a **deliberate divergence**. `writeHolidayError`
 | `shabbat.go` `queryHour12` | `options.hour12 = !off(query.h12)` |
 | `shabbat.go` `writeShabbatBody` JSONP | `jsonpBody()` in `src/common.js` |
 | `zmanim.go` `checkMelacha` | `checkMelacha()` in `zmanim.js` |
+| `shorturl.go` (whole file) | `src/shortUrlRedir.js`; `utmSourceFromRef` ← `utmSourceFromRef()`/`isTrustedHostname()` (`src/common.js`); `orderedQuery` ← Koa's `querystring.parse` (repeated keys comma-joined) fed to `URLSearchParams`, whose insertion order and form encoding it reproduces; `yyyymmdd` ← `dayjs(hd.greg()).format('YYYYMMDD')` (proleptic); `numParshiot` ← `@hebcal/core`'s 54-entry `parshiot`. The GET/HEAD-only 405 is a **deliberate divergence**: hebcal-web redirects any method |
 
 ### `internal/service/converter/`
 

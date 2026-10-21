@@ -24,6 +24,7 @@ const (
 	CacheControl30Days = "public, max-age=2592000, s-maxage=2592000"
 	CacheControl14Days = "public, max-age=1209600, s-maxage=1209600"
 	CacheControl7Days  = "public, max-age=604800, s-maxage=604800"
+	CacheControl1Day   = "public, max-age=86400, s-maxage=86400"
 )
 
 // Content types used across the routes.
