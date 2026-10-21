@@ -11,6 +11,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+	dto "github.com/prometheus/client_model/go"
+
 	"github.com/hebcal/hebcal-api-go/internal/logger"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/reqlog"
@@ -332,4 +335,29 @@ func TestAccessLogRecordsUnsupportedSeries(t *testing.T) {
 	if m["unsupported"] != "dirshuAmudYomi" {
 		t.Errorf("unsupported = %v", m["unsupported"])
 	}
+}
+
+func TestRequestDurationRouteLabel(t *testing.T) {
+	mux := http.NewServeMux()
+	lg, err := logger.New(filepath.Join(t.TempDir(), "api.log"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	mw := &Middleware{Logger: lg}
+	mux.HandleFunc("/shabbat/", mw.Serve(func(w http.ResponseWriter, r *http.Request) {}))
+	before := histogramCount(t, "/shabbat")
+	req := httptest.NewRequest("GET", "/shabbat/?cfg=json", nil)
+	mux.ServeHTTP(httptest.NewRecorder(), req)
+	if got := histogramCount(t, "/shabbat") - before; got != 1 {
+		t.Errorf("observations for route /shabbat = %d, want 1", got)
+	}
+}
+
+func histogramCount(t *testing.T, route string) uint64 {
+	t.Helper()
+	var m dto.Metric
+	if err := httpRequestDuration.WithLabelValues(route).(prometheus.Metric).Write(&m); err != nil {
+		t.Fatal(err)
+	}
+	return m.GetHistogram().GetSampleCount()
 }

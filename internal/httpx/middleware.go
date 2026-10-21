@@ -26,6 +26,29 @@ var httpRequestsTotal = promauto.NewCounterVec(prometheus.CounterOpts{
 	Help: "Total number of HTTP requests",
 }, []string{"method", "status"})
 
+// httpRequestDuration records handler-to-last-byte time per route. The buckets
+// are dense below 200ms, where nearly every response lands, with a coarse tail
+// to 10s for the slow PDF renders. route is the registered mux pattern, never the URL, so
+// its cardinality is bounded by the routes in server.go.
+var httpRequestDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
+	Name:    "http_request_duration_seconds",
+	Help:    "HTTP request latency in seconds, by route",
+	Buckets: []float64{0.001, 0.0025, 0.005, 0.01, 0.02, 0.03, 0.05, 0.075, 0.1, 0.15, 0.2, 0.3, 0.5, 1, 2.5, 5, 10},
+}, []string{"route"})
+
+// routeLabel names the mux pattern that matched r, without a trailing slash so
+// "/shabbat" and "/shabbat/" count as one route. The catch-all "/" stays "/".
+func routeLabel(r *http.Request) string {
+	p := r.Pattern
+	if p == "" {
+		return "unknown"
+	}
+	if len(p) > 1 {
+		p = strings.TrimSuffix(p, "/")
+	}
+	return p
+}
+
 // bufWriter buffers the response so the middleware can compress it, set
 // Content-Length, and log the final status/size. It also carries the request's
 // reqlog.Collector, so an error helper handed this writer can record the error
@@ -223,6 +246,7 @@ func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 		}
 
 		httpRequestsTotal.WithLabelValues(r.Method, strconv.Itoa(bw.status)).Inc()
+		httpRequestDuration.WithLabelValues(routeLabel(r)).Observe(durMs / 1000)
 		m.logAccess(r, bw, uncompressedLen, start, calls)
 	}
 }
