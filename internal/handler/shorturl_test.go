@@ -27,6 +27,8 @@ func TestShortURL(t *testing.T) {
 		{"/s/5786/0", 400, "invalid short redirect parsha: 0"},
 		{"/s/5786/42", 404, "short redirect not found: 5786/42"},
 		{"/s/5785/42d", 302, "https://www.hebcal.com/sedrot/matot-masei-20250726?utm_medium=redir&utm_source=redir"},
+		{"/s/5787/51d?uc=pdf-palo-alto-5787", 302, "https://www.hebcal.com/sedrot/nitzavim-vayeilech-20270925?utm_campaign=pdf-palo-alto-5787&utm_medium=document&utm_source=pdf"},
+		{"/s/5787/52d", 400, "invalid short redirect double parsha: 52d"},
 		{"/s/1000/1", 410, "short redirect year out of range: 1000"},
 		{"/s/abc/1", 302, "https://www.hebcal.com/sedrot/abc/1?utm_medium=redir&utm_source=redir"},
 		{"/s/12", 400, "invalid short redirect parsha: 12"},
