@@ -246,7 +246,11 @@ func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 		}
 
 		httpRequestsTotal.WithLabelValues(r.Method, strconv.Itoa(bw.status)).Inc()
-		httpRequestDuration.WithLabelValues(routeLabel(r)).Observe(durMs / 1000)
+		// Health probes arrive every few seconds and answer in microseconds, which
+		// would drag every aggregate percentile toward zero.
+		if route := routeLabel(r); route != "/ping" {
+			httpRequestDuration.WithLabelValues(route).Observe(durMs / 1000)
+		}
 		m.logAccess(r, bw, uncompressedLen, start, calls)
 	}
 }

@@ -361,3 +361,18 @@ func histogramCount(t *testing.T, route string) uint64 {
 	}
 	return m.GetHistogram().GetSampleCount()
 }
+
+func TestRequestDurationSkipsPing(t *testing.T) {
+	mux := http.NewServeMux()
+	lg, err := logger.New(filepath.Join(t.TempDir(), "api.log"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	mw := &Middleware{Logger: lg}
+	mux.HandleFunc("/ping", mw.Serve(func(w http.ResponseWriter, r *http.Request) {}))
+	before := histogramCount(t, "/ping")
+	mux.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/ping", nil))
+	if got := histogramCount(t, "/ping") - before; got != 0 {
+		t.Errorf("observations for route /ping = %d, want 0", got)
+	}
+}
