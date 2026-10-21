@@ -24,6 +24,9 @@ Currently implemented:
 - **CSV calendars** — the `download.hebcal.com/v4/…csv` Outlook-compatible
   exports of the same calendars (ported from `@hebcal/rest-api`'s
   `eventToCsv()` and hebcal-web's `eventsWithParshaToCsv()`)
+- **Short URL redirects** (`/h/`, `/s/`, `/o/`) — www.hebcal.com's short
+  links to holiday, Torah portion and Omer pages, ported from hebcal-web's
+  `src/shortUrlRedir.js`
 - **MCP server** (`/mcp`) — a Model Context Protocol server with seven
   Hebrew-calendar tools, ported from the separate
   [hebcal-mcp](https://github.com/hebcal/hebcal-mcp) service.
@@ -315,6 +318,24 @@ default `fonts`) names a directory holding `Source_Sans_Pro/` and
 request; only the per-document embedded instances are rebuilt. A failure to
 load them is logged and disables the two PDF routes rather than stopping
 the server.
+
+### Short URL redirects
+
+- `GET /h/<slug>`, `/o/<path>` — `302` to `https://www.hebcal.com/holidays/<slug>`
+  or `/omer/<path>`, with the query string carried over.
+- `GET /s/<year>/<num>` — `302` to the Torah portion page for the Shabbat that
+  portion number (Bereshit = 1) is read in Hebrew year `<year>`, e.g.
+  `/s/5786/12` → `/sedrot/vayechi-20260103`. A year ending in `i` selects the
+  Israel schedule (and adds `i=on`); a number ending in `d` names a doubled
+  portion by its first half (`22d` → Vayakhel-Pekudei). An invalid number is
+  `400`, a portion not read on its own that year `404`, a year outside
+  3860–6759 `410`. A non-numeric `/s/<slug>` redirects to `/sedrot/<slug>`.
+
+All three expand the short tracking parameters: `uc` → `utm_campaign` (a
+`pdf-` campaign implies `utm_source=pdf&utm_medium=document`, an `ical-` one
+`js`/`icalendar`), `us` → `utm_source`, `um` → `utm_medium`. A missing source
+falls back to the referring site's hostname, then `redir`. Redirects are
+cacheable for a day; only `GET` and `HEAD` are accepted (`405` otherwise).
 
 ### MCP server
 

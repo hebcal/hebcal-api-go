@@ -106,6 +106,11 @@ func (s *Server) Routes() http.Handler {
 	// The Model Context Protocol server. Stateless streamable-HTTP: the SDK
 	// answers non-POST with 405 itself.
 	mux.HandleFunc("/mcp", mw.Serve(s.mcp))
+	// www.hebcal.com's short URLs, which the PDF, iCalendar and email links
+	// use: /h/ for holidays, /s/ for Torah portions, /o/ for the Omer.
+	mux.HandleFunc("/h/", mw.Serve(s.shortURL))
+	mux.HandleFunc("/s/", mw.Serve(s.shortURL))
+	mux.HandleFunc("/o/", mw.Serve(s.shortURL))
 	// The PDF and CSV calendars: download.hebcal.com's downloads and
 	// www.hebcal.com's /holidays/ holiday calendars, both routed here by
 	// Varnish. Nothing else under /holidays/ belongs to this service -- the
