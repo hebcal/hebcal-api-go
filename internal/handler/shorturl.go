@@ -58,7 +58,7 @@ func (s *Server) shortURL(w http.ResponseWriter, r *http.Request) {
 		destURL = u
 	}
 	if destURL == "" {
-		destURL = "https://www.hebcal.com/" + dest + "/" + base + "?" + qs.encode()
+		destURL = "https://www.hebcal.com/" + dest + "/" + base + "?" + qs.Encode()
 	}
 	w.Header().Set("Cache-Control", httpx.CacheControl1Day)
 	w.Header().Set("Location", destURL)
@@ -71,12 +71,12 @@ func (s *Server) shortURL(w http.ResponseWriter, r *http.Request) {
 // campaign becomes utm_campaign and, for a pdf- or ical- campaign, implies the
 // source and medium of that kind of link. Otherwise the source falls back to
 // the referring site, then to "redir", as the medium does.
-func shortURLQuery(r *http.Request) *orderedQuery {
-	qs := parseOrderedQuery(r.URL.RawQuery)
-	utmSource := firstNonEmpty(qs.get("utm_source"), qs.get("us"))
-	utmMedium := firstNonEmpty(qs.get("utm_medium"), qs.get("um"))
-	if qs.has("uc") {
-		campaign := qs.get("uc")
+func shortURLQuery(r *http.Request) url.Values {
+	qs := r.URL.Query()
+	utmSource := firstNonEmpty(qs.Get("utm_source"), qs.Get("us"))
+	utmMedium := firstNonEmpty(qs.Get("utm_medium"), qs.Get("um"))
+	if qs.Has("uc") {
+		campaign := qs.Get("uc")
 		if strings.HasPrefix(campaign, "pdf-") {
 			utmSource = firstNonEmpty(utmSource, "pdf")
 			utmMedium = firstNonEmpty(utmMedium, "document")
@@ -84,16 +84,16 @@ func shortURLQuery(r *http.Request) *orderedQuery {
 			utmSource = firstNonEmpty(utmSource, "js")
 			utmMedium = firstNonEmpty(utmMedium, "icalendar")
 		}
-		qs.set("utm_campaign", campaign)
-		qs.del("uc")
+		qs.Set("utm_campaign", campaign)
+		qs.Del("uc")
 	}
 	if utmSource == "" {
 		utmSource = utmSourceFromRef(r.Header.Get("Referer"))
 	}
-	qs.set("utm_source", firstNonEmpty(utmSource, "redir"))
-	qs.set("utm_medium", firstNonEmpty(utmMedium, "redir"))
-	qs.del("us")
-	qs.del("um")
+	qs.Set("utm_source", firstNonEmpty(utmSource, "redir"))
+	qs.Set("utm_medium", firstNonEmpty(utmMedium, "redir"))
+	qs.Del("us")
+	qs.Del("um")
 	return qs
 }
 
@@ -129,7 +129,7 @@ func utmSourceFromRef(ref string) string {
 // half. An empty base goes to the portion index. A base that does not start
 // with a digit is not a portion number, and yields "" so the caller redirects
 // it like any other short URL.
-func shortParshaURL(str string, qs *orderedQuery) (string, error) {
+func shortParshaURL(str string, qs url.Values) (string, error) {
 	if str == "" {
 		return sedrotBaseURL, nil
 	}
@@ -175,9 +175,9 @@ func shortParshaURL(str string, qs *orderedQuery) (string, error) {
 		name += "-" + parshiot[parshaID+1]
 	}
 	if il {
-		qs.set("i", "on")
+		qs.Set("i", "on")
 	}
-	return sedrotBaseURL + jsutil.MakeAnchor(name) + "-" + yyyymmdd(hd) + "?" + qs.encode(), nil
+	return sedrotBaseURL + jsutil.MakeAnchor(name) + "-" + yyyymmdd(hd) + "?" + qs.Encode(), nil
 }
 
 // isValidDouble reports whether the 0-based parsha index begins one of the
@@ -201,103 +201,4 @@ func isValidDouble(id int) bool {
 func yyyymmdd(hd hdate.HDate) string {
 	y, m, d := hd.ProlepticGreg()
 	return fmt.Sprintf("%04d%02d%02d", y, int(m), d)
-}
-
-// orderedQuery is a query string that keeps its parameters in the order they
-// arrived, so the long URL repeats them as the visitor sent them. A key given
-// more than once keeps its first position with its values comma-joined.
-type orderedQuery struct {
-	keys []string
-	vals map[string]string
-}
-
-func parseOrderedQuery(raw string) *orderedQuery {
-	q := &orderedQuery{vals: map[string]string{}}
-	for _, part := range strings.Split(raw, "&") {
-		if part == "" {
-			continue
-		}
-		k, v, _ := strings.Cut(part, "=")
-		k, v = unescapeQuery(k), unescapeQuery(v)
-		if prev, ok := q.vals[k]; ok {
-			q.vals[k] = prev + "," + v
-			continue
-		}
-		q.keys = append(q.keys, k)
-		q.vals[k] = v
-	}
-	return q
-}
-
-// unescapeQuery decodes a form-encoded component, leaving it as it was when
-// its percent-escapes are malformed.
-func unescapeQuery(s string) string {
-	if u, err := url.QueryUnescape(s); err == nil {
-		return u
-	}
-	return strings.ReplaceAll(s, "+", " ")
-}
-
-func (q *orderedQuery) has(k string) bool {
-	_, ok := q.vals[k]
-	return ok
-}
-
-func (q *orderedQuery) get(k string) string {
-	return q.vals[k]
-}
-
-// set replaces k's value in place, or appends k when it is absent.
-func (q *orderedQuery) set(k, v string) {
-	if !q.has(k) {
-		q.keys = append(q.keys, k)
-	}
-	q.vals[k] = v
-}
-
-func (q *orderedQuery) del(k string) {
-	if !q.has(k) {
-		return
-	}
-	delete(q.vals, k)
-	for i, key := range q.keys {
-		if key == k {
-			q.keys = append(q.keys[:i], q.keys[i+1:]...)
-			break
-		}
-	}
-}
-
-// encode serializes the query as application/x-www-form-urlencoded, which
-// leaves only ASCII alphanumerics and "*-._" unescaped and writes a space as
-// "+".
-func (q *orderedQuery) encode() string {
-	var sb strings.Builder
-	for i, k := range q.keys {
-		if i > 0 {
-			sb.WriteByte('&')
-		}
-		formEncode(&sb, k)
-		sb.WriteByte('=')
-		formEncode(&sb, q.vals[k])
-	}
-	return sb.String()
-}
-
-func formEncode(sb *strings.Builder, s string) {
-	const hex = "0123456789ABCDEF"
-	for i := 0; i < len(s); i++ {
-		c := s[i]
-		switch {
-		case c >= 'a' && c <= 'z', c >= 'A' && c <= 'Z', c >= '0' && c <= '9',
-			c == '*', c == '-', c == '.', c == '_':
-			sb.WriteByte(c)
-		case c == ' ':
-			sb.WriteByte('+')
-		default:
-			sb.WriteByte('%')
-			sb.WriteByte(hex[c>>4])
-			sb.WriteByte(hex[c&15])
-		}
-	}
 }

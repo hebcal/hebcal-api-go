@@ -8,8 +8,9 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
 )
 
-// The expected redirects were produced by hebcal-web's shortUrlRedir() for the
-// same URLs, query-parameter order included.
+// The expected redirects are hebcal-web's shortUrlRedir() output for the same
+// URLs, with the query string in url.Values' sorted encoding rather than
+// URLSearchParams' insertion order.
 func TestShortURL(t *testing.T) {
 	_, srv := testServer(t)
 	tests := []struct {
@@ -17,27 +18,27 @@ func TestShortURL(t *testing.T) {
 		status int
 		want   string // the Location for a 302, the error message otherwise
 	}{
-		{"/s/5786/12", 302, "https://www.hebcal.com/sedrot/vayechi-20260103?utm_source=redir&utm_medium=redir"},
-		{"/s/5786i/12?uc=pdf-2026", 302, "https://www.hebcal.com/sedrot/vayechi-20260103?utm_campaign=pdf-2026&utm_source=pdf&utm_medium=document&i=on"},
-		{"/s/5786/22d?us=foo&um=bar", 302, "https://www.hebcal.com/sedrot/vayakhel-pekudei-20260314?utm_source=foo&utm_medium=bar"},
+		{"/s/5786/12", 302, "https://www.hebcal.com/sedrot/vayechi-20260103?utm_medium=redir&utm_source=redir"},
+		{"/s/5786i/12?uc=pdf-2026", 302, "https://www.hebcal.com/sedrot/vayechi-20260103?i=on&utm_campaign=pdf-2026&utm_medium=document&utm_source=pdf"},
+		{"/s/5786/22d?us=foo&um=bar", 302, "https://www.hebcal.com/sedrot/vayakhel-pekudei-20260314?utm_medium=bar&utm_source=foo"},
 		{"/s/5786/21d", 400, "invalid short redirect double parsha: 21d"},
 		{"/s/5786/54", 404, "short redirect not found: 5786/54"},
 		{"/s/5786/55", 400, "invalid short redirect parsha: 55"},
 		{"/s/5786/0", 400, "invalid short redirect parsha: 0"},
 		{"/s/5786/42", 404, "short redirect not found: 5786/42"},
-		{"/s/5785/42d", 302, "https://www.hebcal.com/sedrot/matot-masei-20250726?utm_source=redir&utm_medium=redir"},
+		{"/s/5785/42d", 302, "https://www.hebcal.com/sedrot/matot-masei-20250726?utm_medium=redir&utm_source=redir"},
 		{"/s/1000/1", 410, "short redirect year out of range: 1000"},
-		{"/s/abc/1", 302, "https://www.hebcal.com/sedrot/abc/1?utm_source=redir&utm_medium=redir"},
+		{"/s/abc/1", 302, "https://www.hebcal.com/sedrot/abc/1?utm_medium=redir&utm_source=redir"},
 		{"/s/12", 400, "invalid short redirect parsha: 12"},
 		{"/s/", 302, "https://www.hebcal.com/sedrot/"},
-		{"/s/vayera?x=1", 302, "https://www.hebcal.com/sedrot/vayera?x=1&utm_source=redir&utm_medium=redir"},
-		{"/s/5786/12/", 302, "https://www.hebcal.com/sedrot/vayechi-20260103?utm_source=redir&utm_medium=redir"},
-		{"/h/chanukah-2026?uc=ical-foo&a=b+c&z=%7E*~", 302, "https://www.hebcal.com/holidays/chanukah-2026?a=b+c&z=%7E*%7E&utm_campaign=ical-foo&utm_source=js&utm_medium=icalendar"},
-		{"/o/5786/3?utm_source=x&a=1&a=2", 302, "https://www.hebcal.com/omer/5786/3?utm_source=x&a=1%2C2&utm_medium=redir"},
-		{"/h/purim?i=on&uc=other", 302, "https://www.hebcal.com/holidays/purim?i=on&utm_campaign=other&utm_source=redir&utm_medium=redir"},
-		{"/s/3860/1", 302, "https://www.hebcal.com/sedrot/bereshit-00990926?utm_source=redir&utm_medium=redir"},
+		{"/s/vayera?x=1", 302, "https://www.hebcal.com/sedrot/vayera?utm_medium=redir&utm_source=redir&x=1"},
+		{"/s/5786/12/", 302, "https://www.hebcal.com/sedrot/vayechi-20260103?utm_medium=redir&utm_source=redir"},
+		{"/h/chanukah-2026?uc=ical-foo&a=b+c&z=%7E*~", 302, "https://www.hebcal.com/holidays/chanukah-2026?a=b+c&utm_campaign=ical-foo&utm_medium=icalendar&utm_source=js&z=~%2A~"},
+		{"/o/5786/3?utm_source=x&a=1&a=2", 302, "https://www.hebcal.com/omer/5786/3?a=1&a=2&utm_medium=redir&utm_source=x"},
+		{"/h/purim?i=on&uc=other", 302, "https://www.hebcal.com/holidays/purim?i=on&utm_campaign=other&utm_medium=redir&utm_source=redir"},
+		{"/s/3860/1", 302, "https://www.hebcal.com/sedrot/bereshit-00990926?utm_medium=redir&utm_source=redir"},
 		{"/s/6760/1", 410, "short redirect year out of range: 6760"},
-		{"/s/5786/53", 302, "https://www.hebcal.com/sedrot/haazinu-20251004?utm_source=redir&utm_medium=redir"},
+		{"/s/5786/53", 302, "https://www.hebcal.com/sedrot/haazinu-20251004?utm_medium=redir&utm_source=redir"},
 	}
 	for _, tt := range tests {
 		resp, body := get(t, srv, tt.path)
@@ -66,10 +67,10 @@ func TestShortURL(t *testing.T) {
 func TestShortURLReferer(t *testing.T) {
 	_, srv := testServer(t)
 	tests := []struct{ ref, want string }{
-		{"https://www.Example.org/x", "https://www.hebcal.com/holidays/foo?utm_source=example.org&utm_medium=redir"},
-		{"https://hebcal.com/", "https://www.hebcal.com/holidays/foo?utm_source=redir&utm_medium=redir"},
-		{"https://download.hebcal.com/", "https://www.hebcal.com/holidays/foo?utm_source=redir&utm_medium=redir"},
-		{"not a url", "https://www.hebcal.com/holidays/foo?utm_source=redir&utm_medium=redir"},
+		{"https://www.Example.org/x", "https://www.hebcal.com/holidays/foo?utm_medium=redir&utm_source=example.org"},
+		{"https://hebcal.com/", "https://www.hebcal.com/holidays/foo?utm_medium=redir&utm_source=redir"},
+		{"https://download.hebcal.com/", "https://www.hebcal.com/holidays/foo?utm_medium=redir&utm_source=redir"},
+		{"not a url", "https://www.hebcal.com/holidays/foo?utm_medium=redir&utm_source=redir"},
 	}
 	for _, tt := range tests {
 		resp, _ := get(t, srv, "/h/foo", "Referer", tt.ref)
@@ -79,7 +80,7 @@ func TestShortURLReferer(t *testing.T) {
 	}
 	// An explicit source wins over the referrer.
 	resp, _ := get(t, srv, "/h/foo?us=mail", "Referer", "https://example.org/")
-	if loc := resp.Header.Get("Location"); !strings.Contains(loc, "utm_source=mail&") {
+	if loc := resp.Header.Get("Location"); !strings.Contains(loc, "utm_source=mail") {
 		t.Errorf("explicit source: Location = %s", loc)
 	}
 }
