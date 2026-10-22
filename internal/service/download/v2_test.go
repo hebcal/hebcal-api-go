@@ -187,7 +187,7 @@ func TestDecodeV2Sedrot(t *testing.T) {
 func TestDecodeV2DailyLearning(t *testing.T) {
 	msg := decodeV2(t, "v=1&F=on&myomi=on&dpy=on&nyomi=on&dty=on&dps=on&d929=on&"+
 		"dr1=on&dr3=on&dsm=on&yyomi=on&yys=on&dcc=on&dshl=on&ayd=on&dw=on&"+
-		"dpa=on&ahsy=on&dksa=on&ddh=on")
+		"dpa=on&ahsy=on&dksa=on&ddh=on&dtn=on")
 	for name, got := range map[string]bool{
 		"dafyomi": msg.GetDafyomi(), "mishnaYomi": msg.GetMishnaYomi(),
 		"perekYomi": msg.GetPerekYomi(), "nachYomi": msg.GetNachYomi(),
@@ -200,6 +200,7 @@ func TestDecodeV2DailyLearning(t *testing.T) {
 		"pirkeiAvotSummer": msg.GetPirkeiAvotSummer(), "arukhHaShulchanYomi": msg.GetArukhHaShulchanYomi(),
 		"kitzurShulchanAruch": msg.GetKitzurShulchanAruch(),
 		"dirshuDafHalacha":    msg.GetDirshuDafHalacha(),
+		"tanyaYomi":           msg.GetTanyaYomi(),
 	} {
 		if !got {
 			t.Errorf("%s was not set", name)

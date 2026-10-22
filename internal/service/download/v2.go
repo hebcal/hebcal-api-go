@@ -428,6 +428,7 @@ func applyV2DailyLearning(q v2Query, msg *downloadpb.Download) {
 		{"ahsy", func(m *downloadpb.Download) { m.ArukhHaShulchanYomi = true }},
 		{"dksa", func(m *downloadpb.Download) { m.KitzurShulchanAruch = true }},
 		{"ddh", func(m *downloadpb.Download) { m.DirshuDafHalacha = true }},
+		{"dtn", func(m *downloadpb.Download) { m.TanyaYomi = true }},
 		{"s", func(m *downloadpb.Download) { m.Sedrot = true }},
 	} {
 		if q.on(s.param) {

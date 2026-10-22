@@ -679,7 +679,7 @@ func applyDailyLearning(msg *downloadpb.Download, o *hebcal.CalOptions) {
 // explicitly selected, so their rows are fetched from the readings-svc sidecar
 // and merged instead (see fallback.go).
 //
-// These seven have no schedule in github.com/hebcal/learning. Keep this list and
+// These eight have no schedule in github.com/hebcal/learning. Keep this list and
 // learningSchedules together: anything the learning package gains should move
 // from here to there.
 func UnsupportedSeries(msg *downloadpb.Download) []string {
@@ -695,6 +695,7 @@ func UnsupportedSeries(msg *downloadpb.Download) []string {
 		{"kitzurShulchanAruch", msg.GetKitzurShulchanAruch()},
 		{"dirshuAmudYomi", msg.GetDirshuAmudYomi()},
 		{"dirshuDafHalacha", msg.GetDirshuDafHalacha()},
+		{"tanyaYomi", msg.GetTanyaYomi()},
 	} {
 		if s.on {
 			out = append(out, s.name)

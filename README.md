@@ -283,13 +283,14 @@ APIs are unaffected.
 
 #### Daily learning
 
-hebcal-web offers 20 daily-learning series. Thirteen of them — Daf Yomi,
+hebcal-web offers 21 daily-learning series. Thirteen of them — Daf Yomi,
 Mishna Yomi, Nach Yomi, the two Yerushalmi editions, Perek Yomi,
 Daf-a-Week, 929, Psalms, the two Rambam schedules, Tanakh Yomi and Pirkei
 Avot — are generated in-process by
-[hebcal/learning](https://github.com/hebcal/learning). The remaining six —
+[hebcal/learning](https://github.com/hebcal/learning). The remaining eight —
 Sefer HaMitzvot, Kitzur Shulchan Arukh, Arukh HaShulchan, Amud HaYomi
-(Dirshu), Chofetz Chaim and Shemirat HaLashon — are fetched from the
+(Dirshu), Daf HaHalacha (Dirshu), Chofetz Chaim, Shemirat HaLashon and
+Tanya Yomi — are fetched from the
 [readings-svc](https://github.com/hebcal/readings-svc) sidecar's
 `/learning` endpoint and merged into the calendar, so every series still
 renders. Each learning row links to its source on Sefaria (or

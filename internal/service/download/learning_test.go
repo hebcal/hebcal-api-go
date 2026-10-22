@@ -103,17 +103,18 @@ func TestLearningFieldsMapToTheRightSchedules(t *testing.T) {
 	}
 }
 
-// The six with no schedule in the learning package must still be reported, so
-// the handler hands those requests back to Node rather than rendering a
-// calendar missing rows.
+// The eight with no schedule in the learning package must still be reported, so
+// their rows are fetched from readings-svc rather than the calendar rendering
+// without them.
 func TestRemainingUnsupportedSeries(t *testing.T) {
 	msg := &pb.Download{
 		Year: 2026, ChofetzChaim: true, ShemiratHaLashon: true,
 		ArukhHaShulchanYomi: true, SeferHaMitzvot: true,
 		KitzurShulchanAruch: true, DirshuAmudYomi: true,
+		DirshuDafHalacha: true, TanyaYomi: true,
 	}
-	if got := UnsupportedSeries(msg); len(got) != 6 {
-		t.Errorf("UnsupportedSeries() = %v, want all six", got)
+	if got := UnsupportedSeries(msg); len(got) != 8 {
+		t.Errorf("UnsupportedSeries() = %v, want all eight", got)
 	}
 }
 
@@ -123,7 +124,7 @@ func TestEveryUnsupportedSeriesHasAQueryParameter(t *testing.T) {
 	msg := &pb.Download{
 		ChofetzChaim: true, ShemiratHaLashon: true, ArukhHaShulchanYomi: true,
 		SeferHaMitzvot: true, KitzurShulchanAruch: true, DirshuAmudYomi: true,
-		DirshuDafHalacha: true,
+		DirshuDafHalacha: true, TanyaYomi: true,
 	}
 	for _, s := range UnsupportedSeries(msg) {
 		if _, ok := fallbackSeries[s]; !ok {

@@ -70,6 +70,11 @@ func TestMessageToQuery(t *testing.T) {
 			"v=1&M=on&yt=G&year=2026&lg=s&h12=1&dsm=on&dcc=on&dshl=on&ayd=on&ahsy=on&mm=0",
 		},
 		{
+			"Dirshu Daf HaHalacha and Tanya Yomi",
+			"QAFg6g9qAXOoBAHgBAE",
+			"v=1&M=on&yt=G&year=2026&lg=s&ddh=on&dtn=on&mm=0",
+		},
+		{
 			"the remaining daily-learning series",
 			"QAFg6g_oAgHwAgH4AgGQAwGYAwGwAwG4AwHQAwHYAwGABAKgBAE",
 			"v=1&M=on&yt=G&year=2026&lg=s&dpy=on&nyomi=on&dty=on&dps=on&d929=on&" +
