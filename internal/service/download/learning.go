@@ -12,7 +12,7 @@ import (
 // github.com/hebcal/learning to the readings-svc /learning query code that
 // selects it.
 //
-// Seven series have no Go implementation. Rather than refuse those calendars,
+// Eight series have no Go implementation. Rather than refuse those calendars,
 // their rows are fetched from the readings-svc sidecar and merged into the
 // locally generated events. Keep this in step with unsupportedSeries in
 // params.go: a series gaining a Go schedule moves to learningSchedules and
@@ -25,6 +25,7 @@ var fallbackSeries = map[string]string{
 	"dirshuAmudYomi":      "ayd",
 	"dirshuDafHalacha":    "ddh",
 	"arukhHaShulchanYomi": "ahsy",
+	"tanyaYomi":           "dtn",
 }
 
 // LearningFetcher retrieves daily-learning rows this service cannot generate,

@@ -153,6 +153,8 @@ var learningQueryParams = []struct {
 	{"dpa", func(m *downloadpb.Download) bool { return m.GetPirkeiAvotSummer() }},
 	{"ahsy", func(m *downloadpb.Download) bool { return m.GetArukhHaShulchanYomi() }},
 	{"dksa", func(m *downloadpb.Download) bool { return m.GetKitzurShulchanAruch() }},
+	{"ddh", func(m *downloadpb.Download) bool { return m.GetDirshuDafHalacha() }},
+	{"dtn", func(m *downloadpb.Download) bool { return m.GetTanyaYomi() }},
 	{"s", func(m *downloadpb.Download) bool { return m.GetSedrot() }},
 }
 

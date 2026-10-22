@@ -624,7 +624,7 @@ packages and answers HTTP **over a unix domain socket**
 (`-readings-socket`, default `/run/hebcal/readings-svc.sock`):
 
 - `/leyning` — Torah readings, including triennial, for `/shabbat`;
-- `/learning` — the seven daily-learning series with no Go schedule, for the PDF
+- `/learning` — the eight daily-learning series with no Go schedule, for the PDF
   calendars.
 
 `internal/repository/readings` is the whole client: the socket transport, the
@@ -814,14 +814,19 @@ feeds; dropping it silently reduces the service to the four hard-wired series.
 away from a consumer that forgets it.)
 
 `learningSchedules` in `params.go` maps each protobuf field to a registry name.
-`unsupportedSeries` lists the seven with no schedule at all, and `fallback.go`
+`unsupportedSeries` lists the eight with no schedule at all, and `fallback.go`
 fetches those from readings-svc's `/learning` and merges them.
 `applyV2DailyLearning` in `v2.go` maps the legacy URLs' query codes onto the
 same protobuf fields, mirroring hebcal-web's `dailyLearningConfig.json`. Those
 four lists move together, and a fifth is in a different repository:
 `queryToDailyLearningName` in readings-svc's `learning.js`, which resolves the
-same query codes (`dcc`, `dshl`, `dsm`, `dksa`, `ayd`, `ddh`, `ahsy`) to
+same query codes (`dcc`, `dshl`, `dsm`, `dksa`, `ayd`, `ddh`, `ahsy`, `dtn`) to
 @hebcal/learning schedule names.
+
+**readings-svc silently ignores a query code it does not know**, so a series
+added here must be deployed there first. Tanya Yomi (`dtn`, protobuf field 76)
+needs a readings-svc on `@hebcal/learning` 6.13.0 or later; against an older
+sidecar a Tanya calendar renders without a single Tanya row and with no error.
 
 The fetch goes over the readings-svc unix domain socket (`-readings-socket`,
 default `/run/hebcal/readings-svc.sock`) -- see "The readings-svc sidecar"
@@ -1019,7 +1024,7 @@ and the within-day ordering below, which production picks up with the next
   not fatal: the two PDF routes answer 503 and the JSON APIs keep working.
 - **readings-svc has to be running**, on `/run/hebcal/readings-svc.sock`,
   before this service is deployed: without it `/shabbat` answers 503 and any
-  PDF naming one of the seven daily-learning series answers 503. Its systemd
+  PDF naming one of the eight daily-learning series answers 503. Its systemd
   unit is in that repository, and its `RuntimeDirectory=hebcal` is what
   creates the socket directory.
 - **Varnish is not configured** to route PDF URLs here, and the 503 path
@@ -1243,7 +1248,7 @@ more code is ported.
 | `holidayMask`, `majorHolidayMask` | `optsToMask` / `getMaskFromQuery()` in `src/calendar.js`; hebcal-web never sets `noHolidays` (`maj=off` becomes `noMajor`, which `@hebcal/core` ignores), so `NoHolidays` must not be derived from `major` |
 | `learningSchedules`, `dw`→`dafWeeklySunday` | `dailyLearningConfig.json` |
 | `fastTimeFields` / `setFastTimes` | `deserializeDownload.js`'s fast fields + `floatToString()` (`toPrecision(6)`), then `getFastTimeOpts()` |
-| `unsupportedSeries` | the seven series with no `github.com/hebcal/learning` schedule |
+| `unsupportedSeries` | the eight series with no `github.com/hebcal/learning` schedule |
 
 ### `internal/service/download/v2.go` — `downloadHref2()` (`src/makeDownloadProps.js`)
 
