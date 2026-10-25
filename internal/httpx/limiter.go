@@ -9,22 +9,22 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
-// pdfShedTotal counts PDF requests refused because the renderer was already at
-// its concurrency limit, so an operator can see load-shedding happening in
+// downloadShedTotal counts download requests (PDF and CSV) refused because the
+// service was already at its concurrency limit, so an operator can see load-shedding happening in
 // /metrics rather than inferring it from latency.
-var pdfShedTotal = promauto.NewCounter(prometheus.CounterOpts{
-	Name: "pdf_shed_total",
-	Help: "PDF requests rejected with 503 because the render concurrency limit was reached",
+var downloadShedTotal = promauto.NewCounter(prometheus.CounterOpts{
+	Name: "download_shed_total",
+	Help: "Download (PDF and CSV) requests rejected with 503 because the concurrency limit was reached",
 })
 
-// pdfRenderInflight is the number of PDF renders holding a slot right now. It is
-// the signal for tuning -pdf-max-concurrency: watch it against the cap, and
+// downloadInflight is the number of download requests holding a slot right now. It is
+// the signal for tuning -download-max-concurrency: watch it against the cap, and
 // against go_memstats_heap_inuse_bytes, to see how close a flood drives the pool
 // to its limit before it starts shedding. A gauge, not a log line -- per-request
 // heap cannot be attributed under concurrency, and ReadMemStats stops the world.
-var pdfRenderInflight = promauto.NewGauge(prometheus.GaugeOpts{
-	Name: "pdf_render_inflight",
-	Help: "PDF renders currently holding a concurrency slot",
+var downloadInflight = promauto.NewGauge(prometheus.GaugeOpts{
+	Name: "download_inflight",
+	Help: "Download requests (PDF and CSV) currently holding a concurrency slot",
 })
 
 // Limiter bounds how many wrapped handlers run at once and sheds the overflow
@@ -67,7 +67,7 @@ func (l *Limiter) Wrap(h http.HandlerFunc) http.HandlerFunc {
 		select {
 		case l.sem <- struct{}{}:
 			defer l.release()
-			pdfRenderInflight.Inc()
+			downloadInflight.Inc()
 			h(w, r)
 			return
 		default:
@@ -79,20 +79,20 @@ func (l *Limiter) Wrap(h http.HandlerFunc) http.HandlerFunc {
 		select {
 		case l.sem <- struct{}{}:
 			defer l.release()
-			pdfRenderInflight.Inc()
+			downloadInflight.Inc()
 			h(w, r)
 		case <-r.Context().Done():
-			pdfShedTotal.Inc()
+			downloadShedTotal.Inc()
 			err := errors.New("client closed request")
 			RecordError(w, err)
 			http.Error(w, err.Error(), 499)
 		case <-timer.C:
-			pdfShedTotal.Inc()
+			downloadShedTotal.Inc()
 			// A shed response must not be cached: it says "busy now", not
 			// "this calendar does not exist". http.Error sets no Cache-Control,
 			// and the handler that would have set the 14-day one never runs.
 			w.Header().Set("Retry-After", "5")
-			err := errors.New("PDF renderer is busy; please retry")
+			err := errors.New("server is busy; please retry")
 			RecordError(w, err)
 			http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		}
@@ -103,5 +103,5 @@ func (l *Limiter) Wrap(h http.HandlerFunc) http.HandlerFunc {
 // that follows each successful acquire.
 func (l *Limiter) release() {
 	<-l.sem
-	pdfRenderInflight.Dec()
+	downloadInflight.Dec()
 }

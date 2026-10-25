@@ -533,8 +533,8 @@ it shares everything up to the event list with the PDF through
 and `GenerateCalEvents` (the raw, category-filtered hebcal-go events that
 `pdf.Generate` flattens into cells). `handler.byExtension`, mounted on all three
 download URL shapes, sends `.csv` to `csvDownload` and everything else to
-`pdfDownload`; the CSV path skips the PDF
-limiter and needs no fonts.
+`pdfDownload`; both go through the one download concurrency limiter
+(`-download-max-concurrency`), and the CSV path needs no fonts.
 
 The bar is the same as for the PDFs -- the same bytes production serves -- and
 it was measured that way: a scratch harness ran hebcal-web's own

@@ -48,10 +48,10 @@ type Server struct {
 	PDF *pdf.Service
 	// CSV renders the Outlook CSV calendars served from the same /v4/ URLs.
 	CSV *csvsvc.Service
-	// PDFLimiter caps how many PDF calendars render at once, shedding the
+	// DownloadLimiter caps how many PDF and CSV downloads run at once, shedding the
 	// overflow with 503 so a flood cannot grow the heap into swap. Nil (the
 	// zero value) leaves the routes unlimited; main sets it from the config.
-	PDFLimiter *httpx.Limiter
+	DownloadLimiter *httpx.Limiter
 	// MCP serves the /mcp Model Context Protocol endpoint (www.hebcal.com/mcp).
 	// main sets it from internal/service/mcp; when nil the route answers 404.
 	MCP http.Handler
@@ -124,15 +124,17 @@ func (s *Server) Routes() http.Handler {
 	// calendars) and the .ics form of each shape are handled elsewhere and
 	// answered 404 here.
 	//
-	// The PDF routes share one renderer and one memory pool, so they share one
-	// concurrency limiter: the cap is on total simultaneous renders, not per
-	// route. Wrapped inside mw.Serve so a shed 503 is still logged and counted
-	// like any other response. A CSV is cheap enough to need no limiter.
-	download := mw.Serve(s.byExtension(s.PDFLimiter.Wrap(s.pdfDownload)))
+	// Every download route -- both formats, all three URL shapes, and the
+	// holiday PDFs -- shares one concurrency limiter: the cap is on total
+	// simultaneous work, not per route or per format. A CSV costs roughly half
+	// a PDF in CPU, so it holds a slot like any other request. Wrapped inside
+	// mw.Serve so a shed 503 is still logged and counted like any other
+	// response.
+	download := mw.Serve(s.DownloadLimiter.Wrap(s.byExtension(s.pdfDownload)))
 	mux.HandleFunc("/v2/", download)
 	mux.HandleFunc("/v4/", download)
 	mux.HandleFunc("/hebcal/index.cgi/", download)
-	mux.HandleFunc("/holidays/", mw.Serve(s.PDFLimiter.Wrap(s.pdfHoliday)))
+	mux.HandleFunc("/holidays/", mw.Serve(s.DownloadLimiter.Wrap(s.pdfHoliday)))
 	mux.HandleFunc("/", mw.Serve(s.notFound))
 	return s.withBackend(mux)
 }

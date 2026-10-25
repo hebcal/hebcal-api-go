@@ -29,7 +29,7 @@ var httpRequestsTotal = promauto.NewCounterVec(prometheus.CounterOpts{
 // httpRequestDuration records handler-to-last-byte time per route. The buckets
 // are dense below 200ms, where nearly every response lands: the JSON routes sit
 // under a millisecond, and a third of /v4 lands in 10-20ms. The tail to 10s
-// is mostly the PDF limiter: a request refused after its 5s queue wait is
+// is mostly the download limiter: a request refused after its 5s queue wait is
 // recorded just past 5s, so the 5-10s bucket is shed traffic, not slow renders. route is the
 // registered mux pattern, never the URL, so its cardinality is bounded by the
 // routes in server.go.

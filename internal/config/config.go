@@ -24,7 +24,7 @@ const (
 	// for replacement. A check is one stat(2); the file is rebuilt weekly and
 	// nothing needs the new rows within minutes.
 	DefaultGeonamesPoll = 10 * time.Minute
-	// DefaultPDFMaxConcurrency caps how many PDF calendars render at once. An
+	// DefaultDownloadMaxConcurrency caps how many PDF and CSV downloads run at once. An
 	// unbounded flood grows the heap past physical RAM and the box swaps, which
 	// is what turned 50ms requests into the 10-25s durations seen in production.
 	//
@@ -36,11 +36,11 @@ const (
 	// while draining a flood at ~320 renders/s. Raise it together with the
 	// GOMEMLIMIT / MemoryMax numbers on a larger box; the rule of thumb is to
 	// keep N * 30 MiB under about half of GOMEMLIMIT.
-	DefaultPDFMaxConcurrency = 8
-	// DefaultPDFQueueTimeout is how long a request waits for a free render slot
+	DefaultDownloadMaxConcurrency = 8
+	// DefaultDownloadQueueTimeout is how long a request waits for a free render slot
 	// before it is shed with 503. A render is ~50ms, so a short wait absorbs
 	// bursts without letting a flood pile up in memory.
-	DefaultPDFQueueTimeout = 5 * time.Second
+	DefaultDownloadQueueTimeout = 5 * time.Second
 )
 
 // Config is the resolved runtime configuration.
@@ -69,13 +69,13 @@ type Config struct {
 	// calendars are drawn with. Without it the PDF routes report 503 and the
 	// rest of the API is unaffected.
 	FontDir string
-	// PDFMaxConcurrency caps how many PDF calendars render simultaneously; the
+	// DownloadMaxConcurrency caps how many PDF and CSV downloads run simultaneously; the
 	// overflow is shed with 503 rather than queued into swap. Zero disables the
-	// cap. See DefaultPDFMaxConcurrency.
-	PDFMaxConcurrency int
-	// PDFQueueTimeout is how long a PDF request waits for a free render slot
+	// cap. See DefaultDownloadMaxConcurrency.
+	DownloadMaxConcurrency int
+	// DownloadQueueTimeout is how long a download request waits for a free render slot
 	// before it is shed with 503 + Retry-After.
-	PDFQueueTimeout time.Duration
+	DownloadQueueTimeout time.Duration
 }
 
 // Load parses flags (with environment-variable fallbacks) into a Config. It
@@ -107,11 +107,11 @@ func Load() *Config {
 			"/shabbat and the daily-learning series with no Go schedule)")
 	flag.StringVar(&cfg.FontDir, "fonts", envOr("FONT_DIR", DefaultFontDir),
 		"directory holding Source_Sans_Pro/ and Adobe_Hebrew/ (for the PDF calendars)")
-	flag.IntVar(&cfg.PDFMaxConcurrency, "pdf-max-concurrency",
-		envIntOr("PDF_MAX_CONCURRENCY", DefaultPDFMaxConcurrency),
-		"max PDF calendars rendered at once; the overflow is shed with 503 (0 disables the cap)")
-	flag.DurationVar(&cfg.PDFQueueTimeout, "pdf-queue-timeout", DefaultPDFQueueTimeout,
-		"how long a PDF request waits for a free render slot before it is shed with 503")
+	flag.IntVar(&cfg.DownloadMaxConcurrency, "download-max-concurrency",
+		envIntOr("DOWNLOAD_MAX_CONCURRENCY", DefaultDownloadMaxConcurrency),
+		"max PDF and CSV downloads served at once; the overflow is shed with 503 (0 disables the cap)")
+	flag.DurationVar(&cfg.DownloadQueueTimeout, "download-queue-timeout", DefaultDownloadQueueTimeout,
+		"how long a download request waits for a free render slot before it is shed with 503")
 	flag.Parse()
 	return cfg
 }

@@ -1,5 +1,5 @@
 [Unit]
-Description=Hebcal API server (REST APIs + PDF calendars)
+Description=Hebcal API server (REST APIs + PDF and CSV calendars)
 Documentation=https://github.com/hebcal/hebcal-api-go
 After=network.target
 
@@ -13,15 +13,15 @@ ExecStart=/usr/local/bin/hebcal-api \
   -zips-db /var/www/zips.sqlite3 \
   -geonames-db /var/www/geonames.sqlite3 \
   -fonts /var/www/fonts \
-  -pdf-max-concurrency 16
+  -download-max-concurrency 16
 # SIGUSR1 (or SIGHUP) reopens the access log after rotation and checks
 # geonames.sqlite3 for replacement (which -geonames-poll also does every 10m)
 ExecReload=/bin/kill -USR1 $MAINPID
 Restart=on-failure
 RestartSec=2
 
-# Memory ceiling, three nested backstops behind the -pdf-max-concurrency cap.
-# Each PDF render churns tens of MiB of transient heap, so a flood on a small
+# Memory ceiling, three nested backstops behind the -download-max-concurrency cap.
+# Each PDF render (and, less so, CSV) churns tens of MiB of transient heap, so a flood on a small
 # box used to grow the heap into swap and turn 50ms requests into 10-25s ones.
 # The concurrency cap bounds the working set; these defend the ceiling if it is
 # ever exceeded anyway. Sized for a ~1 GiB host -- raise all three together on a

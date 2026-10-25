@@ -133,14 +133,14 @@ func main() {
 		app.CSV.Learning = app.PDF.Learning
 	}
 
-	// Cap concurrent PDF renders so a flood cannot grow the heap into swap (each
+	// Cap concurrent PDF and CSV downloads so a flood cannot grow the heap into swap (each
 	// render churns tens of MiB). The overflow is shed with 503 + Retry-After
 	// after a bounded wait. A soft GOMEMLIMIT and a systemd MemoryMax (see
 	// etc/hebcal-api.service) are the ceiling behind this cap.
-	if cfg.PDFMaxConcurrency > 0 {
-		app.PDFLimiter = httpx.NewLimiter(cfg.PDFMaxConcurrency, cfg.PDFQueueTimeout)
-		lg.Info(fmt.Sprintf("PDF render concurrency capped at %d (queue timeout %s)",
-			cfg.PDFMaxConcurrency, cfg.PDFQueueTimeout))
+	if cfg.DownloadMaxConcurrency > 0 {
+		app.DownloadLimiter = httpx.NewLimiter(cfg.DownloadMaxConcurrency, cfg.DownloadQueueTimeout)
+		lg.Info(fmt.Sprintf("download concurrency capped at %d (queue timeout %s)",
+			cfg.DownloadMaxConcurrency, cfg.DownloadQueueTimeout))
 	}
 
 	srv := &http.Server{
