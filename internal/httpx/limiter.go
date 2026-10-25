@@ -14,7 +14,7 @@ import (
 // /metrics rather than inferring it from latency.
 var downloadShedTotal = promauto.NewCounter(prometheus.CounterOpts{
 	Name: "download_shed_total",
-	Help: "Download (PDF and CSV) requests rejected with 503 because the concurrency limit was reached",
+	Help: "Download (PDF and CSV) requests rejected with 429 because the concurrency limit was reached",
 })
 
 // downloadInflight is the number of download requests holding a slot right now. It is
@@ -28,7 +28,7 @@ var downloadInflight = promauto.NewGauge(prometheus.GaugeOpts{
 })
 
 // Limiter bounds how many wrapped handlers run at once and sheds the overflow
-// with 503 rather than letting it queue.
+// with 429 rather than letting it queue.
 //
 // The PDF calendars are the reason it exists. Each render is only ~50ms of CPU
 // but churns tens of MiB of transient heap, so on a small box an unbounded
@@ -39,8 +39,8 @@ var downloadInflight = promauto.NewGauge(prometheus.GaugeOpts{
 // speed instead of thrashing.
 //
 // A request that cannot get a slot waits up to Wait for one, then is refused
-// with 503 + Retry-After. Shedding beats queueing here: the client (Varnish)
-// can retry or fall back, and a request left waiting only ties up memory.
+// with 429 + Retry-After. Shedding beats queueing here: a request left waiting
+// only ties up memory, and the client is told when to come back.
 type Limiter struct {
 	sem  chan struct{}
 	wait time.Duration
@@ -91,10 +91,10 @@ func (l *Limiter) Wrap(h http.HandlerFunc) http.HandlerFunc {
 			// A shed response must not be cached: it says "busy now", not
 			// "this calendar does not exist". http.Error sets no Cache-Control,
 			// and the handler that would have set the 14-day one never runs.
-			w.Header().Set("Retry-After", "5")
+			w.Header().Set("Retry-After", "10")
 			err := errors.New("server is busy; please retry")
 			RecordError(w, err)
-			http.Error(w, err.Error(), http.StatusServiceUnavailable)
+			http.Error(w, err.Error(), http.StatusTooManyRequests)
 		}
 	}
 }

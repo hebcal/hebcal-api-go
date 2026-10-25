@@ -38,7 +38,7 @@ const (
 	// keep N * 30 MiB under about half of GOMEMLIMIT.
 	DefaultDownloadMaxConcurrency = 8
 	// DefaultDownloadQueueTimeout is how long a request waits for a free render slot
-	// before it is shed with 503. A render is ~50ms, so a short wait absorbs
+	// before it is shed with 429. A render is ~50ms, so a short wait absorbs
 	// bursts without letting a flood pile up in memory.
 	DefaultDownloadQueueTimeout = 5 * time.Second
 )
@@ -70,11 +70,11 @@ type Config struct {
 	// rest of the API is unaffected.
 	FontDir string
 	// DownloadMaxConcurrency caps how many PDF and CSV downloads run simultaneously; the
-	// overflow is shed with 503 rather than queued into swap. Zero disables the
+	// overflow is shed with 429 rather than queued into swap. Zero disables the
 	// cap. See DefaultDownloadMaxConcurrency.
 	DownloadMaxConcurrency int
 	// DownloadQueueTimeout is how long a download request waits for a free render slot
-	// before it is shed with 503 + Retry-After.
+	// before it is shed with 429 + Retry-After.
 	DownloadQueueTimeout time.Duration
 }
 
@@ -109,9 +109,9 @@ func Load() *Config {
 		"directory holding Source_Sans_Pro/ and Adobe_Hebrew/ (for the PDF calendars)")
 	flag.IntVar(&cfg.DownloadMaxConcurrency, "download-max-concurrency",
 		envIntOr("DOWNLOAD_MAX_CONCURRENCY", DefaultDownloadMaxConcurrency),
-		"max PDF and CSV downloads served at once; the overflow is shed with 503 (0 disables the cap)")
+		"max PDF and CSV downloads served at once; the overflow is shed with 429 (0 disables the cap)")
 	flag.DurationVar(&cfg.DownloadQueueTimeout, "download-queue-timeout", DefaultDownloadQueueTimeout,
-		"how long a download request waits for a free render slot before it is shed with 503")
+		"how long a download request waits for a free render slot before it is shed with 429")
 	flag.Parse()
 	return cfg
 }

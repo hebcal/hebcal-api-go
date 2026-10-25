@@ -24,7 +24,7 @@ func TestLimiterNilIsPassthrough(t *testing.T) {
 }
 
 // TestLimiterShedsWhenSaturated: with one slot held, the next request is shed
-// with 503 + Retry-After after the queue timeout rather than queued.
+// with 429 + Retry-After after the queue timeout rather than queued.
 func TestLimiterShedsWhenSaturated(t *testing.T) {
 	l := NewLimiter(1, 30*time.Millisecond)
 
@@ -54,11 +54,11 @@ func TestLimiterShedsWhenSaturated(t *testing.T) {
 	if shedHandlerRan {
 		t.Error("shed request should not have run the handler")
 	}
-	if rec.Code != http.StatusServiceUnavailable {
-		t.Errorf("shed status = %d, want 503", rec.Code)
+	if rec.Code != http.StatusTooManyRequests {
+		t.Errorf("shed status = %d, want 429", rec.Code)
 	}
 	if got := rec.Header().Get("Retry-After"); got == "" {
-		t.Error("shed 503 is missing Retry-After")
+		t.Error("shed 429 is missing Retry-After")
 	}
 	if waited < 30*time.Millisecond {
 		t.Errorf("shed after %v, expected to wait the full queue timeout", waited)

@@ -134,7 +134,7 @@ func main() {
 	}
 
 	// Cap concurrent PDF and CSV downloads so a flood cannot grow the heap into swap (each
-	// render churns tens of MiB). The overflow is shed with 503 + Retry-After
+	// render churns tens of MiB). The overflow is shed with 429 + Retry-After
 	// after a bounded wait. A soft GOMEMLIMIT and a systemd MemoryMax (see
 	// etc/hebcal-api.service) are the ceiling behind this cap.
 	if cfg.DownloadMaxConcurrency > 0 {
