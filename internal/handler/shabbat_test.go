@@ -192,7 +192,7 @@ func TestShabbatLocaleValidation(t *testing.T) {
 }
 
 // TestShabbatYearRange checks that a requested Gregorian year outside the
-// normal range (model.YearIsSupported: 100-2999) is a 400, rather
+// normal range (model.YearIsSupported: 1752-2499) is a 400, rather
 // than an empty week. The check applies to a requested date only; "today" is
 // always in range.
 func TestShabbatYearRange(t *testing.T) {
@@ -201,9 +201,9 @@ func TestShabbatYearRange(t *testing.T) {
 	bad := []string{
 		"&gd=15&gm=6&gy=-1",
 		"&gd=15&gm=6&gy=0",
-		"&gd=15&gm=6&gy=99",
-		"&dt=0099-06-15",
-		"&dt=3000-06-15",
+		"&gd=15&gm=6&gy=1751",
+		"&dt=1751-06-15",
+		"&dt=2500-06-15",
 	}
 	for _, q := range bad {
 		resp, body := get(t, srv, base+q)
@@ -211,7 +211,7 @@ func TestShabbatYearRange(t *testing.T) {
 			t.Errorf("%q: status = %d, want 400 (%s)", q, resp.StatusCode, body)
 		}
 	}
-	for _, q := range []string{"&gd=15&gm=6&gy=100", "&dt=2999-06-15"} {
+	for _, q := range []string{"&gd=15&gm=6&gy=1752", "&dt=2499-06-15"} {
 		resp, body := get(t, srv, base+q)
 		if resp.StatusCode != 200 {
 			t.Errorf("%q: status = %d, want 200 (%s)", q, resp.StatusCode, body)

@@ -3,14 +3,14 @@ module github.com/hebcal/hebcal-api-go
 go 1.26.0
 
 require (
-	github.com/andybalholm/brotli v1.2.6
+	github.com/andybalholm/brotli v1.2.7
 	github.com/dustin/go-humanize v1.1.0
 	github.com/go-text/typesetting v0.3.5
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/hebcal/gematriya v1.1.0
 	github.com/hebcal/greg v1.1.0
 	github.com/hebcal/hdate v1.4.0
-	github.com/hebcal/hebcal-go v0.26.0
+	github.com/hebcal/hebcal-go v0.26.1
 	github.com/hebcal/learning v0.6.0
 	github.com/hebcal/locales v1.1.3
 	github.com/klauspost/compress v1.20.3

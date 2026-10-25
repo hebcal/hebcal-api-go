@@ -309,6 +309,7 @@ func TestHolidayPDFErrors(t *testing.T) {
 		want int
 	}{
 		{"/holidays/hebcal-3000.pdf", http.StatusGone},
+		{"/holidays/hebcal-9999.pdf", http.StatusGone},
 		{"/holidays/hebcal-0.pdf", http.StatusBadRequest},
 		{"/holidays/hebcal-foo.pdf", http.StatusNotFound},
 		{"/holidays/2026", http.StatusNotFound}, // an HTML page, still served by Node

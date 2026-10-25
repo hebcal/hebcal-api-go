@@ -103,14 +103,13 @@ func HDateFromRD(rd int64) hdate.HDate {
 	return hdate.FromRD(rd)
 }
 
-// YearIsSupported reports whether a calendar is served for the given year: no
-// calendar before year 100 or after 2999 (Gregorian), or before 3860 or after
-// 6759 (Hebrew).
+// YearIsSupported reports whether a calendar is served for the given year:
+// Hebrew 5513-6260, or Gregorian 1752-2499, which is roughly the same span.
 func YearIsSupported(year int, hebrew bool) bool {
 	if hebrew {
-		return year >= 3860 && year <= 6759
+		return year >= 5513 && year <= 6260
 	}
-	return year >= 100 && year <= 2999
+	return year >= 1752 && year <= 2499
 }
 
 // NewHDateLenient rolls an out-of-range day over into the following month

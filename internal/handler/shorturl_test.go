@@ -38,8 +38,9 @@ func TestShortURL(t *testing.T) {
 		{"/h/chanukah-2026?uc=ical-foo&a=b+c&z=%7E*~", 302, "https://www.hebcal.com/holidays/chanukah-2026?a=b+c&utm_campaign=ical-foo&utm_medium=icalendar&utm_source=js&z=~%2A~"},
 		{"/o/5786/3?utm_source=x&a=1&a=2", 302, "https://www.hebcal.com/omer/5786/3?a=1&a=2&utm_medium=redir&utm_source=x"},
 		{"/h/purim?i=on&uc=other", 302, "https://www.hebcal.com/holidays/purim?i=on&utm_campaign=other&utm_medium=redir&utm_source=redir"},
-		{"/s/3860/1", 302, "https://www.hebcal.com/sedrot/bereshit-00990926?utm_medium=redir&utm_source=redir"},
-		{"/s/6760/1", 410, "short redirect year out of range: 6760"},
+		{"/s/5513/1", 302, "https://www.hebcal.com/sedrot/bereshit-17521007?utm_medium=redir&utm_source=redir"},
+		{"/s/6261/1", 410, "short redirect year out of range: 6261"},
+		{"/s/5512/1", 410, "short redirect year out of range: 5512"},
 		{"/s/5786/53", 302, "https://www.hebcal.com/sedrot/haazinu-20251004?utm_medium=redir&utm_source=redir"},
 	}
 	for _, tt := range tests {

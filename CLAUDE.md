@@ -945,7 +945,10 @@ test in `calendar_port_test.go`.
 - **Unknown location → 404, out-of-range year → 410** (`notFoundError`,
   `outOfRangeError`), matching getLocationFromQuery and hebcal-download.js
   rather than a blanket 400. The 410 range check also stops a far-future
-  request before it reaches the generator.
+  request before it reaches the generator. The range (`model.YearIsSupported`,
+  shared with `/shabbat` and the short-URL redirects) is Hebrew 5513-6260 /
+  Gregorian 1752-2499, and applies to both dates of a start/end range and to
+  the `/holidays/` calendars as well.
 - **Explicit `numYears` is capped at 10** (`maxNumYears`), as getNumYears does.
 - **Havdalah is suppressed when `M=off` and `m=0`** — the default for a download
   that did not set a Havdalah time. `deserializeDownload.js` writes `q.m =

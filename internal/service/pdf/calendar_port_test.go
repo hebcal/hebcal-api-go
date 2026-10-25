@@ -225,11 +225,17 @@ func TestYearRange(t *testing.T) {
 		wantErr bool
 	}{
 		{"year 9999 gone", &pb.Download{Year: 9999, Major: true}, true},
-		{"year 50 gone", &pb.Download{Year: 50, Major: true}, true},
-		{"year 2999 ok", &pb.Download{Year: 2999, Major: true}, false},
-		{"year 100 ok", &pb.Download{Year: 100, Major: true}, false},
-		{"hebrew 3859 gone", &pb.Download{Year: 3859, IsHebrewYear: true, Major: true}, true},
-		{"hebrew 5800 ok", &pb.Download{Year: 5800, IsHebrewYear: true, Major: true}, false},
+		{"year 2500 gone", &pb.Download{Year: 2500, Major: true}, true},
+		{"year 1751 gone", &pb.Download{Year: 1751, Major: true}, true},
+		{"year 2499 ok", &pb.Download{Year: 2499, Major: true}, false},
+		{"year 1752 ok", &pb.Download{Year: 1752, Major: true}, false},
+		{"hebrew 5512 gone", &pb.Download{Year: 5512, IsHebrewYear: true, Major: true}, true},
+		{"hebrew 6261 gone", &pb.Download{Year: 6261, IsHebrewYear: true, Major: true}, true},
+		{"hebrew 5513 ok", &pb.Download{Year: 5513, IsHebrewYear: true, Major: true}, false},
+		{"hebrew 6260 ok", &pb.Download{Year: 6260, IsHebrewYear: true, Major: true}, false},
+		{"range ending in 2500 gone", &pb.Download{StartOneof: &pb.Download_StartStr{StartStr: "2499-12-01"}, EndOneof: &pb.Download_EndStr{EndStr: "2500-01-31"}, Major: true}, true},
+		{"range starting in 1751 gone", &pb.Download{StartOneof: &pb.Download_StartStr{StartStr: "1751-12-01"}, EndOneof: &pb.Download_EndStr{EndStr: "1752-01-31"}, Major: true}, true},
+		{"range in 2499 ok", &pb.Download{StartOneof: &pb.Download_StartStr{StartStr: "2499-11-01"}, EndOneof: &pb.Download_EndStr{EndStr: "2499-12-31"}, Major: true}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -240,8 +240,9 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 	if err := applyDateRange(msg, p); err != nil {
 		return nil, err
 	}
-	// A single-year request outside the supported range is 410. A start/end
-	// range leaves Year zero and is not checked.
+	// A single-year request outside the supported range is 410, decided here
+	// so it never reaches the generator. A start/end range leaves Year zero;
+	// applyDateRange has already checked its two dates.
 	if o.Year != 0 && !model.YearIsSupported(o.Year, o.IsHebrewYear) {
 		return nil, &OutOfRangeError{Year: o.Year, IsHebrewYear: o.IsHebrewYear}
 	}
@@ -443,6 +444,11 @@ func applyDateRange(msg *downloadpb.Download, p *Params) error {
 		}
 		if end.Abs() < start.Abs() {
 			return errors.New("end date precedes start date")
+		}
+		for _, d := range []hdate.HDate{start, end} {
+			if y, _, _ := d.Greg(); !model.YearIsSupported(y, false) {
+				return &OutOfRangeError{Year: y}
+			}
 		}
 		o.Start, o.End = start, end
 		return nil
