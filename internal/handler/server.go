@@ -130,11 +130,14 @@ func (s *Server) Routes() http.Handler {
 	// a PDF in CPU, so it holds a slot like any other request. Wrapped inside
 	// mw.Serve so a shed 503 is still logged and counted like any other
 	// response.
-	download := mw.Serve(s.DownloadLimiter.Wrap(s.byExtension(s.pdfDownload)))
-	mux.HandleFunc("/v2/", download)
-	mux.HandleFunc("/v4/", download)
-	mux.HandleFunc("/hebcal/index.cgi/", download)
-	mux.HandleFunc("/holidays/", mw.Serve(s.DownloadLimiter.Wrap(s.pdfHoliday)))
+	limited := func(h http.HandlerFunc) http.HandlerFunc {
+		return mw.Serve(s.DownloadLimiter.Wrap(h))
+	}
+	calendar := limited(s.download)
+	mux.HandleFunc("/v2/", calendar)
+	mux.HandleFunc("/v4/", calendar)
+	mux.HandleFunc("/hebcal/index.cgi/", calendar)
+	mux.HandleFunc("/holidays/", limited(s.pdfHoliday))
 	mux.HandleFunc("/", mw.Serve(s.notFound))
 	return s.withBackend(mux)
 }

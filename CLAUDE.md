@@ -531,7 +531,7 @@ port of `@hebcal/rest-api`'s `src/csv.ts` (`eventToCsv()`) and of hebcal-web's
 it shares everything up to the event list with the PDF through
 `internal/service/download`: `Decode(ctx, u, ".csv")`, `ParamsFromMessage`,
 and `GenerateCalEvents` (the raw, category-filtered hebcal-go events that
-`pdf.Generate` flattens into cells). `handler.byExtension`, mounted on all three
+`pdf.Generate` flattens into cells). `handler.download`, mounted on all three
 download URL shapes, sends `.csv` to `csvDownload` and everything else to
 `pdfDownload`; both go through the one download concurrency limiter
 (`-download-max-concurrency`), and the CSV path needs no fonts.

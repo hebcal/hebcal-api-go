@@ -16,17 +16,15 @@ import (
 // accepted methods, the conditional request, and the status each service error
 // maps to. pdf.go and csv.go hold what differs.
 
-// byExtension sends a download request whose path ends in .csv to csvDownload
-// and everything else to pdf, the PDF handler. All three download URL shapes
-// -- /v4/, /v2/h/ and /hebcal/index.cgi/ -- serve both formats.
-func (s *Server) byExtension(pdf http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasSuffix(r.URL.Path, ".csv") {
-			s.csvDownload(w, r)
-			return
-		}
-		pdf(w, r)
+// download serves a calendar download: csvDownload when the path ends in .csv,
+// pdfDownload for everything else. All three download URL shapes -- /v4/,
+// /v2/h/ and /hebcal/index.cgi/ -- serve both formats.
+func (s *Server) download(w http.ResponseWriter, r *http.Request) {
+	if strings.HasSuffix(r.URL.Path, ".csv") {
+		s.csvDownload(w, r)
+		return
 	}
+	s.pdfDownload(w, r)
 }
 
 // downloadMethodAllowed rejects the methods a calendar has no answer for.
