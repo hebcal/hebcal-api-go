@@ -787,13 +787,21 @@ func TestCompression(t *testing.T) {
 	if resp2.Header.Get("Vary") != "" {
 		t.Errorf("Vary = %q", resp2.Header.Get("Vary"))
 	}
-	// no gzip without Accept-Encoding, but Vary still set for non-JSON
-	resp3, _ := get(t, srv, "/converter/csv?hd=20&hm=Tamuz&hy=5786&h2g=1")
-	if resp3.Header.Get("Content-Encoding") != "" {
-		t.Errorf("csv Content-Encoding = %q", resp3.Header.Get("Content-Encoding"))
+	// a small non-JSON response (a text/plain redirect) is likewise sent without Vary
+	resp3, _ := get(t, srv, "/s/5787/6?uc=x", "Accept-Encoding", "gzip")
+	if resp3.StatusCode != http.StatusFound {
+		t.Fatalf("redirect status = %d", resp3.StatusCode)
 	}
-	if !strings.Contains(resp3.Header.Get("Vary"), "Accept-Encoding") {
-		t.Error("csv missing Vary")
+	if resp3.Header.Get("Vary") != "" {
+		t.Errorf("redirect Vary = %q", resp3.Header.Get("Vary"))
+	}
+	// a large body keeps Vary even for a client that offers no encoding
+	resp4, _ := get(t, srv, "/converter?cfg=json&start=2025-01-01&end=2025-06-29")
+	if resp4.Header.Get("Content-Encoding") != "" {
+		t.Errorf("Content-Encoding = %q", resp4.Header.Get("Content-Encoding"))
+	}
+	if !strings.Contains(resp4.Header.Get("Vary"), "Accept-Encoding") {
+		t.Error("large uncompressed response missing Vary")
 	}
 }
 
