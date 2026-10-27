@@ -40,14 +40,7 @@ func MakeETag(r *http.Request, extra string) string {
 		h.Write([]byte{0})
 	}
 	// vary the tag by encoding class
-	enc := r.Header.Get("Accept-Encoding")
-	if strings.Contains(enc, "zstd") {
-		h.Write([]byte("zstd"))
-	} else if strings.Contains(enc, "br") {
-		h.Write([]byte("br"))
-	} else if strings.Contains(enc, "gzip") {
-		h.Write([]byte("gzip"))
-	}
+	h.Write([]byte(negotiateEncoding(r)))
 	sum := h.Sum(nil)
 	return `W/"` + base64.RawURLEncoding.EncodeToString(sum) + `"`
 }
