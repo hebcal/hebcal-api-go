@@ -1501,8 +1501,9 @@ JS object key order (zmanim `ALL_TIMES`, classic-API items, `/geo`). `query.go`
 (FNV-1a here; weak ETags need not match). `httpx.go` Cache-Control consts ←
 `cacheControl(days)`: 14 (`app-download.js`) and 60 (`holidayPdf.js`). `SetCORS`
 ← hebcal-web's cfg-param-present rule. `middleware.go` `brotliQuality` 6 ←
-`app-www.js`. The Vary rule (on any compressible response, stripped from
-uncompressed JSON) ← hebcal-web. `logAccess` ← `makeLogInfo()`; the `host`
+`app-www.js`. The Vary rule (only on a compressible body over `CompressThreshold`, the only
+size that ever varies by encoding) is a **deliberate divergence** from
+hebcal-web, which also sent it on small non-JSON responses such as redirects. `logAccess` ← `makeLogInfo()`; the `host`
 field is a deliberate addition for the dual vhost.
 
 ### `internal/logger/logger.go`

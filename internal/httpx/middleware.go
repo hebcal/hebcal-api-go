@@ -218,16 +218,17 @@ func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 		uncompressedLen := len(body)
 		contentType := bw.header.Get("Content-Type")
 		if compressibleType(contentType) && bw.header.Get("Content-Encoding") == "" {
-			compressed := false
 			enc := negotiateEncoding(r)
-			if uncompressedLen > CompressThreshold && enc != "" {
-				body = compress(enc, body)
-				bw.header.Set("Content-Encoding", enc)
-				compressed = true
-			}
-			// Vary appears on any compressible response, but is stripped from
-			// uncompressed JSON
-			if compressed || !strings.HasPrefix(contentType, "application/json") {
+			// Only a body over the threshold is ever compressed, so only it varies
+			// with Accept-Encoding. A smaller one is identical for every client and
+			// is sent without Vary so a shared cache keeps a single copy. The test is
+			// on size, not on this client's Accept-Encoding, so a large body sent
+			// plain to a client with no Accept-Encoding is still marked.
+			if uncompressedLen > CompressThreshold {
+				if enc != "" {
+					body = compress(enc, body)
+					bw.header.Set("Content-Encoding", enc)
+				}
 				bw.header.Set("Vary", "Accept-Encoding")
 			}
 		}
