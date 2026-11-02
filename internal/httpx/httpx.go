@@ -36,6 +36,10 @@ const (
 	ContentTypeJSONP = "text/javascript; charset=utf-8"
 )
 
+// PreflightMaxAge is the Access-Control-Max-Age of a preflight response, in
+// seconds. Chromium caps it at 7200.
+const PreflightMaxAge = "7200"
+
 // SetCORS marks a response world-readable, for API responses (cfg param
 // present).
 func SetCORS(w http.ResponseWriter) {
@@ -44,10 +48,13 @@ func SetCORS(w http.ResponseWriter) {
 }
 
 // CORSPreflight answers an OPTIONS request with a CORS preflight response
-// advertising the given allowed methods.
+// advertising the given allowed methods. OPTIONS responses are not cacheable
+// by HTTP caches, so Access-Control-Max-Age is what lets a browser reuse the
+// result (it would otherwise default to 5 seconds).
 func CORSPreflight(w http.ResponseWriter, methods string) {
 	SetCORS(w)
 	w.Header().Set("Access-Control-Allow-Methods", methods)
+	w.Header().Set("Access-Control-Max-Age", PreflightMaxAge)
 	w.WriteHeader(http.StatusNoContent)
 }
 

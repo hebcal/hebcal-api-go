@@ -355,6 +355,9 @@ func TestZmanimCORS(t *testing.T) {
 	if resp.StatusCode != 204 {
 		t.Errorf("OPTIONS status = %d, want 204", resp.StatusCode)
 	}
+	if got := resp.Header.Get("Access-Control-Max-Age"); got != "7200" {
+		t.Errorf("Access-Control-Max-Age = %q, want 7200", got)
+	}
 	if got := resp.Header.Get("Access-Control-Allow-Methods"); got != "GET" {
 		t.Errorf("Access-Control-Allow-Methods = %q, want GET", got)
 	}
