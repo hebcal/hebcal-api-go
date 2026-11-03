@@ -111,6 +111,13 @@ func Int(n int) []byte {
 	return []byte(strconv.Itoa(n))
 }
 
+// Millis encodes a duration as a JSON number of milliseconds, rounded to the
+// microsecond and written in its shortest form: 0.321, 12.5, 7 -- never 7.000.
+func Millis(d time.Duration) []byte {
+	ms := float64(d.Round(time.Microsecond).Microseconds()) / 1e3
+	return []byte(strconv.FormatFloat(ms, 'f', -1, 64))
+}
+
 // Info logs a startup/shutdown style message.
 func (lg *AccessLogger) Info(msg string) {
 	lg.Write(LevelInfo, []KV{{"msg", String(msg)}})

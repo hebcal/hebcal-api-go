@@ -275,7 +275,7 @@ func (m *Middleware) logAccess(r *http.Request, bw *bufWriter, length int, start
 		fields = append(fields, logger.KV{K: "length", V: logger.Int(length)})
 	}
 	fields = append(fields,
-		logger.KV{K: "duration", V: logger.Int(int(time.Since(start).Milliseconds()))},
+		logger.KV{K: "duration", V: logger.Millis(time.Since(start))},
 		logger.KV{K: "ip", V: logger.String(ClientIP(r))},
 		logger.KV{K: "method", V: logger.String(r.Method)},
 		logger.KV{K: "host", V: logger.String(r.Host)},
@@ -350,8 +350,8 @@ func encodePostBody(raw []byte) []byte {
 
 // encodeSubrequests renders the backend sub-requests as the log field value: a
 // single {status,url,duration,length} object for one call, a JSON array for
-// several, and nil (the field is omitted) for none. Duration is a float in
-// milliseconds, emitted in its shortest round-tripping form.
+// several, and nil (the field is omitted) for none. Duration is in
+// milliseconds to the microsecond, as for the request's own duration.
 func encodeSubrequests(calls []reqlog.Call) []byte {
 	if len(calls) == 0 {
 		return nil
@@ -369,9 +369,7 @@ func encodeSubrequests(calls []reqlog.Call) []byte {
 		b.WriteString(`,"url":`)
 		b.Write(logger.String(c.URL))
 		b.WriteString(`,"duration":`)
-		durMs := float64(c.Duration.Nanoseconds()) / 1e6
-		// -1 precision emits the shortest form that round-trips: 3.5, not 3.500.
-		b.WriteString(strconv.FormatFloat(durMs, 'f', -1, 64))
+		b.Write(logger.Millis(c.Duration))
 		b.WriteString(`,"length":`)
 		b.Write(logger.Int(c.Length))
 		b.WriteByte('}')
