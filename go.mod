@@ -3,7 +3,7 @@ module github.com/hebcal/hebcal-api-go
 go 1.26.0
 
 require (
-	github.com/andybalholm/brotli v1.2.7
+	github.com/andybalholm/brotli v1.2.8
 	github.com/dustin/go-humanize v1.1.0
 	github.com/go-text/typesetting v0.3.5
 	github.com/hashicorp/golang-lru/v2 v2.0.7
@@ -18,7 +18,7 @@ require (
 	github.com/modelcontextprotocol/go-sdk v1.8.0
 	github.com/prometheus/client_golang v1.25.0
 	github.com/prometheus/client_model v0.6.3
-	github.com/ringsaturn/tzf/v2 v2.1.3
+	github.com/ringsaturn/tzf/v2 v2.3.0
 	golang.org/x/image v0.47.0
 	golang.org/x/sync v0.24.0
 	golang.org/x/text v0.43.0
@@ -34,9 +34,10 @@ require (
 	github.com/google/jsonschema-go v0.4.3 // indirect
 	github.com/hebcal/noaa-go v1.0.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/prometheus/common v0.72.1 // indirect
-	github.com/prometheus/procfs v0.22.0 // indirect
-	github.com/ringsaturn/tzf-dist v0.0.2026-e // indirect
+	github.com/pandatix/go-abnf v0.5.5 // indirect
+	github.com/prometheus/common v0.73.1 // indirect
+	github.com/prometheus/procfs v0.23.0 // indirect
+	github.com/ringsaturn/tzf-dist v0.0.2026-f // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
 	github.com/segmentio/encoding v0.5.4 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
