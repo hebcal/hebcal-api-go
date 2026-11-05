@@ -41,6 +41,7 @@ func (e *UnsupportedSeriesError) Header() string { return strings.Join(e.Series,
 //	/v4/<base64-protobuf>/<name><ext>           the current form
 //	/v2/h/<base64-querystring>/<name><ext>      the legacy form (see v2.go)
 //	/hebcal/index.cgi/<name><ext>?<query>       the classic form (see cgi.go)
+//	/export/[<dir>/...]<name><ext>?<query>      its older /export/ spelling
 //
 // ext is the file extension the caller serves (".pdf" or ".csv"); a URL with
 // another extension, or of any other shape, is a *NotFoundError. From here on
@@ -64,12 +65,12 @@ func Decode(ctx context.Context, u *url.URL, ext string) (*downloadpb.Download, 
 // isOpaquePath reports whether a download URL hides its calendar options behind
 // a base64 payload, as the /v4/ protobuf and the /v2/h/ query string both do.
 func isOpaquePath(path string) bool {
-	return !strings.HasPrefix(path, cgiPrefix)
+	return !isCGIPath(path)
 }
 
 func decode(u *url.URL, ext string) (*downloadpb.Download, error) {
 	switch path := u.Path; {
-	case strings.HasPrefix(path, cgiPrefix):
+	case isCGIPath(path):
 		q, err := ParseCGIPath(path, u.RawQuery, ext)
 		if err != nil {
 			return nil, NotFoundf("%s", err.Error())
