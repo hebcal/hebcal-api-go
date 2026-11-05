@@ -22,20 +22,32 @@ import (
 // cgiPrefix is the classic CGI download path this service answers.
 const cgiPrefix = "/hebcal/index.cgi/"
 
-// ParseCGIPath decodes a /hebcal/index.cgi/<name><ext> request into the query
-// map that carries it: querystring normalization (normalizeCGIQuery) followed
-// by two legacy-parameter rewrites (applyCGILegacyParams).
+// exportPrefix is the older /export/ spelling of the same download. It takes
+// the query string identically, and may nest the file under further path
+// segments (/export/x.csv, /export/76/0db7b2.csv), which are only a cache-
+// busting name and carry no options.
+const exportPrefix = "/export/"
+
+// isCGIPath reports whether path is a classic query-string download, under
+// either prefix.
+func isCGIPath(path string) bool {
+	return strings.HasPrefix(path, cgiPrefix) || strings.HasPrefix(path, exportPrefix)
+}
+
+// ParseCGIPath decodes a /hebcal/index.cgi/<name><ext> or /export/.../<name><ext>
+// request into the query map that carries it: querystring normalization
+// (normalizeCGIQuery) followed by two legacy-parameter rewrites
+// (applyCGILegacyParams).
 //
 // Only the caller's extension is accepted; the .ics feeds and the yahrzeit
 // calendars this same path also serves are handled elsewhere, so anything else
 // is an error the handler maps to 404, as it does for the equivalent /v2/
 // shapes.
 func ParseCGIPath(path, rawQuery, ext string) (v2Query, error) {
-	if !strings.HasPrefix(path, cgiPrefix) {
-		return nil, fmt.Errorf("expected /hebcal/index.cgi/<name>%s, got %q", ext, path)
+	if !isCGIPath(path) {
+		return nil, fmt.Errorf("expected /hebcal/index.cgi/<name>%s or /export/<name>%s, got %q", ext, ext, path)
 	}
-	filename := path[len(cgiPrefix):]
-	if !strings.HasSuffix(filename, ext) {
+	if !strings.HasSuffix(path, ext) {
 		return nil, fmt.Errorf("not a %s request", ext)
 	}
 	// The error is ignored for the same reason ParseV2Path ignores it: a stray

@@ -137,6 +137,10 @@ func (s *Server) Routes() http.Handler {
 	mux.HandleFunc("/v2/", calendar)
 	mux.HandleFunc("/v4/", calendar)
 	mux.HandleFunc("/hebcal/index.cgi/", calendar)
+	// /export/x.csv and /export/<dir>/x.csv are the same classic query-string
+	// download under an older name; historical URLs nest the file in one or
+	// more directories.
+	mux.HandleFunc("/export/", calendar)
 	mux.HandleFunc("/holidays/", limited(s.pdfHoliday))
 	mux.HandleFunc("/", mw.Serve(s.notFound))
 	return s.withBackend(mux)

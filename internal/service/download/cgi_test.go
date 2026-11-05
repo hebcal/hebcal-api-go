@@ -153,3 +153,28 @@ func TestCGIPathErrors(t *testing.T) {
 		}
 	})
 }
+
+// /export/x.csv and /export/<dir>/x.csv are the classic download under an older
+// name, and decode exactly as /hebcal/index.cgi/ does.
+func TestExportPaths(t *testing.T) {
+	const qs = "v=1&year=2026&month=x&c=off&maj=on"
+	want, err := ParseCGIPath(cgiPrefix+"x.csv", qs, ".csv")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, p := range []string{"/export/x.csv", "/export/foo/x.csv", "/export/76/0db7b2440f4a.csv"} {
+		got, err := ParseCGIPath(p, qs, ".csv")
+		if err != nil {
+			t.Fatalf("ParseCGIPath(%q): %v", p, err)
+		}
+		if len(got) != len(want) {
+			t.Errorf("%s: %v, want %v", p, got, want)
+		}
+		if isOpaquePath(p) {
+			t.Errorf("%s should not be an opaque path", p)
+		}
+	}
+	if _, err := ParseCGIPath("/export/76/x.ics", qs, ".csv"); err == nil {
+		t.Error("a .ics export was accepted as .csv")
+	}
+}
