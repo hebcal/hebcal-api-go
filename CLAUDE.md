@@ -458,6 +458,14 @@ added later, so pinning the 404 in Varnish for two weeks is worse than a cache
 miss. `X-Content-Type-Options` comes free from Go's `http.Error` on the error
 paths but is set explicitly on the 200, which uses `w.Write`.
 
+**The shared error helpers strip caching headers.** `httpx.WritePlainError`
+and `httpx.WriteJSONError` delete `Cache-Control`, `Expires`, `Last-Modified`
+and `ETag` before writing, whatever the status, so an error found after a
+handler set the 200's headers (a PDF render failure, the `/shabbat` readings-svc
+503, a `/zmanim?im=1` 400) is never cached. The two errors that are *meant* to
+be cached -- the download 410 and `/complete`'s no-match 404 -- are written
+with `http.Error` / `writeNotFoundJSON` so they keep theirs; keep it that way.
+
 **CORS differs by format.** The PDF 200 sends `Access-Control-Allow-Origin: *`
 because www.hebcal.com's `print-iframe.ejs` loads the PDF cross-origin from
 download.hebcal.com. The `.csv` 200 sends none, matching production -- hebcal-web

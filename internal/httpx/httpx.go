@@ -79,9 +79,28 @@ func MethodNotAllowed(w http.ResponseWriter, method, allowed string) {
 	http.Error(w, err.Error(), http.StatusMethodNotAllowed)
 }
 
-// WritePlainError emits a plain-text error carrying the error's own status.
+// cachingHeaders are the freshness and validator headers a handler may have
+// set for the body it meant to send.
+var cachingHeaders = []string{"Cache-Control", "Expires", "Last-Modified", "ETag"}
+
+// clearCaching removes cachingHeaders. An error response describes this
+// attempt, not the resource, so it must not inherit a lifetime or validator a
+// handler set before something later failed (a PDF render error, a sidecar
+// that did not answer): Varnish would otherwise keep a transient failure for
+// as long as the calendar itself. A status that is meant to be cached (the
+// download 410, /complete's no-match 404) is written without these helpers.
+func clearCaching(w http.ResponseWriter) {
+	h := w.Header()
+	for _, k := range cachingHeaders {
+		h.Del(k)
+	}
+}
+
+// WritePlainError emits a plain-text error carrying the error's own status,
+// with no caching headers.
 func WritePlainError(w http.ResponseWriter, err error) {
 	RecordError(w, err)
+	clearCaching(w)
 	w.Header().Set("Content-Type", ContentTypeText)
 	w.WriteHeader(model.StatusOf(err))
 	fmt.Fprintln(w, err.Error())
@@ -95,9 +114,10 @@ func JSONErrorBody(message string) []byte {
 
 // WriteJSONError emits a JSON {"error": ...} body carrying the error's own
 // status. It is the error shape the /geo, /zmanim, /shabbat and /complete
-// routes share.
+// routes share. Like WritePlainError it drops any caching headers.
 func WriteJSONError(w http.ResponseWriter, err error) {
 	RecordError(w, err)
+	clearCaching(w)
 	w.Header().Set("Content-Type", ContentTypeJSON)
 	w.WriteHeader(model.StatusOf(err))
 	w.Write(JSONErrorBody(err.Error()))

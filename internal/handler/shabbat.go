@@ -135,11 +135,8 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 		leyningByDate, err = s.Readings.Leyning(r.Context(), start, end, il)
 		if err != nil {
 			s.Logger.Warn("leyning lookup failed: " + err.Error())
-			// the validators and freshness above describe the body we are
-			// no longer sending
-			for _, h := range []string{"Cache-Control", "Expires", "Last-Modified", "ETag"} {
-				w.Header().Del(h)
-			}
+			// WriteJSONError drops the validators and freshness set above,
+			// which describe the body we are no longer sending.
 			httpx.WriteJSONError(w, model.Unavailable("Torah reading service is not available"))
 			return
 		}
