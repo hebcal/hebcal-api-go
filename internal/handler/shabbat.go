@@ -76,8 +76,8 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 		httpx.WriteJSONError(w, model.BadRequest("Gregorian year %d out of range", dt.Year))
 		return
 	}
-	// One clock reading picks the week and computes its Expires; see
-	// ExpiresSaturdayNight for what two readings did at Saturday midnight.
+	// One clock reading picks the week; Expires is then derived from that
+	// week (see ExpiresAfterWeek).
 	now := time.Now()
 	start, end, err := shabbat.WeekRange(dt, isToday, loc.TimeZoneID, now)
 	if err != nil {
@@ -119,7 +119,8 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 	if !isToday {
 		w.Header().Set("Cache-Control", httpx.CacheControl7Days)
 	} else {
-		now, expires := shabbat.ExpiresSaturdayNight(loc.TimeZoneID, now)
+		// Expires follows the week in the body, not the clock.
+		expires := shabbat.ExpiresAfterWeek(loc.TimeZoneID, start)
 		w.Header().Set("Last-Modified", now.UTC().Format(http.TimeFormat))
 		w.Header().Set("Expires", expires.UTC().Format(http.TimeFormat))
 	}
