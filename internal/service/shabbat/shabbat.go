@@ -74,15 +74,17 @@ func QueryLang(q url.Values) string {
 }
 
 // WeekRange returns the [start, endOfWeek] Gregorian window for the Shabbat
-// listing. If isToday, "now" in the location tz is used.
-func WeekRange(dt model.GregDate, isToday bool, tzid string) (model.GregDate, model.GregDate, error) {
+// listing. If isToday, now (read in the location's timezone) picks the week.
+// The caller passes the same now to ExpiresSaturdayNight, so the window and
+// its Expires header can never straddle a Saturday-midnight rollover.
+func WeekRange(dt model.GregDate, isToday bool, tzid string, now time.Time) (model.GregDate, model.GregDate, error) {
 	loc, err := zmanim.LoadLocation(tzid)
 	if err != nil {
 		return model.GregDate{}, model.GregDate{}, model.BadRequest("Invalid time zone specified: %s", tzid)
 	}
 	var day time.Time
 	if isToday {
-		day = time.Now().In(loc)
+		day = now.In(loc)
 	} else {
 		day = time.Date(dt.Year, dt.Month, dt.Day, 12, 0, 0, 0, loc)
 	}

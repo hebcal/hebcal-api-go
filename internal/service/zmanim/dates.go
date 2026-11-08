@@ -46,19 +46,20 @@ func ParseMelachaDate(dateStr string, tz *time.Location) (time.Time, bool) {
 	return time.Time{}, false
 }
 
-// NowInTimezone returns today's calendar date in the given timezone.
-func NowInTimezone(tzid string) model.GregDate {
+// NowInTimezone returns now's calendar date in the given timezone.
+func NowInTimezone(tzid string, now time.Time) model.GregDate {
 	loc, err := zman.LoadLocation(tzid)
 	if err != nil {
 		loc = time.UTC
 	}
-	y, m, d := time.Now().In(loc).Date()
+	y, m, d := now.In(loc).Date()
 	return model.GregDate{Year: y, Month: m, Day: d}
 }
 
 // StartAndEnd resolves the start, end, and date query parameters to a date
-// or date range.
-func StartAndEnd(q url.Values, tzid string) (isRange bool, startD, endD model.GregDate, err error) {
+// or date range. With no date at all it is now's date in the location's
+// timezone; the caller passes the same now to ExpiresTomorrow.
+func StartAndEnd(q url.Values, tzid string, now time.Time) (isRange bool, startD, endD model.GregDate, err error) {
 	start := q.Get("start")
 	end := q.Get("end")
 	if start != "" && end == "" {
@@ -89,24 +90,26 @@ func StartAndEnd(q url.Values, tzid string) (isRange bool, startD, endD model.Gr
 	}
 	var single model.GregDate
 	if date == "" {
-		single = NowInTimezone(tzid)
+		single = NowInTimezone(tzid, now)
 	} else if single, err = model.IsoDateStringToDate(date); err != nil {
 		return false, model.GregDate{}, model.GregDate{}, err
 	}
 	return false, single, single, nil
 }
 
-// ExpiresTomorrow returns "now" and tomorrow's midnight in the location's
+// ExpiresTomorrow returns now and the following midnight in the location's
 // timezone. The handler stamps them onto Last-Modified and Expires: a request
 // without an explicit date describes today, so its answer stops being true
-// when the day rolls over there.
-func ExpiresTomorrow(tzid string) (now, expires time.Time) {
+// when the day rolls over there. now must be the instant StartAndEnd chose the
+// day from, or a request at midnight could pair yesterday's times with
+// tomorrow's Expires.
+func ExpiresTomorrow(tzid string, now time.Time) (time.Time, time.Time) {
 	loc, err := zman.LoadLocation(tzid)
 	if err != nil {
 		loc = time.UTC
 	}
-	now = time.Now().In(loc)
+	now = now.In(loc)
 	tomorrow := now.AddDate(0, 0, 1)
-	expires = time.Date(tomorrow.Year(), tomorrow.Month(), tomorrow.Day(), 0, 0, 0, 0, loc)
+	expires := time.Date(tomorrow.Year(), tomorrow.Month(), tomorrow.Day(), 0, 0, 0, 0, loc)
 	return now, expires
 }

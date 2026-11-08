@@ -58,7 +58,9 @@ func (s *Server) zmanim(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	isRange, startD, endD, err := zmanim.StartAndEnd(q, loc.TimeZoneID)
+	// One clock reading picks "today" and computes its Expires.
+	now := time.Now()
+	isRange, startD, endD, err := zmanim.StartAndEnd(q, loc.TimeZoneID, now)
 	if err != nil {
 		httpx.WriteJSONError(w, err)
 		return
@@ -74,7 +76,7 @@ func (s *Server) zmanim(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// A request without an explicit date describes today in the location's
 		// own timezone, so it stops being true when the day rolls over there.
-		now, expires := zmanim.ExpiresTomorrow(loc.TimeZoneID)
+		now, expires := zmanim.ExpiresTomorrow(loc.TimeZoneID, now)
 		w.Header().Set("Last-Modified", now.UTC().Format(http.TimeFormat))
 		w.Header().Set("Expires", expires.UTC().Format(http.TimeFormat))
 	}

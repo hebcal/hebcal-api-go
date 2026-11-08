@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/hebcal/hebcal-go/hebcal"
 
@@ -75,7 +76,10 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 		httpx.WriteJSONError(w, model.BadRequest("Gregorian year %d out of range", dt.Year))
 		return
 	}
-	start, end, err := shabbat.WeekRange(dt, isToday, loc.TimeZoneID)
+	// One clock reading picks the week and computes its Expires; see
+	// ExpiresSaturdayNight for what two readings did at Saturday midnight.
+	now := time.Now()
+	start, end, err := shabbat.WeekRange(dt, isToday, loc.TimeZoneID, now)
 	if err != nil {
 		httpx.WriteJSONError(w, err)
 		return
@@ -115,11 +119,20 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 	if !isToday {
 		w.Header().Set("Cache-Control", httpx.CacheControl7Days)
 	} else {
-		now, expires := shabbat.ExpiresSaturdayNight(loc.TimeZoneID)
+		now, expires := shabbat.ExpiresSaturdayNight(loc.TimeZoneID, now)
 		w.Header().Set("Last-Modified", now.UTC().Format(http.TimeFormat))
 		w.Header().Set("Expires", expires.UTC().Format(http.TimeFormat))
 	}
-	etag := httpx.MakeETag(r, "")
+	// The URL alone does not identify a dateless response: the same URL means
+	// a different week after Saturday midnight. Without the week in the tag, a
+	// cache revalidating last week's copy with If-None-Match got a 304 and kept
+	// serving the old Shabbat indefinitely (Varnish revalidates objects in its
+	// keep window exactly this way).
+	etagExtra := ""
+	if isToday {
+		etagExtra = "week=" + start.String()
+	}
+	etag := httpx.MakeETag(r, etagExtra)
 	w.Header().Set("ETag", etag)
 	if httpx.CheckFresh(r, etag) {
 		w.WriteHeader(http.StatusNotModified)
