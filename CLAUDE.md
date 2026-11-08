@@ -466,6 +466,18 @@ handler set the 200's headers (a PDF render failure, the `/shabbat` readings-svc
 be cached -- the download 410 and `/complete`'s no-match 404 -- are written
 with `http.Error` / `writeNotFoundJSON` so they keep theirs; keep it that way.
 
+**A dateless `/shabbat` or `/zmanim` answer is keyed by the clock, not the
+URL.** Read `time.Now()` once per request and pass it to both the date choice
+(`WeekRange` / `StartAndEnd`) and the expiry (`ExpiresSaturdayNight` /
+`ExpiresTomorrow`). Two readings once straddled Saturday midnight in
+Jerusalem (November 2026): the week came out as last Shabbat's and the Expires
+as next Sunday's, and since a popular URL's Varnish object expires -- and is
+refetched -- at exactly that instant, the app hitting
+`/shabbat?cfg=json&geonameid=281184` got Chayei Sara for the whole of
+Toldot's week. For the same reason the dateless `/shabbat` ETag mixes in the
+week's start date: with a URL-only tag, Varnish revalidating last week's copy
+(`beresp.keep` + `If-None-Match`) got a 304 and kept it indefinitely.
+
 **CORS differs by format.** The PDF 200 sends `Access-Control-Allow-Origin: *`
 because www.hebcal.com's `print-iframe.ejs` loads the PDF cross-origin from
 download.hebcal.com. The `.csv` 200 sends none, matching production -- hebcal-web
