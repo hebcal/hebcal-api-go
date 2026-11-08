@@ -467,9 +467,11 @@ be cached -- the download 410 and `/complete`'s no-match 404 -- are written
 with `http.Error` / `writeNotFoundJSON` so they keep theirs; keep it that way.
 
 **A dateless `/shabbat` or `/zmanim` answer is keyed by the clock, not the
-URL.** Read `time.Now()` once per request and pass it to both the date choice
-(`WeekRange` / `StartAndEnd`) and the expiry (`ExpiresSaturdayNight` /
-`ExpiresTomorrow`). Two readings once straddled Saturday midnight in
+URL.** Read `time.Now()` once per request for the date choice (`WeekRange` /
+`StartAndEnd`), and derive the expiry from the result: `/shabbat`'s
+`ExpiresAfterWeek` takes the window's start date, not the clock, so the
+header cannot describe a different week from the body (`/zmanim`'s
+`ExpiresTomorrow` takes the same `now`). Two readings once straddled Saturday midnight in
 Jerusalem (November 2026): the week came out as last Shabbat's and the Expires
 as next Sunday's, and since a popular URL's Varnish object expires -- and is
 refetched -- at exactly that instant, the app hitting
@@ -1473,7 +1475,7 @@ this is an addition rather than a parity target. `ceilMinute` /
 | `stripMevarchimPrefix` | `MevarchimChodeshEvent.renderBrief` |
 | `itemLeyning` | the inverse of the `getLeyningForHoliday()` lookup |
 | `normMonth` | `hdate` `Tammuz` vs `@hebcal/core` `Tamuz`; keeps `Tzom Tammuz` |
-| `dates.go` `ExpiresSaturdayNight` | `expiresSaturdayNight` |
+| `dates.go` `ExpiresAfterWeek` | `expiresSaturdayNight`, derived from the window rather than the clock |
 
 ### `internal/service/mcp/` — `@hebcal/mcp` (`../hebcal-mcp`)
 
