@@ -8,10 +8,10 @@ its notes have moved into `CLAUDE.md`.
 
 | Phase | Feeds | State |
 |---|---|---|
-| 1 | Yahrzeit feeds that carry their calendar in the URL: `/v2/y/`, `/yahrzeit/yahrzeit.cgi/`, `/export/…?v=yahrzeit` | **done** (November 2026) |
+| 1 | Yahrzeit feeds that carry their calendar in the URL: `/v2/y/`, `/yahrzeit/yahrzeit.cgi/`, `/export/…?v=yahrzeit` | **done** (November 2026), `.csv` included |
 | 2 | Saved Yahrzeit calendars: `/v3/<ulid>/<name>.ics` (MySQL) | planned below |
 | 3 | Holiday feeds: `/v4/`, `/v2/h/`, `/hebcal/index.cgi/`, `/export/…?v=1` | planned below |
-| 4 | Left on Node until someone decides otherwise: `/zmanim` and `/sunrs` feeds, the static `/ical/*.ics` files, Yahrzeit `.csv` | notes at the end |
+| 4 | Left on Node until someone decides otherwise: `/zmanim` and `/sunrs` feeds, the static `/ical/*.ics` files | notes at the end |
 
 ## What phase 1 left you
 
@@ -176,8 +176,9 @@ owner's email and must never reach the output or the log.
    configured -- Varnish then serves the stale object (`beresp.grace = 24h`),
    which is what a subscriber should get during an outage.
 8. **The `.csv`.** hebcal-web's test suite covers `/v3/…/x.csv?yrem=0`.
-   Either port Yahrzeit CSV (see the last section) or keep `/v3/**.csv` on
-   Node in the VCL. Recommended: keep it on Node; route only `.ics`.
+   `Calendar.CSV` already renders the legacy URLs' `.csv` (CLAUDE.md, "The
+   Yahrzeit `.csv`"), so `/v3/**.csv` needs only the same dispatch once the
+   query comes from the database; route it with the `.ics`.
 9. **Tests.** Replicate `describe('v3 yahrzeit subscription downloads')` and
    `describe('yahrzeit anniversary numbers (an)')` from
    `../hebcal-web/test/download.test.js` against a fake repository (an
@@ -396,13 +397,9 @@ changed UID is not.
 
 ## Phase 4 and loose ends
 
-- **Yahrzeit `.csv`** (`/v2/y/…csv`, `/v3/…csv`, `/export/…csv?v=yahrzeit`):
-  hebcal-web serves it with `eventsToCsv()` -- every field quoted, commas
-  deleted from the subject and turned into `;` in the description, and the
-  memo's `\n` left as a literal backslash-n. The CSV service here writes with
-  `encoding/csv` and deliberately quotes only when needed. Decide which
-  format a Yahrzeit CSV should have before porting; until then Varnish keeps
-  these on Node, and this service answers them 404.
+- **Yahrzeit `.csv`**: done for the legacy URLs (November 2026), written in
+  the holiday CSV service's format rather than `eventsToCsv()`'s -- see
+  CLAUDE.md, "The Yahrzeit `.csv`". `/v3/…csv` follows with phase 2.
 - **`/zmanim` and `/sunrs` feeds** (`zmanimDownload.js`): a different event
   source and their own caching. Not planned.
 - **`/ical/*.ics`**: static files written weekly by `makeStaticCalendars.js`

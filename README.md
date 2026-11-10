@@ -296,6 +296,11 @@ the URL and need no database:
 The query string may separate its parameters with `&` or `;`, and may be
 percent-encoded a second time; all are served in place with a `200`.
 
+Each of those URLs also serves a one-time **`.csv`** export with the same
+filename ending in `.csv` instead of `.ics`: every observance in the range, no
+reminder events, in the same Outlook-compatible format as the holiday CSV
+calendars (`euro` for day/month/year dates).
+
 Each numbered entry is `n1` (name), `t1` (Yahrzeit, Birthday, Anniversary or
 Other), `y1`/`m1`/`d1` (Gregorian date) and `s1=on` (after sunset). Calendar
 options: `years` (2-50, default 20), `hebdate=on` (Hebrew date in the title),
@@ -309,8 +314,8 @@ here. Feeds sent to Google Calendar's importer pin the reminder events to a
 time zone and embed its `VTIMEZONE`, read from the vzic-generated files under
 `-zoneinfo` (default `/var/www/zoneinfo`).
 
-Not served yet: the saved calendars under `/v3/` (which need MySQL), the
-`.csv` form of a Yahrzeit calendar, and the holiday `.ics` feeds. The plan for
+Not served yet: the saved calendars under `/v3/` (which need MySQL) and the
+holiday `.ics` feeds. The plan for
 those is in [iCalendar-port.md](iCalendar-port.md).
 
 #### Daily learning
@@ -606,9 +611,9 @@ its access log to `/var/log/hebcal/api.log` (same directory hebcal-web
 uses), rotated daily; logrotate signals the service with `SIGUSR1` to
 reopen the file after rotation.
 
-Varnish decides which URLs reach this service. The Yahrzeit `.ics` feeds
-(`/v2/y/**.ics`, and `/yahrzeit/yahrzeit.cgi/*.ics` and `/export/**.ics` when
-the query says `v=yahrzeit`) are routed here by hebcal-devops'
+Varnish decides which URLs reach this service. The Yahrzeit feeds and their
+`.csv` exports (`/v2/y/**.ics|csv`, and `/yahrzeit/yahrzeit.cgi/*.ics|csv` and
+`/export/**.ics|csv` when the query says `v=yahrzeit`) are routed here by hebcal-devops'
 `etc/varnish/download.vcl`; `/v3/` and every holiday `.ics` stay with Node. `download.hebcal.com/v4/**.csv`
 (and its legacy `/v2/h/**.csv` and `/hebcal/index.cgi/*.csv` spellings)
 can be routed here too; until it is, hebcal-web keeps serving it. Alongside

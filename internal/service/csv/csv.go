@@ -230,16 +230,44 @@ func Render(cal *Calendar) []byte {
 		return rows[i].rank < rows[j].rank
 	})
 
+	lines := make([][]string, len(rows))
+	for i, r := range rows {
+		lines[i] = r.line
+	}
+	return Document(lines)
+}
+
+// Document writes a whole CSV document from its rows: the byte order mark,
+// the header row, then each row, every line ending in CRLF. A field is quoted
+// only when it needs to be.
+func Document(rows [][]string) []byte {
 	var buf bytes.Buffer
 	buf.WriteString(bom)
 	w := csv.NewWriter(&buf)
 	w.UseCRLF = true
 	w.Write(Header)
-	for _, r := range rows {
-		w.Write(r.line)
-	}
-	w.Flush()
+	w.WriteAll(rows)
 	return buf.Bytes()
+}
+
+// FormatDate writes a date the way the Start Date and End Date columns want
+// it: month/day/year ("3/5/2027"), or day/month/year when euro is set, with
+// the year padded to four digits.
+func FormatDate(y int, m time.Month, d int, euro bool) string {
+	year := strconv.Itoa(y)
+	if len(year) < 4 {
+		year = strings.Repeat("0", 4-len(year)) + year
+	}
+	if euro {
+		return strconv.Itoa(d) + "/" + strconv.Itoa(int(m)) + "/" + year
+	}
+	return strconv.Itoa(int(m)) + "/" + strconv.Itoa(d) + "/" + year
+}
+
+// FlattenNewlines turns each newline in a description into " / ", which a
+// CSV writer would otherwise have to quote across lines.
+func FlattenNewlines(s string) string {
+	return strings.ReplaceAll(s, "\n", " / ")
 }
 
 // addGregorianDates adds a Gregorian-date row on every day from the first row
@@ -339,16 +367,7 @@ func learningToCSV(it *readings.Item, hd hdate.HDate, p *download.Params) []stri
 func formatRow(hd hdate.HDate, subj, hebrew, timeStr string, timed bool, memo string,
 	showTimeAs int, loc string, p *download.Params) []string {
 	y, m, d := hd.Greg()
-	year := strconv.Itoa(y)
-	if len(year) < 4 {
-		year = strings.Repeat("0", 4-len(year)) + year
-	}
-	var date string
-	if p.Euro {
-		date = strconv.Itoa(d) + "/" + strconv.Itoa(int(m)) + "/" + year
-	} else {
-		date = strconv.Itoa(int(m)) + "/" + strconv.Itoa(d) + "/" + year
-	}
+	date := FormatDate(y, m, d, p.Euro)
 
 	startTime, endDate, endTime, allDay := "", "", "", "true"
 	if timed {
@@ -361,7 +380,7 @@ func formatRow(hd hdate.HDate, subj, hebrew, timeStr string, timed bool, memo st
 	if hebrew != "" {
 		subj += " / " + hebrew
 	}
-	memo = strings.ReplaceAll(memo, "\n", " / ")
+	memo = FlattenNewlines(memo)
 
 	return []string{subj, date, startTime, endDate, endTime, allDay, memo, strconv.Itoa(showTimeAs), loc}
 }

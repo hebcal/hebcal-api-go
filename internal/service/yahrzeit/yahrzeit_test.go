@@ -313,3 +313,76 @@ func TestTextCannotInjectLines(t *testing.T) {
 		t.Errorf("line breaks should be escaped:\n%s", out[:600])
 	}
 }
+
+func csvBody(t *testing.T, url string) string {
+	t.Helper()
+	req, ok := ParseRequest(url)
+	if !ok || !req.IsYahrzeit() {
+		t.Fatalf("not a yahrzeit request: %s", url)
+	}
+	cal, err := New(req, today2026)
+	if err != nil {
+		t.Fatal(err)
+	}
+	b, err := cal.CSV()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(b)
+}
+
+func TestCSV(t *testing.T) {
+	const url = "/export/x.csv?v=yahrzeit&years=3&start=5786&yizkor=on" +
+		"&n1=Chaim+Weizmann&y1=1952&m1=11&d1=9&t1=Yahrzeit" +
+		"&n2=Golda%2C+%22Meir%22&y2=1898&m2=5&d2=3&t2=Birthday"
+	got := csvBody(t, url)
+	const header = "\xEF\xBB\xBFSubject,Start Date,Start Time,End Date,End Time,All day event,Description,Show time as,Location\r\n"
+	if !strings.HasPrefix(got, header) || !strings.HasSuffix(got, "\r\n") {
+		t.Fatalf("framing: %.200q", got)
+	}
+	// Every observance in the range, past ones included, and no reminders.
+	if n := strings.Count(got, "\nChaim Weizmann’s "); n != 3 {
+		t.Errorf("%d Yahrzeit rows, want 3", n)
+	}
+	if strings.Contains(got, "reminder") {
+		t.Error("a CSV has no reminder events")
+	}
+	if n := strings.Count(got, "\nYizkor ("); n != 12 {
+		t.Errorf("%d Yizkor rows, want 12", n)
+	}
+	// 21 Cheshvan 5786 was 12 November 2025. No emoji, and the memo's
+	// paragraphs are flattened onto one line.
+	want := "Chaim Weizmann’s 73rd Yahrzeit,11/12/2025,,,,true," +
+		"\"Hebcal joins you in remembering Chaim Weizmann, whose 73rd Yahrzeit occurs on Wednesday, November 12, " +
+		"corresponding to the 21st of Cheshvan, 5786. /  / Chaim Weizmann’s Yahrzeit begins at sundown on " +
+		"Tuesday, November 11 and continues until sundown on the day of observance. It is customary to light a " +
+		"memorial candle at dusk as the Yahrzeit begins. /  / May your loved one’s soul be bound up in the bond of " +
+		"eternal life and may their memory serve as a continued source of inspiration and comfort to you.\",3,Personal\r\n"
+	if !strings.Contains(got, want) {
+		t.Errorf("Yahrzeit row missing:\n%s", got)
+	}
+	// Commas and quotes survive, quoted.
+	if !strings.Contains(got, "\"Golda, \"\"Meir\"\"’s 128th Hebrew Birthday\",") {
+		t.Errorf("birthday row missing:\n%s", got)
+	}
+	if !strings.Contains(got, "Yizkor (Yom Kippur),10/2/2025,,,,true,,3,Personal\r\n") {
+		t.Errorf("Yizkor row missing:\n%s", got)
+	}
+
+	// Any euro= value means day/month/year.
+	if euro := csvBody(t, url+"&euro=0"); !strings.Contains(euro, "Yahrzeit,12/11/2025,") {
+		t.Errorf("euro dates:\n%.400s", euro)
+	}
+	if empty := csvBody(t, "/v2/y/"+"dj15YWhyemVpdA"+"/x.csv"); empty != header {
+		t.Errorf("empty calendar: %q", empty)
+	}
+}
+
+func TestCSVVariantIgnoresWeekAndClient(t *testing.T) {
+	req, _ := ParseRequest("/export/x.csv?v=yahrzeit&n1=A&y1=2001&m1=5&d1=5")
+	a, _ := New(req, today2026)
+	b, _ := New(req, model.GregDate{Year: 2026, Month: time.November, Day: 15})
+	if a.Variant("") != b.Variant(GoogleImporter) {
+		t.Error("a CSV does not depend on the week or the client")
+	}
+}
