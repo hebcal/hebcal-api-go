@@ -11,7 +11,8 @@ its notes have moved into `CLAUDE.md`.
 | 1 | Yahrzeit feeds that carry their calendar in the URL: `/v2/y/`, `/yahrzeit/yahrzeit.cgi/`, `/export/…?v=yahrzeit` | **done** (November 2026), `.csv` included |
 | 2 | Saved Yahrzeit calendars: `/v3/<ulid>/<name>.ics` (MySQL) | **done** (November 2026), `.csv` included; notes in `CLAUDE.md`, "Saved calendars: `/v3/` and MySQL" |
 | 3 | Holiday feeds: `/v4/`, `/v2/h/`, `/hebcal/index.cgi/`, `/export/…?v=1` | planned below |
-| 4 | Left on Node until someone decides otherwise: `/zmanim` and `/sunrs` feeds, the static `/ical/*.ics` files | notes at the end |
+| 4a | Zmanim feeds: `/zmanim`, `/zmanim2`, `/sunrs` | **done** (November 2026); notes in `CLAUDE.md`, "The zmanim feeds" |
+| 4b | Left on Node until someone decides otherwise: the static `/ical/*.ics` files | notes at the end |
 
 ## What phases 1 and 2 left you
 
@@ -255,6 +256,52 @@ changed UID is not.
   is not the cost; event generation and the memo lookups are. Hold a download
   limiter slot, as PDF and CSV do.
 
+## Translations that live in hebcal-web, not in `locales`
+
+Found while porting the zmanim feeds, and it will come up again in phase 3.
+hebcal-web loads its own `po/*.po` catalogs **on top of** `@hebcal/core`'s
+(`src/locale.js`: `Locale.addTranslations` per locale, then `he-x-NoNikud`
+derived from `he` by `copyLocaleNoNikud` with `po/he-x-NoNikud.po` over it).
+github.com/hebcal/locales is generated from the `@hebcal/*` packages only, so
+anything Go renders through `locales.LookupTranslation` misses hebcal-web's
+additions and loses where hebcal-web overrides a core string.
+
+Measured against locales v1.1.3 (November 2026):
+
+| hebcal-web catalog | same in `locales` | different | missing |
+|---|---|---|---|
+| `po/en.po` | -- | -- | all 84: the `TITLE:<zman>` / `MEMO:<zman>` keys |
+| `po/he.po` | 10 | 7 | 27 |
+| `po/ashkenazi.po` | 4 | 0 | 1 |
+| `po/es.po`, `fr.po`, `nl.po`, `pt.po` | 0 | 0 | 4 each |
+
+Nearly all of it is the zman titles. The rest are web and email strings
+("Shabbat Times for", "This week's Torah portion is", "occurs on"), and the 7
+differing Hebrew entries are nikud spellings of zman names ("חֲצוֹת הַלַיְלָה"
+in hebcal-web against "חֲצוֹת הַלַּיְלָה" in `locales`).
+
+**Today** the zmanim feed vendors what it needs: `tools/zmanim-titles.py`
+generates `internal/service/zmanim/titles.go` from hebcal-web's `po/` with the
+same precedence, and `translateTitle` consults that table before `locales`.
+
+**The proper fix** is to have github.com/hebcal/po2catalog read hebcal-web's
+`po/` (or move those strings into a package it already reads) so that
+`locales` carries them, with hebcal-web's catalog taking precedence over
+`@hebcal/core`'s exactly as `src/locale.js` loads them. Things to settle
+first:
+
+- whether po2catalog accepts msgids that are keys rather than English text
+  (`TITLE:sunrise`), and whether adding those to `locales`' `en` catalog
+  changes any other lookup;
+- precedence: a hebcal-web string must win over the core one it overrides,
+  in `he` and in the derived `he-x-NoNikud` alike;
+- after that, delete `titles.go`, `zmanTitleTranslations` and the script, and
+  re-run the zmanim feed comparison (`CLAUDE.md`, "The zmanim feeds").
+
+Phase 3 should check its strings the same way before trusting `locales`:
+holiday descriptions and the memo labels (`createMemo()`'s "Torah:",
+"Haftarah:") may come from hebcal-web's catalogs too.
+
 ---
 
 ## Phase 4 and loose ends
@@ -262,8 +309,9 @@ changed UID is not.
 - **Yahrzeit `.csv`**: done for the legacy URLs (November 2026), written in
   the holiday CSV service's format rather than `eventsToCsv()`'s -- see
   CLAUDE.md, "The Yahrzeit `.csv`". `/v3/…csv` is served too.
-- **`/zmanim` and `/sunrs` feeds** (`zmanimDownload.js`): a different event
-  source and their own caching. Not planned.
+- **`/zmanim`, `/zmanim2` and `/sunrs` feeds**: done (November 2026), in
+  `internal/service/zmanim/feed.go`, routed by `download.vcl`. hebcal-web's
+  `zmanimDownload.js` is left in place as the fallback.
 - **`/ical/*.ics`**: static files written weekly by `makeStaticCalendars.js`
   on the Node hosts. Porting the feeds does not move these; the cron would
   need its own Go command, built on the phase 3 service.

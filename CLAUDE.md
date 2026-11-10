@@ -12,8 +12,9 @@ Guidance for Claude Code (claude.ai/code) working in this repository.
 - the **Yahrzeit iCalendar feeds** — `download.hebcal.com/v2/y/…ics` and its
   two older spellings, and the saved `/v3/<ulid>/…ics` calendars read from
   MySQL — ported from `@hebcal/icalendar` (as `pkg/icalendar`) and
-  `src/yahrzeitDownload.js`. The holiday feeds are planned in
-  [iCalendar-port.md](iCalendar-port.md);
+  `src/yahrzeitDownload.js`; and the **zmanim feeds** -- `/zmanim`,
+  `/zmanim2` and `/sunrs` -- ported from `src/zmanimDownload.js`. The holiday
+  feeds are planned in [iCalendar-port.md](iCalendar-port.md);
 - the **PDF calendars** — `download.hebcal.com/v4/…pdf` (and its legacy
   `/v2/h/…pdf` spelling) and `www.hebcal.com/holidays/hebcal-<year>.pdf` —
   ported from `src/pdf.js` and `src/holidayPdf.js`. These arrived from the separate `hebcal-pdf-go`
@@ -884,6 +885,71 @@ validated before it becomes a path, so a request cannot grow it. A missing
 directory or zone is not an error: the feed goes out with `X-WR-TIMEZONE` and
 no definition, as hebcal-web's does.
 
+### The zmanim feeds (`/zmanim`, `/zmanim2`, `/sunrs`)
+
+`internal/service/zmanim/feed.go` serves download.hebcal.com's three
+halachic-times subscriptions, a port of `src/zmanimDownload.js`: `/zmanim`
+(every zman a timed event, yesterday to +60 days), `/zmanim2` (one all-day
+event per day titled with the Hebrew date, its times in the description, +90
+days) and `/sunrs` (sunrise and sunset, +365). It reuses the `/zmanim` API's
+tables through `computeTimes`, writes through `pkg/icalendar`, and needs no
+sidecar. `/zmanim` is shared with the JSON API: `cfg=json` is the API, any
+other GET/HEAD is the feed (subscription URLs carry no `cfg`), and a CORS
+preflight stays the API's.
+
+Measured (November 2026) against a local hebcal-web download server over 26
+URLs -- geonameid, ZIP, legacy `city=`, lat/long with and without `tzid`,
+Sydney, Tromsø, Svalbard, the North Pole, `lg` = he, h, a, fr,
+he-x-NoNikud, and the error cases: every line identical except `DTSTART`/`DTEND`
+(and the `/zmanim2` description times) a minute apart on some days -- the
+known noaa-go vs `@hebcal/core` difference, which moves an event without
+changing its UID -- and, at Tromsø on the first day of polar night, a few
+sunrise-derived times one library computes and the other does not.
+`internal/handler/zmanim_feed_test.go` pins lines captured from that server.
+
+Things that are not obvious:
+
+- **The zman titles and memos are hebcal-web's, vendored.** `TITLE:<zman>` /
+  `MEMO:<zman>` live in hebcal-web's `po/en.po`, and the Hebrew titles in its
+  `po/he.po` (plus four Kiddush Levana overrides in `he-x-NoNikud.po` and
+  `ashkenazi.po`), which hebcal-web loads *over* `@hebcal/core`'s catalogs.
+  github.com/hebcal/locales is generated from the `@hebcal/*` packages only,
+  so it lacks most of them and spells several differently ("חֲצוֹת הַלַּיְלָה"
+  against hebcal-web's "חֲצוֹת הַלַיְלָה", "נֵץ הַחַמָּה" against
+  "הַנֵץ הַחַמָּה"). `tools/zmanim-titles.py` generates `titles.go` from
+  hebcal-web's `po/`; `translateTitle` consults it first, then `locales`. The
+  plan is to move those strings into `locales` via po2catalog (see
+  iCalendar-port.md) and delete the table.
+- **Kiddush Levana times are moved to the night** in the feed (to tzeit 8.5°
+  that evening, or back to alot hashachar that morning), and dropped on a day
+  with no alot or tzeit; the JSON API reports them unadjusted. `klAtNight`.
+- **An event's date is the date its zman was computed for**, not the date it
+  falls on, so a Chatzot HaLailah after midnight is stamped on the evening
+  before. UIDs depend on it; do not "fix" it.
+- **UIDs** are `hebcal-<yyyymmdd>-<murmur32(English title)>-<place>`, place
+  being the geonameid, the ZIP, or `makeAnchor` of a lat/long location's name;
+  `/zmanim2`'s are `hebcal-zmanim2-<yyyymmdd>-<place>`.
+- **Timed zman events are private** (no `CLASS:PUBLIC`, they are user events
+  in `@hebcal/core`) and carry no alarm; `/zmanim2`'s are public.
+- **Same-minute ties keep table order** (stable sort on the instant, events
+  tabulated name-major), in both the timed feed and a `/zmanim2` description.
+- **The 12-hour clock follows the country** (`event.ReformatTimeStr` with the
+  location's CC; a lat/long location has none and is US, 12-hour), and a
+  `/zmanim2` line pads a one-digit hour with a space so the colons line up.
+- **The PRODID language is the raw `lg`** when it is two letters, so `lg=xx`
+  writes `//XX` while the titles fall back to English, as hebcal-web does.
+- **"Today" is the location's date** (`Server.Clock` read in its zone), and
+  the ETag covers it, so a same-day refresh is a 304 before anything is
+  computed; that is safe because the feed is a function of URL and date.
+  Cache-Control is 7 days (`publishedTTL` P7D); errors carry none.
+- **A time "in year 1" means it does not occur.** hebcal-go v0.26.1's
+  `MinchaGedolaMGA`/`MinchaKetanaMGA` offset sunrise/sunset by 72 minutes
+  before checking for the zero time, so in a polar night they returned
+  `0001-01-01T00:06`; the feed then listed them and the JSON API reported
+  them. `computeTimes` zeroes any year <= 1. Fixed upstream on hebcal-go's
+  `claude/elegant-pasteur-y40dlj` branch; the guard can go once a release
+  with it is bumped here.
+
 ## The readings-svc sidecar
 
 Two things this service cannot do in Go come from
@@ -1707,6 +1773,21 @@ columns (`Personal`, show-time-as 3) written by `csv.Document`.
 `internal/handler/yahrzeit.go` ← the headers `yahrzeitDownload()` sets and
 does not set (`Vary: User-Agent`, attachment on `dl=1`, no Cache-Control);
 `yahrzeitCSV` ← its `.csv` branch (`text/x-csv`, ETag attrs without `sunday`).
+
+### `internal/service/zmanim/feed.go` — `src/zmanimDownload.js` + `src/zmanimCommon.js`
+
+`FeedKindFor` / `days` ← `zmanimIcalendar()`'s path tests and durations.
+`NewFeed`'s today ← `nowInTimezone()`. `compute` / `computeTimes(…, klAtNight)`
+← `getTimesForRange()` / `getTimes()` with `roundMinute` and the Kiddush
+Levana alos/tzeit adjustment. `hasSolarTimes` ← `hasSolarTimes()`.
+`timedEvents` ← `makeEvents()` + `makeTimedEvent()`; `allDayEvents` ←
+`makeAllDayEvents()`. `place` ← `IcalEvent.getUid()`'s
+`getGeoId() || makeAnchor(getName())`. `prodidLang` ← `makeIcalPreamble()`'s
+`localeMap` after `lgToLocale`. `translateTitle` ← hebcal-web's
+`Locale.addTranslations` precedence (`src/locale.js`, `copyLocaleNoNikud`).
+`titles.go` ← `po/en.po`, `po/he.po`, `po/he-x-NoNikud.po`,
+`po/ashkenazi.po`. `handler.zmanimFeed` ← the headers `zmanimIcalendar()`
+sets (`CACHE_CONTROL_7DAYS` after the 400s; `checkFreshETag` with `dt`).
 
 ### `internal/handler/pdf.go`, `download.go`
 

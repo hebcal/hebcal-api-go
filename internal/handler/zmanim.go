@@ -17,9 +17,15 @@ import (
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 )
 
-// zmanim implements GET /zmanim (cfg=json only).
+// zmanim implements GET /zmanim: the JSON API with cfg=json, and otherwise
+// download.hebcal.com's zmanim iCalendar feed (zmanimFeed), whose subscription
+// URLs carry no cfg. A CORS preflight is the API's whatever its query.
 func (s *Server) zmanim(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
+	if q.Get("cfg") != "json" && (r.Method == http.MethodGet || r.Method == http.MethodHead) {
+		s.DownloadLimiter.Wrap(s.zmanimFeed)(w, r)
+		return
+	}
 	jsutil.TrimTrailingWhitespace(q)
 	httpx.SetCORS(w)
 	switch r.Method {
@@ -147,4 +153,57 @@ func (s *Server) checkMelacha(w http.ResponseWriter, q url.Values,
 		{Key: "status", Val: status},
 	}
 	w.Write(jsutil.Marshal(body))
+}
+
+// zmanimFeed serves the zmanim iCalendar feeds: /zmanim (every zman as a
+// timed event, 60 days), /zmanim2 (a day's times listed in one all-day event,
+// 90 days) and /sunrs (sunrise and sunset, a year), each from yesterday in
+// the location's own time zone.
+//
+// The feed is a function of the URL and that date, so the ETag covers both
+// and a refresh on the same day is answered 304 before anything is computed.
+// It is cacheable for a week, the refresh interval it advertises; a location
+// with no sunrise or sunset in the whole range is 400, uncached.
+func (s *Server) zmanimFeed(w http.ResponseWriter, r *http.Request) {
+	if !downloadMethodAllowed(w, r) {
+		return
+	}
+	h := w.Header()
+	h.Set("X-Content-Type-Options", "nosniff")
+	if s.DB == nil {
+		httpx.WritePlainError(w, dbUnavailable())
+		return
+	}
+	q := r.URL.Query()
+	jsutil.TrimTrailingWhitespace(q)
+	loc, err := location.FromQuery(s.DB, q)
+	if err != nil {
+		httpx.WritePlainError(w, err)
+		return
+	}
+	if loc == nil {
+		httpx.WritePlainError(w, model.BadRequest("Location is required"))
+		return
+	}
+	now := time.Now
+	if s.Clock != nil {
+		now = s.Clock
+	}
+	stamp := now()
+	feed := zmanim.NewFeed(zmanim.FeedKindFor(r.URL.Path), q, loc, stamp)
+	etag := httpx.MakeETag(r, feed.Variant())
+	h.Set("ETag", etag)
+	if httpx.CheckFresh(r, etag) {
+		h.Set("Cache-Control", httpx.CacheControl7Days)
+		w.WriteHeader(http.StatusNotModified)
+		return
+	}
+	body, err := feed.ICS(s.Zones, stamp)
+	if err != nil {
+		httpx.WritePlainError(w, err)
+		return
+	}
+	h.Set("Cache-Control", httpx.CacheControl7Days)
+	h.Set("Content-Type", "text/calendar; charset=utf-8")
+	w.Write(body)
 }
