@@ -20,6 +20,11 @@ type Request struct {
 	// Opaque is true when the query string was not in the URL's own query
 	// (the /v2/ base64 form), so a log of the URL does not show it.
 	Opaque bool
+	// ID is a saved calendar's id (the /v3/ form); legacy URLs have none.
+	ID string
+	// Version changes whenever a saved calendar is edited, for the cache
+	// validator. Empty for a calendar carried in its URL.
+	Version string
 }
 
 // The URL prefixes a personal calendar is served under.

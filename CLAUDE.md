@@ -10,9 +10,10 @@ Guidance for Claude Code (claude.ai/code) working in this repository.
   `/complete` — ported from [hebcal-web](https://github.com/hebcal/hebcal-web)'s
   `src/converter.js`, `src/zmanim.js` and `src/shabbat.js`;
 - the **Yahrzeit iCalendar feeds** — `download.hebcal.com/v2/y/…ics` and its
-  two older spellings — ported from `@hebcal/icalendar` (as `pkg/icalendar`)
-  and `src/yahrzeitDownload.js`. The first of the `.ics` feeds; `/v3/` and the
-  holiday feeds are planned in [iCalendar-port.md](iCalendar-port.md);
+  two older spellings, and the saved `/v3/<ulid>/…ics` calendars read from
+  MySQL — ported from `@hebcal/icalendar` (as `pkg/icalendar`) and
+  `src/yahrzeitDownload.js`. The holiday feeds are planned in
+  [iCalendar-port.md](iCalendar-port.md);
 - the **PDF calendars** — `download.hebcal.com/v4/…pdf` (and its legacy
   `/v2/h/…pdf` spelling) and `www.hebcal.com/holidays/hebcal-<year>.pdf` —
   ported from `src/pdf.js` and `src/holidayPdf.js`. These arrived from the separate `hebcal-pdf-go`
@@ -644,10 +645,10 @@ sweep is byte-identical):
 
 ## The iCalendar feeds (`pkg/icalendar`, Yahrzeit first)
 
-**Status (November 2026): the Yahrzeit + Anniversary feeds that need no
-database are served here. `/v3/` (MySQL) and every holiday `.ics` feed are
-not; [iCalendar-port.md](iCalendar-port.md) is the plan for both, written to
-be picked up cold.**
+**Status (November 2026): every Yahrzeit + Anniversary feed is served here,
+the saved `/v3/` calendars included (see "Saved calendars: `/v3/` and
+MySQL"). No holiday `.ics` feed is; [iCalendar-port.md](iCalendar-port.md) is
+the plan, written to be picked up cold.**
 
 `pkg/icalendar` is a port of `@hebcal/icalendar` (hebcal-icalendar 7.0.6), and
 `internal/service/yahrzeit` of hebcal-web's `yahrzeitDownload.js`,
@@ -659,6 +660,7 @@ below):
 - `/yahrzeit/yahrzeit.cgi/<name>.ics?<query>`
 - `/export/[<dir>/]<name>.ics?<query>` and `/hebcal/index.cgi/<name>.ics?<query>`
   when the query names a personal calendar
+- `/v3/<ulid>/<name>.ics`, a saved calendar whose query lives in MySQL
 
 `handler.download` (mounted on `/v2/`, `/export/`, `/hebcal/index.cgi/` and
 now `/yahrzeit/yahrzeit.cgi/`) asks `yahrzeit.ParseRequest` first, and hands
@@ -795,6 +797,77 @@ hebcal-web builds as a literal two-character `\n` (`String.raw`), that
 newlines in the memo, flattened to `" / "` like every other CSV description.
 That format difference is the deliberate divergence, for the reasons the CSV
 section gives (Excel, and keeping punctuation people typed into a name).
+
+### Saved calendars: `/v3/` and MySQL
+
+`/v3/<ulid>/<name>.ics` (and `.csv`) is every calendar saved from the
+Yahrzeit form. `handler.yahrzeitSaved` reads the row through
+`internal/repository/yahrzeitdb`, `yahrzeit.NewSavedRequest` turns it into the
+same `Request` a legacy URL produces, and from there it is
+`yahrzeitDownload` unchanged -- so `/v3/` needed no new rendering code, only a
+lookup in front.
+
+**Parity is measured, not assumed.** `testdata/saved/` holds two real rows
+(public figures only: `01m73gh503ng2gfkfbyt3t0a38`, the Israeli prime
+ministers, and `01jmt1hef19p1hw6qn48k8p4z9`, the Chabad calendar of 23
+entries) exactly as `SELECT contents` returned them, and `cases.tsv` renders
+seven `/v3/` URLs from them (Google's copy, `dl=1`, `yrem=0&i=on`,
+`an=off&years=3`) against goldens. The reference server for those goldens is
+hebcal-web's own download app with `app.context.mysql` replaced by an object
+whose `query2` returns `JSON.parse(<file>)` -- mysql2 parses the JSON column
+the same way, so key order is what production sees. The same 43 goldens were
+then re-checked over a real MariaDB with the binary's own driver: identical.
+
+Things that are not obvious:
+
+- **The JSON key order is MySQL's, and it names the calendar.** MySQL's JSON
+  type normalizes an object to keys sorted by length, then bytewise -- `n1 …
+  n9, n10 … n23` -- and mysql2 hands that text to `JSON.parse`, which keeps
+  it (no key here is integer-like). `queryFromJSON` therefore decodes with
+  `json.Decoder.Token()`, never into a map. (MariaDB stores JSON as text and
+  keeps insertion order; rows written by MySQL already arrive sorted, so the
+  test database gives the same result.)
+- **The row is expanded the way `getYahrzeitDetailsFromDb` does it**:
+  `x<N>` "1978-12-08" becomes `y`/`m`/`d` without leading zeros, a numeric
+  `s<N>` becomes `on`/`off`, and `t<N>` is spelled out for **every** number
+  from 1 to the highest entry -- gaps included, which then count as Yahrzeits
+  in the calendar's set of types (and so in its title and the Google zone
+  hack). `years` is a JSON number. Then `v=yahrzeit`, then the URL's own
+  query overrides any key, then `ulid` is set last, so a URL cannot rename
+  the calendar.
+- **`em` is the owner's email.** It rides in the query like any other key;
+  nothing renders it, and the access log logs the URL, not the merged query.
+  `TestYahrzeitSavedRealRows` asserts it never reaches the feed.
+- **The id is used as the URL spells it**, not lowercased: it goes into
+  UIDs, `X-WR-RELCALID` and the edit links, and hebcal-web takes
+  `path.substring(4, 30)` verbatim. The collation makes the lookup
+  case-insensitive anyway. A non-alphanumeric id is 404 without a query.
+- **The ETag covers the row** (`Request.Version`: `updated` plus a hash of
+  `contents`), so an edit changes it. The 304 check still needs the SELECT;
+  that is one primary-key read.
+- **Two writes follow every successful lookup, 304s included**: `UPDATE
+  yahrzeit SET downloaded = 1, updated = NOW()` the first time, and `REPLACE
+  INTO yahrzeit_atime` always. The first is load-bearing --
+  hebcal-shabbat-email's retention job prunes calendars never downloaded --
+  and both are kept for compatibility (decided November 2026: the database
+  handles the load). They run on one background worker behind a 256-deep
+  queue, 3 s each; a full queue drops the write with a warning rather than
+  delay a response, and the next poll writes it again. Note the first write
+  bumps `updated`, so a calendar's first fetch changes its ETag once.
+- **Failures:** unknown id → 404 with no caching headers; no `-ini` file, no
+  `hebcal.mysql.user`/`dbname`, or a database that does not answer within
+  7 s → 503 + `Retry-After: 30`, so Varnish's 24 h grace serves the stale
+  copy. The cause goes to the access log's `msg`, not the body.
+- **Connection:** `-ini` (default `/etc/hebcal-dot-com.ini`) is read once at
+  startup by `config.ReadINI`, a flat key=value reader -- only the five
+  `hebcal.mysql.*` keys are used, so no INI dependency. The pool is
+  `MaxOpenConns(8)`, five-minute lifetime, one-minute idle time (the managed
+  database drops idle connections), and dials lazily, so the service starts
+  whether or not the database is up. TLS is `preferred` (used when the
+  server offers it, unverified, since the connection stays on the VPC);
+  `hebcal.mysql.tls` overrides it. hebcal-web's mysql2 pool uses no TLS at
+  all. The password never appears in a flag, the unit file or the log
+  (`yahrzeitdb.Config.String()` omits it).
 
 ### VTIMEZONE
 
@@ -1222,6 +1295,11 @@ and the within-day ordering below, which production picks up with the next
   PDF naming one of the eight daily-learning series answers 503. Its systemd
   unit is in that repository, and its `RuntimeDirectory=hebcal` is what
   creates the socket directory.
+- **The saved Yahrzeit calendars need MySQL**: `/etc/hebcal-dot-com.ini`
+  on the api host (hebcal-devops' `cloud-config/web-api.yaml` installs it,
+  mode 0640 root:www-data) and the api hosts in the managed database's
+  trusted sources. Without either, `/v3/` answers 503 and Varnish serves
+  stale copies; nothing else is affected.
 - **Varnish is not configured** to route PDF URLs here, and the 503 path
   assumes it will retry or fall back to Node. Two families need routing now, to
   **port 8082** rather than the retired hebcal-pdf service on 8083:
@@ -1613,6 +1691,14 @@ emoji, `CATEGORY`, `appendHebrewToSubject`, `locationName` -- and
 `Calendar.CSV` ← the `.csv` branch of `yahrzeitDownload()` (`reminder =
 false`, no look-back filter, `Boolean(query.euro)`), with `eventsToCsv()`'s
 columns (`Personal`, show-time-as 3) written by `csv.Document`.
+
+`saved.go` `NewSavedRequest` ← `getDetailsFromDb()` (`yahrzeitDownload.js`)
++ `getYahrzeitDetailsFromDb()` (`yahrzeitCommon.js`) + the `{...details,
+...ctx.request.query}` merge; `expandRow` ← its x/t/s loop; `SavedID` ←
+`path.substring(4, 30)`. `internal/repository/yahrzeitdb` ← the SELECT, the
+`downloaded` UPDATE and the `yahrzeit_atime` REPLACE there, and the pool in
+`src/db.js`. `config.ReadINI` ← hebcal-web's `hebcal-dot-com.ini` reading
+(`createBaseApp`).
 
 `internal/handler/yahrzeit.go` ← the headers `yahrzeitDownload()` sets and
 does not set (`Vary: User-Agent`, attachment on `dl=1`, no Cache-Control);

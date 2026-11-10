@@ -77,6 +77,10 @@ type Config struct {
 	// directory or zone is not an error: the feed is served without the
 	// definition and the client falls back on its own.
 	ZoneInfoDir string
+	// INIFile is the site-wide hebcal-dot-com.ini, read for the
+	// hebcal.mysql.* keys only. Without it (or them) the saved Yahrzeit
+	// calendars under /v3/ answer 503 and nothing else is affected.
+	INIFile string
 	// DownloadMaxConcurrency caps how many PDF and CSV downloads run simultaneously; the
 	// overflow is shed with 429 rather than queued into swap. Zero disables the
 	// cap. See DefaultDownloadMaxConcurrency.
@@ -117,6 +121,8 @@ func Load() *Config {
 		"directory holding Source_Sans_Pro/ and Adobe_Hebrew/ (for the PDF calendars)")
 	flag.StringVar(&cfg.ZoneInfoDir, "zoneinfo", envOr("ZONEINFO_DIR", DefaultZoneInfoDir),
 		"directory of vzic-generated VTIMEZONE files (for the iCalendar feeds)")
+	flag.StringVar(&cfg.INIFile, "ini", envOr("HEBCAL_INI", DefaultINIFile),
+		"site-wide hebcal-dot-com.ini holding the hebcal.mysql.* settings (for the saved Yahrzeit calendars)")
 	flag.IntVar(&cfg.DownloadMaxConcurrency, "download-max-concurrency",
 		envIntOr("DOWNLOAD_MAX_CONCURRENCY", DefaultDownloadMaxConcurrency),
 		"max PDF and CSV downloads served at once; the overflow is shed with 429 (0 disables the cap)")
