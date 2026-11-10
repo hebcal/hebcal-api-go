@@ -233,11 +233,13 @@ type eventOptions struct {
 // makeEvents generates the calendar's events in date order: for each entry
 // its observances over the range and, when reminder is set, an afternoon
 // reminder on the eve of each Yahrzeit; then the Yizkor days when asked for.
-func makeEvents(q *Query, r dateRange, reminder bool) ([]calEvent, error) {
+// A calendar that is not a feed (a CSV, imported once) never links back to the
+// page where a saved calendar is edited.
+func makeEvents(q *Query, r dateRange, reminder, feed bool) ([]calEvent, error) {
 	calendarID := q.Get("ulid")
 	opts := eventOptions{
 		calendarID:    calendarID,
-		includeURL:    calendarID != "" && q.Get("dl") != "1",
+		includeURL:    feed && calendarID != "" && q.Get("dl") != "1",
 		appendHebDate: q.on("hebdate"),
 		includeNumber: includeNumber(q),
 	}
@@ -269,7 +271,11 @@ func makeEvents(q *Query, r dateRange, reminder bool) ([]calEvent, error) {
 		}
 	}
 	if q.on("yizkor") {
-		events = append(events, makeYizkorEvents(r, q.Get("i") == "on", q.Get("ulid"))...)
+		yizkorID := calendarID
+		if !feed {
+			yizkorID = ""
+		}
+		events = append(events, makeYizkorEvents(r, q.Get("i") == "on", yizkorID)...)
 	}
 	sort.SliceStable(events, func(i, j int) bool {
 		return events[i].date.Abs() < events[j].date.Abs()

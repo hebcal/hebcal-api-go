@@ -99,7 +99,7 @@ type Result struct {
 func (c *Calendar) ICS(userAgent string, zones *icalendar.ZoneInfo, now time.Time) (*Result, error) {
 	q := c.req.Query
 	reminder := q.Get("yrem") != "0" && q.Get("yrem") != "off"
-	events, err := makeEvents(q, c.rng, reminder)
+	events, err := makeEvents(q, c.rng, reminder, true)
 	if err != nil {
 		return nil, err
 	}
@@ -213,7 +213,7 @@ func (c *Calendar) ICS(userAgent string, zones *icalendar.ZoneInfo, now time.Tim
 // reminder events, and with no events at all is a header row alone.
 func (c *Calendar) CSV() ([]byte, error) {
 	q := c.req.Query
-	events, err := makeEvents(q, c.rng, false)
+	events, err := makeEvents(q, c.rng, false, false)
 	if err != nil {
 		return nil, err
 	}

@@ -398,6 +398,18 @@ func TestCSV(t *testing.T) {
 	}
 }
 
+// A CSV is imported once, so it never says how to edit a saved calendar, with
+// or without dl=1 and for Yizkor rows as much as for entries.
+func TestCSVHasNoEditMemo(t *testing.T) {
+	for _, dl := range []string{"", "&dl=1"} {
+		got := csvBody(t, "/export/x.csv?v=yahrzeit&years=2&start=5786&yizkor=on&ulid=01m73gh503ng2gfkfbyt3t0a38"+
+			"&n1=A&y1=2001&m1=5&d1=5&t1=Yahrzeit&n2=B&y2=2001&m2=5&d2=5&t2=Birthday"+dl)
+		if strings.Contains(got, "To edit") || strings.Contains(got, "yahrzeit/edit") {
+			t.Errorf("edit memo in CSV (%q):\n%.600s", dl, got)
+		}
+	}
+}
+
 func TestCSVVariantIgnoresWeekAndClient(t *testing.T) {
 	req, _ := ParseRequest("/export/x.csv?v=yahrzeit&n1=A&y1=2001&m1=5&d1=5")
 	a, _ := New(req, today2026)

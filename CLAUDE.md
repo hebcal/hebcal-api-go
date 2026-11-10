@@ -783,6 +783,10 @@ things that differ from the `.ics` and are what hebcal-web does too:
   header row, not the placeholder event.
 - **`euro` is a bare truthiness test** (`Boolean(query.euro)`), so `euro=0`
   writes day/month/year.
+- **No edit-page memo, on any route.** A CSV is a one-time import, not a
+  feed, so the "To edit this Hebcal Yahrzeit + Anniversary Calendar" memo
+  (and the per-entry edit link) is never written, `dl=1` or not -- `/v3/`,
+  `/v2/y/`, `/export/` alike. `makeEvents` takes a `feed` flag for it.
 - **Headers:** no Cache-Control and `Content-Disposition` only on `dl=1`, like
   the feed; but no `Vary: User-Agent`, and the ETag variant drops the week and
   the Google distinction, since neither changes the file. Content-Type is
