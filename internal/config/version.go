@@ -21,12 +21,3 @@ var PDFProducer = func() string {
 	}
 	return "hebcal-api-go"
 }()
-
-// LibraryVersions is baked into every ETag so tags change when the
-// application or the hebcal libraries are upgraded.
-var LibraryVersions = func() string {
-	if info, ok := debug.ReadBuildInfo(); ok {
-		return info.Main.Path + "@" + info.Main.Version
-	}
-	return ""
-}()

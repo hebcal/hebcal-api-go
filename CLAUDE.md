@@ -487,13 +487,13 @@ never set it there, and nothing needs a page to `fetch()` a CSV. (`http.Error`
 does not set ACAO on either format's error paths.)
 
 The `ETag` (`httpx.MakeETag`) is a weak FNV-1a hash of the
-request path, query, encoding class and library versions — not a hash of the
+request path, query, encoding class and the API version — not a hash of the
 rendered bytes, as hebcal-web's koa-etag is. Because it depends only on the
 request and the build, the conditional check can answer `304` *before* the
 render runs: a client only holds the tag if it received a 200 for the same URL,
-and the calendar is a deterministic function of that URL. An upgrade of this
-service or the hebcal libraries changes every tag, since `config.LibraryVersions`
-is folded into the hash.
+and the calendar is a deterministic function of that URL. A new release of this
+service changes every tag, since `config.APIVersion` is folded into the hash.
+(A library upgrade alone does not, unless it ships in a new release.)
 
 ### Fast start and end times
 

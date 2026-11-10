@@ -16,7 +16,7 @@ import (
 // not in the URL (e.g. the caller's IP for /complete).
 func MakeETag(r *http.Request, extra string) string {
 	h := fnv.New128a()
-	h.Write([]byte(config.LibraryVersions))
+	h.Write([]byte(config.APIVersion))
 	h.Write([]byte{0})
 	h.Write([]byte(r.URL.Path))
 	h.Write([]byte{0})
