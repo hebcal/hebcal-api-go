@@ -9,11 +9,11 @@ its notes have moved into `CLAUDE.md`.
 | Phase | Feeds | State |
 |---|---|---|
 | 1 | Yahrzeit feeds that carry their calendar in the URL: `/v2/y/`, `/yahrzeit/yahrzeit.cgi/`, `/export/…?v=yahrzeit` | **done** (November 2026), `.csv` included |
-| 2 | Saved Yahrzeit calendars: `/v3/<ulid>/<name>.ics` (MySQL) | planned below |
+| 2 | Saved Yahrzeit calendars: `/v3/<ulid>/<name>.ics` (MySQL) | **done** (November 2026), `.csv` included; notes in `CLAUDE.md`, "Saved calendars: `/v3/` and MySQL" |
 | 3 | Holiday feeds: `/v4/`, `/v2/h/`, `/hebcal/index.cgi/`, `/export/…?v=1` | planned below |
 | 4 | Left on Node until someone decides otherwise: `/zmanim` and `/sunrs` feeds, the static `/ical/*.ics` files | notes at the end |
 
-## What phase 1 left you
+## What phases 1 and 2 left you
 
 Read these before writing anything; `CLAUDE.md`'s "The iCalendar feeds"
 section explains the non-obvious parts.
@@ -28,6 +28,8 @@ section explains the non-obvious parts.
 | `internal/handler/yahrzeit.go` | Headers, ETag/304, error statuses. |
 | `internal/handler/download.go` | `download()` dispatches to `yahrzeitDownload` when `ParseRequest` says the query's `v` starts with `y`. |
 | `internal/service/yahrzeit/testdata/` | `cases.tsv` (name, User-Agent, URL), `golden/*.ics` captured from hebcal-web, `TODAY`. |
+| `internal/service/yahrzeit/saved.go` | `/v3/`: `SavedID`, `NewSavedRequest` (row JSON + URL query → `Request`). |
+| `internal/repository/yahrzeitdb/` | The MySQL reader and its background access writes; `Memory` for tests. |
 | `tools/yahrzeit-goldens.sh` | Regenerates the goldens from a local hebcal-web. |
 
 ### Standing up the reference server
@@ -58,153 +60,13 @@ diff <(curl -s localhost:8081$URL | sed 's/^DTSTAMP:.*/DTSTAMP:X/') \
 ```
 
 Repeat with `-A Google-Calendar-Importer`; that client gets a different body.
-The dev server runs without MySQL for phase 1 and phase 3 URLs. For `/v3/` it
-needs a database (below).
+The dev server runs without MySQL for phase 1 and phase 3 URLs. For the
+`/v3/` goldens, give it an `app.context.mysql` whose `query2` returns
+`[{contents: JSON.parse(<testdata/saved/<id>.json>), updated, downloaded}]`
+(CLAUDE.md, "Saved calendars").
 
 Never check real names into tests. Production log lines are personal data:
 substitute Ploni Almoni, Jane Doe, Golda Meir, Theodor Herzl, יצחק בן אברהם.
-
----
-
-## Phase 2: `/v3/` saved Yahrzeit calendars (MySQL)
-
-`/v3/<ulid>/<filename>.ics` is the URL of every saved calendar.
-The 26-character ULID keys a row whose JSON `contents` is the same set of
-parameters a legacy URL carries in its query string. So phase 2 is a lookup
-in front of the code that already exists. Estimate: one focused session.
-
-### What hebcal-web does
-
-`getDetailsFromDb()` in `src/yahrzeitDownload.js` and
-`getYahrzeitDetailsFromDb()` in `src/yahrzeitCommon.js`:
-
-1. `id = path.substring(4, 30)`.
-2. `SELECT contents, updated, downloaded FROM yahrzeit WHERE id = ?`
-   (7 s timeout). No row → **404** `Yahrzeit/Anniversary id not found: <id>`,
-   with Cache-Control removed.
-3. If `downloaded` is 0: `UPDATE yahrzeit SET downloaded = 1, updated = NOW()
-   WHERE id = ?`. Fire-and-forget (3 s timeout, failure only logged).
-   **This is load-bearing**: hebcal-shabbat-email's retention cron prunes
-   calendars that were never downloaded.
-4. `REPLACE INTO yahrzeit_atime (id, ts) VALUES (?, NOW())`. Fire-and-forget,
-   on **every** request -- including the ones that then answer 304.
-5. Expand the compact row into query form, for each entry number:
-   `x<N>` (`"1978-12-08"`) → `y<N>`/`m<N>`/`d<N>` with leading zeros stripped;
-   `t<N>` one letter (`y`/`b`/`a`/`o`) → the full word; `s<N>` number
-   (`0`/`1`) → `off`/`on`.
-6. Set `lastModified = row.updated`, `v = 'yahrzeit'`, and `ulid = id`.
-7. `query = {...details, ...ctx.request.query}`: **the URL's own query string
-   overrides the row** (`?yrem=0`, `?dl=1`, and anything else).
-
-Then the common path, with these differences from a legacy URL:
-
-- `relcalid` is `hebcal-<ulid>` (`X-WR-RELCALID`).
-- UIDs use the ULID where legacy URLs use a hash of the name:
-  `yahrzeit-5787-<ulid>-1`, `reminder-20260224-<ulid>-1`.
-- Every memo ends with `https://www.hebcal.com/yahrzeit/edit/<ulid>#row<N>`
-  unless `dl=1`; Yizkor events get the "To edit this Hebcal Yahrzeit +
-  Anniversary Calendar, visit …" memo; the empty-calendar placeholder uses
-  that memo and the ULID in its UID.
-- The ETag input is the merged query, which includes `lastModified` -- so
-  editing the calendar changes the tag.
-
-Schema (`../hebcal-web/hebcal.sql`):
-
-```sql
-CREATE TABLE yahrzeit (
-  id char(26) NOT NULL,
-  created datetime NOT NULL,
-  updated timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  ip varchar(39) DEFAULT NULL,
-  downloaded tinyint(1) NOT NULL DEFAULT '0',
-  contents JSON NOT NULL,
-  PRIMARY KEY (id)
-);
-CREATE TABLE yahrzeit_atime (
-  id char(26) NOT NULL,
-  ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (id)
-);
-```
-
-A stored row (`compactJsonToSave()` writes it; `test/mock-mysql.js` has
-examples): `{"x1": "1978-12-08", "n1": "Golda Meir", "t1": "y", "s1": 0,
-"years": 20, "hebdate": "on", "yizkor": "on", "an": "off", "em": "…"}`.
-`years` is a JSON **number**; `an` is present only as `"off"`; `em` is the
-owner's email and must never reach the output or the log.
-
-### Steps
-
-1. **Config.** hebcal-web reads `hebcal.mysql.{host,port,user,password,dbname}`
-   from `/etc/hebcal-dot-com.ini` (hebcal-devops `etc/hebcal-dot-com.ini`;
-   the managed database listens on a non-default port over TLS). Add a
-   `-ini` flag (default `/etc/hebcal-dot-com.ini`) and read those five keys --
-   a ten-line parser, no INI dependency. **Never put the password in a flag,
-   the unit file, or a log line.** With no file or no keys, `/v3/` answers
-   503 and everything else keeps working, the way a missing geonames database
-   or font directory already behaves.
-2. **Driver.** `github.com/go-sql-driver/mysql` behind `database/sql` (the
-   repo already uses `database/sql` for SQLite). Small pool
-   (`SetMaxOpenConns(8)`, `SetConnMaxLifetime(5m)` -- the managed database
-   drops idle connections), `tls=true` or a registered TLS config, context
-   timeouts of 7 s for the SELECT and 3 s for the writes.
-3. **Repository.** `internal/repository/yahrzeitdb` (next to `readings`):
-   `Get(ctx, id) (contents []byte, updated time.Time, downloaded bool, err)`,
-   `Touch(id, downloaded bool)` running the two writes on a background
-   goroutine with its own timeout, errors logged. Bound the goroutines (a
-   buffered channel and one worker) so a slow database cannot pile them up.
-   Validate `id` as 26 Crockford base32 characters before querying, and
-   lowercase it the way hebcal-web's stored IDs are (check a production URL).
-4. **Row → `yahrzeit.Query`.** Add `yahrzeit.QueryFromJSON(contents)` doing
-   step 5 above. Decode with `json.Decoder.Token()` (or an ordered decode), not
-   `map[string]any`: **key order names the calendar** -- the title lists names
-   in the order the `n` keys appear. MySQL's JSON type normalizes objects, returning keys sorted
-   by length then bytes (`n1, n2, …, n10`); confirm against a real row that this
-   is the order hebcal-web sees, and preserve whatever the driver returns.
-   Numbers become their decimal strings.
-5. **Merge.** `Request.Query` = row parameters, then every URL query parameter
-   overriding (`Query.Set` keeps the row's position for an existing key, which
-   matches a JS object spread). Then set `v=yahrzeit`, `ulid`, and
-   `Calendar.RelCalID = id`. `events.go` and `placeholder()` already key
-   everything off `ulid`/`RelCalID`.
-6. **ETag.** Add `updated` (and the ULID, which the path already carries) to
-   `Calendar.Variant`. The 304 short-circuit still needs the SELECT, since
-   the tag depends on `updated`; that is one indexed primary-key read. The
-   atime write happens either way, as in hebcal-web.
-7. **Handler.** Mount `/v3/` on the download limiter. 404 for an unknown ID
-   (no caching headers), 503 + `Retry-After` when the database is down or not
-   configured -- Varnish then serves the stale object (`beresp.grace = 24h`),
-   which is what a subscriber should get during an outage.
-8. **The `.csv`.** hebcal-web's test suite covers `/v3/…/x.csv?yrem=0`.
-   `Calendar.CSV` already renders the legacy URLs' `.csv` (CLAUDE.md, "The
-   Yahrzeit `.csv`"), so `/v3/**.csv` needs only the same dispatch once the
-   query comes from the database; route it with the `.ics`.
-9. **Tests.** Replicate `describe('v3 yahrzeit subscription downloads')` and
-   `describe('yahrzeit anniversary numbers (an)')` from
-   `../hebcal-web/test/download.test.js` against a fake repository (an
-   interface with an in-memory map, as `test/mock-mysql.js` does). Add: URL
-   overrides the row; unknown ID 404; database down 503; `em` never appears;
-   name order with ten or more entries; the edit link and its absence under
-   `dl=1`; ETag changes with `updated`.
-10. **Goldens.** Extend `tools/yahrzeit-goldens.sh` for `/v3/`. The reference
-    server needs MySQL: a local `mysqld` (or MariaDB) with `hebcal.sql` loaded
-    and a few hand-written rows, and `hebcal.mysql.*` in hebcal-web's
-    `hebcal-dot-com.ini`. Do not point a development server at production.
-11. **Varnish** (`hebcal-devops/etc/varnish/download.vcl`): add
-    `^/v3/[^?]*\.ics(\?|$)` to the api rule. The `private` Cache-Control in
-    `vcl_deliver` already covers `/v3/`.
-12. **Deployment.** The api hosts need `/etc/hebcal-dot-com.ini` (check
-    whether `cloud-config/web-api.yaml` already installs it) and the managed
-    database's trusted-sources list has to include them. `ProtectSystem=strict`
-    in `etc/hebcal-api.service` still allows reading `/etc`.
-
-### Open questions for phase 2
-
-- Is a connection pool on every api host acceptable to the managed
-  database's connection limit? (Count hosts × `MaxOpenConns`.)
-- Should a 304 skip the atime write? It would halve the write load, but
-  hebcal-web writes it, and something may read `yahrzeit_atime` as "last
-  polled". Default: keep writing.
 
 ---
 
@@ -399,7 +261,7 @@ changed UID is not.
 
 - **Yahrzeit `.csv`**: done for the legacy URLs (November 2026), written in
   the holiday CSV service's format rather than `eventsToCsv()`'s -- see
-  CLAUDE.md, "The Yahrzeit `.csv`". `/v3/…csv` follows with phase 2.
+  CLAUDE.md, "The Yahrzeit `.csv`". `/v3/…csv` is served too.
 - **`/zmanim` and `/sunrs` feeds** (`zmanimDownload.js`): a different event
   source and their own caching. Not planned.
 - **`/ical/*.ics`**: static files written weekly by `makeStaticCalendars.js`

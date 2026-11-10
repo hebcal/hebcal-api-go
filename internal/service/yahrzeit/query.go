@@ -54,6 +54,20 @@ func (q *Query) Set(key, val string) {
 	q.vals[key] = val
 }
 
+// Delete removes a parameter.
+func (q *Query) Delete(key string) {
+	if _, ok := q.vals[key]; !ok {
+		return
+	}
+	delete(q.vals, key)
+	for i, k := range q.keys {
+		if k == key {
+			q.keys = append(q.keys[:i], q.keys[i+1:]...)
+			break
+		}
+	}
+}
+
 // Keys returns the parameter names in the order they first appeared.
 func (q *Query) Keys() []string { return q.keys }
 

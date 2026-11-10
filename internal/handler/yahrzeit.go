@@ -1,11 +1,15 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
+	"github.com/hebcal/hebcal-api-go/internal/model"
+	"github.com/hebcal/hebcal-api-go/internal/repository/yahrzeitdb"
 	"github.com/hebcal/hebcal-api-go/internal/reqlog"
 	"github.com/hebcal/hebcal-api-go/internal/service/yahrzeit"
 )
@@ -97,4 +101,77 @@ func (s *Server) yahrzeitCSV(w http.ResponseWriter, r *http.Request, cal *yahrze
 	}
 	h.Set("Content-Type", "text/x-csv; charset=utf-8")
 	w.Write(body)
+}
+
+// yahrzeitSaved serves a saved calendar, /v3/<id>/<name>.ics or .csv: its
+// parameters are read from the database by id, the URL's own query string
+// overrides them, and the result is served exactly as a calendar carried in
+// its URL would be.
+//
+// An unknown id is 404 with no caching headers. A database that is not
+// configured or does not answer is 503 with Retry-After, so the proxy in front
+// keeps serving its stale copy -- what a subscriber should see during an
+// outage, rather than an error their client may unsubscribe over.
+//
+// Every request that finds its calendar records the access, 304s included:
+// the first marks the calendar downloaded, which keeps it from being pruned
+// as abandoned.
+func (s *Server) yahrzeitSaved(w http.ResponseWriter, r *http.Request) {
+	if !downloadMethodAllowed(w, r) {
+		return
+	}
+	path, rawQuery, _ := strings.Cut(r.RequestURI, "?")
+	id, ok := yahrzeit.SavedID(path)
+	if !ok {
+		httpx.WritePlainError(w, model.NotFound("Yahrzeit/Anniversary id not found: %s", savedIDForMessage(path)))
+		return
+	}
+	if s.Yahrzeit == nil {
+		writeYahrzeitUnavailable(w, errors.New("Yahrzeit database is not configured"))
+		return
+	}
+	row, err := s.Yahrzeit.Get(r.Context(), id)
+	if errors.Is(err, yahrzeitdb.ErrNotFound) {
+		httpx.WritePlainError(w, model.NotFound("Yahrzeit/Anniversary id not found: %s", id))
+		return
+	}
+	if err != nil {
+		writeYahrzeitUnavailable(w, err)
+		return
+	}
+	s.Yahrzeit.Touch(id, row.Downloaded)
+	req, err := yahrzeit.NewSavedRequest(path, rawQuery, id, row.Contents, row.Updated)
+	if err != nil {
+		httpx.WritePlainError(w, model.Internal("Yahrzeit/Anniversary calendar %s is unreadable: %v", id, err))
+		return
+	}
+	if !req.IsYahrzeit() {
+		// The URL overrode v= with something that is not a personal calendar.
+		httpx.WriteNotFoundText(w)
+		return
+	}
+	s.yahrzeitDownload(w, r, req)
+}
+
+// savedIDForMessage is what a malformed /v3/ path named in place of an id,
+// cut to the id's length the way the path is read.
+func savedIDForMessage(path string) string {
+	rest := strings.TrimPrefix(path, yahrzeit.SavedPrefix)
+	if len(rest) > 26 {
+		rest = rest[:26]
+	}
+	return rest
+}
+
+// writeYahrzeitUnavailable answers 503 for a database that is down or not
+// configured. The cause goes to the access log, not to the client.
+func writeYahrzeitUnavailable(w http.ResponseWriter, err error) {
+	httpx.RecordError(w, err)
+	h := w.Header()
+	h.Del("Cache-Control")
+	h.Del("ETag")
+	h.Set("Retry-After", "30")
+	h.Set("Content-Type", httpx.ContentTypeText)
+	w.WriteHeader(http.StatusServiceUnavailable)
+	w.Write([]byte("Yahrzeit database is not available\n"))
 }

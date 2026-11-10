@@ -36,7 +36,8 @@ type Calendar struct {
 	req   *Request
 	rng   dateRange
 	today hdate.HDate
-	// RelCalID identifies a saved calendar; legacy URLs have none.
+	// RelCalID identifies a saved calendar (Request.ID); legacy URLs have
+	// none.
 	RelCalID string
 }
 
@@ -48,7 +49,7 @@ func New(req *Request, today model.GregDate) (*Calendar, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Calendar{req: req, rng: rng, today: hd}, nil
+	return &Calendar{req: req, rng: rng, today: hd, RelCalID: req.ID}, nil
 }
 
 // Attachment reports whether the calendar is a one-time download (dl=1)
@@ -61,7 +62,7 @@ func (c *Calendar) sunday() int64 {
 }
 
 // Variant names everything outside the URL that a rendering depends on: the
-// years it spans, the week it was made in (a subscription drops events as
+// saved calendar's version, the years it spans, the week it was made in (a subscription drops events as
 // they recede into the past), and whether it is Google's copy. A cache
 // validator has to include it.
 //
@@ -69,6 +70,9 @@ func (c *Calendar) sunday() int64 {
 // no reminders, so neither the week nor the client changes it.
 func (c *Calendar) Variant(userAgent string) string {
 	v := strconv.Itoa(c.rng.startYear) + "-" + strconv.Itoa(c.rng.endYear) + "/" + c.req.RawQuery
+	if c.req.Version != "" {
+		v += "/" + c.req.Version
+	}
 	if c.req.Ext() == ".csv" {
 		return v
 	}

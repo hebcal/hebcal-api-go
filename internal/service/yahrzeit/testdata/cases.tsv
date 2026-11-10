@@ -34,3 +34,10 @@ start-in-past	-	/export/x.ics?v=yahrzeit&dl=1&years=3&n1=Chaim+Weizmann&y1=1952&
 subscription-past-filter	-	/export/x.ics?v=yahrzeit&years=3&n1=Chaim+Weizmann&y1=1952&m1=11&d1=9&start=5785
 empty	-	/export/x.ics?v=yahrzeit
 long-names-fold	-	/export/x.ics?v=yahrzeit&years=2&hebdate=on&n1=%D7%91%D6%B0%D6%BC%D7%A8%D6%B5%D7%90%D7%A9%D6%B4%D7%81%D7%99%D7%AA+%D7%91%D6%B8%D6%BC%D7%A8%D6%B8%D7%90+%D7%90%D6%B1%D7%9C%D6%B9%D7%94%D6%B4%D7%99%D7%9D+%D7%90%D6%B5%D7%AA+%D7%94%D6%B7%D7%A9%D6%B8%D6%BC%D7%81%D7%9E%D6%B7%D7%99%D6%B4%D7%9D+%D7%95%D6%B0%D7%90%D6%B5%D7%AA+%D7%94%D6%B8%D7%90%D6%B8%D7%A8%D6%B6%D7%A5&y1=2001&m1=5&d1=5&n2=%F0%9F%87%AE%F0%9F%87%B1+Israel+%F0%9F%87%AE%F0%9F%87%B1+Israel+%F0%9F%87%AE%F0%9F%87%B1+Israel+%F0%9F%87%AE%F0%9F%87%B1+Israel+%F0%9F%87%AE%F0%9F%87%B1+Israel+%F0%9F%87%AE%F0%9F%87%B1+Israel+%F0%9F%91%A8%E2%80%8D%F0%9F%91%A9%E2%80%8D%F0%9F%91%A7%E2%80%8D%F0%9F%91%A6+family+%F0%9F%91%A8%E2%80%8D%F0%9F%91%A9%E2%80%8D%F0%9F%91%A7%E2%80%8D%F0%9F%91%A6+family&y2=2002&m2=6&d2=6&t2=o&n3=%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9%C3%A9&y3=2003&m3=7&d3=7&t3=a
+v3-herzl	-	/v3/01m73gh503ng2gfkfbyt3t0a38/herzl.ics
+v3-herzl-google	Google-Calendar-Importer	/v3/01m73gh503ng2gfkfbyt3t0a38/herzl.ics
+v3-herzl-dl	-	/v3/01m73gh503ng2gfkfbyt3t0a38/herzl.ics?dl=1
+v3-herzl-yrem0-israel	-	/v3/01m73gh503ng2gfkfbyt3t0a38/herzl.ics?yrem=0&i=on
+v3-chabad	-	/v3/01jmt1hef19p1hw6qn48k8p4z9/chabad.ics
+v3-chabad-google	Google-Calendar-Importer	/v3/01jmt1hef19p1hw6qn48k8p4z9/chabad.ics
+v3-chabad-an-off	-	/v3/01jmt1hef19p1hw6qn48k8p4z9/chabad.ics?an=off&years=3

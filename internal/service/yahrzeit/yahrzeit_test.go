@@ -34,10 +34,7 @@ func goldenToday(t *testing.T) model.GregDate {
 
 func render(t *testing.T, url, userAgent string, today model.GregDate) *Result {
 	t.Helper()
-	req, ok := ParseRequest(url)
-	if !ok || !req.IsYahrzeit() {
-		t.Fatalf("not a yahrzeit request: %s", url)
-	}
+	req := parseTestURL(t, url)
 	cal, err := New(req, today)
 	if err != nil {
 		t.Fatal(err)
@@ -47,6 +44,29 @@ func render(t *testing.T, url, userAgent string, today model.GregDate) *Result {
 		t.Fatal(err)
 	}
 	return res
+}
+
+// parseTestURL resolves a test URL into a request. A /v3/ URL's calendar is
+// read from testdata/saved/<id>.json, standing in for the database row.
+func parseTestURL(t *testing.T, url string) *Request {
+	t.Helper()
+	if id, ok := SavedID(url); ok {
+		contents, err := os.ReadFile(filepath.Join("testdata", "saved", id+".json"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		path, rawQuery, _ := strings.Cut(url, "?")
+		req, err := NewSavedRequest(path, rawQuery, id, contents, time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC))
+		if err != nil {
+			t.Fatal(err)
+		}
+		return req
+	}
+	req, ok := ParseRequest(url)
+	if !ok || !req.IsYahrzeit() {
+		t.Fatalf("not a yahrzeit request: %s", url)
+	}
+	return req
 }
 
 // TestGolden renders every URL in testdata/cases.tsv and requires the bytes

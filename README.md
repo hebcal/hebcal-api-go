@@ -285,9 +285,10 @@ APIs are unaffected.
 ### iCalendar feeds
 
 The personal **Yahrzeit + Anniversary** calendars of download.hebcal.com, as
-subscribable `.ics` feeds -- the legacy URLs that carry the whole calendar in
-the URL and need no database:
+subscribable `.ics` feeds:
 
+- `GET|HEAD /v3/<id>/<filename>.ics` -- a saved calendar, read from MySQL by
+  its 26-character id (see below)
 - `GET|HEAD /v2/y/<base64 query string>/<filename>.ics`
 - `GET|HEAD /yahrzeit/yahrzeit.cgi/<filename>.ics?<query>`
 - `GET|HEAD /export/[<dir>/]<filename>.ics?<query>` when the query names a
@@ -314,9 +315,18 @@ here. Feeds sent to Google Calendar's importer pin the reminder events to a
 time zone and embed its `VTIMEZONE`, read from the vzic-generated files under
 `-zoneinfo` (default `/var/www/zoneinfo`).
 
-Not served yet: the saved calendars under `/v3/` (which need MySQL) and the
-holiday `.ics` feeds. The plan for
-those is in [iCalendar-port.md](iCalendar-port.md).
+A saved calendar's parameters are a JSON object in the `yahrzeit` table of the
+site's MySQL database; the URL's own query string overrides them (`?yrem=0`,
+`?dl=1`). The connection comes from the `hebcal.mysql.host`, `port`, `user`,
+`password` and `dbname` keys of `-ini` (default `/etc/hebcal-dot-com.ini`, or
+`HEBCAL_INI`). An unknown id is `404`; with no file, no keys, or a database
+that does not answer, `/v3/` is `503` with `Retry-After` and everything else
+keeps working. Each fetch -- `304`s included -- records an access time and, the
+first time, marks the calendar downloaded, on a background worker that never
+delays the response.
+
+Not served yet: the holiday `.ics` feeds. The plan for those is in
+[iCalendar-port.md](iCalendar-port.md).
 
 #### Daily learning
 
@@ -519,6 +529,8 @@ internal/
     readings/              client for the readings-svc sidecar (/leyning
                            for /shabbat, /learning for the PDF calendars)
                            over its unix domain socket
+    yahrzeitdb/            MySQL reader for the saved Yahrzeit calendars
+                           (/v3/), with its fire-and-forget access writes
   model/                 domain layer: dates, locales, calendar events, errors
   httpx/                 shared transport utilities: ETag, CORS, content types,
                          error rendering, compression/metrics/logging middleware
@@ -586,7 +598,8 @@ access log defaults to stdout (pass `-logfile <path>`). The geonames/zips
 database paths default to the working directory (see
 [Location databases](#location-databases)). `/shabbat` needs readings-svc
 listening on `-readings-socket` (or `READINGS_SOCKET`) for Torah readings,
-and the PDF calendars need `-fonts` (see [Fonts](#fonts)).
+the PDF calendars need `-fonts` (see [Fonts](#fonts)), and the saved Yahrzeit
+calendars need MySQL settings in `-ini` (see [iCalendar feeds](#icalendar-feeds)).
 
 Access logs are pino-compatible JSON lines, e.g.:
 
@@ -612,9 +625,9 @@ uses), rotated daily; logrotate signals the service with `SIGUSR1` to
 reopen the file after rotation.
 
 Varnish decides which URLs reach this service. The Yahrzeit feeds and their
-`.csv` exports (`/v2/y/**.ics|csv`, and `/yahrzeit/yahrzeit.cgi/*.ics|csv` and
+`.csv` exports (`/v3/**.ics|csv`, `/v2/y/**.ics|csv`, and `/yahrzeit/yahrzeit.cgi/*.ics|csv` and
 `/export/**.ics|csv` when the query says `v=yahrzeit`) are routed here by hebcal-devops'
-`etc/varnish/download.vcl`; `/v3/` and every holiday `.ics` stay with Node. `download.hebcal.com/v4/**.csv`
+`etc/varnish/download.vcl`; every holiday `.ics` stays with Node. `download.hebcal.com/v4/**.csv`
 (and its legacy `/v2/h/**.csv` and `/hebcal/index.cgi/*.csv` spellings)
 can be routed here too; until it is, hebcal-web keeps serving it. Alongside
 the JSON APIs, two PDF families now belong here rather than to the Node.js

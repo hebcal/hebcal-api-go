@@ -5,6 +5,7 @@ go 1.26.0
 require (
 	github.com/andybalholm/brotli v1.2.8
 	github.com/dustin/go-humanize v1.1.0
+	github.com/go-sql-driver/mysql v1.10.1
 	github.com/go-text/typesetting v0.3.5
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/hebcal/gematriya v1.1.0
@@ -31,6 +32,7 @@ require (
 )
 
 require (
+	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/google/jsonschema-go v0.4.3 // indirect

@@ -1,0 +1,1560 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Hebrew Anniversaries: Rebbetzin Chana Schneerson\, R. Shmuel 
+ o...
+X-WR-CALDESC:Hebcal Hebrew Anniversaries: Rebbetzin Chana Schneerson\, R. 
+ Shmuel of Lubavitch\, Birthday of R. Sholom DovBer of Lubavitch\, The Rebb
+ e recovers from illness\, Birthday and Passing of R. DovBer of Lubavitch\,
+  Liberation of R. DovBer of Lubavitch\, Marriage of Rebbe and Rebbetzin\, 
+ Rosh Hashanah of Chassidism\, Sefarim Victory\, R. Schneur Zalman of Liadi
+ \, R. Yosef Yitzchak of Lubavitch\, Rebbetzin Chaya Mushka Schneerson\, Bi
+ rthday of Rebbetzin Chaya Mushka Schneerson\, R. Sholom DovBer of Lubavitc
+ h\, Birthday of Lubavitcher Rebbe R. Menachem M. Schneerson\, Tzemach Tzed
+ dek\, Birthday of R. Shmuel of Lubavitch\, Baal Shem Tov\, Lubavitcher Reb
+ be R. Menachem M. Schneerson\, Birthday of R. Yosef Yitzchak of Lubavitch\
+ , R. Levi Yitzchak Schneerson\, Birthday of Baal Shem Tov\, Birthday of Tz
+ emach Tzeddek
+X-WR-RELCALID:hebcal-01jmt1hef19p1hw6qn48k8p4z9
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of Baal Shem Tov (18th of Elul)
+DTSTART;VALUE=DATE:20260831
+DTEND;VALUE=DATE:20260901
+UID:other-5786-01jmt1hef19p1hw6qn48k8p4z9-22
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of Baal Shem Tov occurs on Monday\, August 31\, corre
+ sponding to the 18th of Elul\, 5786.\n\nBirthday of Baal Shem Tov begins a
+ t sundown on Sunday\, August 30 and continues until sundown on the day of 
+ observance.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8
+ p4z9#row22
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of Tzemach Tzeddek (29th of Elul)
+DTSTART;VALUE=DATE:20260911
+DTEND;VALUE=DATE:20260912
+UID:other-5786-01jmt1hef19p1hw6qn48k8p4z9-23
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of Tzemach Tzeddek occurs on Friday\, September 11\, 
+ corresponding to the 29th of Elul\, 5786.\n\nBirthday of Tzemach Tzeddek b
+ egins at sundown on Thursday\, September 10 and continues until sundown on
+  the day of observance.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef1
+ 9p1hw6qn48k8p4z9#row23
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Rebbetzin Chana Schneerson Yahrzeit reminder
+DTSTART:20260916T163000
+DTEND:20260916T163000
+UID:reminder-20260916-01jmt1hef19p1hw6qn48k8p4z9-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rebbetzin Chana Schneerson\, w
+ hose Yahrzeit occurs on Thursday\, September 17\, corresponding to the 6th
+  of Tishrei\, 5787.\n\nRebbetzin Chana Schneerson’s Yahrzeit begins at s
+ undown on Wednesday\, September 16 and continues until sundown on the day 
+ of observance. It is customary to light a memorial candle at dusk as the Y
+ ahrzeit begins.\n\nMay your loved one’s soul be bound up in the bond of 
+ eternal life and may their memory serve as a continued source of inspirati
+ on and comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19
+ p1hw6qn48k8p4z9#row1
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Rebbetzin Chana Schneerson’s Yahrzeit (6th of Tishrei)
+DTSTART;VALUE=DATE:20260917
+DTEND;VALUE=DATE:20260918
+UID:yahrzeit-5787-01jmt1hef19p1hw6qn48k8p4z9-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rebbetzin Chana Schneerson\, w
+ hose Yahrzeit occurs on Thursday\, September 17\, corresponding to the 6th
+  of Tishrei\, 5787.\n\nRebbetzin Chana Schneerson’s Yahrzeit begins at s
+ undown on Wednesday\, September 16 and continues until sundown on the day 
+ of observance. It is customary to light a memorial candle at dusk as the Y
+ ahrzeit begins.\n\nMay your loved one’s soul be bound up in the bond of 
+ eternal life and may their memory serve as a continued source of inspirati
+ on and comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19
+ p1hw6qn48k8p4z9#row1
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Shmuel of Lubavitch Yahrzeit reminder
+DTSTART:20260923T163000
+DTEND:20260923T163000
+UID:reminder-20260923-01jmt1hef19p1hw6qn48k8p4z9-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering R. Shmuel of Lubavitch\, whose
+  Yahrzeit occurs on Thursday\, September 24\, corresponding to the 13th of
+  Tishrei\, 5787.\n\nR. Shmuel of Lubavitch’s Yahrzeit begins at sundown 
+ on Wednesday\, September 23 and continues until sundown on the day of obse
+ rvance. It is customary to light a memorial candle at dusk as the Yahrzeit
+  begins.\n\nMay your loved one’s soul be bound up in the bond of eternal
+  life and may their memory serve as a continued source of inspiration and 
+ comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn
+ 48k8p4z9#row2
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Shmuel of Lubavitch’s Yahrzeit (13th of Tishrei)
+DTSTART;VALUE=DATE:20260924
+DTEND;VALUE=DATE:20260925
+UID:yahrzeit-5787-01jmt1hef19p1hw6qn48k8p4z9-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering R. Shmuel of Lubavitch\, whose
+  Yahrzeit occurs on Thursday\, September 24\, corresponding to the 13th of
+  Tishrei\, 5787.\n\nR. Shmuel of Lubavitch’s Yahrzeit begins at sundown 
+ on Wednesday\, September 23 and continues until sundown on the day of obse
+ rvance. It is customary to light a memorial candle at dusk as the Yahrzeit
+  begins.\n\nMay your loved one’s soul be bound up in the bond of eternal
+  life and may their memory serve as a continued source of inspiration and 
+ comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn
+ 48k8p4z9#row2
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of R. Sholom DovBer of Lubavitch (20th of Cheshvan)
+DTSTART;VALUE=DATE:20261031
+DTEND;VALUE=DATE:20261101
+UID:other-5787-01jmt1hef19p1hw6qn48k8p4z9-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of R. Sholom DovBer of Lubavitch occurs on Saturday\,
+  October 31\, corresponding to the 20th of Cheshvan\, 5787.\n\nBirthday of
+  R. Sholom DovBer of Lubavitch begins at sundown on Friday\, October 30 an
+ d continues until sundown on the day of observance.\n\nhttps://www.hebcal.
+ com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row3
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:The Rebbe recovers from illness (1st of Kislev)
+DTSTART;VALUE=DATE:20261111
+DTEND;VALUE=DATE:20261112
+UID:other-5787-01jmt1hef19p1hw6qn48k8p4z9-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:The Rebbe recovers from illness occurs on Wednesday\, November
+  11\, corresponding to the 1st of Kislev\, 5787.\n\nThe Rebbe recovers fro
+ m illness begins at sundown on Tuesday\, November 10 and continues until s
+ undown on the day of observance.\n\nhttps://www.hebcal.com/yahrzeit/edit/0
+ 1jmt1hef19p1hw6qn48k8p4z9#row4
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday and Passing of R. DovBer of Lubavitch (9th of Kislev)
+DTSTART;VALUE=DATE:20261119
+DTEND;VALUE=DATE:20261120
+UID:other-5787-01jmt1hef19p1hw6qn48k8p4z9-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday and Passing of R. DovBer of Lubavitch occurs on Thurs
+ day\, November 19\, corresponding to the 9th of Kislev\, 5787.\n\nBirthday
+  and Passing of R. DovBer of Lubavitch begins at sundown on Wednesday\, No
+ vember 18 and continues until sundown on the day of observance.\n\nhttps:/
+ /www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row5
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Liberation of R. DovBer of Lubavitch (10th of Kislev)
+DTSTART;VALUE=DATE:20261120
+DTEND;VALUE=DATE:20261121
+UID:other-5787-01jmt1hef19p1hw6qn48k8p4z9-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Liberation of R. DovBer of Lubavitch occurs on Friday\, Novemb
+ er 20\, corresponding to the 10th of Kislev\, 5787.\n\nLiberation of R. Do
+ vBer of Lubavitch begins at sundown on Thursday\, November 19 and continue
+ s until sundown on the day of observance.\n\nhttps://www.hebcal.com/yahrze
+ it/edit/01jmt1hef19p1hw6qn48k8p4z9#row6
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Marriage of Rebbe and Rebbetzin (14th of Kislev)
+DTSTART;VALUE=DATE:20261124
+DTEND;VALUE=DATE:20261125
+UID:other-5787-01jmt1hef19p1hw6qn48k8p4z9-7
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Marriage of Rebbe and Rebbetzin occurs on Tuesday\, November 2
+ 4\, corresponding to the 14th of Kislev\, 5787.\n\nMarriage of Rebbe and R
+ ebbetzin begins at sundown on Monday\, November 23 and continues until sun
+ down on the day of observance.\n\nhttps://www.hebcal.com/yahrzeit/edit/01j
+ mt1hef19p1hw6qn48k8p4z9#row7
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Rosh Hashanah of Chassidism (19th of Kislev)
+DTSTART;VALUE=DATE:20261129
+DTEND;VALUE=DATE:20261130
+UID:other-5787-01jmt1hef19p1hw6qn48k8p4z9-8
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Rosh Hashanah of Chassidism occurs on Sunday\, November 29\, c
+ orresponding to the 19th of Kislev\, 5787.\n\nRosh Hashanah of Chassidism 
+ begins at sundown on Saturday\, November 28 and continues until sundown on
+  the day of observance.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef1
+ 9p1hw6qn48k8p4z9#row8
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Sefarim Victory (5th of Tevet)
+DTSTART;VALUE=DATE:20261215
+DTEND;VALUE=DATE:20261216
+UID:other-5787-01jmt1hef19p1hw6qn48k8p4z9-9
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Sefarim Victory occurs on Tuesday\, December 15\, correspondin
+ g to the 5th of Tevet\, 5787.\n\nSefarim Victory begins at sundown on Mond
+ ay\, December 14 and continues until sundown on the day of observance.\n\n
+ https://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row9
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Schneur Zalman of Liadi Yahrzeit reminder
+DTSTART:20270102T200000
+DTEND:20270102T200000
+UID:reminder-20270102-01jmt1hef19p1hw6qn48k8p4z9-10
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering R. Schneur Zalman of Liadi\, w
+ hose Yahrzeit occurs on Sunday\, January 3\, corresponding to the 24th of 
+ Tevet\, 5787.\n\nR. Schneur Zalman of Liadi’s Yahrzeit begins at sundown
+  on Saturday\, January 2 and continues until sundown on the day of observa
+ nce. It is customary to light a memorial candle at nightfall as the Yahrze
+ it begins.\n\nMay your loved one’s soul be bound up in the bond of etern
+ al life and may their memory serve as a continued source of inspiration an
+ d comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6
+ qn48k8p4z9#row10
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Schneur Zalman of Liadi’s Yahrzeit (24th of Tevet)
+DTSTART;VALUE=DATE:20270103
+DTEND;VALUE=DATE:20270104
+UID:yahrzeit-5787-01jmt1hef19p1hw6qn48k8p4z9-10
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering R. Schneur Zalman of Liadi\, w
+ hose Yahrzeit occurs on Sunday\, January 3\, corresponding to the 24th of 
+ Tevet\, 5787.\n\nR. Schneur Zalman of Liadi’s Yahrzeit begins at sundown
+  on Saturday\, January 2 and continues until sundown on the day of observa
+ nce. It is customary to light a memorial candle at nightfall as the Yahrze
+ it begins.\n\nMay your loved one’s soul be bound up in the bond of etern
+ al life and may their memory serve as a continued source of inspiration an
+ d comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6
+ qn48k8p4z9#row10
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Yosef Yitzchak of Lubavitch Yahrzeit reminder
+DTSTART:20270117T163000
+DTEND:20270117T163000
+UID:reminder-20270117-01jmt1hef19p1hw6qn48k8p4z9-11
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering R. Yosef Yitzchak of Lubavitch
+ \, whose Yahrzeit occurs on Monday\, January 18\, corresponding to the 10t
+ h of Sh’vat\, 5787.\n\nR. Yosef Yitzchak of Lubavitch’s Yahrzeit begin
+ s at sundown on Sunday\, January 17 and continues until sundown on the day
+  of observance. It is customary to light a memorial candle at dusk as the 
+ Yahrzeit begins.\n\nMay your loved one’s soul be bound up in the bond of
+  eternal life and may their memory serve as a continued source of inspirat
+ ion and comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef1
+ 9p1hw6qn48k8p4z9#row11
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Yosef Yitzchak of Lubavitch’s Yahrzeit (10th of Sh’
+ vat)
+DTSTART;VALUE=DATE:20270118
+DTEND;VALUE=DATE:20270119
+UID:yahrzeit-5787-01jmt1hef19p1hw6qn48k8p4z9-11
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering R. Yosef Yitzchak of Lubavitch
+ \, whose Yahrzeit occurs on Monday\, January 18\, corresponding to the 10t
+ h of Sh’vat\, 5787.\n\nR. Yosef Yitzchak of Lubavitch’s Yahrzeit begin
+ s at sundown on Sunday\, January 17 and continues until sundown on the day
+  of observance. It is customary to light a memorial candle at dusk as the 
+ Yahrzeit begins.\n\nMay your loved one’s soul be bound up in the bond of
+  eternal life and may their memory serve as a continued source of inspirat
+ ion and comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef1
+ 9p1hw6qn48k8p4z9#row11
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Rebbetzin Chaya Mushka Schneerson Yahrzeit reminder
+DTSTART:20270129T143000
+DTEND:20270129T143000
+UID:reminder-20270129-01jmt1hef19p1hw6qn48k8p4z9-12
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rebbetzin Chaya Mushka Schneer
+ son\, whose Yahrzeit occurs on Saturday\, January 30\, corresponding to th
+ e 22nd of Sh’vat\, 5787.\n\nRebbetzin Chaya Mushka Schneerson’s Yahrze
+ it begins at sundown on Friday\, January 29 and continues until sundown on
+  the day of observance. It is customary to light a memorial candle before 
+ sundown as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up
+  in the bond of eternal life and may their memory serve as a continued sou
+ rce of inspiration and comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/
+ edit/01jmt1hef19p1hw6qn48k8p4z9#row12
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Rebbetzin Chaya Mushka Schneerson’s Yahrzeit (22nd of Sh
+ ’vat)
+DTSTART;VALUE=DATE:20270130
+DTEND;VALUE=DATE:20270131
+UID:yahrzeit-5787-01jmt1hef19p1hw6qn48k8p4z9-12
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rebbetzin Chaya Mushka Schneer
+ son\, whose Yahrzeit occurs on Saturday\, January 30\, corresponding to th
+ e 22nd of Sh’vat\, 5787.\n\nRebbetzin Chaya Mushka Schneerson’s Yahrze
+ it begins at sundown on Friday\, January 29 and continues until sundown on
+  the day of observance. It is customary to light a memorial candle before 
+ sundown as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up
+  in the bond of eternal life and may their memory serve as a continued sou
+ rce of inspiration and comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/
+ edit/01jmt1hef19p1hw6qn48k8p4z9#row12
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of Rebbetzin Chaya Mushka Schneerson (25th of Adar II)
+DTSTART;VALUE=DATE:20270403
+DTEND;VALUE=DATE:20270404
+UID:other-5787-01jmt1hef19p1hw6qn48k8p4z9-13
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of Rebbetzin Chaya Mushka Schneerson occurs on Saturd
+ ay\, April 3\, corresponding to the 25th of Adar II\, 5787.\n\nBirthday of
+  Rebbetzin Chaya Mushka Schneerson begins at sundown on Friday\, April 2 a
+ nd continues until sundown on the day of observance.\n\nhttps://www.hebcal
+ .com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row13
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Sholom DovBer of Lubavitch Yahrzeit reminder
+DTSTART:20270408T163000
+DTEND:20270408T163000
+UID:reminder-20270408-01jmt1hef19p1hw6qn48k8p4z9-14
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering R. Sholom DovBer of Lubavitch\
+ , whose Yahrzeit occurs on Friday\, April 9\, corresponding to the 2nd of 
+ Nisan\, 5787.\n\nR. Sholom DovBer of Lubavitch’s Yahrzeit begins at sund
+ own on Thursday\, April 8 and continues until sundown on the day of observ
+ ance. It is customary to light a memorial candle at dusk as the Yahrzeit b
+ egins.\n\nMay your loved one’s soul be bound up in the bond of eternal l
+ ife and may their memory serve as a continued source of inspiration and co
+ mfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48
+ k8p4z9#row14
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Sholom DovBer of Lubavitch’s Yahrzeit (2nd of Nisan)
+DTSTART;VALUE=DATE:20270409
+DTEND;VALUE=DATE:20270410
+UID:yahrzeit-5787-01jmt1hef19p1hw6qn48k8p4z9-14
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering R. Sholom DovBer of Lubavitch\
+ , whose Yahrzeit occurs on Friday\, April 9\, corresponding to the 2nd of 
+ Nisan\, 5787.\n\nR. Sholom DovBer of Lubavitch’s Yahrzeit begins at sund
+ own on Thursday\, April 8 and continues until sundown on the day of observ
+ ance. It is customary to light a memorial candle at dusk as the Yahrzeit b
+ egins.\n\nMay your loved one’s soul be bound up in the bond of eternal l
+ ife and may their memory serve as a continued source of inspiration and co
+ mfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48
+ k8p4z9#row14
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of Lubavitcher Rebbe R. Menachem M. Schneerson (11th of N
+ isan)
+DTSTART;VALUE=DATE:20270418
+DTEND;VALUE=DATE:20270419
+UID:other-5787-01jmt1hef19p1hw6qn48k8p4z9-15
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of Lubavitcher Rebbe R. Menachem M. Schneerson occurs
+  on Sunday\, April 18\, corresponding to the 11th of Nisan\, 5787.\n\nBirt
+ hday of Lubavitcher Rebbe R. Menachem M. Schneerson begins at sundown on S
+ aturday\, April 17 and continues until sundown on the day of observance.\n
+ \nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row15
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Tzemach Tzeddek Yahrzeit reminder
+DTSTART:20270419T163000
+DTEND:20270419T163000
+UID:reminder-20270419-01jmt1hef19p1hw6qn48k8p4z9-16
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Tzemach Tzeddek\, whose Yahrze
+ it occurs on Tuesday\, April 20\, corresponding to the 13th of Nisan\, 578
+ 7.\n\nTzemach Tzeddek’s Yahrzeit begins at sundown on Monday\, April 19 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved o
+ ne’s soul be bound up in the bond of eternal life and may their memory s
+ erve as a continued source of inspiration and comfort to you.\n\nhttps://w
+ ww.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row16
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Tzemach Tzeddek’s Yahrzeit (13th of Nisan)
+DTSTART;VALUE=DATE:20270420
+DTEND;VALUE=DATE:20270421
+UID:yahrzeit-5787-01jmt1hef19p1hw6qn48k8p4z9-16
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Tzemach Tzeddek\, whose Yahrze
+ it occurs on Tuesday\, April 20\, corresponding to the 13th of Nisan\, 578
+ 7.\n\nTzemach Tzeddek’s Yahrzeit begins at sundown on Monday\, April 19 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved o
+ ne’s soul be bound up in the bond of eternal life and may their memory s
+ erve as a continued source of inspiration and comfort to you.\n\nhttps://w
+ ww.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row16
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of R. Shmuel of Lubavitch (2nd of Iyyar)
+DTSTART;VALUE=DATE:20270509
+DTEND;VALUE=DATE:20270510
+UID:other-5787-01jmt1hef19p1hw6qn48k8p4z9-17
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of R. Shmuel of Lubavitch occurs on Sunday\, May 9\, 
+ corresponding to the 2nd of Iyyar\, 5787.\n\nBirthday of R. Shmuel of Luba
+ vitch begins at sundown on Saturday\, May 8 and continues until sundown on
+  the day of observance.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef1
+ 9p1hw6qn48k8p4z9#row17
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Baal Shem Tov Yahrzeit reminder
+DTSTART:20270610T163000
+DTEND:20270610T163000
+UID:reminder-20270610-01jmt1hef19p1hw6qn48k8p4z9-18
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Baal Shem Tov\, whose Yahrzeit
+  occurs on Friday\, June 11\, corresponding to the 6th of Sivan\, 5787.\n\
+ nBaal Shem Tov’s Yahrzeit begins at sundown on Thursday\, June 10 and co
+ ntinues until sundown on the day of observance. It is customary to light a
+  memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s
+  soul be bound up in the bond of eternal life and may their memory serve a
+ s a continued source of inspiration and comfort to you.\n\nhttps://www.heb
+ cal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row18
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Baal Shem Tov’s Yahrzeit (6th of Sivan)
+DTSTART;VALUE=DATE:20270611
+DTEND;VALUE=DATE:20270612
+UID:yahrzeit-5787-01jmt1hef19p1hw6qn48k8p4z9-18
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Baal Shem Tov\, whose Yahrzeit
+  occurs on Friday\, June 11\, corresponding to the 6th of Sivan\, 5787.\n\
+ nBaal Shem Tov’s Yahrzeit begins at sundown on Thursday\, June 10 and co
+ ntinues until sundown on the day of observance. It is customary to light a
+  memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s
+  soul be bound up in the bond of eternal life and may their memory serve a
+ s a continued source of inspiration and comfort to you.\n\nhttps://www.heb
+ cal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row18
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Lubavitcher Rebbe R. Menachem M. Schneerson Yahrzeit remin
+ der
+DTSTART:20270707T163000
+DTEND:20270707T163000
+UID:reminder-20270707-01jmt1hef19p1hw6qn48k8p4z9-19
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Lubavitcher Rebbe R. Menachem 
+ M. Schneerson\, whose Yahrzeit occurs on Thursday\, July 8\, corresponding
+  to the 3rd of Tamuz\, 5787.\n\nLubavitcher Rebbe R. Menachem M. Schneerso
+ n’s Yahrzeit begins at sundown on Wednesday\, July 7 and continues until
+  sundown on the day of observance. It is customary to light a memorial can
+ dle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be boun
+ d up in the bond of eternal life and may their memory serve as a continued
+  source of inspiration and comfort to you.\n\nhttps://www.hebcal.com/yahrz
+ eit/edit/01jmt1hef19p1hw6qn48k8p4z9#row19
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Lubavitcher Rebbe R. Menachem M. Schneerson’s Yahrzeit (
+ 3rd of Tamuz)
+DTSTART;VALUE=DATE:20270708
+DTEND;VALUE=DATE:20270709
+UID:yahrzeit-5787-01jmt1hef19p1hw6qn48k8p4z9-19
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Lubavitcher Rebbe R. Menachem 
+ M. Schneerson\, whose Yahrzeit occurs on Thursday\, July 8\, corresponding
+  to the 3rd of Tamuz\, 5787.\n\nLubavitcher Rebbe R. Menachem M. Schneerso
+ n’s Yahrzeit begins at sundown on Wednesday\, July 7 and continues until
+  sundown on the day of observance. It is customary to light a memorial can
+ dle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be boun
+ d up in the bond of eternal life and may their memory serve as a continued
+  source of inspiration and comfort to you.\n\nhttps://www.hebcal.com/yahrz
+ eit/edit/01jmt1hef19p1hw6qn48k8p4z9#row19
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of R. Yosef Yitzchak of Lubavitch (12th of Tamuz)
+DTSTART;VALUE=DATE:20270717
+DTEND;VALUE=DATE:20270718
+UID:other-5787-01jmt1hef19p1hw6qn48k8p4z9-20
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of R. Yosef Yitzchak of Lubavitch occurs on Saturday\
+ , July 17\, corresponding to the 12th of Tamuz\, 5787.\n\nBirthday of R. Y
+ osef Yitzchak of Lubavitch begins at sundown on Friday\, July 16 and conti
+ nues until sundown on the day of observance.\n\nhttps://www.hebcal.com/yah
+ rzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row20
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Levi Yitzchak Schneerson Yahrzeit reminder
+DTSTART:20270822T163000
+DTEND:20270822T163000
+UID:reminder-20270822-01jmt1hef19p1hw6qn48k8p4z9-21
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering R. Levi Yitzchak Schneerson\, 
+ whose Yahrzeit occurs on Monday\, August 23\, corresponding to the 20th of
+  Av\, 5787.\n\nR. Levi Yitzchak Schneerson’s Yahrzeit begins at sundown 
+ on Sunday\, August 22 and continues until sundown on the day of observance
+ . It is customary to light a memorial candle at dusk as the Yahrzeit begin
+ s.\n\nMay your loved one’s soul be bound up in the bond of eternal life 
+ and may their memory serve as a continued source of inspiration and comfor
+ t to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4
+ z9#row21
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Levi Yitzchak Schneerson’s Yahrzeit (20th of Av)
+DTSTART;VALUE=DATE:20270823
+DTEND;VALUE=DATE:20270824
+UID:yahrzeit-5787-01jmt1hef19p1hw6qn48k8p4z9-21
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering R. Levi Yitzchak Schneerson\, 
+ whose Yahrzeit occurs on Monday\, August 23\, corresponding to the 20th of
+  Av\, 5787.\n\nR. Levi Yitzchak Schneerson’s Yahrzeit begins at sundown 
+ on Sunday\, August 22 and continues until sundown on the day of observance
+ . It is customary to light a memorial candle at dusk as the Yahrzeit begin
+ s.\n\nMay your loved one’s soul be bound up in the bond of eternal life 
+ and may their memory serve as a continued source of inspiration and comfor
+ t to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4
+ z9#row21
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of Baal Shem Tov (18th of Elul)
+DTSTART;VALUE=DATE:20270920
+DTEND;VALUE=DATE:20270921
+UID:other-5787-01jmt1hef19p1hw6qn48k8p4z9-22
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of Baal Shem Tov occurs on Monday\, September 20\, co
+ rresponding to the 18th of Elul\, 5787.\n\nBirthday of Baal Shem Tov begin
+ s at sundown on Sunday\, September 19 and continues until sundown on the d
+ ay of observance.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6
+ qn48k8p4z9#row22
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of Tzemach Tzeddek (29th of Elul)
+DTSTART;VALUE=DATE:20271001
+DTEND;VALUE=DATE:20271002
+UID:other-5787-01jmt1hef19p1hw6qn48k8p4z9-23
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of Tzemach Tzeddek occurs on Friday\, October 1\, cor
+ responding to the 29th of Elul\, 5787.\n\nBirthday of Tzemach Tzeddek begi
+ ns at sundown on Thursday\, September 30 and continues until sundown on th
+ e day of observance.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1
+ hw6qn48k8p4z9#row23
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Rebbetzin Chana Schneerson Yahrzeit reminder
+DTSTART:20271006T163000
+DTEND:20271006T163000
+UID:reminder-20271006-01jmt1hef19p1hw6qn48k8p4z9-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rebbetzin Chana Schneerson\, w
+ hose Yahrzeit occurs on Thursday\, October 7\, corresponding to the 6th of
+  Tishrei\, 5788.\n\nRebbetzin Chana Schneerson’s Yahrzeit begins at sund
+ own on Wednesday\, October 6 and continues until sundown on the day of obs
+ ervance. It is customary to light a memorial candle at dusk as the Yahrzei
+ t begins.\n\nMay your loved one’s soul be bound up in the bond of eterna
+ l life and may their memory serve as a continued source of inspiration and
+  comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6q
+ n48k8p4z9#row1
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Rebbetzin Chana Schneerson’s Yahrzeit (6th of Tishrei)
+DTSTART;VALUE=DATE:20271007
+DTEND;VALUE=DATE:20271008
+UID:yahrzeit-5788-01jmt1hef19p1hw6qn48k8p4z9-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rebbetzin Chana Schneerson\, w
+ hose Yahrzeit occurs on Thursday\, October 7\, corresponding to the 6th of
+  Tishrei\, 5788.\n\nRebbetzin Chana Schneerson’s Yahrzeit begins at sund
+ own on Wednesday\, October 6 and continues until sundown on the day of obs
+ ervance. It is customary to light a memorial candle at dusk as the Yahrzei
+ t begins.\n\nMay your loved one’s soul be bound up in the bond of eterna
+ l life and may their memory serve as a continued source of inspiration and
+  comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6q
+ n48k8p4z9#row1
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Shmuel of Lubavitch Yahrzeit reminder
+DTSTART:20271013T163000
+DTEND:20271013T163000
+UID:reminder-20271013-01jmt1hef19p1hw6qn48k8p4z9-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering R. Shmuel of Lubavitch\, whose
+  Yahrzeit occurs on Thursday\, October 14\, corresponding to the 13th of T
+ ishrei\, 5788.\n\nR. Shmuel of Lubavitch’s Yahrzeit begins at sundown on
+  Wednesday\, October 13 and continues until sundown on the day of observan
+ ce. It is customary to light a memorial candle at dusk as the Yahrzeit beg
+ ins.\n\nMay your loved one’s soul be bound up in the bond of eternal lif
+ e and may their memory serve as a continued source of inspiration and comf
+ ort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8
+ p4z9#row2
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Shmuel of Lubavitch’s Yahrzeit (13th of Tishrei)
+DTSTART;VALUE=DATE:20271014
+DTEND;VALUE=DATE:20271015
+UID:yahrzeit-5788-01jmt1hef19p1hw6qn48k8p4z9-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering R. Shmuel of Lubavitch\, whose
+  Yahrzeit occurs on Thursday\, October 14\, corresponding to the 13th of T
+ ishrei\, 5788.\n\nR. Shmuel of Lubavitch’s Yahrzeit begins at sundown on
+  Wednesday\, October 13 and continues until sundown on the day of observan
+ ce. It is customary to light a memorial candle at dusk as the Yahrzeit beg
+ ins.\n\nMay your loved one’s soul be bound up in the bond of eternal lif
+ e and may their memory serve as a continued source of inspiration and comf
+ ort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8
+ p4z9#row2
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of R. Sholom DovBer of Lubavitch (20th of Cheshvan)
+DTSTART;VALUE=DATE:20271120
+DTEND;VALUE=DATE:20271121
+UID:other-5788-01jmt1hef19p1hw6qn48k8p4z9-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of R. Sholom DovBer of Lubavitch occurs on Saturday\,
+  November 20\, corresponding to the 20th of Cheshvan\, 5788.\n\nBirthday o
+ f R. Sholom DovBer of Lubavitch begins at sundown on Friday\, November 19 
+ and continues until sundown on the day of observance.\n\nhttps://www.hebca
+ l.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row3
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:The Rebbe recovers from illness (1st of Kislev)
+DTSTART;VALUE=DATE:20271201
+DTEND;VALUE=DATE:20271202
+UID:other-5788-01jmt1hef19p1hw6qn48k8p4z9-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:The Rebbe recovers from illness occurs on Wednesday\, December
+  1\, corresponding to the 1st of Kislev\, 5788.\n\nThe Rebbe recovers from
+  illness begins at sundown on Tuesday\, November 30 and continues until su
+ ndown on the day of observance.\n\nhttps://www.hebcal.com/yahrzeit/edit/01
+ jmt1hef19p1hw6qn48k8p4z9#row4
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday and Passing of R. DovBer of Lubavitch (9th of Kislev)
+DTSTART;VALUE=DATE:20271209
+DTEND;VALUE=DATE:20271210
+UID:other-5788-01jmt1hef19p1hw6qn48k8p4z9-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday and Passing of R. DovBer of Lubavitch occurs on Thurs
+ day\, December 9\, corresponding to the 9th of Kislev\, 5788.\n\nBirthday 
+ and Passing of R. DovBer of Lubavitch begins at sundown on Wednesday\, Dec
+ ember 8 and continues until sundown on the day of observance.\n\nhttps://w
+ ww.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row5
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Liberation of R. DovBer of Lubavitch (10th of Kislev)
+DTSTART;VALUE=DATE:20271210
+DTEND;VALUE=DATE:20271211
+UID:other-5788-01jmt1hef19p1hw6qn48k8p4z9-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Liberation of R. DovBer of Lubavitch occurs on Friday\, Decemb
+ er 10\, corresponding to the 10th of Kislev\, 5788.\n\nLiberation of R. Do
+ vBer of Lubavitch begins at sundown on Thursday\, December 9 and continues
+  until sundown on the day of observance.\n\nhttps://www.hebcal.com/yahrzei
+ t/edit/01jmt1hef19p1hw6qn48k8p4z9#row6
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Marriage of Rebbe and Rebbetzin (14th of Kislev)
+DTSTART;VALUE=DATE:20271214
+DTEND;VALUE=DATE:20271215
+UID:other-5788-01jmt1hef19p1hw6qn48k8p4z9-7
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Marriage of Rebbe and Rebbetzin occurs on Tuesday\, December 1
+ 4\, corresponding to the 14th of Kislev\, 5788.\n\nMarriage of Rebbe and R
+ ebbetzin begins at sundown on Monday\, December 13 and continues until sun
+ down on the day of observance.\n\nhttps://www.hebcal.com/yahrzeit/edit/01j
+ mt1hef19p1hw6qn48k8p4z9#row7
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Rosh Hashanah of Chassidism (19th of Kislev)
+DTSTART;VALUE=DATE:20271219
+DTEND;VALUE=DATE:20271220
+UID:other-5788-01jmt1hef19p1hw6qn48k8p4z9-8
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Rosh Hashanah of Chassidism occurs on Sunday\, December 19\, c
+ orresponding to the 19th of Kislev\, 5788.\n\nRosh Hashanah of Chassidism 
+ begins at sundown on Saturday\, December 18 and continues until sundown on
+  the day of observance.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef1
+ 9p1hw6qn48k8p4z9#row8
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Sefarim Victory (5th of Tevet)
+DTSTART;VALUE=DATE:20280104
+DTEND;VALUE=DATE:20280105
+UID:other-5788-01jmt1hef19p1hw6qn48k8p4z9-9
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Sefarim Victory occurs on Tuesday\, January 4\, corresponding 
+ to the 5th of Tevet\, 5788.\n\nSefarim Victory begins at sundown on Monday
+ \, January 3 and continues until sundown on the day of observance.\n\nhttp
+ s://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row9
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Schneur Zalman of Liadi Yahrzeit reminder
+DTSTART:20280122T200000
+DTEND:20280122T200000
+UID:reminder-20280122-01jmt1hef19p1hw6qn48k8p4z9-10
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering R. Schneur Zalman of Liadi\, w
+ hose Yahrzeit occurs on Sunday\, January 23\, corresponding to the 24th of
+  Tevet\, 5788.\n\nR. Schneur Zalman of Liadi’s Yahrzeit begins at sundow
+ n on Saturday\, January 22 and continues until sundown on the day of obser
+ vance. It is customary to light a memorial candle at nightfall as the Yahr
+ zeit begins.\n\nMay your loved one’s soul be bound up in the bond of ete
+ rnal life and may their memory serve as a continued source of inspiration 
+ and comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1h
+ w6qn48k8p4z9#row10
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Schneur Zalman of Liadi’s Yahrzeit (24th of Tevet)
+DTSTART;VALUE=DATE:20280123
+DTEND;VALUE=DATE:20280124
+UID:yahrzeit-5788-01jmt1hef19p1hw6qn48k8p4z9-10
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering R. Schneur Zalman of Liadi\, w
+ hose Yahrzeit occurs on Sunday\, January 23\, corresponding to the 24th of
+  Tevet\, 5788.\n\nR. Schneur Zalman of Liadi’s Yahrzeit begins at sundow
+ n on Saturday\, January 22 and continues until sundown on the day of obser
+ vance. It is customary to light a memorial candle at nightfall as the Yahr
+ zeit begins.\n\nMay your loved one’s soul be bound up in the bond of ete
+ rnal life and may their memory serve as a continued source of inspiration 
+ and comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1h
+ w6qn48k8p4z9#row10
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Yosef Yitzchak of Lubavitch Yahrzeit reminder
+DTSTART:20280206T163000
+DTEND:20280206T163000
+UID:reminder-20280206-01jmt1hef19p1hw6qn48k8p4z9-11
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering R. Yosef Yitzchak of Lubavitch
+ \, whose Yahrzeit occurs on Monday\, February 7\, corresponding to the 10t
+ h of Sh’vat\, 5788.\n\nR. Yosef Yitzchak of Lubavitch’s Yahrzeit begin
+ s at sundown on Sunday\, February 6 and continues until sundown on the day
+  of observance. It is customary to light a memorial candle at dusk as the 
+ Yahrzeit begins.\n\nMay your loved one’s soul be bound up in the bond of
+  eternal life and may their memory serve as a continued source of inspirat
+ ion and comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef1
+ 9p1hw6qn48k8p4z9#row11
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Yosef Yitzchak of Lubavitch’s Yahrzeit (10th of Sh’
+ vat)
+DTSTART;VALUE=DATE:20280207
+DTEND;VALUE=DATE:20280208
+UID:yahrzeit-5788-01jmt1hef19p1hw6qn48k8p4z9-11
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering R. Yosef Yitzchak of Lubavitch
+ \, whose Yahrzeit occurs on Monday\, February 7\, corresponding to the 10t
+ h of Sh’vat\, 5788.\n\nR. Yosef Yitzchak of Lubavitch’s Yahrzeit begin
+ s at sundown on Sunday\, February 6 and continues until sundown on the day
+  of observance. It is customary to light a memorial candle at dusk as the 
+ Yahrzeit begins.\n\nMay your loved one’s soul be bound up in the bond of
+  eternal life and may their memory serve as a continued source of inspirat
+ ion and comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef1
+ 9p1hw6qn48k8p4z9#row11
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Rebbetzin Chaya Mushka Schneerson Yahrzeit reminder
+DTSTART:20280218T143000
+DTEND:20280218T143000
+UID:reminder-20280218-01jmt1hef19p1hw6qn48k8p4z9-12
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rebbetzin Chaya Mushka Schneer
+ son\, whose Yahrzeit occurs on Saturday\, February 19\, corresponding to t
+ he 22nd of Sh’vat\, 5788.\n\nRebbetzin Chaya Mushka Schneerson’s Yahrz
+ eit begins at sundown on Friday\, February 18 and continues until sundown 
+ on the day of observance. It is customary to light a memorial candle befor
+ e sundown as the Yahrzeit begins.\n\nMay your loved one’s soul be bound 
+ up in the bond of eternal life and may their memory serve as a continued s
+ ource of inspiration and comfort to you.\n\nhttps://www.hebcal.com/yahrzei
+ t/edit/01jmt1hef19p1hw6qn48k8p4z9#row12
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Rebbetzin Chaya Mushka Schneerson’s Yahrzeit (22nd of Sh
+ ’vat)
+DTSTART;VALUE=DATE:20280219
+DTEND;VALUE=DATE:20280220
+UID:yahrzeit-5788-01jmt1hef19p1hw6qn48k8p4z9-12
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rebbetzin Chaya Mushka Schneer
+ son\, whose Yahrzeit occurs on Saturday\, February 19\, corresponding to t
+ he 22nd of Sh’vat\, 5788.\n\nRebbetzin Chaya Mushka Schneerson’s Yahrz
+ eit begins at sundown on Friday\, February 18 and continues until sundown 
+ on the day of observance. It is customary to light a memorial candle befor
+ e sundown as the Yahrzeit begins.\n\nMay your loved one’s soul be bound 
+ up in the bond of eternal life and may their memory serve as a continued s
+ ource of inspiration and comfort to you.\n\nhttps://www.hebcal.com/yahrzei
+ t/edit/01jmt1hef19p1hw6qn48k8p4z9#row12
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of Rebbetzin Chaya Mushka Schneerson (25th of Adar)
+DTSTART;VALUE=DATE:20280323
+DTEND;VALUE=DATE:20280324
+UID:other-5788-01jmt1hef19p1hw6qn48k8p4z9-13
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of Rebbetzin Chaya Mushka Schneerson occurs on Thursd
+ ay\, March 23\, corresponding to the 25th of Adar\, 5788.\n\nBirthday of R
+ ebbetzin Chaya Mushka Schneerson begins at sundown on Wednesday\, March 22
+  and continues until sundown on the day of observance.\n\nhttps://www.hebc
+ al.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row13
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Sholom DovBer of Lubavitch Yahrzeit reminder
+DTSTART:20280328T163000
+DTEND:20280328T163000
+UID:reminder-20280328-01jmt1hef19p1hw6qn48k8p4z9-14
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering R. Sholom DovBer of Lubavitch\
+ , whose Yahrzeit occurs on Wednesday\, March 29\, corresponding to the 2nd
+  of Nisan\, 5788.\n\nR. Sholom DovBer of Lubavitch’s Yahrzeit begins at 
+ sundown on Tuesday\, March 28 and continues until sundown on the day of ob
+ servance. It is customary to light a memorial candle at dusk as the Yahrze
+ it begins.\n\nMay your loved one’s soul be bound up in the bond of etern
+ al life and may their memory serve as a continued source of inspiration an
+ d comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6
+ qn48k8p4z9#row14
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Sholom DovBer of Lubavitch’s Yahrzeit (2nd of Nisan)
+DTSTART;VALUE=DATE:20280329
+DTEND;VALUE=DATE:20280330
+UID:yahrzeit-5788-01jmt1hef19p1hw6qn48k8p4z9-14
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering R. Sholom DovBer of Lubavitch\
+ , whose Yahrzeit occurs on Wednesday\, March 29\, corresponding to the 2nd
+  of Nisan\, 5788.\n\nR. Sholom DovBer of Lubavitch’s Yahrzeit begins at 
+ sundown on Tuesday\, March 28 and continues until sundown on the day of ob
+ servance. It is customary to light a memorial candle at dusk as the Yahrze
+ it begins.\n\nMay your loved one’s soul be bound up in the bond of etern
+ al life and may their memory serve as a continued source of inspiration an
+ d comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6
+ qn48k8p4z9#row14
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of Lubavitcher Rebbe R. Menachem M. Schneerson (11th of N
+ isan)
+DTSTART;VALUE=DATE:20280407
+DTEND;VALUE=DATE:20280408
+UID:other-5788-01jmt1hef19p1hw6qn48k8p4z9-15
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of Lubavitcher Rebbe R. Menachem M. Schneerson occurs
+  on Friday\, April 7\, corresponding to the 11th of Nisan\, 5788.\n\nBirth
+ day of Lubavitcher Rebbe R. Menachem M. Schneerson begins at sundown on Th
+ ursday\, April 6 and continues until sundown on the day of observance.\n\n
+ https://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row15
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Tzemach Tzeddek Yahrzeit reminder
+DTSTART:20280408T200000
+DTEND:20280408T200000
+UID:reminder-20280408-01jmt1hef19p1hw6qn48k8p4z9-16
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Tzemach Tzeddek\, whose Yahrze
+ it occurs on Sunday\, April 9\, corresponding to the 13th of Nisan\, 5788.
+ \n\nTzemach Tzeddek’s Yahrzeit begins at sundown on Saturday\, April 8 a
+ nd continues until sundown on the day of observance. It is customary to li
+ ght a memorial candle at nightfall as the Yahrzeit begins.\n\nMay your lov
+ ed one’s soul be bound up in the bond of eternal life and may their memo
+ ry serve as a continued source of inspiration and comfort to you.\n\nhttps
+ ://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row16
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Tzemach Tzeddek’s Yahrzeit (13th of Nisan)
+DTSTART;VALUE=DATE:20280409
+DTEND;VALUE=DATE:20280410
+UID:yahrzeit-5788-01jmt1hef19p1hw6qn48k8p4z9-16
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Tzemach Tzeddek\, whose Yahrze
+ it occurs on Sunday\, April 9\, corresponding to the 13th of Nisan\, 5788.
+ \n\nTzemach Tzeddek’s Yahrzeit begins at sundown on Saturday\, April 8 a
+ nd continues until sundown on the day of observance. It is customary to li
+ ght a memorial candle at nightfall as the Yahrzeit begins.\n\nMay your lov
+ ed one’s soul be bound up in the bond of eternal life and may their memo
+ ry serve as a continued source of inspiration and comfort to you.\n\nhttps
+ ://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row16
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of R. Shmuel of Lubavitch (2nd of Iyyar)
+DTSTART;VALUE=DATE:20280428
+DTEND;VALUE=DATE:20280429
+UID:other-5788-01jmt1hef19p1hw6qn48k8p4z9-17
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of R. Shmuel of Lubavitch occurs on Friday\, April 28
+ \, corresponding to the 2nd of Iyyar\, 5788.\n\nBirthday of R. Shmuel of L
+ ubavitch begins at sundown on Thursday\, April 27 and continues until sund
+ own on the day of observance.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jm
+ t1hef19p1hw6qn48k8p4z9#row17
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Baal Shem Tov Yahrzeit reminder
+DTSTART:20280530T163000
+DTEND:20280530T163000
+UID:reminder-20280530-01jmt1hef19p1hw6qn48k8p4z9-18
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Baal Shem Tov\, whose Yahrzeit
+  occurs on Wednesday\, May 31\, corresponding to the 6th of Sivan\, 5788.\
+ n\nBaal Shem Tov’s Yahrzeit begins at sundown on Tuesday\, May 30 and co
+ ntinues until sundown on the day of observance. It is customary to light a
+  memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s
+  soul be bound up in the bond of eternal life and may their memory serve a
+ s a continued source of inspiration and comfort to you.\n\nhttps://www.heb
+ cal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row18
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Baal Shem Tov’s Yahrzeit (6th of Sivan)
+DTSTART;VALUE=DATE:20280531
+DTEND;VALUE=DATE:20280601
+UID:yahrzeit-5788-01jmt1hef19p1hw6qn48k8p4z9-18
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Baal Shem Tov\, whose Yahrzeit
+  occurs on Wednesday\, May 31\, corresponding to the 6th of Sivan\, 5788.\
+ n\nBaal Shem Tov’s Yahrzeit begins at sundown on Tuesday\, May 30 and co
+ ntinues until sundown on the day of observance. It is customary to light a
+  memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s
+  soul be bound up in the bond of eternal life and may their memory serve a
+ s a continued source of inspiration and comfort to you.\n\nhttps://www.heb
+ cal.com/yahrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row18
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Lubavitcher Rebbe R. Menachem M. Schneerson Yahrzeit remin
+ der
+DTSTART:20280626T163000
+DTEND:20280626T163000
+UID:reminder-20280626-01jmt1hef19p1hw6qn48k8p4z9-19
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Lubavitcher Rebbe R. Menachem 
+ M. Schneerson\, whose Yahrzeit occurs on Tuesday\, June 27\, corresponding
+  to the 3rd of Tamuz\, 5788.\n\nLubavitcher Rebbe R. Menachem M. Schneerso
+ n’s Yahrzeit begins at sundown on Monday\, June 26 and continues until s
+ undown on the day of observance. It is customary to light a memorial candl
+ e at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound 
+ up in the bond of eternal life and may their memory serve as a continued s
+ ource of inspiration and comfort to you.\n\nhttps://www.hebcal.com/yahrzei
+ t/edit/01jmt1hef19p1hw6qn48k8p4z9#row19
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ Lubavitcher Rebbe R. Menachem M. Schneerson’s Yahrzeit (
+ 3rd of Tamuz)
+DTSTART;VALUE=DATE:20280627
+DTEND;VALUE=DATE:20280628
+UID:yahrzeit-5788-01jmt1hef19p1hw6qn48k8p4z9-19
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Lubavitcher Rebbe R. Menachem 
+ M. Schneerson\, whose Yahrzeit occurs on Tuesday\, June 27\, corresponding
+  to the 3rd of Tamuz\, 5788.\n\nLubavitcher Rebbe R. Menachem M. Schneerso
+ n’s Yahrzeit begins at sundown on Monday\, June 26 and continues until s
+ undown on the day of observance. It is customary to light a memorial candl
+ e at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound 
+ up in the bond of eternal life and may their memory serve as a continued s
+ ource of inspiration and comfort to you.\n\nhttps://www.hebcal.com/yahrzei
+ t/edit/01jmt1hef19p1hw6qn48k8p4z9#row19
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of R. Yosef Yitzchak of Lubavitch (12th of Tamuz)
+DTSTART;VALUE=DATE:20280706
+DTEND;VALUE=DATE:20280707
+UID:other-5788-01jmt1hef19p1hw6qn48k8p4z9-20
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of R. Yosef Yitzchak of Lubavitch occurs on Thursday\
+ , July 6\, corresponding to the 12th of Tamuz\, 5788.\n\nBirthday of R. Yo
+ sef Yitzchak of Lubavitch begins at sundown on Wednesday\, July 5 and cont
+ inues until sundown on the day of observance.\n\nhttps://www.hebcal.com/ya
+ hrzeit/edit/01jmt1hef19p1hw6qn48k8p4z9#row20
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Levi Yitzchak Schneerson Yahrzeit reminder
+DTSTART:20280811T143000
+DTEND:20280811T143000
+UID:reminder-20280811-01jmt1hef19p1hw6qn48k8p4z9-21
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering R. Levi Yitzchak Schneerson\, 
+ whose Yahrzeit occurs on Saturday\, August 12\, corresponding to the 20th 
+ of Av\, 5788.\n\nR. Levi Yitzchak Schneerson’s Yahrzeit begins at sundow
+ n on Friday\, August 11 and continues until sundown on the day of observan
+ ce. It is customary to light a memorial candle before sundown as the Yahrz
+ eit begins.\n\nMay your loved one’s soul be bound up in the bond of eter
+ nal life and may their memory serve as a continued source of inspiration a
+ nd comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw
+ 6qn48k8p4z9#row21
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:🕯️ R. Levi Yitzchak Schneerson’s Yahrzeit (20th of Av)
+DTSTART;VALUE=DATE:20280812
+DTEND;VALUE=DATE:20280813
+UID:yahrzeit-5788-01jmt1hef19p1hw6qn48k8p4z9-21
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering R. Levi Yitzchak Schneerson\, 
+ whose Yahrzeit occurs on Saturday\, August 12\, corresponding to the 20th 
+ of Av\, 5788.\n\nR. Levi Yitzchak Schneerson’s Yahrzeit begins at sundow
+ n on Friday\, August 11 and continues until sundown on the day of observan
+ ce. It is customary to light a memorial candle before sundown as the Yahrz
+ eit begins.\n\nMay your loved one’s soul be bound up in the bond of eter
+ nal life and may their memory serve as a continued source of inspiration a
+ nd comfort to you.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw
+ 6qn48k8p4z9#row21
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of Baal Shem Tov (18th of Elul)
+DTSTART;VALUE=DATE:20280909
+DTEND;VALUE=DATE:20280910
+UID:other-5788-01jmt1hef19p1hw6qn48k8p4z9-22
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of Baal Shem Tov occurs on Saturday\, September 9\, c
+ orresponding to the 18th of Elul\, 5788.\n\nBirthday of Baal Shem Tov begi
+ ns at sundown on Friday\, September 8 and continues until sundown on the d
+ ay of observance.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1hef19p1hw6
+ qn48k8p4z9#row22
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:6
+CATEGORIES:Personal
+SUMMARY:Birthday of Tzemach Tzeddek (29th of Elul)
+DTSTART;VALUE=DATE:20280920
+DTEND;VALUE=DATE:20280921
+UID:other-5788-01jmt1hef19p1hw6qn48k8p4z9-23
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Birthday of Tzemach Tzeddek occurs on Wednesday\, September 20
+ \, corresponding to the 29th of Elul\, 5788.\n\nBirthday of Tzemach Tzedde
+ k begins at sundown on Tuesday\, September 19 and continues until sundown 
+ on the day of observance.\n\nhttps://www.hebcal.com/yahrzeit/edit/01jmt1he
+ f19p1hw6qn48k8p4z9#row23
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+END:VCALENDAR

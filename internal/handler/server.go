@@ -15,6 +15,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/logger"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
+	"github.com/hebcal/hebcal-api-go/internal/repository/yahrzeitdb"
 	csvsvc "github.com/hebcal/hebcal-api-go/internal/service/csv"
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
@@ -52,6 +53,9 @@ type Server struct {
 	// Zones supplies the VTIMEZONE definitions the iCalendar feeds embed. Nil
 	// serves the feeds without them.
 	Zones *icalendar.ZoneInfo
+	// Yahrzeit holds the saved Yahrzeit + Anniversary calendars served under
+	// /v3/. Nil (no database configured) answers those 503.
+	Yahrzeit yahrzeitdb.Store
 	// DownloadLimiter caps how many PDF and CSV downloads run at once, shedding the
 	// overflow with 503 so a flood cannot grow the heap into swap. Nil (the
 	// zero value) leaves the routes unlimited; main sets it from the config.
@@ -150,6 +154,9 @@ func (s *Server) Routes() http.Handler {
 	// over when the query names one (v=yahrzeit); this is the original CGI
 	// path, which serves nothing else here.
 	mux.HandleFunc("/yahrzeit/yahrzeit.cgi/", calendar)
+	// Saved Yahrzeit + Anniversary calendars, /v3/<id>/<name>.ics (or .csv),
+	// whose parameters live in the MySQL database rather than the URL.
+	mux.HandleFunc("/v3/", limited(s.yahrzeitSaved))
 	mux.HandleFunc("/holidays/", limited(s.pdfHoliday))
 	mux.HandleFunc("/", mw.Serve(s.notFound))
 	return s.withBackend(mux)

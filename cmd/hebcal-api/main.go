@@ -2,7 +2,9 @@
 // Hebcal.com REST APIs in Go: the Hebrew Date Converter (JSON, XML, and CSV),
 // Zmanim / Assur Melacha (JSON), the Shabbat candle-lighting times, the /geo
 // and /complete location endpoints, and the PDF calendars served from
-// download.hebcal.com/v4/ and www.hebcal.com/holidays/.
+// download.hebcal.com/v4/ and www.hebcal.com/holidays/, and the personal
+// Yahrzeit + Anniversary iCalendar and CSV feeds, saved ones (/v3/) read from
+// MySQL.
 //
 // It wires the configuration, logger, and data sources together and starts the
 // listener; all request handling lives in internal/handler.
@@ -24,6 +26,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/logger"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
+	"github.com/hebcal/hebcal-api-go/internal/repository/yahrzeitdb"
 	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	mcpsvc "github.com/hebcal/hebcal-api-go/internal/service/mcp"
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
@@ -138,6 +141,28 @@ func main() {
 	if cfg.ReadingsSocket != "" {
 		app.PDF.Learning = download.NewLearningFetcher(app.Readings)
 		app.CSV.Learning = app.PDF.Learning
+	}
+
+	// The saved Yahrzeit calendars (/v3/) live in the site's MySQL database,
+	// configured in hebcal-dot-com.ini. Without the file or its hebcal.mysql.*
+	// keys those requests answer 503 and nothing else is affected. The pool
+	// dials lazily, so an unreachable database at startup is only a warning.
+	if ini, err := config.ReadINI(cfg.INIFile); err != nil {
+		lg.Warn("cannot read " + cfg.INIFile + "; saved Yahrzeit calendars (/v3/) disabled: " + err.Error())
+	} else if dbCfg, ok := yahrzeitdb.ConfigFromINI(ini); !ok {
+		lg.Warn("no hebcal.mysql.user/dbname in " + cfg.INIFile + "; saved Yahrzeit calendars (/v3/) disabled")
+	} else if ydb, err := yahrzeitdb.Open(dbCfg, lg.Warn); err != nil {
+		lg.Warn("cannot configure " + dbCfg.String() + "; saved Yahrzeit calendars (/v3/) disabled: " + err.Error())
+	} else {
+		app.Yahrzeit = ydb
+		defer ydb.Close()
+		pingCtx, pingCancel := context.WithTimeout(context.Background(), 2*time.Second)
+		if err := ydb.Ping(pingCtx); err != nil {
+			lg.Warn("MySQL " + dbCfg.String() + " not reachable yet: " + err.Error())
+		} else {
+			lg.Info("MySQL connected: " + dbCfg.String())
+		}
+		pingCancel()
 	}
 
 	// Cap concurrent PDF and CSV downloads so a flood cannot grow the heap into swap (each
