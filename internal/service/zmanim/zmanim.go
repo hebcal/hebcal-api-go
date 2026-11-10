@@ -208,12 +208,6 @@ func computeTimes(d model.GregDate, loc *geodb.Location, names []string, roundMi
 				continue
 			}
 		}
-		if dt.Year() <= 1 {
-			// A time derived from one that does not occur (MinchaGedolaMGA
-			// from a missing alot hashachar) comes back as an offset from
-			// the zero time rather than as the zero time itself.
-			dt = time.Time{}
-		}
 		if roundMinute {
 			dt = RoundTime(dt)
 		}

@@ -942,13 +942,13 @@ Things that are not obvious:
   the ETag covers it, so a same-day refresh is a 304 before anything is
   computed; that is safe because the feed is a function of URL and date.
   Cache-Control is 7 days (`publishedTTL` P7D); errors carry none.
-- **A time "in year 1" means it does not occur.** hebcal-go v0.26.1's
-  `MinchaGedolaMGA`/`MinchaKetanaMGA` offset sunrise/sunset by 72 minutes
-  before checking for the zero time, so in a polar night they returned
-  `0001-01-01T00:06`; the feed then listed them and the JSON API reported
-  them. `computeTimes` zeroes any year <= 1. Fixed upstream on hebcal-go's
-  `claude/elegant-pasteur-y40dlj` branch; the guard can go once a release
-  with it is bumped here.
+- **At a pole every sun-derived zman is the zero time.** Until hebcal-go
+  v0.26.2, `MinchaGedolaMGA`/`MinchaKetanaMGA` offset sunrise and sunset by 72
+  minutes before checking for the zero time, so in a polar night they came
+  back as `0001-01-01T00:06`; the feed listed them and the JSON API reported
+  them where hebcal-web reports `null`. Fixed upstream in v0.26.2;
+  `TestZmanimJSONPolarNull` and the North Pole 400 in `TestZmanimFeedErrors`
+  guard it.
 
 ## The readings-svc sidecar
 
@@ -1197,6 +1197,10 @@ github.com/hebcal/learning v0.5.0 adds the `URL()` method to every schedule
 event, which is what closed the daily-learning link gap (see "Where things
 stand"). The empty URLs it returns for Schottenstein Yerushalmi and multi-reading
 Rambam 3-chapter days are deliberate and match @hebcal/core, not omissions.
+
+hebcal-go v0.26.2 came out of the zmanim feed port: `MinchaGedolaMGA` and
+`MinchaKetanaMGA` return the zero time, not an offset from it, when the sun
+never rises (see "The zmanim feeds").
 
 hebcal-go v0.26.0 and github.com/hebcal/learning v0.6.0 came out of the CSV
 port: Yizkor (`CalOptions.Yizkor`, `YizkorEvent`), `event.RenderBrief` and the
