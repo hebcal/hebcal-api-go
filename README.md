@@ -290,6 +290,45 @@ APIs are unaffected.
   HTML pages there are still hebcal-web's, and this route answers them
   `404`.
 
+#### Daily learning
+
+hebcal-web offers 21 daily-learning series. Thirteen of them — Daf Yomi,
+Mishna Yomi, Nach Yomi, the two Yerushalmi editions, Perek Yomi,
+Daf-a-Week, 929, Psalms, the two Rambam schedules, Tanakh Yomi and Pirkei
+Avot — are generated in-process by
+[hebcal/learning](https://github.com/hebcal/learning). The remaining eight —
+Sefer HaMitzvot, Kitzur Shulchan Arukh, Arukh HaShulchan, Amud HaYomi
+(Dirshu), Daf HaHalacha (Dirshu), Chofetz Chaim, Shemirat HaLashon and
+Tanya Yomi — are fetched from the
+[readings-svc](https://github.com/hebcal/readings-svc) sidecar's
+`/learning` endpoint and merged into the calendar, so every series still
+renders. Each learning row links to its source on Sefaria (or
+dafyomi.org).
+
+`-readings-socket` (or `READINGS_SOCKET`) is the same socket `/shabbat`
+uses for Torah readings; the two endpoints are served by one process.
+
+Neither failure mode serves a calendar quietly missing rows the reader
+asked for; both name the missing series in an `X-Unsupported-Series`
+header (which the access log records as `unsupported`):
+
+- **501** when `-readings-socket` is empty — this build cannot render
+  those series and retrying will not help (unreachable in the default
+  configuration).
+- **503**, with `Retry-After`, when a configured readings-svc does not
+  answer — transient, and worth retrying or falling back to the Node.js
+  service.
+
+#### Fonts
+
+The calendars are drawn with the Source Sans Pro and Adobe Hebrew families,
+checked into this repository under `fonts/`. `-fonts` (or `FONT_DIR`,
+default `fonts`) names a directory holding `Source_Sans_Pro/` and
+`Adobe_Hebrew/`. The fonts are parsed once at startup and shared by every
+request; only the per-document embedded instances are rebuilt. A failure to
+load them is logged and disables the two PDF routes rather than stopping
+the server.
+
 ### iCalendar feeds
 
 The personal **Yahrzeit + Anniversary** calendars of download.hebcal.com, as
@@ -335,45 +374,6 @@ delays the response.
 
 Not served yet: the holiday `.ics` feeds. The plan for those is in
 [iCalendar-port.md](iCalendar-port.md).
-
-#### Daily learning
-
-hebcal-web offers 21 daily-learning series. Thirteen of them — Daf Yomi,
-Mishna Yomi, Nach Yomi, the two Yerushalmi editions, Perek Yomi,
-Daf-a-Week, 929, Psalms, the two Rambam schedules, Tanakh Yomi and Pirkei
-Avot — are generated in-process by
-[hebcal/learning](https://github.com/hebcal/learning). The remaining eight —
-Sefer HaMitzvot, Kitzur Shulchan Arukh, Arukh HaShulchan, Amud HaYomi
-(Dirshu), Daf HaHalacha (Dirshu), Chofetz Chaim, Shemirat HaLashon and
-Tanya Yomi — are fetched from the
-[readings-svc](https://github.com/hebcal/readings-svc) sidecar's
-`/learning` endpoint and merged into the calendar, so every series still
-renders. Each learning row links to its source on Sefaria (or
-dafyomi.org).
-
-`-readings-socket` (or `READINGS_SOCKET`) is the same socket `/shabbat`
-uses for Torah readings; the two endpoints are served by one process.
-
-Neither failure mode serves a calendar quietly missing rows the reader
-asked for; both name the missing series in an `X-Unsupported-Series`
-header (which the access log records as `unsupported`):
-
-- **501** when `-readings-socket` is empty — this build cannot render
-  those series and retrying will not help (unreachable in the default
-  configuration).
-- **503**, with `Retry-After`, when a configured readings-svc does not
-  answer — transient, and worth retrying or falling back to the Node.js
-  service.
-
-#### Fonts
-
-The calendars are drawn with the Source Sans Pro and Adobe Hebrew families,
-checked into this repository under `fonts/`. `-fonts` (or `FONT_DIR`,
-default `fonts`) names a directory holding `Source_Sans_Pro/` and
-`Adobe_Hebrew/`. The fonts are parsed once at startup and shared by every
-request; only the per-document embedded instances are rebuilt. A failure to
-load them is logged and disables the two PDF routes rather than stopping
-the server.
 
 ### Short URL redirects
 
