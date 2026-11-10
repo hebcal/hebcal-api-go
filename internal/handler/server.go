@@ -19,6 +19,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 	"github.com/hebcal/hebcal-api-go/pkg/geoip"
+	"github.com/hebcal/hebcal-api-go/pkg/icalendar"
 )
 
 // Server holds the shared state for the HTTP handlers. Its dependencies are
@@ -48,6 +49,9 @@ type Server struct {
 	PDF *pdf.Service
 	// CSV renders the Outlook CSV calendars served from the same /v4/ URLs.
 	CSV *csvsvc.Service
+	// Zones supplies the VTIMEZONE definitions the iCalendar feeds embed. Nil
+	// serves the feeds without them.
+	Zones *icalendar.ZoneInfo
 	// DownloadLimiter caps how many PDF and CSV downloads run at once, shedding the
 	// overflow with 503 so a flood cannot grow the heap into swap. Nil (the
 	// zero value) leaves the routes unlimited; main sets it from the config.
@@ -120,9 +124,9 @@ func (s *Server) Routes() http.Handler {
 	// /v4/<protobuf>/<name>, the legacy /v2/h/<base64 query>/<name> (which
 	// production answers with a 301 to the /v4/ form; this service renders it
 	// instead), and the classic /hebcal/index.cgi/<name>?<query>, older than
-	// both and still crawled. The other /v2/ families (.ics feeds, yahrzeit
-	// calendars) and the .ics form of each shape are handled elsewhere and
-	// answered 404 here.
+	// both and still crawled. The holiday .ics form of each shape is handled
+	// elsewhere and answered 404 here; a personal Yahrzeit + Anniversary
+	// calendar under any of them (v=yahrzeit) is served by yahrzeitDownload.
 	//
 	// Every download route -- both formats, all three URL shapes, and the
 	// holiday PDFs -- shares one concurrency limiter: the cap is on total
@@ -141,6 +145,11 @@ func (s *Server) Routes() http.Handler {
 	// download under an older name; historical URLs nest the file in one or
 	// more directories.
 	mux.HandleFunc("/export/", calendar)
+	// The personal Yahrzeit + Anniversary calendars, as iCalendar feeds. They
+	// arrive under /v2/y/ and /export/ too, which the download handler hands
+	// over when the query names one (v=yahrzeit); this is the original CGI
+	// path, which serves nothing else here.
+	mux.HandleFunc("/yahrzeit/yahrzeit.cgi/", calendar)
 	mux.HandleFunc("/holidays/", limited(s.pdfHoliday))
 	mux.HandleFunc("/", mw.Serve(s.notFound))
 	return s.withBackend(mux)

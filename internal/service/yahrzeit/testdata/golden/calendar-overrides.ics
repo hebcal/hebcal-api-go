@@ -1,0 +1,55 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:PT12H
+X-PUBLISHED-TTL:PT12H
+X-WR-CALNAME:Family\, Calendar
+X-WR-CALDESC:Ours
+X-WR-RELCALID:abc-123
+X-APPLE-CALENDAR-COLOR:#FF0000
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:7
+CATEGORIES:Personal
+SUMMARY:Golda Meir Yahrzeit reminder
+DTSTART:20270214T163000
+DTEND:20270214T163000
+UID:reminder-20270214-0a1da0e9-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Golda Meir\, whose 16th Yahrze
+ it occurs on Monday\, February 15\, corresponding to the 8th of Adar I\, 5
+ 787.\n\nGolda Meir’s Yahrzeit begins at sundown on Sunday\, February 14 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved o
+ ne’s soul be bound up in the bond of eternal life and may their memory s
+ erve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:7
+CATEGORIES:Personal
+SUMMARY:Golda Meir’s 16th Yahrzeit
+DTSTART;VALUE=DATE:20270215
+DTEND;VALUE=DATE:20270216
+UID:yahrzeit-5787-0a1da0e9-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Golda Meir\, whose 16th Yahrze
+ it occurs on Monday\, February 15\, corresponding to the 8th of Adar I\, 5
+ 787.\n\nGolda Meir’s Yahrzeit begins at sundown on Sunday\, February 14 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved o
+ ne’s soul be bound up in the bond of eternal life and may their memory s
+ erve as a continued source of inspiration and comfort to you.
+END:VEVENT
+END:VCALENDAR

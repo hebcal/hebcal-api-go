@@ -1,0 +1,612 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Hebrew Anniversaries: יצחק בן אברהם ושרה\, ש
+ רה\, רבקה\, לאה Leah
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יצחק בן אברהם ושרה יארצייט תזכו
+ רת
+DTSTART:20191125T163000
+DTEND:20191125T163000
+UID:reminder-20191125-12fc0123-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering יצחק בן אברהם וש
+ רה\, whose Yahrzeit occurs on Tuesday\, November 26\, corresponding to t
+ he 28th of Cheshvan\, 5780.\n\nיצחק בן אברהם ושרה’s Yahrz
+ eit begins at sundown on Monday\, November 25 and continues until sundown 
+ on the day of observance. It is customary to light a memorial candle at du
+ sk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in t
+ he bond of eternal life and may their memory serve as a continued source o
+ f inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יארצייט של יצחק בן אברהם ושרה (כ
+ ״ח חשון)
+DTSTART;VALUE=DATE:20191126
+DTEND;VALUE=DATE:20191127
+UID:yahrzeit-5780-12fc0123-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering יצחק בן אברהם וש
+ רה\, whose Yahrzeit occurs on Tuesday\, November 26\, corresponding to t
+ he 28th of Cheshvan\, 5780.\n\nיצחק בן אברהם ושרה’s Yahrz
+ eit begins at sundown on Monday\, November 25 and continues until sundown 
+ on the day of observance. It is customary to light a memorial candle at du
+ sk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in t
+ he bond of eternal life and may their memory serve as a continued source o
+ f inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:יום נישואין לשרה (כ״ח חשון)
+DTSTART;VALUE=DATE:20191126
+DTEND;VALUE=DATE:20191127
+UID:anniversary-5780-b89e130f-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring שרה\, whose Hebrew Anniversary
+  occurs on Tuesday\, November 26\, corresponding to the 28th of Cheshvan\,
+  5780.\n\nשרה’s Hebrew Anniversary begins at sundown on Monday\, Nove
+ mber 25 and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ לאה Leah יארצייט תזכורת
+DTSTART:20191220T143000
+DTEND:20191220T143000
+UID:reminder-20191220-5365b4a7-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering לאה Leah\, whose Yahrzeit o
+ ccurs on Saturday\, December 21\, corresponding to the 23rd of Kislev\, 57
+ 80.\n\nלאה Leah’s Yahrzeit begins at sundown on Friday\, December 20 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle before sundown as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ לאה Leah’s Yahrzeit (23rd of Kislev)
+DTSTART;VALUE=DATE:20191221
+DTEND;VALUE=DATE:20191222
+UID:yahrzeit-5780-5365b4a7-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering לאה Leah\, whose Yahrzeit o
+ ccurs on Saturday\, December 21\, corresponding to the 23rd of Kislev\, 57
+ 80.\n\nלאה Leah’s Yahrzeit begins at sundown on Friday\, December 20 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle before sundown as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ יום הולדת לרבקה (כ״ז אדר)
+DTSTART;VALUE=DATE:20200323
+DTEND;VALUE=DATE:20200324
+UID:birthday-5780-c20dc649-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring רבקה\, whose Hebrew Birthday 
+ occurs on Monday\, March 23\, corresponding to the 27th of Adar\, 5780.\n\
+ nרבקה’s Hebrew Birthday begins at sundown on Sunday\, March 22 and c
+ ontinues until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:Untitled5 (28th of Adar)
+DTSTART;VALUE=DATE:20200324
+DTEND;VALUE=DATE:20200325
+UID:other-5780-adbf6e43-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Untitled5 occurs on Tuesday\, March 24\, corresponding to the 
+ 28th of Adar\, 5780.\n\nUntitled5 begins at sundown on Monday\, March 23 a
+ nd continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יצחק בן אברהם ושרה יארצייט תזכו
+ רת
+DTSTART:20201114T200000
+DTEND:20201114T200000
+UID:reminder-20201114-12fc0123-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering יצחק בן אברהם וש
+ רה\, whose Yahrzeit occurs on Sunday\, November 15\, corresponding to th
+ e 28th of Cheshvan\, 5781.\n\nיצחק בן אברהם ושרה’s Yahrze
+ it begins at sundown on Saturday\, November 14 and continues until sundown
+  on the day of observance. It is customary to light a memorial candle at n
+ ightfall as the Yahrzeit begins.\n\nMay your loved one’s soul be bound u
+ p in the bond of eternal life and may their memory serve as a continued so
+ urce of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יארצייט של יצחק בן אברהם ושרה (כ
+ ״ח חשון)
+DTSTART;VALUE=DATE:20201115
+DTEND;VALUE=DATE:20201116
+UID:yahrzeit-5781-12fc0123-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering יצחק בן אברהם וש
+ רה\, whose Yahrzeit occurs on Sunday\, November 15\, corresponding to th
+ e 28th of Cheshvan\, 5781.\n\nיצחק בן אברהם ושרה’s Yahrze
+ it begins at sundown on Saturday\, November 14 and continues until sundown
+  on the day of observance. It is customary to light a memorial candle at n
+ ightfall as the Yahrzeit begins.\n\nMay your loved one’s soul be bound u
+ p in the bond of eternal life and may their memory serve as a continued so
+ urce of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:יום נישואין לשרה (כ״ח חשון)
+DTSTART;VALUE=DATE:20201115
+DTEND;VALUE=DATE:20201116
+UID:anniversary-5781-b89e130f-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring שרה\, whose Hebrew Anniversary
+  occurs on Sunday\, November 15\, corresponding to the 28th of Cheshvan\, 
+ 5781.\n\nשרה’s Hebrew Anniversary begins at sundown on Saturday\, Nov
+ ember 14 and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ לאה Leah יארצייט תזכורת
+DTSTART:20201208T163000
+DTEND:20201208T163000
+UID:reminder-20201208-5365b4a7-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering לאה Leah\, whose Yahrzeit o
+ ccurs on Wednesday\, December 9\, corresponding to the 23rd of Kislev\, 57
+ 81.\n\nלאה Leah’s Yahrzeit begins at sundown on Tuesday\, December 8 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved o
+ ne’s soul be bound up in the bond of eternal life and may their memory s
+ erve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ לאה Leah’s Yahrzeit (23rd of Kislev)
+DTSTART;VALUE=DATE:20201209
+DTEND;VALUE=DATE:20201210
+UID:yahrzeit-5781-5365b4a7-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering לאה Leah\, whose Yahrzeit o
+ ccurs on Wednesday\, December 9\, corresponding to the 23rd of Kislev\, 57
+ 81.\n\nלאה Leah’s Yahrzeit begins at sundown on Tuesday\, December 8 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved o
+ ne’s soul be bound up in the bond of eternal life and may their memory s
+ erve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ יום הולדת לרבקה (כ״ז אדר)
+DTSTART;VALUE=DATE:20210311
+DTEND;VALUE=DATE:20210312
+UID:birthday-5781-c20dc649-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring רבקה\, whose Hebrew Birthday 
+ occurs on Thursday\, March 11\, corresponding to the 27th of Adar\, 5781.\
+ n\nרבקה’s Hebrew Birthday begins at sundown on Wednesday\, March 10 
+ and continues until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:Untitled5 (28th of Adar)
+DTSTART;VALUE=DATE:20210312
+DTEND;VALUE=DATE:20210313
+UID:other-5781-adbf6e43-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Untitled5 occurs on Friday\, March 12\, corresponding to the 2
+ 8th of Adar\, 5781.\n\nUntitled5 begins at sundown on Thursday\, March 11 
+ and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יצחק בן אברהם ושרה יארצייט תזכו
+ רת
+DTSTART:20211102T163000
+DTEND:20211102T163000
+UID:reminder-20211102-12fc0123-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering יצחק בן אברהם וש
+ רה\, whose Yahrzeit occurs on Wednesday\, November 3\, corresponding to 
+ the 28th of Cheshvan\, 5782.\n\nיצחק בן אברהם ושרה’s Yahr
+ zeit begins at sundown on Tuesday\, November 2 and continues until sundown
+  on the day of observance. It is customary to light a memorial candle at d
+ usk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in 
+ the bond of eternal life and may their memory serve as a continued source 
+ of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יארצייט של יצחק בן אברהם ושרה (כ
+ ״ח חשון)
+DTSTART;VALUE=DATE:20211103
+DTEND;VALUE=DATE:20211104
+UID:yahrzeit-5782-12fc0123-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering יצחק בן אברהם וש
+ רה\, whose Yahrzeit occurs on Wednesday\, November 3\, corresponding to 
+ the 28th of Cheshvan\, 5782.\n\nיצחק בן אברהם ושרה’s Yahr
+ zeit begins at sundown on Tuesday\, November 2 and continues until sundown
+  on the day of observance. It is customary to light a memorial candle at d
+ usk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in 
+ the bond of eternal life and may their memory serve as a continued source 
+ of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:יום נישואין לשרה (כ״ח חשון)
+DTSTART;VALUE=DATE:20211103
+DTEND;VALUE=DATE:20211104
+UID:anniversary-5782-b89e130f-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring שרה\, whose Hebrew Anniversary
+  occurs on Wednesday\, November 3\, corresponding to the 28th of Cheshvan\
+ , 5782.\n\nשרה’s Hebrew Anniversary begins at sundown on Tuesday\, No
+ vember 2 and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ לאה Leah יארצייט תזכורת
+DTSTART:20211126T143000
+DTEND:20211126T143000
+UID:reminder-20211126-5365b4a7-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering לאה Leah\, whose Yahrzeit o
+ ccurs on Saturday\, November 27\, corresponding to the 23rd of Kislev\, 57
+ 82.\n\nלאה Leah’s Yahrzeit begins at sundown on Friday\, November 26 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle before sundown as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ לאה Leah’s Yahrzeit (23rd of Kislev)
+DTSTART;VALUE=DATE:20211127
+DTEND;VALUE=DATE:20211128
+UID:yahrzeit-5782-5365b4a7-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering לאה Leah\, whose Yahrzeit o
+ ccurs on Saturday\, November 27\, corresponding to the 23rd of Kislev\, 57
+ 82.\n\nלאה Leah’s Yahrzeit begins at sundown on Friday\, November 26 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle before sundown as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ יום הולדת לרבקה (כ״ז אדר א׳)
+DTSTART;VALUE=DATE:20220228
+DTEND;VALUE=DATE:20220301
+UID:birthday-5782-c20dc649-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring רבקה\, whose Hebrew Birthday 
+ occurs on Monday\, February 28\, corresponding to the 27th of Adar I\, 578
+ 2.\n\nרבקה’s Hebrew Birthday begins at sundown on Sunday\, February 
+ 27 and continues until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:Untitled5 (28th of Adar I)
+DTSTART;VALUE=DATE:20220301
+DTEND;VALUE=DATE:20220302
+UID:other-5782-adbf6e43-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Untitled5 occurs on Tuesday\, March 1\, corresponding to the 2
+ 8th of Adar I\, 5782.\n\nUntitled5 begins at sundown on Monday\, February 
+ 28 and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יצחק בן אברהם ושרה יארצייט תזכו
+ רת
+DTSTART:20221121T163000
+DTEND:20221121T163000
+UID:reminder-20221121-12fc0123-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering יצחק בן אברהם וש
+ רה\, whose Yahrzeit occurs on Tuesday\, November 22\, corresponding to t
+ he 28th of Cheshvan\, 5783.\n\nיצחק בן אברהם ושרה’s Yahrz
+ eit begins at sundown on Monday\, November 21 and continues until sundown 
+ on the day of observance. It is customary to light a memorial candle at du
+ sk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in t
+ he bond of eternal life and may their memory serve as a continued source o
+ f inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יארצייט של יצחק בן אברהם ושרה (כ
+ ״ח חשון)
+DTSTART;VALUE=DATE:20221122
+DTEND;VALUE=DATE:20221123
+UID:yahrzeit-5783-12fc0123-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering יצחק בן אברהם וש
+ רה\, whose Yahrzeit occurs on Tuesday\, November 22\, corresponding to t
+ he 28th of Cheshvan\, 5783.\n\nיצחק בן אברהם ושרה’s Yahrz
+ eit begins at sundown on Monday\, November 21 and continues until sundown 
+ on the day of observance. It is customary to light a memorial candle at du
+ sk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in t
+ he bond of eternal life and may their memory serve as a continued source o
+ f inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:יום נישואין לשרה (כ״ח חשון)
+DTSTART;VALUE=DATE:20221122
+DTEND;VALUE=DATE:20221123
+UID:anniversary-5783-b89e130f-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring שרה\, whose Hebrew Anniversary
+  occurs on Tuesday\, November 22\, corresponding to the 28th of Cheshvan\,
+  5783.\n\nשרה’s Hebrew Anniversary begins at sundown on Monday\, Nove
+ mber 21 and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ לאה Leah יארצייט תזכורת
+DTSTART:20221216T143000
+DTEND:20221216T143000
+UID:reminder-20221216-5365b4a7-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering לאה Leah\, whose Yahrzeit o
+ ccurs on Saturday\, December 17\, corresponding to the 23rd of Kislev\, 57
+ 83.\n\nלאה Leah’s Yahrzeit begins at sundown on Friday\, December 16 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle before sundown as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ לאה Leah’s Yahrzeit (23rd of Kislev)
+DTSTART;VALUE=DATE:20221217
+DTEND;VALUE=DATE:20221218
+UID:yahrzeit-5783-5365b4a7-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering לאה Leah\, whose Yahrzeit o
+ ccurs on Saturday\, December 17\, corresponding to the 23rd of Kislev\, 57
+ 83.\n\nלאה Leah’s Yahrzeit begins at sundown on Friday\, December 16 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle before sundown as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ יום הולדת לרבקה (כ״ז אדר)
+DTSTART;VALUE=DATE:20230320
+DTEND;VALUE=DATE:20230321
+UID:birthday-5783-c20dc649-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring רבקה\, whose Hebrew Birthday 
+ occurs on Monday\, March 20\, corresponding to the 27th of Adar\, 5783.\n\
+ nרבקה’s Hebrew Birthday begins at sundown on Sunday\, March 19 and c
+ ontinues until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:Untitled5 (28th of Adar)
+DTSTART;VALUE=DATE:20230321
+DTEND;VALUE=DATE:20230322
+UID:other-5783-adbf6e43-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Untitled5 occurs on Tuesday\, March 21\, corresponding to the 
+ 28th of Adar\, 5783.\n\nUntitled5 begins at sundown on Monday\, March 20 a
+ nd continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+END:VCALENDAR

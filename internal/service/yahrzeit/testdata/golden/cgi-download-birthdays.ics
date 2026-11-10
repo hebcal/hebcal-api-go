@@ -1,0 +1,142 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Hebrew Birthday: Ploni Almoni\, Plonit Almonit\, Moshe Cohen
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Plonit Almonit’s 41st Hebrew Birthday
+DTSTART;VALUE=DATE:20250928
+DTEND;VALUE=DATE:20250929
+UID:birthday-5786-181b5dbe-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Plonit Almonit\, whose 41st Hebre
+ w Birthday occurs on Sunday\, September 28\, corresponding to the 6th of T
+ ishrei\, 5786.\n\nPlonit Almonit’s Hebrew Birthday begins at sundown on 
+ Saturday\, September 27 and continues until sundown on the day of observan
+ ce.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Ploni Almoni’s 42nd Hebrew Birthday
+DTSTART;VALUE=DATE:20260105
+DTEND;VALUE=DATE:20260106
+UID:birthday-5786-eefa572d-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Ploni Almoni\, whose 42nd Hebrew 
+ Birthday occurs on Monday\, January 5\, corresponding to the 16th of Tevet
+ \, 5786.\n\nPloni Almoni’s Hebrew Birthday begins at sundown on Sunday\,
+  January 4 and continues until sundown on the day of observance.\n\nMazel 
+ Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Moshe Cohen’s 37th Hebrew Birthday
+DTSTART;VALUE=DATE:20260319
+DTEND;VALUE=DATE:20260320
+UID:birthday-5786-c2995e2b-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Moshe Cohen\, whose 37th Hebrew B
+ irthday occurs on Thursday\, March 19\, corresponding to the 1st of Nisan\
+ , 5786.\n\nMoshe Cohen’s Hebrew Birthday begins at sundown on Wednesday\
+ , March 18 and continues until sundown on the day of observance.\n\nMazel 
+ Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Plonit Almonit’s 42nd Hebrew Birthday
+DTSTART;VALUE=DATE:20260917
+DTEND;VALUE=DATE:20260918
+UID:birthday-5787-181b5dbe-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Plonit Almonit\, whose 42nd Hebre
+ w Birthday occurs on Thursday\, September 17\, corresponding to the 6th of
+  Tishrei\, 5787.\n\nPlonit Almonit’s Hebrew Birthday begins at sundown o
+ n Wednesday\, September 16 and continues until sundown on the day of obser
+ vance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Ploni Almoni’s 43rd Hebrew Birthday
+DTSTART;VALUE=DATE:20261226
+DTEND;VALUE=DATE:20261227
+UID:birthday-5787-eefa572d-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Ploni Almoni\, whose 43rd Hebrew 
+ Birthday occurs on Saturday\, December 26\, corresponding to the 16th of T
+ evet\, 5787.\n\nPloni Almoni’s Hebrew Birthday begins at sundown on Frid
+ ay\, December 25 and continues until sundown on the day of observance.\n\n
+ Mazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Moshe Cohen’s 38th Hebrew Birthday
+DTSTART;VALUE=DATE:20270309
+DTEND;VALUE=DATE:20270310
+UID:birthday-5787-c2995e2b-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Moshe Cohen\, whose 38th Hebrew B
+ irthday occurs on Tuesday\, March 9\, corresponding to the 30th of Adar I\
+ , 5787.\n\nMoshe Cohen’s Hebrew Birthday begins at sundown on Monday\, M
+ arch 8 and continues until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+END:VCALENDAR

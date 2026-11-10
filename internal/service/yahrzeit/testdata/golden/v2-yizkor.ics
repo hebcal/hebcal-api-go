@@ -1,0 +1,467 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Yahrzeit: GOLDA\, THEODOR
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Yom Kippur)
+DTSTART;VALUE=DATE:20260921
+DTEND;VALUE=DATE:20260922
+UID:yizkor-20260921-c1c09604
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shmini Atzeret)
+DTSTART;VALUE=DATE:20261003
+DTEND;VALUE=DATE:20261004
+UID:yizkor-20261003-102d7737
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Pesach VIII)
+DTSTART;VALUE=DATE:20270429
+DTEND;VALUE=DATE:20270430
+UID:yizkor-20270429-2a3f9c25
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shavuot II)
+DTSTART;VALUE=DATE:20270612
+DTEND;VALUE=DATE:20270613
+UID:yizkor-20270612-2336d7cc
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ GOLDA Yahrzeit reminder
+DTSTART:20270614T163000
+DTEND:20270614T163000
+UID:reminder-20270614-e4bf0d1f-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering GOLDA\, whose 8th Yahrzeit occ
+ urs on Tuesday\, June 15\, corresponding to the 10th of Sivan\, 5787.\n\nG
+ OLDA’s Yahrzeit begins at sundown on Monday\, June 14 and continues unti
+ l sundown on the day of observance. It is customary to light a memorial ca
+ ndle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bou
+ nd up in the bond of eternal life and may their memory serve as a continue
+ d source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ GOLDA’s 8th Yahrzeit (10th of Sivan)
+DTSTART;VALUE=DATE:20270615
+DTEND;VALUE=DATE:20270616
+UID:yahrzeit-5787-e4bf0d1f-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering GOLDA\, whose 8th Yahrzeit occ
+ urs on Tuesday\, June 15\, corresponding to the 10th of Sivan\, 5787.\n\nG
+ OLDA’s Yahrzeit begins at sundown on Monday\, June 14 and continues unti
+ l sundown on the day of observance. It is customary to light a memorial ca
+ ndle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bou
+ nd up in the bond of eternal life and may their memory serve as a continue
+ d source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ THEODOR Yahrzeit reminder
+DTSTART:20270701T163000
+DTEND:20270701T163000
+UID:reminder-20270701-30f44a05-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering THEODOR\, whose 12th Yahrzeit 
+ occurs on Friday\, July 2\, corresponding to the 27th of Sivan\, 5787.\n\n
+ THEODOR’s Yahrzeit begins at sundown on Thursday\, July 1 and continues 
+ until sundown on the day of observance. It is customary to light a memoria
+ l candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be
+  bound up in the bond of eternal life and may their memory serve as a cont
+ inued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ THEODOR’s 12th Yahrzeit (27th of Sivan)
+DTSTART;VALUE=DATE:20270702
+DTEND;VALUE=DATE:20270703
+UID:yahrzeit-5787-30f44a05-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering THEODOR\, whose 12th Yahrzeit 
+ occurs on Friday\, July 2\, corresponding to the 27th of Sivan\, 5787.\n\n
+ THEODOR’s Yahrzeit begins at sundown on Thursday\, July 1 and continues 
+ until sundown on the day of observance. It is customary to light a memoria
+ l candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be
+  bound up in the bond of eternal life and may their memory serve as a cont
+ inued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Yom Kippur)
+DTSTART;VALUE=DATE:20271011
+DTEND;VALUE=DATE:20271012
+UID:yizkor-20271011-c1c09604
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shmini Atzeret)
+DTSTART;VALUE=DATE:20271023
+DTEND;VALUE=DATE:20271024
+UID:yizkor-20271023-102d7737
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Pesach VIII)
+DTSTART;VALUE=DATE:20280418
+DTEND;VALUE=DATE:20280419
+UID:yizkor-20280418-2a3f9c25
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shavuot II)
+DTSTART;VALUE=DATE:20280601
+DTEND;VALUE=DATE:20280602
+UID:yizkor-20280601-2336d7cc
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ GOLDA Yahrzeit reminder
+DTSTART:20280603T200000
+DTEND:20280603T200000
+UID:reminder-20280603-e4bf0d1f-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering GOLDA\, whose 9th Yahrzeit occ
+ urs on Sunday\, June 4\, corresponding to the 10th of Sivan\, 5788.\n\nGOL
+ DA’s Yahrzeit begins at sundown on Saturday\, June 3 and continues until
+  sundown on the day of observance. It is customary to light a memorial can
+ dle at nightfall as the Yahrzeit begins.\n\nMay your loved one’s soul be
+  bound up in the bond of eternal life and may their memory serve as a cont
+ inued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ GOLDA’s 9th Yahrzeit (10th of Sivan)
+DTSTART;VALUE=DATE:20280604
+DTEND;VALUE=DATE:20280605
+UID:yahrzeit-5788-e4bf0d1f-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering GOLDA\, whose 9th Yahrzeit occ
+ urs on Sunday\, June 4\, corresponding to the 10th of Sivan\, 5788.\n\nGOL
+ DA’s Yahrzeit begins at sundown on Saturday\, June 3 and continues until
+  sundown on the day of observance. It is customary to light a memorial can
+ dle at nightfall as the Yahrzeit begins.\n\nMay your loved one’s soul be
+  bound up in the bond of eternal life and may their memory serve as a cont
+ inued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ THEODOR Yahrzeit reminder
+DTSTART:20280620T163000
+DTEND:20280620T163000
+UID:reminder-20280620-30f44a05-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering THEODOR\, whose 13th Yahrzeit 
+ occurs on Wednesday\, June 21\, corresponding to the 27th of Sivan\, 5788.
+ \n\nTHEODOR’s Yahrzeit begins at sundown on Tuesday\, June 20 and contin
+ ues until sundown on the day of observance. It is customary to light a mem
+ orial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s sou
+ l be bound up in the bond of eternal life and may their memory serve as a 
+ continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ THEODOR’s 13th Yahrzeit (27th of Sivan)
+DTSTART;VALUE=DATE:20280621
+DTEND;VALUE=DATE:20280622
+UID:yahrzeit-5788-30f44a05-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering THEODOR\, whose 13th Yahrzeit 
+ occurs on Wednesday\, June 21\, corresponding to the 27th of Sivan\, 5788.
+ \n\nTHEODOR’s Yahrzeit begins at sundown on Tuesday\, June 20 and contin
+ ues until sundown on the day of observance. It is customary to light a mem
+ orial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s sou
+ l be bound up in the bond of eternal life and may their memory serve as a 
+ continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Yom Kippur)
+DTSTART;VALUE=DATE:20280930
+DTEND;VALUE=DATE:20281001
+UID:yizkor-20280930-c1c09604
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shmini Atzeret)
+DTSTART;VALUE=DATE:20281012
+DTEND;VALUE=DATE:20281013
+UID:yizkor-20281012-102d7737
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Pesach VIII)
+DTSTART;VALUE=DATE:20290407
+DTEND;VALUE=DATE:20290408
+UID:yizkor-20290407-2a3f9c25
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shavuot II)
+DTSTART;VALUE=DATE:20290521
+DTEND;VALUE=DATE:20290522
+UID:yizkor-20290521-2336d7cc
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ GOLDA Yahrzeit reminder
+DTSTART:20290523T163000
+DTEND:20290523T163000
+UID:reminder-20290523-e4bf0d1f-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering GOLDA\, whose 10th Yahrzeit oc
+ curs on Thursday\, May 24\, corresponding to the 10th of Sivan\, 5789.\n\n
+ GOLDA’s Yahrzeit begins at sundown on Wednesday\, May 23 and continues u
+ ntil sundown on the day of observance. It is customary to light a memorial
+  candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be 
+ bound up in the bond of eternal life and may their memory serve as a conti
+ nued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ GOLDA’s 10th Yahrzeit (10th of Sivan)
+DTSTART;VALUE=DATE:20290524
+DTEND;VALUE=DATE:20290525
+UID:yahrzeit-5789-e4bf0d1f-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering GOLDA\, whose 10th Yahrzeit oc
+ curs on Thursday\, May 24\, corresponding to the 10th of Sivan\, 5789.\n\n
+ GOLDA’s Yahrzeit begins at sundown on Wednesday\, May 23 and continues u
+ ntil sundown on the day of observance. It is customary to light a memorial
+  candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be 
+ bound up in the bond of eternal life and may their memory serve as a conti
+ nued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ THEODOR Yahrzeit reminder
+DTSTART:20290609T200000
+DTEND:20290609T200000
+UID:reminder-20290609-30f44a05-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering THEODOR\, whose 14th Yahrzeit 
+ occurs on Sunday\, June 10\, corresponding to the 27th of Sivan\, 5789.\n\
+ nTHEODOR’s Yahrzeit begins at sundown on Saturday\, June 9 and continues
+  until sundown on the day of observance. It is customary to light a memori
+ al candle at nightfall as the Yahrzeit begins.\n\nMay your loved one’s s
+ oul be bound up in the bond of eternal life and may their memory serve as 
+ a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ THEODOR’s 14th Yahrzeit (27th of Sivan)
+DTSTART;VALUE=DATE:20290610
+DTEND;VALUE=DATE:20290611
+UID:yahrzeit-5789-30f44a05-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering THEODOR\, whose 14th Yahrzeit 
+ occurs on Sunday\, June 10\, corresponding to the 27th of Sivan\, 5789.\n\
+ nTHEODOR’s Yahrzeit begins at sundown on Saturday\, June 9 and continues
+  until sundown on the day of observance. It is customary to light a memori
+ al candle at nightfall as the Yahrzeit begins.\n\nMay your loved one’s s
+ oul be bound up in the bond of eternal life and may their memory serve as 
+ a continued source of inspiration and comfort to you.
+END:VEVENT
+END:VCALENDAR

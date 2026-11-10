@@ -29,6 +29,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 	"github.com/hebcal/hebcal-api-go/pkg/geoip"
+	"github.com/hebcal/hebcal-api-go/pkg/icalendar"
 )
 
 func main() {
@@ -124,6 +125,12 @@ func main() {
 		fmt.Fprintln(os.Stderr, "warning: PDF calendars disabled:", err)
 	} else {
 		app.PDF.Renderer = pdf.NewRenderer(fonts)
+	}
+	// The VTIMEZONE definitions the iCalendar feeds embed are read on demand,
+	// so a missing directory only costs the feeds their definitions.
+	app.Zones = icalendar.NewZoneInfo(cfg.ZoneInfoDir)
+	if _, err := os.Stat(cfg.ZoneInfoDir); err != nil {
+		lg.Warn("no zoneinfo directory; iCalendar feeds will carry no VTIMEZONE: " + err.Error())
 	}
 	// The six daily-learning series with no Go schedule come from readings-svc.
 	// With no socket configured those requests are refused with 501 rather than

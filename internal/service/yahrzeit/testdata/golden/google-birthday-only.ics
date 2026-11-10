@@ -1,0 +1,33 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Hebrew Birthday: Golda Meir
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Golda Meir’s 16th Hebrew Birthday
+DTSTART;VALUE=DATE:20270215
+DTEND;VALUE=DATE:20270216
+UID:birthday-5787-0a1da0e9-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Golda Meir\, whose 16th Hebrew Bi
+ rthday occurs on Monday\, February 15\, corresponding to the 8th of Adar I
+ \, 5787.\n\nGolda Meir’s Hebrew Birthday begins at sundown on Sunday\, F
+ ebruary 14 and continues until sundown on the day of observance.\n\nMazel 
+ Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,265 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Yahrzeit: Ploni Almoni\, Plonit Almonit\, Moshe Cohen
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Plonit Almonit Yahrzeit reminder
+DTSTART:20250930T163000
+DTEND:20250930T163000
+UID:reminder-20250930-181b5dbe-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Plonit Almonit\, whose 12th Ya
+ hrzeit occurs on Wednesday\, October 1\, corresponding to the 9th of Tishr
+ ei\, 5786.\n\nPlonit Almonit’s Yahrzeit begins at sundown on Tuesday\, S
+ eptember 30 and continues until sundown on the day of observance. It is cu
+ stomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay 
+ your loved one’s soul be bound up in the bond of eternal life and may th
+ eir memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Plonit Almonit’s 12th Yahrzeit
+DTSTART;VALUE=DATE:20251001
+DTEND;VALUE=DATE:20251002
+UID:yahrzeit-5786-181b5dbe-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Plonit Almonit\, whose 12th Ya
+ hrzeit occurs on Wednesday\, October 1\, corresponding to the 9th of Tishr
+ ei\, 5786.\n\nPlonit Almonit’s Yahrzeit begins at sundown on Tuesday\, S
+ eptember 30 and continues until sundown on the day of observance. It is cu
+ stomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay 
+ your loved one’s soul be bound up in the bond of eternal life and may th
+ eir memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Moshe Cohen Yahrzeit reminder
+DTSTART:20251021T163000
+DTEND:20251021T163000
+UID:reminder-20251021-c2995e2b-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Moshe Cohen\, whose 28th Yahrz
+ eit occurs on Wednesday\, October 22\, corresponding to the 30th of Tishre
+ i\, 5786.\n\nMoshe Cohen’s Yahrzeit begins at sundown on Tuesday\, Octob
+ er 21 and continues until sundown on the day of observance. It is customar
+ y to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Moshe Cohen’s 28th Yahrzeit
+DTSTART;VALUE=DATE:20251022
+DTEND;VALUE=DATE:20251023
+UID:yahrzeit-5786-c2995e2b-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Moshe Cohen\, whose 28th Yahrz
+ eit occurs on Wednesday\, October 22\, corresponding to the 30th of Tishre
+ i\, 5786.\n\nMoshe Cohen’s Yahrzeit begins at sundown on Tuesday\, Octob
+ er 21 and continues until sundown on the day of observance. It is customar
+ y to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Ploni Almoni Yahrzeit reminder
+DTSTART:20251230T163000
+DTEND:20251230T163000
+UID:reminder-20251230-eefa572d-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Ploni Almoni\, whose 10th Yahr
+ zeit occurs on Wednesday\, December 31\, corresponding to the 11th of Teve
+ t\, 5786.\n\nPloni Almoni’s Yahrzeit begins at sundown on Tuesday\, Dece
+ mber 30 and continues until sundown on the day of observance. It is custom
+ ary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your
+  loved one’s soul be bound up in the bond of eternal life and may their 
+ memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Ploni Almoni’s 10th Yahrzeit
+DTSTART;VALUE=DATE:20251231
+DTEND;VALUE=DATE:20260101
+UID:yahrzeit-5786-eefa572d-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Ploni Almoni\, whose 10th Yahr
+ zeit occurs on Wednesday\, December 31\, corresponding to the 11th of Teve
+ t\, 5786.\n\nPloni Almoni’s Yahrzeit begins at sundown on Tuesday\, Dece
+ mber 30 and continues until sundown on the day of observance. It is custom
+ ary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your
+  loved one’s soul be bound up in the bond of eternal life and may their 
+ memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Plonit Almonit Yahrzeit reminder
+DTSTART:20260919T200000
+DTEND:20260919T200000
+UID:reminder-20260919-181b5dbe-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Plonit Almonit\, whose 13th Ya
+ hrzeit occurs on Sunday\, September 20\, corresponding to the 9th of Tishr
+ ei\, 5787.\n\nPlonit Almonit’s Yahrzeit begins at sundown on Saturday\, 
+ September 19 and continues until sundown on the day of observance. It is c
+ ustomary to light a memorial candle at nightfall as the Yahrzeit begins.\n
+ \nMay your loved one’s soul be bound up in the bond of eternal life and 
+ may their memory serve as a continued source of inspiration and comfort to
+  you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Plonit Almonit’s 13th Yahrzeit
+DTSTART;VALUE=DATE:20260920
+DTEND;VALUE=DATE:20260921
+UID:yahrzeit-5787-181b5dbe-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Plonit Almonit\, whose 13th Ya
+ hrzeit occurs on Sunday\, September 20\, corresponding to the 9th of Tishr
+ ei\, 5787.\n\nPlonit Almonit’s Yahrzeit begins at sundown on Saturday\, 
+ September 19 and continues until sundown on the day of observance. It is c
+ ustomary to light a memorial candle at nightfall as the Yahrzeit begins.\n
+ \nMay your loved one’s soul be bound up in the bond of eternal life and 
+ may their memory serve as a continued source of inspiration and comfort to
+  you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Moshe Cohen Yahrzeit reminder
+DTSTART:20261010T200000
+DTEND:20261010T200000
+UID:reminder-20261010-c2995e2b-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Moshe Cohen\, whose 29th Yahrz
+ eit occurs on Sunday\, October 11\, corresponding to the 30th of Tishrei\,
+  5787.\n\nMoshe Cohen’s Yahrzeit begins at sundown on Saturday\, October
+  10 and continues until sundown on the day of observance. It is customary 
+ to light a memorial candle at nightfall as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Moshe Cohen’s 29th Yahrzeit
+DTSTART;VALUE=DATE:20261011
+DTEND;VALUE=DATE:20261012
+UID:yahrzeit-5787-c2995e2b-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Moshe Cohen\, whose 29th Yahrz
+ eit occurs on Sunday\, October 11\, corresponding to the 30th of Tishrei\,
+  5787.\n\nMoshe Cohen’s Yahrzeit begins at sundown on Saturday\, October
+  10 and continues until sundown on the day of observance. It is customary 
+ to light a memorial candle at nightfall as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Ploni Almoni Yahrzeit reminder
+DTSTART:20261220T163000
+DTEND:20261220T163000
+UID:reminder-20261220-eefa572d-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Ploni Almoni\, whose 11th Yahr
+ zeit occurs on Monday\, December 21\, corresponding to the 11th of Tevet\,
+  5787.\n\nPloni Almoni’s Yahrzeit begins at sundown on Sunday\, December
+  20 and continues until sundown on the day of observance. It is customary 
+ to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your lov
+ ed one’s soul be bound up in the bond of eternal life and may their memo
+ ry serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Ploni Almoni’s 11th Yahrzeit
+DTSTART;VALUE=DATE:20261221
+DTEND;VALUE=DATE:20261222
+UID:yahrzeit-5787-eefa572d-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Ploni Almoni\, whose 11th Yahr
+ zeit occurs on Monday\, December 21\, corresponding to the 11th of Tevet\,
+  5787.\n\nPloni Almoni’s Yahrzeit begins at sundown on Sunday\, December
+  20 and continues until sundown on the day of observance. It is customary 
+ to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your lov
+ ed one’s soul be bound up in the bond of eternal life and may their memo
+ ry serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+END:VCALENDAR

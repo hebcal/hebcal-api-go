@@ -1,0 +1,179 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Yahrzeit: Moses Montefiore\, Rashi
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rashi Yahrzeit reminder
+DTSTART:20270726T163000
+DTEND:20270726T163000
+UID:reminder-20270726-97a4fa5d-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rashi\, whose 922nd Yahrzeit o
+ ccurs on Tuesday\, July 27\, corresponding to the 22nd of Tamuz\, 5787.\n\
+ nRashi’s Yahrzeit begins at sundown on Monday\, July 26 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be b
+ ound up in the bond of eternal life and may their memory serve as a contin
+ ued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rashi’s 922nd Yahrzeit (22nd of Tamuz)
+DTSTART;VALUE=DATE:20270727
+DTEND;VALUE=DATE:20270728
+UID:yahrzeit-5787-97a4fa5d-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rashi\, whose 922nd Yahrzeit o
+ ccurs on Tuesday\, July 27\, corresponding to the 22nd of Tamuz\, 5787.\n\
+ nRashi’s Yahrzeit begins at sundown on Monday\, July 26 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be b
+ ound up in the bond of eternal life and may their memory serve as a contin
+ ued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Moses Montefiore Yahrzeit reminder
+DTSTART:20270818T163000
+DTEND:20270818T163000
+UID:reminder-20270818-2e852432-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Moses Montefiore\, whose 142nd
+  Yahrzeit occurs on Thursday\, August 19\, corresponding to the 16th of Av
+ \, 5787.\n\nMoses Montefiore’s Yahrzeit begins at sundown on Wednesday\,
+  August 18 and continues until sundown on the day of observance. It is cus
+ tomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay y
+ our loved one’s soul be bound up in the bond of eternal life and may the
+ ir memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Moses Montefiore’s 142nd Yahrzeit (16th of Av)
+DTSTART;VALUE=DATE:20270819
+DTEND;VALUE=DATE:20270820
+UID:yahrzeit-5787-2e852432-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Moses Montefiore\, whose 142nd
+  Yahrzeit occurs on Thursday\, August 19\, corresponding to the 16th of Av
+ \, 5787.\n\nMoses Montefiore’s Yahrzeit begins at sundown on Wednesday\,
+  August 18 and continues until sundown on the day of observance. It is cus
+ tomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay y
+ our loved one’s soul be bound up in the bond of eternal life and may the
+ ir memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rashi Yahrzeit reminder
+DTSTART:20280715T200000
+DTEND:20280715T200000
+UID:reminder-20280715-97a4fa5d-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rashi\, whose 923rd Yahrzeit o
+ ccurs on Sunday\, July 16\, corresponding to the 22nd of Tamuz\, 5788.\n\n
+ Rashi’s Yahrzeit begins at sundown on Saturday\, July 15 and continues u
+ ntil sundown on the day of observance. It is customary to light a memorial
+  candle at nightfall as the Yahrzeit begins.\n\nMay your loved one’s sou
+ l be bound up in the bond of eternal life and may their memory serve as a 
+ continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rashi’s 923rd Yahrzeit (22nd of Tamuz)
+DTSTART;VALUE=DATE:20280716
+DTEND;VALUE=DATE:20280717
+UID:yahrzeit-5788-97a4fa5d-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rashi\, whose 923rd Yahrzeit o
+ ccurs on Sunday\, July 16\, corresponding to the 22nd of Tamuz\, 5788.\n\n
+ Rashi’s Yahrzeit begins at sundown on Saturday\, July 15 and continues u
+ ntil sundown on the day of observance. It is customary to light a memorial
+  candle at nightfall as the Yahrzeit begins.\n\nMay your loved one’s sou
+ l be bound up in the bond of eternal life and may their memory serve as a 
+ continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Moses Montefiore Yahrzeit reminder
+DTSTART:20280807T163000
+DTEND:20280807T163000
+UID:reminder-20280807-2e852432-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Moses Montefiore\, whose 143rd
+  Yahrzeit occurs on Tuesday\, August 8\, corresponding to the 16th of Av\,
+  5788.\n\nMoses Montefiore’s Yahrzeit begins at sundown on Monday\, Augu
+ st 7 and continues until sundown on the day of observance. It is customary
+  to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your lo
+ ved one’s soul be bound up in the bond of eternal life and may their mem
+ ory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Moses Montefiore’s 143rd Yahrzeit (16th of Av)
+DTSTART;VALUE=DATE:20280808
+DTEND;VALUE=DATE:20280809
+UID:yahrzeit-5788-2e852432-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Moses Montefiore\, whose 143rd
+  Yahrzeit occurs on Tuesday\, August 8\, corresponding to the 16th of Av\,
+  5788.\n\nMoses Montefiore’s Yahrzeit begins at sundown on Monday\, Augu
+ st 7 and continues until sundown on the day of observance. It is customary
+  to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your lo
+ ved one’s soul be bound up in the bond of eternal life and may their mem
+ ory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+END:VCALENDAR

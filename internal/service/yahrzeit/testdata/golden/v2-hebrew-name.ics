@@ -1,0 +1,179 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Yahrzeit: גולדה
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ גולדה יארצייט תזכורת
+DTSTART:20270125T163000
+DTEND:20270125T163000
+UID:reminder-20270125-ad8ec8b6-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering גולדה\, whose 14th Yahrze
+ it occurs on Tuesday\, January 26\, corresponding to the 18th of Sh’vat\
+ , 5787.\n\nגולדה’s Yahrzeit begins at sundown on Monday\, January 2
+ 5 and continues until sundown on the day of observance. It is customary to
+  light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved
+  one’s soul be bound up in the bond of eternal life and may their memory
+  serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יארצייט ה-14 של גולדה (י״ח שבט)
+DTSTART;VALUE=DATE:20270126
+DTEND;VALUE=DATE:20270127
+UID:yahrzeit-5787-ad8ec8b6-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering גולדה\, whose 14th Yahrze
+ it occurs on Tuesday\, January 26\, corresponding to the 18th of Sh’vat\
+ , 5787.\n\nגולדה’s Yahrzeit begins at sundown on Monday\, January 2
+ 5 and continues until sundown on the day of observance. It is customary to
+  light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved
+  one’s soul be bound up in the bond of eternal life and may their memory
+  serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ גולדה יארצייט תזכורת
+DTSTART:20280214T163000
+DTEND:20280214T163000
+UID:reminder-20280214-ad8ec8b6-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering גולדה\, whose 15th Yahrze
+ it occurs on Tuesday\, February 15\, corresponding to the 18th of Sh’vat
+ \, 5788.\n\nגולדה’s Yahrzeit begins at sundown on Monday\, February
+  14 and continues until sundown on the day of observance. It is customary 
+ to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your lov
+ ed one’s soul be bound up in the bond of eternal life and may their memo
+ ry serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יארצייט ה-15 של גולדה (י״ח שבט)
+DTSTART;VALUE=DATE:20280215
+DTEND;VALUE=DATE:20280216
+UID:yahrzeit-5788-ad8ec8b6-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering גולדה\, whose 15th Yahrze
+ it occurs on Tuesday\, February 15\, corresponding to the 18th of Sh’vat
+ \, 5788.\n\nגולדה’s Yahrzeit begins at sundown on Monday\, February
+  14 and continues until sundown on the day of observance. It is customary 
+ to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your lov
+ ed one’s soul be bound up in the bond of eternal life and may their memo
+ ry serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ גולדה יארצייט תזכורת
+DTSTART:20290202T143000
+DTEND:20290202T143000
+UID:reminder-20290202-ad8ec8b6-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering גולדה\, whose 16th Yahrze
+ it occurs on Saturday\, February 3\, corresponding to the 18th of Sh’vat
+ \, 5789.\n\nגולדה’s Yahrzeit begins at sundown on Friday\, February
+  2 and continues until sundown on the day of observance. It is customary t
+ o light a memorial candle before sundown as the Yahrzeit begins.\n\nMay yo
+ ur loved one’s soul be bound up in the bond of eternal life and may thei
+ r memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יארצייט ה-16 של גולדה (י״ח שבט)
+DTSTART;VALUE=DATE:20290203
+DTEND;VALUE=DATE:20290204
+UID:yahrzeit-5789-ad8ec8b6-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering גולדה\, whose 16th Yahrze
+ it occurs on Saturday\, February 3\, corresponding to the 18th of Sh’vat
+ \, 5789.\n\nגולדה’s Yahrzeit begins at sundown on Friday\, February
+  2 and continues until sundown on the day of observance. It is customary t
+ o light a memorial candle before sundown as the Yahrzeit begins.\n\nMay yo
+ ur loved one’s soul be bound up in the bond of eternal life and may thei
+ r memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ גולדה יארצייט תזכורת
+DTSTART:20300121T163000
+DTEND:20300121T163000
+UID:reminder-20300121-ad8ec8b6-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering גולדה\, whose 17th Yahrze
+ it occurs on Tuesday\, January 22\, corresponding to the 18th of Sh’vat\
+ , 5790.\n\nגולדה’s Yahrzeit begins at sundown on Monday\, January 2
+ 1 and continues until sundown on the day of observance. It is customary to
+  light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved
+  one’s soul be bound up in the bond of eternal life and may their memory
+  serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יארצייט ה-17 של גולדה (י״ח שבט)
+DTSTART;VALUE=DATE:20300122
+DTEND;VALUE=DATE:20300123
+UID:yahrzeit-5790-ad8ec8b6-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering גולדה\, whose 17th Yahrze
+ it occurs on Tuesday\, January 22\, corresponding to the 18th of Sh’vat\
+ , 5790.\n\nגולדה’s Yahrzeit begins at sundown on Monday\, January 2
+ 1 and continues until sundown on the day of observance. It is customary to
+  light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved
+  one’s soul be bound up in the bond of eternal life and may their memory
+  serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+END:VCALENDAR

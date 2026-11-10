@@ -1,0 +1,126 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Hebrew Birthday: A\, NoDate\, אבג 
+ 🏴󠁧󠁢󠁳󠁣󠁴󠁿\, xxxxxxxxxxxxx...
+X-WR-CALDESC:Hebcal Hebrew Birthday: A\, NoDate\, אבג 
+ 🏴󠁧󠁢󠁳󠁣󠁴󠁿\, xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ xxxx🎂
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx🎂’s
+  37th Hebrew Birthday
+DTSTART;VALUE=DATE:20261214
+DTEND;VALUE=DATE:20261215
+UID:birthday-5787-74a69cdc-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ xxxxxxxxxxxxxx🎂\, whose 37th Hebrew Birthday occurs on Monday\, Decembe
+ r 14\, corresponding to the 4th of Tevet\, 5787.\n\nxxxxxxxxxxxxxxxxxxxxxx
+ xxxxxxxxxxxxxxxxxxxxxxxxx🎂’s Hebrew Birthday begins at sundown on Sun
+ day\, December 13 and continues until sundown on the day of observance.\n\
+ nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ אבג 🏴󠁧󠁢󠁳󠁣󠁴󠁿 יארצייט תזכ
+ ורת
+DTSTART:20261222T163000
+DTEND:20261222T163000
+UID:reminder-20261222-9bb0d48d-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering אבג 
+ 🏴󠁧󠁢󠁳󠁣󠁴󠁿\, whose 28th Yahrzeit occurs on Wednesday\, D
+ ecember 23\, corresponding to the 13th of Tevet\, 5787.\n\nאבג 
+ 🏴󠁧󠁢󠁳󠁣󠁴󠁿’s Yahrzeit begins at sundown on Tuesday\, D
+ ecember 22 and continues until sundown on the day of observance. It is cus
+ tomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay y
+ our loved one’s soul be bound up in the bond of eternal life and may the
+ ir memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יארצייט ה-28 של אבג 
+ 🏴󠁧󠁢󠁳󠁣󠁴󠁿
+DTSTART;VALUE=DATE:20261223
+DTEND;VALUE=DATE:20261224
+UID:yahrzeit-5787-9bb0d48d-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering אבג 
+ 🏴󠁧󠁢󠁳󠁣󠁴󠁿\, whose 28th Yahrzeit occurs on Wednesday\, D
+ ecember 23\, corresponding to the 13th of Tevet\, 5787.\n\nאבג 
+ 🏴󠁧󠁢󠁳󠁣󠁴󠁿’s Yahrzeit begins at sundown on Tuesday\, D
+ ecember 22 and continues until sundown on the day of observance. It is cus
+ tomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay y
+ our loved one’s soul be bound up in the bond of eternal life and may the
+ ir memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ A Yahrzeit reminder
+DTSTART:20270207T163000
+DTEND:20270207T163000
+UID:reminder-20270207-54dcf7ce-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering A\, whose 24th Yahrzeit occurs
+  on Monday\, February 8\, corresponding to the 1st of Adar I\, 5787.\n\nA
+ ’s Yahrzeit begins at sundown on Sunday\, February 7 and continues until
+  sundown on the day of observance. It is customary to light a memorial can
+ dle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be boun
+ d up in the bond of eternal life and may their memory serve as a continued
+  source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ A’s 24th Yahrzeit
+DTSTART;VALUE=DATE:20270208
+DTEND;VALUE=DATE:20270209
+UID:yahrzeit-5787-54dcf7ce-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering A\, whose 24th Yahrzeit occurs
+  on Monday\, February 8\, corresponding to the 1st of Adar I\, 5787.\n\nA
+ ’s Yahrzeit begins at sundown on Sunday\, February 7 and continues until
+  sundown on the day of observance. It is customary to light a memorial can
+ dle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be boun
+ d up in the bond of eternal life and may their memory serve as a continued
+  source of inspiration and comfort to you.
+END:VEVENT
+END:VCALENDAR

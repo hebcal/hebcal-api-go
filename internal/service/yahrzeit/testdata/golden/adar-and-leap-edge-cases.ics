@@ -1,0 +1,1717 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Hebrew Birthday: Adar I 30\, Adar II\, Cheshvan 30\, Kislev 3
+ 0\, ...
+X-WR-CALDESC:Hebcal Hebrew Birthday: Adar I 30\, Adar II\, Cheshvan 30\, K
+ islev 30\, Adar birthday\, Adar I 30 birthday
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30 Yahrzeit reminder
+DTSTART:20200224T163000
+DTEND:20200224T163000
+UID:reminder-20200224-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 1st Yahrzeit
+  occurs on Tuesday\, February 25\, corresponding to the 30th of Sh’vat\,
+  5780.\n\nAdar I 30’s Yahrzeit begins at sundown on Monday\, February 24
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved 
+ one’s soul be bound up in the bond of eternal life and may their memory 
+ serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30’s 1st Yahrzeit (30th of Sh’vat)
+DTSTART;VALUE=DATE:20200225
+DTEND;VALUE=DATE:20200226
+UID:yahrzeit-5780-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 1st Yahrzeit
+  occurs on Tuesday\, February 25\, corresponding to the 30th of Sh’vat\,
+  5780.\n\nAdar I 30’s Yahrzeit begins at sundown on Monday\, February 24
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved 
+ one’s soul be bound up in the bond of eternal life and may their memory 
+ serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar birthday’s 2nd Hebrew Birthday (5th of Adar)
+DTSTART;VALUE=DATE:20200301
+DTEND;VALUE=DATE:20200302
+UID:birthday-5780-cef61e50-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar birthday\, whose 2nd Hebrew 
+ Birthday occurs on Sunday\, March 1\, corresponding to the 5th of Adar\, 5
+ 780.\n\nAdar birthday’s Hebrew Birthday begins at sundown on Saturday\, 
+ February 29 and continues until sundown on the day of observance.\n\nMazel
+  Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II Yahrzeit reminder
+DTSTART:20200308T163000
+DTEND:20200308T163000
+UID:reminder-20200308-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 1st Yahrzeit o
+ ccurs on Monday\, March 9\, corresponding to the 13th of Adar\, 5780.\n\nA
+ dar II’s Yahrzeit begins at sundown on Sunday\, March 8 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be b
+ ound up in the bond of eternal life and may their memory serve as a contin
+ ued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II’s 1st Yahrzeit (13th of Adar)
+DTSTART;VALUE=DATE:20200309
+DTEND;VALUE=DATE:20200310
+UID:yahrzeit-5780-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 1st Yahrzeit o
+ ccurs on Monday\, March 9\, corresponding to the 13th of Adar\, 5780.\n\nA
+ dar II’s Yahrzeit begins at sundown on Sunday\, March 8 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be b
+ ound up in the bond of eternal life and may their memory serve as a contin
+ ued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar I 30 birthday’s 1st Hebrew Birthday (1st of Nisa
+ n)
+DTSTART;VALUE=DATE:20200326
+DTEND;VALUE=DATE:20200327
+UID:birthday-5780-1c1c1c94-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar I 30 birthday\, whose 1st He
+ brew Birthday occurs on Thursday\, March 26\, corresponding to the 1st of 
+ Nisan\, 5780.\n\nAdar I 30 birthday’s Hebrew Birthday begins at sundown 
+ on Wednesday\, March 25 and continues until sundown on the day of observan
+ ce.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30 Yahrzeit reminder
+DTSTART:20201214T163000
+DTEND:20201214T163000
+UID:reminder-20201214-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 1st Yahrzeit
+  occurs on Tuesday\, December 15\, corresponding to the 29th of Kislev\, 5
+ 781.\n\nKislev 30’s Yahrzeit begins at sundown on Monday\, December 14 a
+ nd continues until sundown on the day of observance. It is customary to li
+ ght a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved on
+ e’s soul be bound up in the bond of eternal life and may their memory se
+ rve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30’s 1st Yahrzeit (29th of Kislev)
+DTSTART;VALUE=DATE:20201215
+DTEND;VALUE=DATE:20201216
+UID:yahrzeit-5781-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 1st Yahrzeit
+  occurs on Tuesday\, December 15\, corresponding to the 29th of Kislev\, 5
+ 781.\n\nKislev 30’s Yahrzeit begins at sundown on Monday\, December 14 a
+ nd continues until sundown on the day of observance. It is customary to li
+ ght a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved on
+ e’s soul be bound up in the bond of eternal life and may their memory se
+ rve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30 Yahrzeit reminder
+DTSTART:20210211T163000
+DTEND:20210211T163000
+UID:reminder-20210211-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 2nd Yahrzeit
+  occurs on Friday\, February 12\, corresponding to the 30th of Sh’vat\, 
+ 5781.\n\nAdar I 30’s Yahrzeit begins at sundown on Thursday\, February 1
+ 1 and continues until sundown on the day of observance. It is customary to
+  light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved
+  one’s soul be bound up in the bond of eternal life and may their memory
+  serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30’s 2nd Yahrzeit (30th of Sh’vat)
+DTSTART;VALUE=DATE:20210212
+DTEND;VALUE=DATE:20210213
+UID:yahrzeit-5781-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 2nd Yahrzeit
+  occurs on Friday\, February 12\, corresponding to the 30th of Sh’vat\, 
+ 5781.\n\nAdar I 30’s Yahrzeit begins at sundown on Thursday\, February 1
+ 1 and continues until sundown on the day of observance. It is customary to
+  light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved
+  one’s soul be bound up in the bond of eternal life and may their memory
+  serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar birthday’s 3rd Hebrew Birthday (5th of Adar)
+DTSTART;VALUE=DATE:20210217
+DTEND;VALUE=DATE:20210218
+UID:birthday-5781-cef61e50-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar birthday\, whose 3rd Hebrew 
+ Birthday occurs on Wednesday\, February 17\, corresponding to the 5th of A
+ dar\, 5781.\n\nAdar birthday’s Hebrew Birthday begins at sundown on Tues
+ day\, February 16 and continues until sundown on the day of observance.\n\
+ nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II Yahrzeit reminder
+DTSTART:20210224T163000
+DTEND:20210224T163000
+UID:reminder-20210224-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 2nd Yahrzeit o
+ ccurs on Thursday\, February 25\, corresponding to the 13th of Adar\, 5781
+ .\n\nAdar II’s Yahrzeit begins at sundown on Wednesday\, February 24 and
+  continues until sundown on the day of observance. It is customary to ligh
+ t a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved one
+ ’s soul be bound up in the bond of eternal life and may their memory ser
+ ve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II’s 2nd Yahrzeit (13th of Adar)
+DTSTART;VALUE=DATE:20210225
+DTEND;VALUE=DATE:20210226
+UID:yahrzeit-5781-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 2nd Yahrzeit o
+ ccurs on Thursday\, February 25\, corresponding to the 13th of Adar\, 5781
+ .\n\nAdar II’s Yahrzeit begins at sundown on Wednesday\, February 24 and
+  continues until sundown on the day of observance. It is customary to ligh
+ t a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved one
+ ’s soul be bound up in the bond of eternal life and may their memory ser
+ ve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar I 30 birthday’s 2nd Hebrew Birthday (1st of Nisa
+ n)
+DTSTART;VALUE=DATE:20210314
+DTEND;VALUE=DATE:20210315
+UID:birthday-5781-1c1c1c94-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar I 30 birthday\, whose 2nd He
+ brew Birthday occurs on Sunday\, March 14\, corresponding to the 1st of Ni
+ san\, 5781.\n\nAdar I 30 birthday’s Hebrew Birthday begins at sundown on
+  Saturday\, March 13 and continues until sundown on the day of observance.
+ \n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30 Yahrzeit reminder
+DTSTART:20211104T163000
+DTEND:20211104T163000
+UID:reminder-20211104-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 1st Yahrze
+ it occurs on Friday\, November 5\, corresponding to the 1st of Kislev\, 57
+ 82.\n\nCheshvan 30’s Yahrzeit begins at sundown on Thursday\, November 4
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved 
+ one’s soul be bound up in the bond of eternal life and may their memory 
+ serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30’s 1st Yahrzeit (1st of Kislev)
+DTSTART;VALUE=DATE:20211105
+DTEND;VALUE=DATE:20211106
+UID:yahrzeit-5782-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 1st Yahrze
+ it occurs on Friday\, November 5\, corresponding to the 1st of Kislev\, 57
+ 82.\n\nCheshvan 30’s Yahrzeit begins at sundown on Thursday\, November 4
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved 
+ one’s soul be bound up in the bond of eternal life and may their memory 
+ serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30 Yahrzeit reminder
+DTSTART:20211203T143000
+DTEND:20211203T143000
+UID:reminder-20211203-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 2nd Yahrzeit
+  occurs on Saturday\, December 4\, corresponding to the 30th of Kislev\, 5
+ 782.\n\nKislev 30’s Yahrzeit begins at sundown on Friday\, December 3 an
+ d continues until sundown on the day of observance. It is customary to lig
+ ht a memorial candle before sundown as the Yahrzeit begins.\n\nMay your lo
+ ved one’s soul be bound up in the bond of eternal life and may their mem
+ ory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30’s 2nd Yahrzeit (30th of Kislev)
+DTSTART;VALUE=DATE:20211204
+DTEND;VALUE=DATE:20211205
+UID:yahrzeit-5782-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 2nd Yahrzeit
+  occurs on Saturday\, December 4\, corresponding to the 30th of Kislev\, 5
+ 782.\n\nKislev 30’s Yahrzeit begins at sundown on Friday\, December 3 an
+ d continues until sundown on the day of observance. It is customary to lig
+ ht a memorial candle before sundown as the Yahrzeit begins.\n\nMay your lo
+ ved one’s soul be bound up in the bond of eternal life and may their mem
+ ory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30 Yahrzeit reminder
+DTSTART:20220302T163000
+DTEND:20220302T163000
+UID:reminder-20220302-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 3rd Yahrzeit
+  occurs on Thursday\, March 3\, corresponding to the 30th of Adar I\, 5782
+ .\n\nAdar I 30’s Yahrzeit begins at sundown on Wednesday\, March 2 and c
+ ontinues until sundown on the day of observance. It is customary to light 
+ a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’
+ s soul be bound up in the bond of eternal life and may their memory serve 
+ as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30’s 3rd Yahrzeit (30th of Adar I)
+DTSTART;VALUE=DATE:20220303
+DTEND;VALUE=DATE:20220304
+UID:yahrzeit-5782-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 3rd Yahrzeit
+  occurs on Thursday\, March 3\, corresponding to the 30th of Adar I\, 5782
+ .\n\nAdar I 30’s Yahrzeit begins at sundown on Wednesday\, March 2 and c
+ ontinues until sundown on the day of observance. It is customary to light 
+ a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’
+ s soul be bound up in the bond of eternal life and may their memory serve 
+ as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar I 30 birthday’s 3rd Hebrew Birthday (30th of Ada
+ r I)
+DTSTART;VALUE=DATE:20220303
+DTEND;VALUE=DATE:20220304
+UID:birthday-5782-1c1c1c94-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar I 30 birthday\, whose 3rd He
+ brew Birthday occurs on Thursday\, March 3\, corresponding to the 30th of 
+ Adar I\, 5782.\n\nAdar I 30 birthday’s Hebrew Birthday begins at sundown
+  on Wednesday\, March 2 and continues until sundown on the day of observan
+ ce.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar birthday’s 4th Hebrew Birthday (5th of Adar II)
+DTSTART;VALUE=DATE:20220308
+DTEND;VALUE=DATE:20220309
+UID:birthday-5782-cef61e50-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar birthday\, whose 4th Hebrew 
+ Birthday occurs on Tuesday\, March 8\, corresponding to the 5th of Adar II
+ \, 5782.\n\nAdar birthday’s Hebrew Birthday begins at sundown on Monday\
+ , March 7 and continues until sundown on the day of observance.\n\nMazel T
+ ov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II Yahrzeit reminder
+DTSTART:20220315T163000
+DTEND:20220315T163000
+UID:reminder-20220315-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 3rd Yahrzeit o
+ ccurs on Wednesday\, March 16\, corresponding to the 13th of Adar II\, 578
+ 2.\n\nAdar II’s Yahrzeit begins at sundown on Tuesday\, March 15 and con
+ tinues until sundown on the day of observance. It is customary to light a 
+ memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s 
+ soul be bound up in the bond of eternal life and may their memory serve as
+  a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II’s 3rd Yahrzeit (13th of Adar II)
+DTSTART;VALUE=DATE:20220316
+DTEND;VALUE=DATE:20220317
+UID:yahrzeit-5782-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 3rd Yahrzeit o
+ ccurs on Wednesday\, March 16\, corresponding to the 13th of Adar II\, 578
+ 2.\n\nAdar II’s Yahrzeit begins at sundown on Tuesday\, March 15 and con
+ tinues until sundown on the day of observance. It is customary to light a 
+ memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s 
+ soul be bound up in the bond of eternal life and may their memory serve as
+  a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30 Yahrzeit reminder
+DTSTART:20221124T163000
+DTEND:20221124T163000
+UID:reminder-20221124-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 2nd Yahrze
+ it occurs on Friday\, November 25\, corresponding to the 1st of Kislev\, 5
+ 783.\n\nCheshvan 30’s Yahrzeit begins at sundown on Thursday\, November 
+ 24 and continues until sundown on the day of observance. It is customary t
+ o light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your love
+ d one’s soul be bound up in the bond of eternal life and may their memor
+ y serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30’s 2nd Yahrzeit (1st of Kislev)
+DTSTART;VALUE=DATE:20221125
+DTEND;VALUE=DATE:20221126
+UID:yahrzeit-5783-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 2nd Yahrze
+ it occurs on Friday\, November 25\, corresponding to the 1st of Kislev\, 5
+ 783.\n\nCheshvan 30’s Yahrzeit begins at sundown on Thursday\, November 
+ 24 and continues until sundown on the day of observance. It is customary t
+ o light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your love
+ d one’s soul be bound up in the bond of eternal life and may their memor
+ y serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30 Yahrzeit reminder
+DTSTART:20221223T143000
+DTEND:20221223T143000
+UID:reminder-20221223-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 3rd Yahrzeit
+  occurs on Saturday\, December 24\, corresponding to the 30th of Kislev\, 
+ 5783.\n\nKislev 30’s Yahrzeit begins at sundown on Friday\, December 23 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle before sundown as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30’s 3rd Yahrzeit (30th of Kislev)
+DTSTART;VALUE=DATE:20221224
+DTEND;VALUE=DATE:20221225
+UID:yahrzeit-5783-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 3rd Yahrzeit
+  occurs on Saturday\, December 24\, corresponding to the 30th of Kislev\, 
+ 5783.\n\nKislev 30’s Yahrzeit begins at sundown on Friday\, December 23 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle before sundown as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30 Yahrzeit reminder
+DTSTART:20230220T163000
+DTEND:20230220T163000
+UID:reminder-20230220-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 4th Yahrzeit
+  occurs on Tuesday\, February 21\, corresponding to the 30th of Sh’vat\,
+  5783.\n\nAdar I 30’s Yahrzeit begins at sundown on Monday\, February 20
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved 
+ one’s soul be bound up in the bond of eternal life and may their memory 
+ serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30’s 4th Yahrzeit (30th of Sh’vat)
+DTSTART;VALUE=DATE:20230221
+DTEND;VALUE=DATE:20230222
+UID:yahrzeit-5783-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 4th Yahrzeit
+  occurs on Tuesday\, February 21\, corresponding to the 30th of Sh’vat\,
+  5783.\n\nAdar I 30’s Yahrzeit begins at sundown on Monday\, February 20
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved 
+ one’s soul be bound up in the bond of eternal life and may their memory 
+ serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar birthday’s 5th Hebrew Birthday (5th of Adar)
+DTSTART;VALUE=DATE:20230226
+DTEND;VALUE=DATE:20230227
+UID:birthday-5783-cef61e50-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar birthday\, whose 5th Hebrew 
+ Birthday occurs on Sunday\, February 26\, corresponding to the 5th of Adar
+ \, 5783.\n\nAdar birthday’s Hebrew Birthday begins at sundown on Saturda
+ y\, February 25 and continues until sundown on the day of observance.\n\nM
+ azel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II Yahrzeit reminder
+DTSTART:20230305T163000
+DTEND:20230305T163000
+UID:reminder-20230305-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 4th Yahrzeit o
+ ccurs on Monday\, March 6\, corresponding to the 13th of Adar\, 5783.\n\nA
+ dar II’s Yahrzeit begins at sundown on Sunday\, March 5 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be b
+ ound up in the bond of eternal life and may their memory serve as a contin
+ ued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II’s 4th Yahrzeit (13th of Adar)
+DTSTART;VALUE=DATE:20230306
+DTEND;VALUE=DATE:20230307
+UID:yahrzeit-5783-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 4th Yahrzeit o
+ ccurs on Monday\, March 6\, corresponding to the 13th of Adar\, 5783.\n\nA
+ dar II’s Yahrzeit begins at sundown on Sunday\, March 5 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be b
+ ound up in the bond of eternal life and may their memory serve as a contin
+ ued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar I 30 birthday’s 4th Hebrew Birthday (1st of Nisa
+ n)
+DTSTART;VALUE=DATE:20230323
+DTEND;VALUE=DATE:20230324
+UID:birthday-5783-1c1c1c94-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar I 30 birthday\, whose 4th He
+ brew Birthday occurs on Thursday\, March 23\, corresponding to the 1st of 
+ Nisan\, 5783.\n\nAdar I 30 birthday’s Hebrew Birthday begins at sundown 
+ on Wednesday\, March 22 and continues until sundown on the day of observan
+ ce.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30 Yahrzeit reminder
+DTSTART:20231113T163000
+DTEND:20231113T163000
+UID:reminder-20231113-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 3rd Yahrze
+ it occurs on Tuesday\, November 14\, corresponding to the 1st of Kislev\, 
+ 5784.\n\nCheshvan 30’s Yahrzeit begins at sundown on Monday\, November 1
+ 3 and continues until sundown on the day of observance. It is customary to
+  light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved
+  one’s soul be bound up in the bond of eternal life and may their memory
+  serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30’s 3rd Yahrzeit (1st of Kislev)
+DTSTART;VALUE=DATE:20231114
+DTEND;VALUE=DATE:20231115
+UID:yahrzeit-5784-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 3rd Yahrze
+ it occurs on Tuesday\, November 14\, corresponding to the 1st of Kislev\, 
+ 5784.\n\nCheshvan 30’s Yahrzeit begins at sundown on Monday\, November 1
+ 3 and continues until sundown on the day of observance. It is customary to
+  light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved
+  one’s soul be bound up in the bond of eternal life and may their memory
+  serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30 Yahrzeit reminder
+DTSTART:20231211T163000
+DTEND:20231211T163000
+UID:reminder-20231211-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 4th Yahrzeit
+  occurs on Tuesday\, December 12\, corresponding to the 29th of Kislev\, 5
+ 784.\n\nKislev 30’s Yahrzeit begins at sundown on Monday\, December 11 a
+ nd continues until sundown on the day of observance. It is customary to li
+ ght a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved on
+ e’s soul be bound up in the bond of eternal life and may their memory se
+ rve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30’s 4th Yahrzeit (29th of Kislev)
+DTSTART;VALUE=DATE:20231212
+DTEND;VALUE=DATE:20231213
+UID:yahrzeit-5784-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 4th Yahrzeit
+  occurs on Tuesday\, December 12\, corresponding to the 29th of Kislev\, 5
+ 784.\n\nKislev 30’s Yahrzeit begins at sundown on Monday\, December 11 a
+ nd continues until sundown on the day of observance. It is customary to li
+ ght a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved on
+ e’s soul be bound up in the bond of eternal life and may their memory se
+ rve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30 Yahrzeit reminder
+DTSTART:20240309T200000
+DTEND:20240309T200000
+UID:reminder-20240309-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 5th Yahrzeit
+  occurs on Sunday\, March 10\, corresponding to the 30th of Adar I\, 5784.
+ \n\nAdar I 30’s Yahrzeit begins at sundown on Saturday\, March 9 and con
+ tinues until sundown on the day of observance. It is customary to light a 
+ memorial candle at nightfall as the Yahrzeit begins.\n\nMay your loved one
+ ’s soul be bound up in the bond of eternal life and may their memory ser
+ ve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30’s 5th Yahrzeit (30th of Adar I)
+DTSTART;VALUE=DATE:20240310
+DTEND;VALUE=DATE:20240311
+UID:yahrzeit-5784-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 5th Yahrzeit
+  occurs on Sunday\, March 10\, corresponding to the 30th of Adar I\, 5784.
+ \n\nAdar I 30’s Yahrzeit begins at sundown on Saturday\, March 9 and con
+ tinues until sundown on the day of observance. It is customary to light a 
+ memorial candle at nightfall as the Yahrzeit begins.\n\nMay your loved one
+ ’s soul be bound up in the bond of eternal life and may their memory ser
+ ve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar I 30 birthday’s 5th Hebrew Birthday (30th of Ada
+ r I)
+DTSTART;VALUE=DATE:20240310
+DTEND;VALUE=DATE:20240311
+UID:birthday-5784-1c1c1c94-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar I 30 birthday\, whose 5th He
+ brew Birthday occurs on Sunday\, March 10\, corresponding to the 30th of A
+ dar I\, 5784.\n\nAdar I 30 birthday’s Hebrew Birthday begins at sundown 
+ on Saturday\, March 9 and continues until sundown on the day of observance
+ .\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar birthday’s 6th Hebrew Birthday (5th of Adar II)
+DTSTART;VALUE=DATE:20240315
+DTEND;VALUE=DATE:20240316
+UID:birthday-5784-cef61e50-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar birthday\, whose 6th Hebrew 
+ Birthday occurs on Friday\, March 15\, corresponding to the 5th of Adar II
+ \, 5784.\n\nAdar birthday’s Hebrew Birthday begins at sundown on Thursda
+ y\, March 14 and continues until sundown on the day of observance.\n\nMaze
+ l Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II Yahrzeit reminder
+DTSTART:20240322T143000
+DTEND:20240322T143000
+UID:reminder-20240322-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 5th Yahrzeit o
+ ccurs on Saturday\, March 23\, corresponding to the 13th of Adar II\, 5784
+ .\n\nAdar II’s Yahrzeit begins at sundown on Friday\, March 22 and conti
+ nues until sundown on the day of observance. It is customary to light a me
+ morial candle before sundown as the Yahrzeit begins.\n\nMay your loved one
+ ’s soul be bound up in the bond of eternal life and may their memory ser
+ ve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II’s 5th Yahrzeit (13th of Adar II)
+DTSTART;VALUE=DATE:20240323
+DTEND;VALUE=DATE:20240324
+UID:yahrzeit-5784-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 5th Yahrzeit o
+ ccurs on Saturday\, March 23\, corresponding to the 13th of Adar II\, 5784
+ .\n\nAdar II’s Yahrzeit begins at sundown on Friday\, March 22 and conti
+ nues until sundown on the day of observance. It is customary to light a me
+ morial candle before sundown as the Yahrzeit begins.\n\nMay your loved one
+ ’s soul be bound up in the bond of eternal life and may their memory ser
+ ve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30 Yahrzeit reminder
+DTSTART:20241201T163000
+DTEND:20241201T163000
+UID:reminder-20241201-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 4th Yahrze
+ it occurs on Monday\, December 2\, corresponding to the 1st of Kislev\, 57
+ 85.\n\nCheshvan 30’s Yahrzeit begins at sundown on Sunday\, December 1 a
+ nd continues until sundown on the day of observance. It is customary to li
+ ght a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved on
+ e’s soul be bound up in the bond of eternal life and may their memory se
+ rve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30’s 4th Yahrzeit (1st of Kislev)
+DTSTART;VALUE=DATE:20241202
+DTEND;VALUE=DATE:20241203
+UID:yahrzeit-5785-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 4th Yahrze
+ it occurs on Monday\, December 2\, corresponding to the 1st of Kislev\, 57
+ 85.\n\nCheshvan 30’s Yahrzeit begins at sundown on Sunday\, December 1 a
+ nd continues until sundown on the day of observance. It is customary to li
+ ght a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved on
+ e’s soul be bound up in the bond of eternal life and may their memory se
+ rve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30 Yahrzeit reminder
+DTSTART:20241230T163000
+DTEND:20241230T163000
+UID:reminder-20241230-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 5th Yahrzeit
+  occurs on Tuesday\, December 31\, corresponding to the 30th of Kislev\, 5
+ 785.\n\nKislev 30’s Yahrzeit begins at sundown on Monday\, December 30 a
+ nd continues until sundown on the day of observance. It is customary to li
+ ght a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved on
+ e’s soul be bound up in the bond of eternal life and may their memory se
+ rve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30’s 5th Yahrzeit (30th of Kislev)
+DTSTART;VALUE=DATE:20241231
+DTEND;VALUE=DATE:20250101
+UID:yahrzeit-5785-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 5th Yahrzeit
+  occurs on Tuesday\, December 31\, corresponding to the 30th of Kislev\, 5
+ 785.\n\nKislev 30’s Yahrzeit begins at sundown on Monday\, December 30 a
+ nd continues until sundown on the day of observance. It is customary to li
+ ght a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved on
+ e’s soul be bound up in the bond of eternal life and may their memory se
+ rve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30 Yahrzeit reminder
+DTSTART:20250227T163000
+DTEND:20250227T163000
+UID:reminder-20250227-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 6th Yahrzeit
+  occurs on Friday\, February 28\, corresponding to the 30th of Sh’vat\, 
+ 5785.\n\nAdar I 30’s Yahrzeit begins at sundown on Thursday\, February 2
+ 7 and continues until sundown on the day of observance. It is customary to
+  light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved
+  one’s soul be bound up in the bond of eternal life and may their memory
+  serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30’s 6th Yahrzeit (30th of Sh’vat)
+DTSTART;VALUE=DATE:20250228
+DTEND;VALUE=DATE:20250301
+UID:yahrzeit-5785-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 6th Yahrzeit
+  occurs on Friday\, February 28\, corresponding to the 30th of Sh’vat\, 
+ 5785.\n\nAdar I 30’s Yahrzeit begins at sundown on Thursday\, February 2
+ 7 and continues until sundown on the day of observance. It is customary to
+  light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved
+  one’s soul be bound up in the bond of eternal life and may their memory
+  serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar birthday’s 7th Hebrew Birthday (5th of Adar)
+DTSTART;VALUE=DATE:20250305
+DTEND;VALUE=DATE:20250306
+UID:birthday-5785-cef61e50-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar birthday\, whose 7th Hebrew 
+ Birthday occurs on Wednesday\, March 5\, corresponding to the 5th of Adar\
+ , 5785.\n\nAdar birthday’s Hebrew Birthday begins at sundown on Tuesday\
+ , March 4 and continues until sundown on the day of observance.\n\nMazel T
+ ov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II Yahrzeit reminder
+DTSTART:20250312T163000
+DTEND:20250312T163000
+UID:reminder-20250312-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 6th Yahrzeit o
+ ccurs on Thursday\, March 13\, corresponding to the 13th of Adar\, 5785.\n
+ \nAdar II’s Yahrzeit begins at sundown on Wednesday\, March 12 and conti
+ nues until sundown on the day of observance. It is customary to light a me
+ morial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s so
+ ul be bound up in the bond of eternal life and may their memory serve as a
+  continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II’s 6th Yahrzeit (13th of Adar)
+DTSTART;VALUE=DATE:20250313
+DTEND;VALUE=DATE:20250314
+UID:yahrzeit-5785-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 6th Yahrzeit o
+ ccurs on Thursday\, March 13\, corresponding to the 13th of Adar\, 5785.\n
+ \nAdar II’s Yahrzeit begins at sundown on Wednesday\, March 12 and conti
+ nues until sundown on the day of observance. It is customary to light a me
+ morial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s so
+ ul be bound up in the bond of eternal life and may their memory serve as a
+  continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar I 30 birthday’s 6th Hebrew Birthday (1st of Nisa
+ n)
+DTSTART;VALUE=DATE:20250330
+DTEND;VALUE=DATE:20250331
+UID:birthday-5785-1c1c1c94-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar I 30 birthday\, whose 6th He
+ brew Birthday occurs on Sunday\, March 30\, corresponding to the 1st of Ni
+ san\, 5785.\n\nAdar I 30 birthday’s Hebrew Birthday begins at sundown on
+  Saturday\, March 29 and continues until sundown on the day of observance.
+ \n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30 Yahrzeit reminder
+DTSTART:20251120T163000
+DTEND:20251120T163000
+UID:reminder-20251120-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 5th Yahrze
+ it occurs on Friday\, November 21\, corresponding to the 1st of Kislev\, 5
+ 786.\n\nCheshvan 30’s Yahrzeit begins at sundown on Thursday\, November 
+ 20 and continues until sundown on the day of observance. It is customary t
+ o light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your love
+ d one’s soul be bound up in the bond of eternal life and may their memor
+ y serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30’s 5th Yahrzeit (1st of Kislev)
+DTSTART;VALUE=DATE:20251121
+DTEND;VALUE=DATE:20251122
+UID:yahrzeit-5786-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 5th Yahrze
+ it occurs on Friday\, November 21\, corresponding to the 1st of Kislev\, 5
+ 786.\n\nCheshvan 30’s Yahrzeit begins at sundown on Thursday\, November 
+ 20 and continues until sundown on the day of observance. It is customary t
+ o light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your love
+ d one’s soul be bound up in the bond of eternal life and may their memor
+ y serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30 Yahrzeit reminder
+DTSTART:20251219T143000
+DTEND:20251219T143000
+UID:reminder-20251219-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 6th Yahrzeit
+  occurs on Saturday\, December 20\, corresponding to the 30th of Kislev\, 
+ 5786.\n\nKislev 30’s Yahrzeit begins at sundown on Friday\, December 19 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle before sundown as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30’s 6th Yahrzeit (30th of Kislev)
+DTSTART;VALUE=DATE:20251220
+DTEND;VALUE=DATE:20251221
+UID:yahrzeit-5786-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 6th Yahrzeit
+  occurs on Saturday\, December 20\, corresponding to the 30th of Kislev\, 
+ 5786.\n\nKislev 30’s Yahrzeit begins at sundown on Friday\, December 19 
+ and continues until sundown on the day of observance. It is customary to l
+ ight a memorial candle before sundown as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30 Yahrzeit reminder
+DTSTART:20260216T163000
+DTEND:20260216T163000
+UID:reminder-20260216-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 7th Yahrzeit
+  occurs on Tuesday\, February 17\, corresponding to the 30th of Sh’vat\,
+  5786.\n\nAdar I 30’s Yahrzeit begins at sundown on Monday\, February 16
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved 
+ one’s soul be bound up in the bond of eternal life and may their memory 
+ serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30’s 7th Yahrzeit (30th of Sh’vat)
+DTSTART;VALUE=DATE:20260217
+DTEND;VALUE=DATE:20260218
+UID:yahrzeit-5786-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 7th Yahrzeit
+  occurs on Tuesday\, February 17\, corresponding to the 30th of Sh’vat\,
+  5786.\n\nAdar I 30’s Yahrzeit begins at sundown on Monday\, February 16
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved 
+ one’s soul be bound up in the bond of eternal life and may their memory 
+ serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar birthday’s 8th Hebrew Birthday (5th of Adar)
+DTSTART;VALUE=DATE:20260222
+DTEND;VALUE=DATE:20260223
+UID:birthday-5786-cef61e50-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar birthday\, whose 8th Hebrew 
+ Birthday occurs on Sunday\, February 22\, corresponding to the 5th of Adar
+ \, 5786.\n\nAdar birthday’s Hebrew Birthday begins at sundown on Saturda
+ y\, February 21 and continues until sundown on the day of observance.\n\nM
+ azel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II Yahrzeit reminder
+DTSTART:20260301T163000
+DTEND:20260301T163000
+UID:reminder-20260301-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 7th Yahrzeit o
+ ccurs on Monday\, March 2\, corresponding to the 13th of Adar\, 5786.\n\nA
+ dar II’s Yahrzeit begins at sundown on Sunday\, March 1 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be b
+ ound up in the bond of eternal life and may their memory serve as a contin
+ ued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II’s 7th Yahrzeit (13th of Adar)
+DTSTART;VALUE=DATE:20260302
+DTEND;VALUE=DATE:20260303
+UID:yahrzeit-5786-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 7th Yahrzeit o
+ ccurs on Monday\, March 2\, corresponding to the 13th of Adar\, 5786.\n\nA
+ dar II’s Yahrzeit begins at sundown on Sunday\, March 1 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be b
+ ound up in the bond of eternal life and may their memory serve as a contin
+ ued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar I 30 birthday’s 7th Hebrew Birthday (1st of Nisa
+ n)
+DTSTART;VALUE=DATE:20260319
+DTEND;VALUE=DATE:20260320
+UID:birthday-5786-1c1c1c94-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar I 30 birthday\, whose 7th He
+ brew Birthday occurs on Thursday\, March 19\, corresponding to the 1st of 
+ Nisan\, 5786.\n\nAdar I 30 birthday’s Hebrew Birthday begins at sundown 
+ on Wednesday\, March 18 and continues until sundown on the day of observan
+ ce.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30 Yahrzeit reminder
+DTSTART:20261110T163000
+DTEND:20261110T163000
+UID:reminder-20261110-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 6th Yahrze
+ it occurs on Wednesday\, November 11\, corresponding to the 1st of Kislev\
+ , 5787.\n\nCheshvan 30’s Yahrzeit begins at sundown on Tuesday\, Novembe
+ r 10 and continues until sundown on the day of observance. It is customary
+  to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your lo
+ ved one’s soul be bound up in the bond of eternal life and may their mem
+ ory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30’s 6th Yahrzeit (1st of Kislev)
+DTSTART;VALUE=DATE:20261111
+DTEND;VALUE=DATE:20261112
+UID:yahrzeit-5787-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 6th Yahrze
+ it occurs on Wednesday\, November 11\, corresponding to the 1st of Kislev\
+ , 5787.\n\nCheshvan 30’s Yahrzeit begins at sundown on Tuesday\, Novembe
+ r 10 and continues until sundown on the day of observance. It is customary
+  to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your lo
+ ved one’s soul be bound up in the bond of eternal life and may their mem
+ ory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30 Yahrzeit reminder
+DTSTART:20261209T163000
+DTEND:20261209T163000
+UID:reminder-20261209-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 7th Yahrzeit
+  occurs on Thursday\, December 10\, corresponding to the 30th of Kislev\, 
+ 5787.\n\nKislev 30’s Yahrzeit begins at sundown on Wednesday\, December 
+ 9 and continues until sundown on the day of observance. It is customary to
+  light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved
+  one’s soul be bound up in the bond of eternal life and may their memory
+  serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30’s 7th Yahrzeit (30th of Kislev)
+DTSTART;VALUE=DATE:20261210
+DTEND;VALUE=DATE:20261211
+UID:yahrzeit-5787-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 7th Yahrzeit
+  occurs on Thursday\, December 10\, corresponding to the 30th of Kislev\, 
+ 5787.\n\nKislev 30’s Yahrzeit begins at sundown on Wednesday\, December 
+ 9 and continues until sundown on the day of observance. It is customary to
+  light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved
+  one’s soul be bound up in the bond of eternal life and may their memory
+  serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30 Yahrzeit reminder
+DTSTART:20270308T163000
+DTEND:20270308T163000
+UID:reminder-20270308-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 8th Yahrzeit
+  occurs on Tuesday\, March 9\, corresponding to the 30th of Adar I\, 5787.
+ \n\nAdar I 30’s Yahrzeit begins at sundown on Monday\, March 8 and conti
+ nues until sundown on the day of observance. It is customary to light a me
+ morial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s so
+ ul be bound up in the bond of eternal life and may their memory serve as a
+  continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar I 30’s 8th Yahrzeit (30th of Adar I)
+DTSTART;VALUE=DATE:20270309
+DTEND;VALUE=DATE:20270310
+UID:yahrzeit-5787-4bd40391-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar I 30\, whose 8th Yahrzeit
+  occurs on Tuesday\, March 9\, corresponding to the 30th of Adar I\, 5787.
+ \n\nAdar I 30’s Yahrzeit begins at sundown on Monday\, March 8 and conti
+ nues until sundown on the day of observance. It is customary to light a me
+ morial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s so
+ ul be bound up in the bond of eternal life and may their memory serve as a
+  continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar I 30 birthday’s 8th Hebrew Birthday (30th of Ada
+ r I)
+DTSTART;VALUE=DATE:20270309
+DTEND;VALUE=DATE:20270310
+UID:birthday-5787-1c1c1c94-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar I 30 birthday\, whose 8th He
+ brew Birthday occurs on Tuesday\, March 9\, corresponding to the 30th of A
+ dar I\, 5787.\n\nAdar I 30 birthday’s Hebrew Birthday begins at sundown 
+ on Monday\, March 8 and continues until sundown on the day of observance.\
+ n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Adar birthday’s 9th Hebrew Birthday (5th of Adar II)
+DTSTART;VALUE=DATE:20270314
+DTEND;VALUE=DATE:20270315
+UID:birthday-5787-cef61e50-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Adar birthday\, whose 9th Hebrew 
+ Birthday occurs on Sunday\, March 14\, corresponding to the 5th of Adar II
+ \, 5787.\n\nAdar birthday’s Hebrew Birthday begins at sundown on Saturda
+ y\, March 13 and continues until sundown on the day of observance.\n\nMaze
+ l Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II Yahrzeit reminder
+DTSTART:20270321T163000
+DTEND:20270321T163000
+UID:reminder-20270321-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 8th Yahrzeit o
+ ccurs on Monday\, March 22\, corresponding to the 13th of Adar II\, 5787.\
+ n\nAdar II’s Yahrzeit begins at sundown on Sunday\, March 21 and continu
+ es until sundown on the day of observance. It is customary to light a memo
+ rial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul
+  be bound up in the bond of eternal life and may their memory serve as a c
+ ontinued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Adar II’s 8th Yahrzeit (13th of Adar II)
+DTSTART;VALUE=DATE:20270322
+DTEND;VALUE=DATE:20270323
+UID:yahrzeit-5787-ae4d16b8-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Adar II\, whose 8th Yahrzeit o
+ ccurs on Monday\, March 22\, corresponding to the 13th of Adar II\, 5787.\
+ n\nAdar II’s Yahrzeit begins at sundown on Sunday\, March 21 and continu
+ es until sundown on the day of observance. It is customary to light a memo
+ rial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul
+  be bound up in the bond of eternal life and may their memory serve as a c
+ ontinued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30 Yahrzeit reminder
+DTSTART:20271130T163000
+DTEND:20271130T163000
+UID:reminder-20271130-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 7th Yahrze
+ it occurs on Wednesday\, December 1\, corresponding to the 1st of Kislev\,
+  5788.\n\nCheshvan 30’s Yahrzeit begins at sundown on Tuesday\, November
+  30 and continues until sundown on the day of observance. It is customary 
+ to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your lov
+ ed one’s soul be bound up in the bond of eternal life and may their memo
+ ry serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30’s 7th Yahrzeit (1st of Kislev)
+DTSTART;VALUE=DATE:20271201
+DTEND;VALUE=DATE:20271202
+UID:yahrzeit-5788-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 7th Yahrze
+ it occurs on Wednesday\, December 1\, corresponding to the 1st of Kislev\,
+  5788.\n\nCheshvan 30’s Yahrzeit begins at sundown on Tuesday\, November
+  30 and continues until sundown on the day of observance. It is customary 
+ to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your lov
+ ed one’s soul be bound up in the bond of eternal life and may their memo
+ ry serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30 Yahrzeit reminder
+DTSTART:20271229T163000
+DTEND:20271229T163000
+UID:reminder-20271229-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 8th Yahrzeit
+  occurs on Thursday\, December 30\, corresponding to the 30th of Kislev\, 
+ 5788.\n\nKislev 30’s Yahrzeit begins at sundown on Wednesday\, December 
+ 29 and continues until sundown on the day of observance. It is customary t
+ o light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your love
+ d one’s soul be bound up in the bond of eternal life and may their memor
+ y serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Kislev 30’s 8th Yahrzeit (30th of Kislev)
+DTSTART;VALUE=DATE:20271230
+DTEND;VALUE=DATE:20271231
+UID:yahrzeit-5788-db1cda4d-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Kislev 30\, whose 8th Yahrzeit
+  occurs on Thursday\, December 30\, corresponding to the 30th of Kislev\, 
+ 5788.\n\nKislev 30’s Yahrzeit begins at sundown on Wednesday\, December 
+ 29 and continues until sundown on the day of observance. It is customary t
+ o light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your love
+ d one’s soul be bound up in the bond of eternal life and may their memor
+ y serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30 Yahrzeit reminder
+DTSTART:20281118T200000
+DTEND:20281118T200000
+UID:reminder-20281118-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 8th Yahrze
+ it occurs on Sunday\, November 19\, corresponding to the 1st of Kislev\, 5
+ 789.\n\nCheshvan 30’s Yahrzeit begins at sundown on Saturday\, November 
+ 18 and continues until sundown on the day of observance. It is customary t
+ o light a memorial candle at nightfall as the Yahrzeit begins.\n\nMay your
+  loved one’s soul be bound up in the bond of eternal life and may their 
+ memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Cheshvan 30’s 8th Yahrzeit (1st of Kislev)
+DTSTART;VALUE=DATE:20281119
+DTEND;VALUE=DATE:20281120
+UID:yahrzeit-5789-4a5812d3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Cheshvan 30\, whose 8th Yahrze
+ it occurs on Sunday\, November 19\, corresponding to the 1st of Kislev\, 5
+ 789.\n\nCheshvan 30’s Yahrzeit begins at sundown on Saturday\, November 
+ 18 and continues until sundown on the day of observance. It is customary t
+ o light a memorial candle at nightfall as the Yahrzeit begins.\n\nMay your
+  loved one’s soul be bound up in the bond of eternal life and may their 
+ memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+END:VCALENDAR

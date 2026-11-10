@@ -1,0 +1,55 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Yahrzeit: Chaim Weizmann
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Chaim Weizmann Yahrzeit reminder
+DTSTART:20261031T200000
+DTEND:20261031T200000
+UID:reminder-20261031-b67273bb-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Chaim Weizmann\, whose 74th Ya
+ hrzeit occurs on Sunday\, November 1\, corresponding to the 21st of Cheshv
+ an\, 5787.\n\nChaim Weizmann’s Yahrzeit begins at sundown on Saturday\, 
+ October 31 and continues until sundown on the day of observance. It is cus
+ tomary to light a memorial candle at nightfall as the Yahrzeit begins.\n\n
+ May your loved one’s soul be bound up in the bond of eternal life and ma
+ y their memory serve as a continued source of inspiration and comfort to y
+ ou.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Chaim Weizmann’s 74th Yahrzeit
+DTSTART;VALUE=DATE:20261101
+DTEND;VALUE=DATE:20261102
+UID:yahrzeit-5787-b67273bb-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Chaim Weizmann\, whose 74th Ya
+ hrzeit occurs on Sunday\, November 1\, corresponding to the 21st of Cheshv
+ an\, 5787.\n\nChaim Weizmann’s Yahrzeit begins at sundown on Saturday\, 
+ October 31 and continues until sundown on the day of observance. It is cus
+ tomary to light a memorial candle at nightfall as the Yahrzeit begins.\n\n
+ May your loved one’s soul be bound up in the bond of eternal life and ma
+ y their memory serve as a continued source of inspiration and comfort to y
+ ou.
+END:VEVENT
+END:VCALENDAR

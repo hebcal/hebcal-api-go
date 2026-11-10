@@ -1,0 +1,120 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Hebrew Anniversary: בְּרֵאשִׁית בָּרָא אֱ
+ לֹהִים אֵת הַשָּׁמַי...
+X-WR-CALDESC:Hebcal Hebrew Anniversary: בְּרֵאשִׁית בָּרָ
+ א אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶ
+ ץ\, 🇮🇱 Israel 🇮🇱 Israel 🇮🇱 Israel 🇮🇱 Israel 
+ 🇮🇱 Israel 🇮🇱 Israel 👨‍👩‍👧‍👦 family 
+ 👨‍👩‍👧‍👦 family\, ééééééééééééééééééé
+ ééééééééééééééééééééé
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ בְּרֵאשִׁית בָּרָא אֱלֹהִים אֵ
+ ת הַשָּׁמַיִם וְאֵת הָאָרֶץ יארצייט תזכ
+ ורת
+DTSTART:20270518T163000
+DTEND:20270518T163000
+UID:reminder-20270518-ac5a5674-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering בְּרֵאשִׁית בָּ
+ רָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָ
+ רֶץ\, whose 26th Yahrzeit occurs on Wednesday\, May 19\, corresponding 
+ to the 12th of Iyyar\, 5787.\n\nבְּרֵאשִׁית בָּרָא אֱ
+ לֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ’s Y
+ ahrzeit begins at sundown on Tuesday\, May 18 and continues until sundown 
+ on the day of observance. It is customary to light a memorial candle at du
+ sk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in t
+ he bond of eternal life and may their memory serve as a continued source o
+ f inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יארצייט ה-26 של בְּרֵאשִׁית בָּ
+ רָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָ
+ רֶץ (י״ב אייר)
+DTSTART;VALUE=DATE:20270519
+DTEND;VALUE=DATE:20270520
+UID:yahrzeit-5787-ac5a5674-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering בְּרֵאשִׁית בָּ
+ רָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָ
+ רֶץ\, whose 26th Yahrzeit occurs on Wednesday\, May 19\, corresponding 
+ to the 12th of Iyyar\, 5787.\n\nבְּרֵאשִׁית בָּרָא אֱ
+ לֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ’s Y
+ ahrzeit begins at sundown on Tuesday\, May 18 and continues until sundown 
+ on the day of observance. It is customary to light a memorial candle at du
+ sk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in t
+ he bond of eternal life and may their memory serve as a continued source o
+ f inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🇮🇱 Israel 🇮🇱 Israel 🇮🇱 Israel 🇮🇱 Israel 
+ 🇮🇱 Israel 🇮🇱 Israel 👨‍👩‍👧‍👦 family 
+ 👨‍👩‍👧‍👦 family (26th of Sivan)
+DTSTART;VALUE=DATE:20270701
+DTEND;VALUE=DATE:20270702
+UID:other-5787-6f804e2a-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:🇮🇱 Israel 🇮🇱 Israel 🇮🇱 Israel 🇮🇱 Israe
+ l 🇮🇱 Israel 🇮🇱 Israel 👨‍👩‍👧‍👦 family 
+ 👨‍👩‍👧‍👦 family occurs on Thursday\, July 1\, correspondi
+ ng to the 26th of Sivan\, 5787.\n\n🇮🇱 Israel 🇮🇱 Israel 
+ 🇮🇱 Israel 🇮🇱 Israel 🇮🇱 Israel 🇮🇱 Israel 
+ 👨‍👩‍👧‍👦 family 👨‍👩‍👧‍👦 family begins a
+ t sundown on Wednesday\, June 30 and continues until sundown on the day of
+  observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:ééééééééééééééééééééééééééééééééé
+ ééééééé’s 24th Hebrew Anniversary (7th of Tamuz)
+DTSTART;VALUE=DATE:20270712
+DTEND;VALUE=DATE:20270713
+UID:anniversary-5787-f4f841a1-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring éééééééééééééééé
+ éééééééééééééééééééééééé\, whose 24th Hebrew Anniv
+ ersary occurs on Monday\, July 12\, corresponding to the 7th of Tamuz\, 57
+ 87.\n\nééééééééééééééééééééééééééééééééé
+ ééééééé’s Hebrew Anniversary begins at sundown on Sunday\, July 1
+ 1 and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+END:VCALENDAR

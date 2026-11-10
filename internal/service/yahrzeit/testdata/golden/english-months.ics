@@ -1,0 +1,1587 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Hebrew Anniversaries: A\, B\, C\, D\, E\, F\, G\, H\, I\, J\,
+  K\, L\, M\, N
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ J Yahrzeit reminder
+DTSTART:20251005T163000
+DTEND:20251005T163000
+UID:reminder-20251005-61a789d7-10
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering J\, whose 24th Yahrzeit occurs
+  on Monday\, October 6\, corresponding to the 14th of Tishrei\, 5786.\n\nJ
+ ’s Yahrzeit begins at sundown on Sunday\, October 5 and continues until 
+ sundown on the day of observance. It is customary to light a memorial cand
+ le at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound
+  up in the bond of eternal life and may their memory serve as a continued 
+ source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ J’s 24th Yahrzeit (14th of Tishrei)
+DTSTART;VALUE=DATE:20251006
+DTEND;VALUE=DATE:20251007
+UID:yahrzeit-5786-61a789d7-10
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering J\, whose 24th Yahrzeit occurs
+  on Monday\, October 6\, corresponding to the 14th of Tishrei\, 5786.\n\nJ
+ ’s Yahrzeit begins at sundown on Sunday\, October 5 and continues until 
+ sundown on the day of observance. It is customary to light a memorial cand
+ le at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound
+  up in the bond of eternal life and may their memory serve as a continued 
+ source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ K Yahrzeit reminder
+DTSTART:20251105T163000
+DTEND:20251105T163000
+UID:reminder-20251105-efcf429a-11
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering K\, whose 24th Yahrzeit occurs
+  on Thursday\, November 6\, corresponding to the 15th of Cheshvan\, 5786.\
+ n\nK’s Yahrzeit begins at sundown on Wednesday\, November 5 and continue
+ s until sundown on the day of observance. It is customary to light a memor
+ ial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul 
+ be bound up in the bond of eternal life and may their memory serve as a co
+ ntinued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ K’s 24th Yahrzeit (15th of Cheshvan)
+DTSTART;VALUE=DATE:20251106
+DTEND;VALUE=DATE:20251107
+UID:yahrzeit-5786-efcf429a-11
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering K\, whose 24th Yahrzeit occurs
+  on Thursday\, November 6\, corresponding to the 15th of Cheshvan\, 5786.\
+ n\nK’s Yahrzeit begins at sundown on Wednesday\, November 5 and continue
+ s until sundown on the day of observance. It is customary to light a memor
+ ial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul 
+ be bound up in the bond of eternal life and may their memory serve as a co
+ ntinued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ L Yahrzeit reminder
+DTSTART:20251205T143000
+DTEND:20251205T143000
+UID:reminder-20251205-f3397f3f-12
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering L\, whose 24th Yahrzeit occurs
+  on Saturday\, December 6\, corresponding to the 16th of Kislev\, 5786.\n\
+ nL’s Yahrzeit begins at sundown on Friday\, December 5 and continues unt
+ il sundown on the day of observance. It is customary to light a memorial c
+ andle before sundown as the Yahrzeit begins.\n\nMay your loved one’s sou
+ l be bound up in the bond of eternal life and may their memory serve as a 
+ continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ L’s 24th Yahrzeit (16th of Kislev)
+DTSTART;VALUE=DATE:20251206
+DTEND;VALUE=DATE:20251207
+UID:yahrzeit-5786-f3397f3f-12
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering L\, whose 24th Yahrzeit occurs
+  on Saturday\, December 6\, corresponding to the 16th of Kislev\, 5786.\n\
+ nL’s Yahrzeit begins at sundown on Friday\, December 5 and continues unt
+ il sundown on the day of observance. It is customary to light a memorial c
+ andle before sundown as the Yahrzeit begins.\n\nMay your loved one’s sou
+ l be bound up in the bond of eternal life and may their memory serve as a 
+ continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ A Yahrzeit reminder
+DTSTART:20251225T163000
+DTEND:20251225T163000
+UID:reminder-20251225-54dcf7ce-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering A\, whose 25th Yahrzeit occurs
+  on Friday\, December 26\, corresponding to the 6th of Tevet\, 5786.\n\nA
+ ’s Yahrzeit begins at sundown on Thursday\, December 25 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be b
+ ound up in the bond of eternal life and may their memory serve as a contin
+ ued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ A’s 25th Yahrzeit (6th of Tevet)
+DTSTART;VALUE=DATE:20251226
+DTEND;VALUE=DATE:20251227
+UID:yahrzeit-5786-54dcf7ce-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering A\, whose 25th Yahrzeit occurs
+  on Friday\, December 26\, corresponding to the 6th of Tevet\, 5786.\n\nA
+ ’s Yahrzeit begins at sundown on Thursday\, December 25 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be b
+ ound up in the bond of eternal life and may their memory serve as a contin
+ ued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ B Yahrzeit reminder
+DTSTART:20260125T163000
+DTEND:20260125T163000
+UID:reminder-20260125-cca66a8a-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering B\, whose 25th Yahrzeit occurs
+  on Monday\, January 26\, corresponding to the 8th of Sh’vat\, 5786.\n\n
+ B’s Yahrzeit begins at sundown on Sunday\, January 25 and continues unti
+ l sundown on the day of observance. It is customary to light a memorial ca
+ ndle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bou
+ nd up in the bond of eternal life and may their memory serve as a continue
+ d source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ B’s 25th Yahrzeit (8th of Sh’vat)
+DTSTART;VALUE=DATE:20260126
+DTEND;VALUE=DATE:20260127
+UID:yahrzeit-5786-cca66a8a-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering B\, whose 25th Yahrzeit occurs
+  on Monday\, January 26\, corresponding to the 8th of Sh’vat\, 5786.\n\n
+ B’s Yahrzeit begins at sundown on Sunday\, January 25 and continues unti
+ l sundown on the day of observance. It is customary to light a memorial ca
+ ndle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bou
+ nd up in the bond of eternal life and may their memory serve as a continue
+ d source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ M’s 23rd Hebrew Birthday (1st of Adar)
+DTSTART;VALUE=DATE:20260218
+DTEND;VALUE=DATE:20260219
+UID:birthday-5786-0612876a-13
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring M\, whose 23rd Hebrew Birthday oc
+ curs on Wednesday\, February 18\, corresponding to the 1st of Adar\, 5786.
+ \n\nM’s Hebrew Birthday begins at sundown on Tuesday\, February 17 and c
+ ontinues until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:N’s 23rd Hebrew Anniversary (3rd of Adar)
+DTSTART;VALUE=DATE:20260220
+DTEND;VALUE=DATE:20260221
+UID:anniversary-5786-e62e0bb1-14
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring N\, whose 23rd Hebrew Anniversary
+  occurs on Friday\, February 20\, corresponding to the 3rd of Adar\, 5786.
+ \n\nN’s Hebrew Anniversary begins at sundown on Thursday\, February 19 a
+ nd continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ C’s 25th Hebrew Birthday (6th of Adar)
+DTSTART;VALUE=DATE:20260223
+DTEND;VALUE=DATE:20260224
+UID:birthday-5786-ea1cfe8b-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring C\, whose 25th Hebrew Birthday oc
+ curs on Monday\, February 23\, corresponding to the 6th of Adar\, 5786.\n\
+ nC’s Hebrew Birthday begins at sundown on Sunday\, February 22 and conti
+ nues until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ D Yahrzeit reminder
+DTSTART:20260325T163000
+DTEND:20260325T163000
+UID:reminder-20260325-63c05906-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering D\, whose 25th Yahrzeit occurs
+  on Thursday\, March 26\, corresponding to the 8th of Nisan\, 5786.\n\nD
+ ’s Yahrzeit begins at sundown on Wednesday\, March 25 and continues unti
+ l sundown on the day of observance. It is customary to light a memorial ca
+ ndle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bou
+ nd up in the bond of eternal life and may their memory serve as a continue
+ d source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ D’s 25th Yahrzeit (8th of Nisan)
+DTSTART;VALUE=DATE:20260326
+DTEND;VALUE=DATE:20260327
+UID:yahrzeit-5786-63c05906-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering D\, whose 25th Yahrzeit occurs
+  on Thursday\, March 26\, corresponding to the 8th of Nisan\, 5786.\n\nD
+ ’s Yahrzeit begins at sundown on Wednesday\, March 25 and continues unti
+ l sundown on the day of observance. It is customary to light a memorial ca
+ ndle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bou
+ nd up in the bond of eternal life and may their memory serve as a continue
+ d source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ E Yahrzeit reminder
+DTSTART:20260424T143000
+DTEND:20260424T143000
+UID:reminder-20260424-0f783207-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering E\, whose 25th Yahrzeit occurs
+  on Saturday\, April 25\, corresponding to the 8th of Iyyar\, 5786.\n\nE
+ ’s Yahrzeit begins at sundown on Friday\, April 24 and continues until s
+ undown on the day of observance. It is customary to light a memorial candl
+ e before sundown as the Yahrzeit begins.\n\nMay your loved one’s soul be
+  bound up in the bond of eternal life and may their memory serve as a cont
+ inued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ E’s 25th Yahrzeit (8th of Iyyar)
+DTSTART;VALUE=DATE:20260425
+DTEND;VALUE=DATE:20260426
+UID:yahrzeit-5786-0f783207-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering E\, whose 25th Yahrzeit occurs
+  on Saturday\, April 25\, corresponding to the 8th of Iyyar\, 5786.\n\nE
+ ’s Yahrzeit begins at sundown on Friday\, April 24 and continues until s
+ undown on the day of observance. It is customary to light a memorial candl
+ e before sundown as the Yahrzeit begins.\n\nMay your loved one’s soul be
+  bound up in the bond of eternal life and may their memory serve as a cont
+ inued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ F Yahrzeit reminder
+DTSTART:20260525T163000
+DTEND:20260525T163000
+UID:reminder-20260525-982b1106-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering F\, whose 25th Yahrzeit occurs
+  on Tuesday\, May 26\, corresponding to the 10th of Sivan\, 5786.\n\nF’s
+  Yahrzeit begins at sundown on Monday\, May 25 and continues until sundown
+  on the day of observance. It is customary to light a memorial candle at d
+ usk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in 
+ the bond of eternal life and may their memory serve as a continued source 
+ of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ F’s 25th Yahrzeit (10th of Sivan)
+DTSTART;VALUE=DATE:20260526
+DTEND;VALUE=DATE:20260527
+UID:yahrzeit-5786-982b1106-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering F\, whose 25th Yahrzeit occurs
+  on Tuesday\, May 26\, corresponding to the 10th of Sivan\, 5786.\n\nF’s
+  Yahrzeit begins at sundown on Monday\, May 25 and continues until sundown
+  on the day of observance. It is customary to light a memorial candle at d
+ usk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in 
+ the bond of eternal life and may their memory serve as a continued source 
+ of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ G Yahrzeit reminder
+DTSTART:20260624T163000
+DTEND:20260624T163000
+UID:reminder-20260624-7d180799-7
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering G\, whose 25th Yahrzeit occurs
+  on Thursday\, June 25\, corresponding to the 10th of Tamuz\, 5786.\n\nG
+ ’s Yahrzeit begins at sundown on Wednesday\, June 24 and continues until
+  sundown on the day of observance. It is customary to light a memorial can
+ dle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be boun
+ d up in the bond of eternal life and may their memory serve as a continued
+  source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ G’s 25th Yahrzeit (10th of Tamuz)
+DTSTART;VALUE=DATE:20260625
+DTEND;VALUE=DATE:20260626
+UID:yahrzeit-5786-7d180799-7
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering G\, whose 25th Yahrzeit occurs
+  on Thursday\, June 25\, corresponding to the 10th of Tamuz\, 5786.\n\nG
+ ’s Yahrzeit begins at sundown on Wednesday\, June 24 and continues until
+  sundown on the day of observance. It is customary to light a memorial can
+ dle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be boun
+ d up in the bond of eternal life and may their memory serve as a continued
+  source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ H Yahrzeit reminder
+DTSTART:20260725T200000
+DTEND:20260725T200000
+UID:reminder-20260725-407f6809-8
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering H\, whose 25th Yahrzeit occurs
+  on Sunday\, July 26\, corresponding to the 12th of Av\, 5786.\n\nH’s Ya
+ hrzeit begins at sundown on Saturday\, July 25 and continues until sundown
+  on the day of observance. It is customary to light a memorial candle at n
+ ightfall as the Yahrzeit begins.\n\nMay your loved one’s soul be bound u
+ p in the bond of eternal life and may their memory serve as a continued so
+ urce of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ H’s 25th Yahrzeit (12th of Av)
+DTSTART;VALUE=DATE:20260726
+DTEND;VALUE=DATE:20260727
+UID:yahrzeit-5786-407f6809-8
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering H\, whose 25th Yahrzeit occurs
+  on Sunday\, July 26\, corresponding to the 12th of Av\, 5786.\n\nH’s Ya
+ hrzeit begins at sundown on Saturday\, July 25 and continues until sundown
+  on the day of observance. It is customary to light a memorial candle at n
+ ightfall as the Yahrzeit begins.\n\nMay your loved one’s soul be bound u
+ p in the bond of eternal life and may their memory serve as a continued so
+ urce of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ I Yahrzeit reminder
+DTSTART:20260825T163000
+DTEND:20260825T163000
+UID:reminder-20260825-5491dfca-9
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering I\, whose 25th Yahrzeit occurs
+  on Wednesday\, August 26\, corresponding to the 13th of Elul\, 5786.\n\nI
+ ’s Yahrzeit begins at sundown on Tuesday\, August 25 and continues until
+  sundown on the day of observance. It is customary to light a memorial can
+ dle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be boun
+ d up in the bond of eternal life and may their memory serve as a continued
+  source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ I’s 25th Yahrzeit (13th of Elul)
+DTSTART;VALUE=DATE:20260826
+DTEND;VALUE=DATE:20260827
+UID:yahrzeit-5786-5491dfca-9
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering I\, whose 25th Yahrzeit occurs
+  on Wednesday\, August 26\, corresponding to the 13th of Elul\, 5786.\n\nI
+ ’s Yahrzeit begins at sundown on Tuesday\, August 25 and continues until
+  sundown on the day of observance. It is customary to light a memorial can
+ dle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be boun
+ d up in the bond of eternal life and may their memory serve as a continued
+  source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ J Yahrzeit reminder
+DTSTART:20260924T163000
+DTEND:20260924T163000
+UID:reminder-20260924-61a789d7-10
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering J\, whose 25th Yahrzeit occurs
+  on Friday\, September 25\, corresponding to the 14th of Tishrei\, 5787.\n
+ \nJ’s Yahrzeit begins at sundown on Thursday\, September 24 and continue
+ s until sundown on the day of observance. It is customary to light a memor
+ ial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul 
+ be bound up in the bond of eternal life and may their memory serve as a co
+ ntinued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ J’s 25th Yahrzeit (14th of Tishrei)
+DTSTART;VALUE=DATE:20260925
+DTEND;VALUE=DATE:20260926
+UID:yahrzeit-5787-61a789d7-10
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering J\, whose 25th Yahrzeit occurs
+  on Friday\, September 25\, corresponding to the 14th of Tishrei\, 5787.\n
+ \nJ’s Yahrzeit begins at sundown on Thursday\, September 24 and continue
+ s until sundown on the day of observance. It is customary to light a memor
+ ial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul 
+ be bound up in the bond of eternal life and may their memory serve as a co
+ ntinued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ K Yahrzeit reminder
+DTSTART:20261025T163000
+DTEND:20261025T163000
+UID:reminder-20261025-efcf429a-11
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering K\, whose 25th Yahrzeit occurs
+  on Monday\, October 26\, corresponding to the 15th of Cheshvan\, 5787.\n\
+ nK’s Yahrzeit begins at sundown on Sunday\, October 25 and continues unt
+ il sundown on the day of observance. It is customary to light a memorial c
+ andle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bo
+ und up in the bond of eternal life and may their memory serve as a continu
+ ed source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ K’s 25th Yahrzeit (15th of Cheshvan)
+DTSTART;VALUE=DATE:20261026
+DTEND;VALUE=DATE:20261027
+UID:yahrzeit-5787-efcf429a-11
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering K\, whose 25th Yahrzeit occurs
+  on Monday\, October 26\, corresponding to the 15th of Cheshvan\, 5787.\n\
+ nK’s Yahrzeit begins at sundown on Sunday\, October 25 and continues unt
+ il sundown on the day of observance. It is customary to light a memorial c
+ andle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bo
+ und up in the bond of eternal life and may their memory serve as a continu
+ ed source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ L Yahrzeit reminder
+DTSTART:20261125T163000
+DTEND:20261125T163000
+UID:reminder-20261125-f3397f3f-12
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering L\, whose 25th Yahrzeit occurs
+  on Thursday\, November 26\, corresponding to the 16th of Kislev\, 5787.\n
+ \nL’s Yahrzeit begins at sundown on Wednesday\, November 25 and continue
+ s until sundown on the day of observance. It is customary to light a memor
+ ial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul 
+ be bound up in the bond of eternal life and may their memory serve as a co
+ ntinued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ L’s 25th Yahrzeit (16th of Kislev)
+DTSTART;VALUE=DATE:20261126
+DTEND;VALUE=DATE:20261127
+UID:yahrzeit-5787-f3397f3f-12
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering L\, whose 25th Yahrzeit occurs
+  on Thursday\, November 26\, corresponding to the 16th of Kislev\, 5787.\n
+ \nL’s Yahrzeit begins at sundown on Wednesday\, November 25 and continue
+ s until sundown on the day of observance. It is customary to light a memor
+ ial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul 
+ be bound up in the bond of eternal life and may their memory serve as a co
+ ntinued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ A Yahrzeit reminder
+DTSTART:20261215T163000
+DTEND:20261215T163000
+UID:reminder-20261215-54dcf7ce-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering A\, whose 26th Yahrzeit occurs
+  on Wednesday\, December 16\, corresponding to the 6th of Tevet\, 5787.\n\
+ nA’s Yahrzeit begins at sundown on Tuesday\, December 15 and continues u
+ ntil sundown on the day of observance. It is customary to light a memorial
+  candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be 
+ bound up in the bond of eternal life and may their memory serve as a conti
+ nued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ A’s 26th Yahrzeit (6th of Tevet)
+DTSTART;VALUE=DATE:20261216
+DTEND;VALUE=DATE:20261217
+UID:yahrzeit-5787-54dcf7ce-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering A\, whose 26th Yahrzeit occurs
+  on Wednesday\, December 16\, corresponding to the 6th of Tevet\, 5787.\n\
+ nA’s Yahrzeit begins at sundown on Tuesday\, December 15 and continues u
+ ntil sundown on the day of observance. It is customary to light a memorial
+  candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be 
+ bound up in the bond of eternal life and may their memory serve as a conti
+ nued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ B Yahrzeit reminder
+DTSTART:20270115T143000
+DTEND:20270115T143000
+UID:reminder-20270115-cca66a8a-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering B\, whose 26th Yahrzeit occurs
+  on Saturday\, January 16\, corresponding to the 8th of Sh’vat\, 5787.\n
+ \nB’s Yahrzeit begins at sundown on Friday\, January 15 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle before sundown as the Yahrzeit begins.\n\nMay your loved one’s so
+ ul be bound up in the bond of eternal life and may their memory serve as a
+  continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ B’s 26th Yahrzeit (8th of Sh’vat)
+DTSTART;VALUE=DATE:20270116
+DTEND;VALUE=DATE:20270117
+UID:yahrzeit-5787-cca66a8a-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering B\, whose 26th Yahrzeit occurs
+  on Saturday\, January 16\, corresponding to the 8th of Sh’vat\, 5787.\n
+ \nB’s Yahrzeit begins at sundown on Friday\, January 15 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle before sundown as the Yahrzeit begins.\n\nMay your loved one’s so
+ ul be bound up in the bond of eternal life and may their memory serve as a
+  continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:N’s 24th Hebrew Anniversary (3rd of Adar I)
+DTSTART;VALUE=DATE:20270210
+DTEND;VALUE=DATE:20270211
+UID:anniversary-5787-e62e0bb1-14
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring N\, whose 24th Hebrew Anniversary
+  occurs on Wednesday\, February 10\, corresponding to the 3rd of Adar I\, 
+ 5787.\n\nN’s Hebrew Anniversary begins at sundown on Tuesday\, February 
+ 9 and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ M’s 24th Hebrew Birthday (1st of Adar II)
+DTSTART;VALUE=DATE:20270310
+DTEND;VALUE=DATE:20270311
+UID:birthday-5787-0612876a-13
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring M\, whose 24th Hebrew Birthday oc
+ curs on Wednesday\, March 10\, corresponding to the 1st of Adar II\, 5787.
+ \n\nM’s Hebrew Birthday begins at sundown on Tuesday\, March 9 and conti
+ nues until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ C’s 26th Hebrew Birthday (6th of Adar II)
+DTSTART;VALUE=DATE:20270315
+DTEND;VALUE=DATE:20270316
+UID:birthday-5787-ea1cfe8b-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring C\, whose 26th Hebrew Birthday oc
+ curs on Monday\, March 15\, corresponding to the 6th of Adar II\, 5787.\n\
+ nC’s Hebrew Birthday begins at sundown on Sunday\, March 14 and continue
+ s until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ D Yahrzeit reminder
+DTSTART:20270414T163000
+DTEND:20270414T163000
+UID:reminder-20270414-63c05906-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering D\, whose 26th Yahrzeit occurs
+  on Thursday\, April 15\, corresponding to the 8th of Nisan\, 5787.\n\nD
+ ’s Yahrzeit begins at sundown on Wednesday\, April 14 and continues unti
+ l sundown on the day of observance. It is customary to light a memorial ca
+ ndle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bou
+ nd up in the bond of eternal life and may their memory serve as a continue
+ d source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ D’s 26th Yahrzeit (8th of Nisan)
+DTSTART;VALUE=DATE:20270415
+DTEND;VALUE=DATE:20270416
+UID:yahrzeit-5787-63c05906-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering D\, whose 26th Yahrzeit occurs
+  on Thursday\, April 15\, corresponding to the 8th of Nisan\, 5787.\n\nD
+ ’s Yahrzeit begins at sundown on Wednesday\, April 14 and continues unti
+ l sundown on the day of observance. It is customary to light a memorial ca
+ ndle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bou
+ nd up in the bond of eternal life and may their memory serve as a continue
+ d source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ E Yahrzeit reminder
+DTSTART:20270514T143000
+DTEND:20270514T143000
+UID:reminder-20270514-0f783207-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering E\, whose 26th Yahrzeit occurs
+  on Saturday\, May 15\, corresponding to the 8th of Iyyar\, 5787.\n\nE’s
+  Yahrzeit begins at sundown on Friday\, May 14 and continues until sundown
+  on the day of observance. It is customary to light a memorial candle befo
+ re sundown as the Yahrzeit begins.\n\nMay your loved one’s soul be bound
+  up in the bond of eternal life and may their memory serve as a continued 
+ source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ E’s 26th Yahrzeit (8th of Iyyar)
+DTSTART;VALUE=DATE:20270515
+DTEND;VALUE=DATE:20270516
+UID:yahrzeit-5787-0f783207-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering E\, whose 26th Yahrzeit occurs
+  on Saturday\, May 15\, corresponding to the 8th of Iyyar\, 5787.\n\nE’s
+  Yahrzeit begins at sundown on Friday\, May 14 and continues until sundown
+  on the day of observance. It is customary to light a memorial candle befo
+ re sundown as the Yahrzeit begins.\n\nMay your loved one’s soul be bound
+  up in the bond of eternal life and may their memory serve as a continued 
+ source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ F Yahrzeit reminder
+DTSTART:20270614T163000
+DTEND:20270614T163000
+UID:reminder-20270614-982b1106-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering F\, whose 26th Yahrzeit occurs
+  on Tuesday\, June 15\, corresponding to the 10th of Sivan\, 5787.\n\nF’
+ s Yahrzeit begins at sundown on Monday\, June 14 and continues until sundo
+ wn on the day of observance. It is customary to light a memorial candle at
+  dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up i
+ n the bond of eternal life and may their memory serve as a continued sourc
+ e of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ F’s 26th Yahrzeit (10th of Sivan)
+DTSTART;VALUE=DATE:20270615
+DTEND;VALUE=DATE:20270616
+UID:yahrzeit-5787-982b1106-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering F\, whose 26th Yahrzeit occurs
+  on Tuesday\, June 15\, corresponding to the 10th of Sivan\, 5787.\n\nF’
+ s Yahrzeit begins at sundown on Monday\, June 14 and continues until sundo
+ wn on the day of observance. It is customary to light a memorial candle at
+  dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up i
+ n the bond of eternal life and may their memory serve as a continued sourc
+ e of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ G Yahrzeit reminder
+DTSTART:20270714T163000
+DTEND:20270714T163000
+UID:reminder-20270714-7d180799-7
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering G\, whose 26th Yahrzeit occurs
+  on Thursday\, July 15\, corresponding to the 10th of Tamuz\, 5787.\n\nG
+ ’s Yahrzeit begins at sundown on Wednesday\, July 14 and continues until
+  sundown on the day of observance. It is customary to light a memorial can
+ dle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be boun
+ d up in the bond of eternal life and may their memory serve as a continued
+  source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ G’s 26th Yahrzeit (10th of Tamuz)
+DTSTART;VALUE=DATE:20270715
+DTEND;VALUE=DATE:20270716
+UID:yahrzeit-5787-7d180799-7
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering G\, whose 26th Yahrzeit occurs
+  on Thursday\, July 15\, corresponding to the 10th of Tamuz\, 5787.\n\nG
+ ’s Yahrzeit begins at sundown on Wednesday\, July 14 and continues until
+  sundown on the day of observance. It is customary to light a memorial can
+ dle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be boun
+ d up in the bond of eternal life and may their memory serve as a continued
+  source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ H Yahrzeit reminder
+DTSTART:20270814T200000
+DTEND:20270814T200000
+UID:reminder-20270814-407f6809-8
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering H\, whose 26th Yahrzeit occurs
+  on Sunday\, August 15\, corresponding to the 12th of Av\, 5787.\n\nH’s 
+ Yahrzeit begins at sundown on Saturday\, August 14 and continues until sun
+ down on the day of observance. It is customary to light a memorial candle 
+ at nightfall as the Yahrzeit begins.\n\nMay your loved one’s soul be bou
+ nd up in the bond of eternal life and may their memory serve as a continue
+ d source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ H’s 26th Yahrzeit (12th of Av)
+DTSTART;VALUE=DATE:20270815
+DTEND;VALUE=DATE:20270816
+UID:yahrzeit-5787-407f6809-8
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering H\, whose 26th Yahrzeit occurs
+  on Sunday\, August 15\, corresponding to the 12th of Av\, 5787.\n\nH’s 
+ Yahrzeit begins at sundown on Saturday\, August 14 and continues until sun
+ down on the day of observance. It is customary to light a memorial candle 
+ at nightfall as the Yahrzeit begins.\n\nMay your loved one’s soul be bou
+ nd up in the bond of eternal life and may their memory serve as a continue
+ d source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ I Yahrzeit reminder
+DTSTART:20270914T163000
+DTEND:20270914T163000
+UID:reminder-20270914-5491dfca-9
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering I\, whose 26th Yahrzeit occurs
+  on Wednesday\, September 15\, corresponding to the 13th of Elul\, 5787.\n
+ \nI’s Yahrzeit begins at sundown on Tuesday\, September 14 and continues
+  until sundown on the day of observance. It is customary to light a memori
+ al candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul b
+ e bound up in the bond of eternal life and may their memory serve as a con
+ tinued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ I’s 26th Yahrzeit (13th of Elul)
+DTSTART;VALUE=DATE:20270915
+DTEND;VALUE=DATE:20270916
+UID:yahrzeit-5787-5491dfca-9
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering I\, whose 26th Yahrzeit occurs
+  on Wednesday\, September 15\, corresponding to the 13th of Elul\, 5787.\n
+ \nI’s Yahrzeit begins at sundown on Tuesday\, September 14 and continues
+  until sundown on the day of observance. It is customary to light a memori
+ al candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul b
+ e bound up in the bond of eternal life and may their memory serve as a con
+ tinued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ J Yahrzeit reminder
+DTSTART:20271014T163000
+DTEND:20271014T163000
+UID:reminder-20271014-61a789d7-10
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering J\, whose 26th Yahrzeit occurs
+  on Friday\, October 15\, corresponding to the 14th of Tishrei\, 5788.\n\n
+ J’s Yahrzeit begins at sundown on Thursday\, October 14 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be b
+ ound up in the bond of eternal life and may their memory serve as a contin
+ ued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ J’s 26th Yahrzeit (14th of Tishrei)
+DTSTART;VALUE=DATE:20271015
+DTEND;VALUE=DATE:20271016
+UID:yahrzeit-5788-61a789d7-10
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering J\, whose 26th Yahrzeit occurs
+  on Friday\, October 15\, corresponding to the 14th of Tishrei\, 5788.\n\n
+ J’s Yahrzeit begins at sundown on Thursday\, October 14 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be b
+ ound up in the bond of eternal life and may their memory serve as a contin
+ ued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ K Yahrzeit reminder
+DTSTART:20271114T163000
+DTEND:20271114T163000
+UID:reminder-20271114-efcf429a-11
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering K\, whose 26th Yahrzeit occurs
+  on Monday\, November 15\, corresponding to the 15th of Cheshvan\, 5788.\n
+ \nK’s Yahrzeit begins at sundown on Sunday\, November 14 and continues u
+ ntil sundown on the day of observance. It is customary to light a memorial
+  candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be 
+ bound up in the bond of eternal life and may their memory serve as a conti
+ nued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ K’s 26th Yahrzeit (15th of Cheshvan)
+DTSTART;VALUE=DATE:20271115
+DTEND;VALUE=DATE:20271116
+UID:yahrzeit-5788-efcf429a-11
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering K\, whose 26th Yahrzeit occurs
+  on Monday\, November 15\, corresponding to the 15th of Cheshvan\, 5788.\n
+ \nK’s Yahrzeit begins at sundown on Sunday\, November 14 and continues u
+ ntil sundown on the day of observance. It is customary to light a memorial
+  candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be 
+ bound up in the bond of eternal life and may their memory serve as a conti
+ nued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ L Yahrzeit reminder
+DTSTART:20271215T163000
+DTEND:20271215T163000
+UID:reminder-20271215-f3397f3f-12
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering L\, whose 26th Yahrzeit occurs
+  on Thursday\, December 16\, corresponding to the 16th of Kislev\, 5788.\n
+ \nL’s Yahrzeit begins at sundown on Wednesday\, December 15 and continue
+ s until sundown on the day of observance. It is customary to light a memor
+ ial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul 
+ be bound up in the bond of eternal life and may their memory serve as a co
+ ntinued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ L’s 26th Yahrzeit (16th of Kislev)
+DTSTART;VALUE=DATE:20271216
+DTEND;VALUE=DATE:20271217
+UID:yahrzeit-5788-f3397f3f-12
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering L\, whose 26th Yahrzeit occurs
+  on Thursday\, December 16\, corresponding to the 16th of Kislev\, 5788.\n
+ \nL’s Yahrzeit begins at sundown on Wednesday\, December 15 and continue
+ s until sundown on the day of observance. It is customary to light a memor
+ ial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul 
+ be bound up in the bond of eternal life and may their memory serve as a co
+ ntinued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ A Yahrzeit reminder
+DTSTART:20280104T163000
+DTEND:20280104T163000
+UID:reminder-20280104-54dcf7ce-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering A\, whose 27th Yahrzeit occurs
+  on Wednesday\, January 5\, corresponding to the 6th of Tevet\, 5788.\n\nA
+ ’s Yahrzeit begins at sundown on Tuesday\, January 4 and continues until
+  sundown on the day of observance. It is customary to light a memorial can
+ dle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be boun
+ d up in the bond of eternal life and may their memory serve as a continued
+  source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ A’s 27th Yahrzeit (6th of Tevet)
+DTSTART;VALUE=DATE:20280105
+DTEND;VALUE=DATE:20280106
+UID:yahrzeit-5788-54dcf7ce-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering A\, whose 27th Yahrzeit occurs
+  on Wednesday\, January 5\, corresponding to the 6th of Tevet\, 5788.\n\nA
+ ’s Yahrzeit begins at sundown on Tuesday\, January 4 and continues until
+  sundown on the day of observance. It is customary to light a memorial can
+ dle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be boun
+ d up in the bond of eternal life and may their memory serve as a continued
+  source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ B Yahrzeit reminder
+DTSTART:20280204T143000
+DTEND:20280204T143000
+UID:reminder-20280204-cca66a8a-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering B\, whose 27th Yahrzeit occurs
+  on Saturday\, February 5\, corresponding to the 8th of Sh’vat\, 5788.\n
+ \nB’s Yahrzeit begins at sundown on Friday\, February 4 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle before sundown as the Yahrzeit begins.\n\nMay your loved one’s so
+ ul be bound up in the bond of eternal life and may their memory serve as a
+  continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ B’s 27th Yahrzeit (8th of Sh’vat)
+DTSTART;VALUE=DATE:20280205
+DTEND;VALUE=DATE:20280206
+UID:yahrzeit-5788-cca66a8a-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering B\, whose 27th Yahrzeit occurs
+  on Saturday\, February 5\, corresponding to the 8th of Sh’vat\, 5788.\n
+ \nB’s Yahrzeit begins at sundown on Friday\, February 4 and continues un
+ til sundown on the day of observance. It is customary to light a memorial 
+ candle before sundown as the Yahrzeit begins.\n\nMay your loved one’s so
+ ul be bound up in the bond of eternal life and may their memory serve as a
+  continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ M’s 25th Hebrew Birthday (1st of Adar)
+DTSTART;VALUE=DATE:20280228
+DTEND;VALUE=DATE:20280229
+UID:birthday-5788-0612876a-13
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring M\, whose 25th Hebrew Birthday oc
+ curs on Monday\, February 28\, corresponding to the 1st of Adar\, 5788.\n\
+ nM’s Hebrew Birthday begins at sundown on Sunday\, February 27 and conti
+ nues until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:N’s 25th Hebrew Anniversary (3rd of Adar)
+DTSTART;VALUE=DATE:20280301
+DTEND;VALUE=DATE:20280302
+UID:anniversary-5788-e62e0bb1-14
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring N\, whose 25th Hebrew Anniversary
+  occurs on Wednesday\, March 1\, corresponding to the 3rd of Adar\, 5788.\
+ n\nN’s Hebrew Anniversary begins at sundown on Tuesday\, February 29 and
+  continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ C’s 27th Hebrew Birthday (6th of Adar)
+DTSTART;VALUE=DATE:20280304
+DTEND;VALUE=DATE:20280305
+UID:birthday-5788-ea1cfe8b-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring C\, whose 27th Hebrew Birthday oc
+ curs on Saturday\, March 4\, corresponding to the 6th of Adar\, 5788.\n\nC
+ ’s Hebrew Birthday begins at sundown on Friday\, March 3 and continues u
+ ntil sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ D Yahrzeit reminder
+DTSTART:20280403T163000
+DTEND:20280403T163000
+UID:reminder-20280403-63c05906-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering D\, whose 27th Yahrzeit occurs
+  on Tuesday\, April 4\, corresponding to the 8th of Nisan\, 5788.\n\nD’s
+  Yahrzeit begins at sundown on Monday\, April 3 and continues until sundow
+ n on the day of observance. It is customary to light a memorial candle at 
+ dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in
+  the bond of eternal life and may their memory serve as a continued source
+  of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ D’s 27th Yahrzeit (8th of Nisan)
+DTSTART;VALUE=DATE:20280404
+DTEND;VALUE=DATE:20280405
+UID:yahrzeit-5788-63c05906-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering D\, whose 27th Yahrzeit occurs
+  on Tuesday\, April 4\, corresponding to the 8th of Nisan\, 5788.\n\nD’s
+  Yahrzeit begins at sundown on Monday\, April 3 and continues until sundow
+ n on the day of observance. It is customary to light a memorial candle at 
+ dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in
+  the bond of eternal life and may their memory serve as a continued source
+  of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ E Yahrzeit reminder
+DTSTART:20280503T163000
+DTEND:20280503T163000
+UID:reminder-20280503-0f783207-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering E\, whose 27th Yahrzeit occurs
+  on Thursday\, May 4\, corresponding to the 8th of Iyyar\, 5788.\n\nE’s 
+ Yahrzeit begins at sundown on Wednesday\, May 3 and continues until sundow
+ n on the day of observance. It is customary to light a memorial candle at 
+ dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in
+  the bond of eternal life and may their memory serve as a continued source
+  of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ E’s 27th Yahrzeit (8th of Iyyar)
+DTSTART;VALUE=DATE:20280504
+DTEND;VALUE=DATE:20280505
+UID:yahrzeit-5788-0f783207-5
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering E\, whose 27th Yahrzeit occurs
+  on Thursday\, May 4\, corresponding to the 8th of Iyyar\, 5788.\n\nE’s 
+ Yahrzeit begins at sundown on Wednesday\, May 3 and continues until sundow
+ n on the day of observance. It is customary to light a memorial candle at 
+ dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in
+  the bond of eternal life and may their memory serve as a continued source
+  of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ F Yahrzeit reminder
+DTSTART:20280603T200000
+DTEND:20280603T200000
+UID:reminder-20280603-982b1106-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering F\, whose 27th Yahrzeit occurs
+  on Sunday\, June 4\, corresponding to the 10th of Sivan\, 5788.\n\nF’s 
+ Yahrzeit begins at sundown on Saturday\, June 3 and continues until sundow
+ n on the day of observance. It is customary to light a memorial candle at 
+ nightfall as the Yahrzeit begins.\n\nMay your loved one’s soul be bound 
+ up in the bond of eternal life and may their memory serve as a continued s
+ ource of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ F’s 27th Yahrzeit (10th of Sivan)
+DTSTART;VALUE=DATE:20280604
+DTEND;VALUE=DATE:20280605
+UID:yahrzeit-5788-982b1106-6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering F\, whose 27th Yahrzeit occurs
+  on Sunday\, June 4\, corresponding to the 10th of Sivan\, 5788.\n\nF’s 
+ Yahrzeit begins at sundown on Saturday\, June 3 and continues until sundow
+ n on the day of observance. It is customary to light a memorial candle at 
+ nightfall as the Yahrzeit begins.\n\nMay your loved one’s soul be bound 
+ up in the bond of eternal life and may their memory serve as a continued s
+ ource of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ G Yahrzeit reminder
+DTSTART:20280703T163000
+DTEND:20280703T163000
+UID:reminder-20280703-7d180799-7
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering G\, whose 27th Yahrzeit occurs
+  on Tuesday\, July 4\, corresponding to the 10th of Tamuz\, 5788.\n\nG’s
+  Yahrzeit begins at sundown on Monday\, July 3 and continues until sundown
+  on the day of observance. It is customary to light a memorial candle at d
+ usk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in 
+ the bond of eternal life and may their memory serve as a continued source 
+ of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ G’s 27th Yahrzeit (10th of Tamuz)
+DTSTART;VALUE=DATE:20280704
+DTEND;VALUE=DATE:20280705
+UID:yahrzeit-5788-7d180799-7
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering G\, whose 27th Yahrzeit occurs
+  on Tuesday\, July 4\, corresponding to the 10th of Tamuz\, 5788.\n\nG’s
+  Yahrzeit begins at sundown on Monday\, July 3 and continues until sundown
+  on the day of observance. It is customary to light a memorial candle at d
+ usk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up in 
+ the bond of eternal life and may their memory serve as a continued source 
+ of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ H Yahrzeit reminder
+DTSTART:20280803T163000
+DTEND:20280803T163000
+UID:reminder-20280803-407f6809-8
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering H\, whose 27th Yahrzeit occurs
+  on Friday\, August 4\, corresponding to the 12th of Av\, 5788.\n\nH’s Y
+ ahrzeit begins at sundown on Thursday\, August 3 and continues until sundo
+ wn on the day of observance. It is customary to light a memorial candle at
+  dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up i
+ n the bond of eternal life and may their memory serve as a continued sourc
+ e of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ H’s 27th Yahrzeit (12th of Av)
+DTSTART;VALUE=DATE:20280804
+DTEND;VALUE=DATE:20280805
+UID:yahrzeit-5788-407f6809-8
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering H\, whose 27th Yahrzeit occurs
+  on Friday\, August 4\, corresponding to the 12th of Av\, 5788.\n\nH’s Y
+ ahrzeit begins at sundown on Thursday\, August 3 and continues until sundo
+ wn on the day of observance. It is customary to light a memorial candle at
+  dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bound up i
+ n the bond of eternal life and may their memory serve as a continued sourc
+ e of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ I Yahrzeit reminder
+DTSTART:20280903T163000
+DTEND:20280903T163000
+UID:reminder-20280903-5491dfca-9
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering I\, whose 27th Yahrzeit occurs
+  on Monday\, September 4\, corresponding to the 13th of Elul\, 5788.\n\nI
+ ’s Yahrzeit begins at sundown on Sunday\, September 3 and continues unti
+ l sundown on the day of observance. It is customary to light a memorial ca
+ ndle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bou
+ nd up in the bond of eternal life and may their memory serve as a continue
+ d source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ I’s 27th Yahrzeit (13th of Elul)
+DTSTART;VALUE=DATE:20280904
+DTEND;VALUE=DATE:20280905
+UID:yahrzeit-5788-5491dfca-9
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering I\, whose 27th Yahrzeit occurs
+  on Monday\, September 4\, corresponding to the 13th of Elul\, 5788.\n\nI
+ ’s Yahrzeit begins at sundown on Sunday\, September 3 and continues unti
+ l sundown on the day of observance. It is customary to light a memorial ca
+ ndle at dusk as the Yahrzeit begins.\n\nMay your loved one’s soul be bou
+ nd up in the bond of eternal life and may their memory serve as a continue
+ d source of inspiration and comfort to you.
+END:VEVENT
+END:VCALENDAR
