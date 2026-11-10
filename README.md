@@ -24,6 +24,14 @@ Currently implemented:
 - **CSV calendars** — the `download.hebcal.com/v4/…csv` Outlook-compatible
   exports of the same calendars (ported from `@hebcal/rest-api`'s
   `eventToCsv()` and hebcal-web's `eventsWithParshaToCsv()`)
+- **Yahrzeit + Anniversary iCalendar feeds** — download.hebcal.com's personal
+  calendars as subscribable `.ics` feeds and one-time `.csv` exports: the
+  legacy URLs that carry the calendar in the URL (`/v2/y/`,
+  `/yahrzeit/yahrzeit.cgi/`, `/export/`) and the saved `/v3/<id>/` calendars
+  read from MySQL. Ported from `@hebcal/icalendar` (as `pkg/icalendar`) and
+  hebcal-web's `src/yahrzeitDownload.js`; see
+  [iCalendar feeds](#icalendar-feeds). The holiday `.ics` feeds are not
+  ported yet.
 - **Short URL redirects** (`/h/`, `/s/`, `/o/`) — www.hebcal.com's short
   links to holiday, Torah portion and Omer pages, ported from hebcal-web's
   `src/shortUrlRedir.js`
