@@ -14,6 +14,7 @@ import (
 
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
+	"github.com/hebcal/hebcal-api-go/internal/service/csv"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 	"github.com/hebcal/hebcal-api-go/pkg/icalendar"
 )
@@ -63,8 +64,14 @@ func (c *Calendar) sunday() int64 {
 // years it spans, the week it was made in (a subscription drops events as
 // they recede into the past), and whether it is Google's copy. A cache
 // validator has to include it.
+//
+// A .csv is a one-time export whatever its URL says: it holds every event and
+// no reminders, so neither the week nor the client changes it.
 func (c *Calendar) Variant(userAgent string) string {
 	v := strconv.Itoa(c.rng.startYear) + "-" + strconv.Itoa(c.rng.endYear) + "/" + c.req.RawQuery
+	if c.req.Ext() == ".csv" {
+		return v
+	}
 	if !c.Attachment() {
 		v += "/" + strconv.FormatInt(c.sunday(), 10)
 	}
@@ -194,6 +201,33 @@ func (c *Calendar) ICS(userAgent string, zones *icalendar.ZoneInfo, now time.Tim
 	}
 	res.Body, err = cal.Marshal(out)
 	return res, err
+}
+
+// CSV renders the calendar as an Outlook-compatible CSV document, in the
+// format of the holiday CSV calendars. Unlike a feed it is a file to import
+// once: it holds every observance in the range however long ago, has no
+// reminder events, and with no events at all is a header row alone.
+func (c *Calendar) CSV() ([]byte, error) {
+	q := c.req.Query
+	events, err := makeEvents(q, c.rng, false)
+	if err != nil {
+		return nil, err
+	}
+	// Any value turns on day/month/year, even euro=0 or euro=off.
+	euro := q.Get("euro") != ""
+	rows := make([][]string, len(events))
+	for i, ev := range events {
+		y, m, d := ev.date.ProlepticGreg()
+		rows[i] = []string{
+			ev.subj,
+			csv.FormatDate(y, m, d, euro),
+			"", "", "", "true",
+			csv.FlattenNewlines(ev.memo),
+			"3", // free, not busy: nothing here is a festival
+			"Personal",
+		}
+	}
+	return csv.Document(rows), nil
 }
 
 // sequenceOf reads the seq= revision number; anything but a nonzero integer

@@ -218,7 +218,7 @@ func TestYahrzeitErrors(t *testing.T) {
 	}{
 		{"invalid date", "/export/x.ics?v=yahrzeit&d1=31&m1=2&y1=2003", 400, "Gregorian day 31 out of valid range for 2/2003\n"},
 		{"other format", "/export/x.txt?v=yahrzeit&d1=3&m1=2&y1=2003", 404, "Invalid download format: .txt\n"},
-		{"csv is not served here", v2y("v=yahrzeit&d1=3&m1=2&y1=2003")[:len(v2y("v=yahrzeit&d1=3&m1=2&y1=2003"))-4] + ".csv", 404, "Invalid download format: .csv\n"},
+		{"invalid date, csv", "/yahrzeit/yahrzeit.cgi/x.csv?v=yahrzeit&d1=31&m1=2&y1=2003", 400, "Gregorian day 31 out of valid range for 2/2003\n"},
 		{"cgi path without a calendar", "/yahrzeit/yahrzeit.cgi/x.ics?d1=3&m1=2&y1=2003", 404, "Invalid download URL: v=undefined\n"},
 		{"cgi path, holiday calendar", "/yahrzeit/yahrzeit.cgi/x.ics?v=1&year=2026", 404, "Invalid download URL: v=undefined\n"},
 	}
@@ -257,6 +257,49 @@ func TestYahrzeitHead(t *testing.T) {
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 || resp.ContentLength <= 0 || resp.Header.Get("ETag") == "" {
 		t.Errorf("HEAD: %d, length %d", resp.StatusCode, resp.ContentLength)
+	}
+}
+
+// The .csv export: every URL shape, and the feed's headers minus what depends
+// on the client.
+func TestYahrzeitCSV(t *testing.T) {
+	_, srv := testServer(t)
+	const qs = "v=yahrzeit&n1=Theodor+Herzl&y1=1904&m1=7&d1=3&years=3"
+	paths := []string{
+		strings.TrimSuffix(v2y(qs), ".ics") + ".csv",
+		"/yahrzeit/yahrzeit.cgi/x.csv?" + qs,
+		"/export/x.csv?" + qs,
+		"/hebcal/index.cgi/x.csv?" + strings.ReplaceAll(qs, "&", ";"),
+	}
+	for _, p := range paths {
+		resp, body := get(t, srv, p)
+		if resp.StatusCode != 200 || resp.Header.Get("Content-Type") != "text/x-csv; charset=utf-8" {
+			t.Fatalf("%s: %d %q %.80q", p, resp.StatusCode, resp.Header.Get("Content-Type"), body)
+		}
+		if !strings.HasPrefix(body, "\xEF\xBB\xBFSubject,") || strings.Count(body, "\r\n") != 4 ||
+			!strings.Contains(body, "Theodor Herzl’s") || strings.Contains(body, "reminder") {
+			t.Errorf("%s: body %q", p, body)
+		}
+		for _, k := range []string{"Cache-Control", "Content-Disposition"} {
+			if v := resp.Header.Get(k); v != "" {
+				t.Errorf("%s: unexpected %s: %s", p, k, v)
+			}
+		}
+		if v := resp.Header.Values("Vary"); strings.Contains(strings.Join(v, ","), "User-Agent") {
+			t.Errorf("%s: a CSV does not vary by client: %v", p, v)
+		}
+		etag := resp.Header.Get("ETag")
+		if etag == "" {
+			t.Errorf("%s: no ETag", p)
+		}
+		resp, _ = get(t, srv, p, "If-None-Match", etag)
+		if resp.StatusCode != http.StatusNotModified {
+			t.Errorf("%s: conditional request got %d", p, resp.StatusCode)
+		}
+	}
+	resp, _ := get(t, srv, "/export/yahrzeit.csv?dl=1&"+qs)
+	if cd := resp.Header.Get("Content-Disposition"); cd != `attachment; filename="yahrzeit.csv"` {
+		t.Errorf("dl=1: Content-Disposition %q", cd)
 	}
 }
 

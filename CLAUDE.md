@@ -350,7 +350,7 @@ Only `/v2/h/` and only `.pdf` and `.csv` are ours on this path. The holiday
 `.ics` feeds are still hebcal-web's, so those are 404, as is a URL with no
 `v=`. A URL whose `v=` names a Yahrzeit calendar never reaches this code: it
 is served by `yahrzeitDownload` (see "The iCalendar feeds"), which answers a
-`.pdf` or `.csv` 404.
+`.pdf` 404 and serves a `.csv` as the Yahrzeit CSV export.
 
 ### The classic /hebcal/index.cgi/ URL is a query string in two encodings
 
@@ -652,7 +652,8 @@ be picked up cold.**
 `pkg/icalendar` is a port of `@hebcal/icalendar` (hebcal-icalendar 7.0.6), and
 `internal/service/yahrzeit` of hebcal-web's `yahrzeitDownload.js`,
 `yahrzeitEvents.js` and the parts of `yahrzeitCommon.js` and `app-download.js`
-they need. Served now, all `.ics` only:
+they need. Served now, as `.ics` and as `.csv` (see "The Yahrzeit `.csv`"
+below):
 
 - `/v2/y/<base64 query string>/<name>.ics`
 - `/yahrzeit/yahrzeit.cgi/<name>.ics?<query>`
@@ -761,11 +762,39 @@ is allocation spread evenly. There is nothing in it worth optimizing.
   into the feed. `icalendar.line` writes any CR/LF in content as `\n`.
 - **`start=` outside Hebrew years 1-9999 is a 400** rather than whatever the
   date arithmetic makes of it.
-- **A Yahrzeit `.csv` is a 404 here.** hebcal-web serves one; Varnish keeps
-  those on Node. (See iCalendar-port.md before porting it: the CSV service's
-  quoting has deliberately diverged from `eventsToCsv`.)
+- **A Yahrzeit `.csv` is written like the holiday CSVs**, not like
+  hebcal-web's -- see the next section.
 - **`/yahrzeit/yahrzeit.cgi/` with `v=1`** is a holiday feed on hebcal-web and
   a 404 here; Varnish routes only `v=y...` to this service.
+
+### The Yahrzeit `.csv`
+
+The same four URL shapes with a `.csv` extension get `Calendar.CSV`: the
+events `makeEvents` generates for the feed, as rows of the CSV service's nine
+columns, written through `csv.Document` -- so the BOM, `encoding/csv` quoting
+and CRLF of the holiday CSVs, not `eventsToCsv`'s always-quoted rows. Three
+things that differ from the `.ics` and are what hebcal-web does too:
+
+- **No reminders, and the whole range.** `yrem` is ignored (reminders are
+  forced off), the subscription's twelve-week look-back and 1200-event cap do
+  not apply, and the subject has no emoji. A calendar with no events is a
+  header row, not the placeholder event.
+- **`euro` is a bare truthiness test** (`Boolean(query.euro)`), so `euro=0`
+  writes day/month/year.
+- **Headers:** no Cache-Control and `Content-Disposition` only on `dl=1`, like
+  the feed; but no `Vary: User-Agent`, and the ETag variant drops the week and
+  the Google distinction, since neither changes the file. Content-Type is
+  `text/x-csv; charset=utf-8`.
+
+Measured against hebcal-web's own `makeYahrzeitEvents` + `eventsToCsv` over
+the 35 golden cases (533 rows): identical in every field once production's
+format is undone -- commas deleted from the subject, commas turned into `;`
+and `"` into `''` in either column, and the memo's paragraph breaks, which
+hebcal-web builds as a literal two-character `\n` (`String.raw`), that
+`eventsToCsv`'s newline flattening therefore never sees. Here they are real
+newlines in the memo, flattened to `" / "` like every other CSV description.
+That format difference is the deliberate divergence, for the reasons the CSV
+section gives (Excel, and keeping punctuation people typed into a name).
 
 ### VTIMEZONE
 
@@ -1581,8 +1610,13 @@ emoji, `CATEGORY`, `appendHebrewToSubject`, `locationName` -- and
 | `dayAndMonth` | `hd.render('en', false)` with a smart apostrophe |
 | `hdate.GetYahrzeit` / `GetBirthdayOrAnniversary` | `yahrzeit()` / `birthdayOrAnniversary()` (`@hebcal/hdate`); in github.com/hebcal/hdate, not hebcal-go |
 
+`Calendar.CSV` ← the `.csv` branch of `yahrzeitDownload()` (`reminder =
+false`, no look-back filter, `Boolean(query.euro)`), with `eventsToCsv()`'s
+columns (`Personal`, show-time-as 3) written by `csv.Document`.
+
 `internal/handler/yahrzeit.go` ← the headers `yahrzeitDownload()` sets and
-does not set (`Vary: User-Agent`, attachment on `dl=1`, no Cache-Control).
+does not set (`Vary: User-Agent`, attachment on `dl=1`, no Cache-Control);
+`yahrzeitCSV` ← its `.csv` branch (`text/x-csv`, ETag attrs without `sunday`).
 
 ### `internal/handler/pdf.go`, `download.go`
 

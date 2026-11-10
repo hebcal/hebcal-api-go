@@ -11,7 +11,7 @@ import (
 )
 
 // yahrzeitDownload serves a personal Yahrzeit + Anniversary calendar as an
-// iCalendar feed.
+// iCalendar feed, or as a .csv file (yahrzeitCSV).
 //
 // The response carries no Cache-Control: these are personal calendars, and
 // the proxy in front marks them private. It does vary by User-Agent, because
@@ -33,8 +33,8 @@ func (s *Server) yahrzeitDownload(w http.ResponseWriter, r *http.Request, req *y
 	}
 	h := w.Header()
 	h.Set("X-Content-Type-Options", "nosniff")
-	if ext := req.Ext(); ext != ".ics" {
-		// The .csv export of these calendars is not served here.
+	ext := req.Ext()
+	if ext != ".ics" && ext != ".csv" {
 		h.Set("Content-Type", httpx.ContentTypeText)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("Invalid download format: " + ext + "\n"))
@@ -43,6 +43,10 @@ func (s *Server) yahrzeitDownload(w http.ResponseWriter, r *http.Request, req *y
 	cal, err := yahrzeit.New(req, s.Now())
 	if err != nil {
 		httpx.WritePlainError(w, err)
+		return
+	}
+	if ext == ".csv" {
+		s.yahrzeitCSV(w, r, cal)
 		return
 	}
 	userAgent := r.UserAgent()
@@ -68,4 +72,29 @@ func (s *Server) yahrzeitDownload(w http.ResponseWriter, r *http.Request, req *y
 	}
 	h.Set("Content-Type", "text/calendar; charset=utf-8")
 	w.Write(res.Body)
+}
+
+// yahrzeitCSV serves the .csv export of a personal calendar. Like the feed it
+// carries no Cache-Control and saves as an attachment only on dl=1; unlike it,
+// nothing in it depends on the client or the current week, so it does not
+// vary by User-Agent and a calendar with no events is a header row with an
+// ETag like any other.
+func (s *Server) yahrzeitCSV(w http.ResponseWriter, r *http.Request, cal *yahrzeit.Calendar) {
+	h := w.Header()
+	etag := httpx.MakeETag(r, cal.Variant(""))
+	h.Set("ETag", etag)
+	if httpx.CheckFresh(r, etag) {
+		w.WriteHeader(http.StatusNotModified)
+		return
+	}
+	body, err := cal.CSV()
+	if err != nil {
+		httpx.WritePlainError(w, err)
+		return
+	}
+	if cal.Attachment() {
+		h.Set("Content-Disposition", attachment(path.Base(r.URL.Path)))
+	}
+	h.Set("Content-Type", "text/x-csv; charset=utf-8")
+	w.Write(body)
 }
