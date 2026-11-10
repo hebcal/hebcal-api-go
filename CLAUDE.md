@@ -4,11 +4,15 @@ Guidance for Claude Code (claude.ai/code) working in this repository.
 
 ## What this is
 
-`hebcal-api` is one Go binary serving two things that used to be two services:
+`hebcal-api` is one Go binary serving what used to be several services:
 
 - the Hebcal.com **REST APIs** — `/converter`, `/zmanim`, `/shabbat`, `/geo`,
   `/complete` — ported from [hebcal-web](https://github.com/hebcal/hebcal-web)'s
   `src/converter.js`, `src/zmanim.js` and `src/shabbat.js`;
+- the **Yahrzeit iCalendar feeds** — `download.hebcal.com/v2/y/…ics` and its
+  two older spellings — ported from `@hebcal/icalendar` (as `pkg/icalendar`)
+  and `src/yahrzeitDownload.js`. The first of the `.ics` feeds; `/v3/` and the
+  holiday feeds are planned in [iCalendar-port.md](iCalendar-port.md);
 - the **PDF calendars** — `download.hebcal.com/v4/…pdf` (and its legacy
   `/v2/h/…pdf` spelling) and `www.hebcal.com/holidays/hebcal-<year>.pdf` —
   ported from `src/pdf.js` and `src/holidayPdf.js`. These arrived from the separate `hebcal-pdf-go`
@@ -342,10 +346,11 @@ fields last), and `start`/`end`, which travel as the ISO string the message can
 also carry rather than as epoch seconds — the same date, without a trip through
 the server's local timezone.
 
-Only `/v2/h/` and only `.pdf` and `.csv` are ours. The `.ics` feeds and the yahrzeit
-calendars under `/v2/` are still hebcal-web's, so those are 404, as is a URL
-with no `v=`; a `v=` naming another kind of calendar is 400, which is what the
-download dispatcher answers.
+Only `/v2/h/` and only `.pdf` and `.csv` are ours on this path. The holiday
+`.ics` feeds are still hebcal-web's, so those are 404, as is a URL with no
+`v=`. A URL whose `v=` names a Yahrzeit calendar never reaches this code: it
+is served by `yahrzeitDownload` (see "The iCalendar feeds"), which answers a
+`.pdf` or `.csv` 404.
 
 ### The classic /hebcal/index.cgi/ URL is a query string in two encodings
 
@@ -376,9 +381,9 @@ leaves `+` alone, not `decodeURIComponent` -- before splitting. Production
 answers that second form with a 301 to the `&` spelling and renders the redirect;
 this service does the `unescape` inline (`unescapeLatin1`) and renders in one hop.
 
-The status codes match the router: only `.pdf` and `.csv` are ours (a `.ics` is 404), a URL
+The status codes match the router: only `.pdf` and `.csv` are ours (a holiday `.ics` is 404), a URL
 naming no `v=` is 404 (which is why `hebcal_2028_may.pdf` with no query string is
-404, not a calendar), and a `v=` naming another kind of calendar is 400. The
+404, not a calendar), and a `v=` naming a Yahrzeit calendar goes to `yahrzeitDownload`. The
 finite `redirectDownload.json` map of specific no-query legacy URLs that
 hebcal-web 301s is not reproduced -- those 404 here, which is acceptable for a
 handful of curated redirects.
@@ -636,6 +641,142 @@ sweep is byte-identical):
 4. Hebrew-month (`mm=1`/`mm=2`) multi-year calendars: production appends the
    next Tishrei from `year+1` rather than `year+numYears`, duplicating that
    month's rows; this service inherits the PDF's corrected anchoring.
+
+## The iCalendar feeds (`pkg/icalendar`, Yahrzeit first)
+
+**Status (November 2026): the Yahrzeit + Anniversary feeds that need no
+database are served here. `/v3/` (MySQL) and every holiday `.ics` feed are
+not; [iCalendar-port.md](iCalendar-port.md) is the plan for both, written to
+be picked up cold.**
+
+`pkg/icalendar` is a port of `@hebcal/icalendar` (hebcal-icalendar 7.0.6), and
+`internal/service/yahrzeit` of hebcal-web's `yahrzeitDownload.js`,
+`yahrzeitEvents.js` and the parts of `yahrzeitCommon.js` and `app-download.js`
+they need. Served now, all `.ics` only:
+
+- `/v2/y/<base64 query string>/<name>.ics`
+- `/yahrzeit/yahrzeit.cgi/<name>.ics?<query>`
+- `/export/[<dir>/]<name>.ics?<query>` and `/hebcal/index.cgi/<name>.ics?<query>`
+  when the query names a personal calendar
+
+`handler.download` (mounted on `/v2/`, `/export/`, `/hebcal/index.cgi/` and
+now `/yahrzeit/yahrzeit.cgi/`) asks `yahrzeit.ParseRequest` first, and hands
+the request to `yahrzeitDownload` when the decoded query's `v` starts with
+`y`; everything else falls through to the PDF/CSV path unchanged.
+
+**The bar is the PDFs' bar: the same bytes production serves, UIDs included.**
+A subscriber's client matches events by UID, so a changed UID duplicates every
+event in their calendar. `internal/service/yahrzeit/testdata/golden/` holds 36
+feeds captured from a local hebcal-web (`tools/yahrzeit-goldens.sh`
+regenerates them; `testdata/TODAY` pins the day they depend on), and
+`TestGolden` requires byte equality. Run the script again -- and read the diff
+-- before changing anything in either package.
+
+### pkg/icalendar is a serializer, not a port of the IcalEvent class
+
+`IcalEvent`'s constructor mixes two jobs: deciding what an event says (brief
+or full render, emoji placement, category from flags, the default alarm, the
+UID) and writing it down. Only the second lives in `pkg/icalendar`, which
+takes a resolved `icalendar.Event` and knows nothing about hebcal-go. The
+first belongs to the service that owns the events -- `yahrzeit.ICS` today, a
+holiday-feed service later -- because everything it needs
+(`shouldRenderBrief`, `renderSubject`, the category table) already lives under
+`internal/service/` and `pkg/` deliberately imports nothing from `internal/`.
+`AlarmUserEvent`, `AlarmOmer`, `AlarmCandleLighting`, `AbsoluteAlarm` and
+`DefaultUID` are exported for that service; nothing uses the last four yet.
+
+### Line folding
+
+RFC 5545 limits a physical line to 75 octets. Content is cut at **74**, as
+`foldLine` does, because a continuation line spends one octet on its leading
+space. The cut never lands inside a UTF-8 sequence or a grapheme cluster
+(nikud stays with its letter, a ZWJ family or a flag stays whole, CR stays
+with LF). `github.com/rivo/uniseg` does the segmenting, and only at a
+candidate break whose neighbours are not both ASCII -- between two ASCII
+characters there is always a boundary, which settles most breaks for free.
+
+Two deliberate differences from `foldLine`, neither reachable from a real feed:
+
+- **A cluster too wide for the next line is not carried over.** `foldLine`
+  backs a break up to the start of the cluster it would split even when that
+  cluster is 73+ octets, and the carried-over part then overflows the next
+  line (found by `FuzzFoldLine`: two ASCII characters, 37 combining marks, one
+  more). Here such a cluster is cut where it crosses the limit.
+- **The all-ASCII fast path keeps CRLF together**; `foldLine`'s cuts at fixed
+  offsets.
+
+Folding was 29-57% of `.ics` CPU in the Node profile. Here it is about 13%:
+a 100 KB, three-person, twenty-year feed takes ~0.9 ms end to end
+(`BenchmarkICS`), against ~12 ms in production's access log, and what is left
+is allocation spread evenly. There is nothing in it worth optimizing.
+
+### Things that look wrong and are not
+
+- **MurmurHash3 is the x86 32-bit variant** (`murmur3.StringSum32` from
+  github.com/twmb/murmur3, seed 0), which is `murmur32HexSync`.
+  `TestMurmur32Hex` pins eight values taken from `@hebcal/murmurhash3`. The
+  one hash that does **not** match is the empty calendar's placeholder UID:
+  hebcal-web uses the x86 **128**-bit variant, twmb has only the x64 one, and
+  that UID embeds today's date so it changes daily anyway.
+- **Reminders are on by default.** `yrem` is tested as "not `0` and not
+  `off`", so every legacy URL -- all older than the option -- gets a timed
+  "Yahrzeit reminder" event on the eve of each Yahrzeit (4:30pm; 2:30pm on a
+  Friday, 8pm on a Saturday) with a `TRIGGER:P0DT0H0M0S` alarm. The Yahrzeit
+  itself has no alarm; birthdays, anniversaries and Yizkor get the user-event
+  default, noon the day before.
+- **The reminder is a floating time** (`DTSTART:20260224T163000`, no TZID),
+  except in two cases: `i=on` pins it to Asia/Jerusalem, and the exact
+  User-Agent `Google-Calendar-Importer` gets a zone derived from `tzo` (the
+  browser's `getTimezoneOffset()` when the calendar was made), because Google
+  does not understand floating times. Hence `Vary: User-Agent`, and the
+  User-Agent in the ETag. Both cases also write `GEO:` -- `0;0` for Google's
+  copy, since that location is a zone and nothing else.
+- **That hack needs a `t<N>` parameter.** It is gated on the calendar's set of
+  anniversary types containing Yahrzeit, and the set is built from the `t`
+  keys alone, so an entry with no `t1` is rendered as a Yahrzeit (the default)
+  yet gets floating reminders even for Google.
+- **A half-hour `tzo` produces a zone that does not exist** (`tzo=-330` →
+  `Etc/GMT+5.5`), and a fractional offset inside the US or European range
+  produces none at all. Both are what production emits.
+- **The title's 64-character limit is in UTF-16 code units**, so
+  `calendarTitle` encodes to UTF-16 to find the cut.
+- **Parameter order names the calendar.** The title lists names in the order
+  their `n` keys appear in the URL, and a repeated key keeps its *first*
+  value -- the opposite of the `v2Query` the PDF path uses, which is why
+  `yahrzeit.Query` is its own type.
+- **A subscription forgets the past; a download does not.** Without `dl=1`,
+  events older than twelve weeks before this week's Sunday are dropped (and
+  the feed capped at 1200 events). The ETag therefore includes the week.
+- **No Cache-Control on a feed.** hebcal-web sets none for Yahrzeit calendars,
+  and Varnish's `vcl_deliver` marks them `private`. The empty calendar's
+  one-event placeholder is the exception: `max-age=86400`, no ETag.
+- **An entry number is a key, not a count.** hebcal-web loops from 1 to the
+  highest entry number; `entryIDs` visits only the numbers present, so
+  `n999999999=` costs nothing. Same output.
+
+### Deliberate divergences
+
+- **Line breaks in a value are escaped.** hebcal-web writes a name or `title=`
+  containing `%0A` raw, which lets a URL inject properties or whole components
+  into the feed. `icalendar.line` writes any CR/LF in content as `\n`.
+- **`start=` outside Hebrew years 1-9999 is a 400** rather than whatever the
+  date arithmetic makes of it.
+- **A Yahrzeit `.csv` is a 404 here.** hebcal-web serves one; Varnish keeps
+  those on Node. (See iCalendar-port.md before porting it: the CSV service's
+  quoting has deliberately diverged from `eventsToCsv`.)
+- **`/yahrzeit/yahrzeit.cgi/` with `v=1`** is a holiday feed on hebcal-web and
+  a 404 here; Varnish routes only `v=y...` to this service.
+
+### VTIMEZONE
+
+`icalendar.ZoneInfo` reads `<dir>/<tzid>.ics` (`-zoneinfo`, default
+`/var/www/zoneinfo`), the tree vzic generates; hebcal-devops'
+`cloud-config/web-api.yaml` builds it on the api hosts the way
+`dl-nodejs.yaml` does on the Node ones. The cache is unbounded on purpose --
+there are ~344 files, only successful reads are stored, and the identifier is
+validated before it becomes a path, so a request cannot grow it. A missing
+directory or zone is not an error: the feed goes out with `X-WR-TIMEZONE` and
+no definition, as hebcal-web's does.
 
 ## The readings-svc sidecar
 
@@ -1399,6 +1540,49 @@ linkedEvent.render()`. `ownMemo` ← `MevarchimChodeshEvent`'s and
 `numYears` ← `getNumYears()` + `maxNumYear` (`src/calendar.js`).
 `addGregorianDates` ← `makeHebrewCalendar()`'s `GregorianDateEvent` loop.
 `learningToCSV` renders readings-svc's classic-API items.
+
+### `pkg/icalendar/` — `@hebcal/icalendar` (hebcal-icalendar 7.0.6)
+
+`FoldLine` / `writeFolded` ← `foldLine()` (`src/foldLine.ts`); `clusterStart`
+← its `Intl.Segmenter` `containing()` lookup. `Event.write` ←
+`IcalEvent.getLongLines()`; `Event.startEnd` ← the constructor's
+DTSTART/DTEND half and `formatTimedStartEnd()`. `Calendar.writePreamble` ←
+`makeIcalPreamble()`; `Calendar.Marshal` ← `icalEventsToString()`. `Escape` ←
+`IcalEvent.escape()`; `FormatUTC` ← `makeDtstamp()`; `Date.String` ←
+`formatYYYYMMDD()`. `Alarm` and the three `Alarm…` defaults ← `getAlarm()`.
+`DefaultUID` ← `getUid()`; `Murmur32Hex` ← `murmur32HexSync`
+(`@hebcal/murmurhash3`). `ZoneInfo.VTimezone` ← `getVtimezone()` (which
+slices fixed line numbers; this finds the component). `Version` ← the
+package version in the PRODID. **Not ported, on purpose** (see "pkg/icalendar
+is a serializer"): the rest of the `IcalEvent` constructor -- render/brief,
+emoji, `CATEGORY`, `appendHebrewToSubject`, `locationName` -- and
+`appendTrackingToUrl`, `eventsToIcalendar`'s `getCalendarTitle` default.
+
+### `internal/service/yahrzeit/` — `yahrzeitDownload.js`, `yahrzeitEvents.js`, `yahrzeitCommon.js`
+
+| Go | JS source |
+|---|---|
+| `ParseRequest` | `fixup2` + `fixup3` + the `/v2` branch in `src/app-download.js` |
+| `ParseQuery`, `unescapeComponent` | Koa's `ctx.query` (`node:querystring`), first value of a repeated key |
+| `unescapeLatin1` | JavaScript `unescape()` |
+| `decodeBase64ASCII` | `Buffer.from(s, 'base64').toString('ascii')` |
+| `Calendar.ICS` | the `.ics` branch of `yahrzeitDownload()` + `makeIcalOpts()` (`src/urlArgs.js`) + the `IcalEvent` constructor's emoji/category choices |
+| `Calendar.Variant` | the `attrs` `yahrzeitDownload()` gives `checkFreshETag()` |
+| `Calendar.placeholder` | `makeDummyEvent()` |
+| `googleLocation` | `makeLocation()` + `Location.legacyTzToTzid()` |
+| `calendarTitle`, `anniversaryTypes` | `makeCalendarTitle()`, `getCalendarNames()`, `summarizeAnniversaryTypes()`, `getAnniversaryTypes()` |
+| `numYears`, `includeNumber`, `entryIDs`, `entryFor`, `anniversaryType` | `getNumYears()`, `includeAnniversaryNumber()`, `getYahrzeitIds()`/`getMaxYahrzeitId()`, `getYahrzeitDetailForId()`, `getAnniversaryType()` |
+| `rangeFor` | `getDateRange()` + `getDefaultStartYear()` |
+| `makeEvents` | `makeYahrzeitEvents()` + `getEventsForId()` |
+| `makeEvent`, `makeSubject`, `makeMemo` | `makeYahrzeitEvent()`, `makeSubject()`, `makeMemo()` |
+| `makeReminder` | `makeReminderEvents()` + `getAlarmTime()` |
+| `makeYizkorEvents`, `editMemo` | `makeYizkorEvents()`, `makeEditMemo()` |
+| `candlesWhen` | `lightCandlesWhen()` (`src/common.js`) |
+| `dayAndMonth` | `hd.render('en', false)` with a smart apostrophe |
+| `hdate.GetYahrzeit` / `GetBirthdayOrAnniversary` | `yahrzeit()` / `birthdayOrAnniversary()` (`@hebcal/hdate`); in github.com/hebcal/hdate, not hebcal-go |
+
+`internal/handler/yahrzeit.go` ← the headers `yahrzeitDownload()` sets and
+does not set (`Vary: User-Agent`, attachment on `dl=1`, no Cache-Control).
 
 ### `internal/handler/pdf.go`, `download.go`
 

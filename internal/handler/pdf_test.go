@@ -468,7 +468,8 @@ func TestPDFLegacyV2Errors(t *testing.T) {
 		{"a yahrzeit calendar", "/v2/y/" + enc("v=yahrzeit") + "/yahrzeit.pdf", http.StatusNotFound},
 		{"no v at all", "/v2/h/" + enc("year=2026&maj=on") + "/x.pdf", http.StatusNotFound},
 		{"not base64", "/v2/h/!!!!/x.pdf", http.StatusNotFound},
-		{"a yahrzeit v=", "/v2/h/" + enc("v=yahrzeit&y1=1990") + "/x.pdf", http.StatusBadRequest},
+		// A personal calendar has no PDF form, and no such file is a 404.
+		{"a yahrzeit v=", "/v2/h/" + enc("v=yahrzeit&y1=1990") + "/x.pdf", http.StatusNotFound},
 		{"an out-of-range year", "/v2/h/" + enc("v=1&year=9999&maj=on") + "/x.pdf", http.StatusGone},
 	}
 	_, srv := pdfServerNoFonts(t)
@@ -608,7 +609,7 @@ func TestPDFLegacyCGIErrors(t *testing.T) {
 		{"no query at all", "/hebcal/index.cgi/hebcal_2028_may.pdf", http.StatusNotFound},
 		{"no v", "/hebcal/index.cgi/x.pdf?year=2026&maj=on", http.StatusNotFound},
 		{"an ics feed", "/hebcal/index.cgi/hebcal.ics?v=1&year=2026&maj=on", http.StatusNotFound},
-		{"a yahrzeit v=", "/hebcal/index.cgi/x.pdf?v=yahrzeit&y1=1990", http.StatusBadRequest},
+		{"a yahrzeit v=", "/hebcal/index.cgi/x.pdf?v=yahrzeit&y1=1990", http.StatusNotFound},
 		{"an out-of-range year", "/hebcal/index.cgi/x.pdf?v=1&year=9999&maj=on", http.StatusGone},
 	}
 	for _, tt := range tests {

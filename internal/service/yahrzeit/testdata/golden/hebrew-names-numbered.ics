@@ -1,0 +1,186 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Hebrew Anniversaries: יצחק בן אברהם\, שרה\, ר
+ בקה
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יצחק בן אברהם יארצייט תזכורת
+DTSTART:20261107T200000
+DTEND:20261107T200000
+UID:reminder-20261107-717629ec-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering יצחק בן אברהם\, who
+ se 21st Yahrzeit occurs on Sunday\, November 8\, corresponding to the 28th
+  of Cheshvan\, 5787.\n\nיצחק בן אברהם’s Yahrzeit begins at su
+ ndown on Saturday\, November 7 and continues until sundown on the day of o
+ bservance. It is customary to light a memorial candle at nightfall as the 
+ Yahrzeit begins.\n\nMay your loved one’s soul be bound up in the bond of
+  eternal life and may their memory serve as a continued source of inspirat
+ ion and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יארצייט ה-21 של יצחק בן אברהם (כ״ח
+  חשון)
+DTSTART;VALUE=DATE:20261108
+DTEND;VALUE=DATE:20261109
+UID:yahrzeit-5787-717629ec-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering יצחק בן אברהם\, who
+ se 21st Yahrzeit occurs on Sunday\, November 8\, corresponding to the 28th
+  of Cheshvan\, 5787.\n\nיצחק בן אברהם’s Yahrzeit begins at su
+ ndown on Saturday\, November 7 and continues until sundown on the day of o
+ bservance. It is customary to light a memorial candle at nightfall as the 
+ Yahrzeit begins.\n\nMay your loved one’s soul be bound up in the bond of
+  eternal life and may their memory serve as a continued source of inspirat
+ ion and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:יום נישואין 21 לשרה (כ״ח חשון)
+DTSTART;VALUE=DATE:20261108
+DTEND;VALUE=DATE:20261109
+UID:anniversary-5787-b89e130f-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring שרה\, whose 21st Hebrew Annive
+ rsary occurs on Sunday\, November 8\, corresponding to the 28th of Cheshva
+ n\, 5787.\n\nשרה’s Hebrew Anniversary begins at sundown on Saturday\,
+  November 7 and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ יום הולדת 24 לרבקה (כ״ז אדר א׳)
+DTSTART;VALUE=DATE:20270306
+DTEND;VALUE=DATE:20270307
+UID:birthday-5787-c20dc649-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring רבקה\, whose 24th Hebrew Birt
+ hday occurs on Saturday\, March 6\, corresponding to the 27th of Adar I\, 
+ 5787.\n\nרבקה’s Hebrew Birthday begins at sundown on Friday\, March 
+ 5 and continues until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יצחק בן אברהם יארצייט תזכורת
+DTSTART:20271127T200000
+DTEND:20271127T200000
+UID:reminder-20271127-717629ec-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering יצחק בן אברהם\, who
+ se 22nd Yahrzeit occurs on Sunday\, November 28\, corresponding to the 28t
+ h of Cheshvan\, 5788.\n\nיצחק בן אברהם’s Yahrzeit begins at s
+ undown on Saturday\, November 27 and continues until sundown on the day of
+  observance. It is customary to light a memorial candle at nightfall as th
+ e Yahrzeit begins.\n\nMay your loved one’s soul be bound up in the bond 
+ of eternal life and may their memory serve as a continued source of inspir
+ ation and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ יארצייט ה-22 של יצחק בן אברהם (כ״ח
+  חשון)
+DTSTART;VALUE=DATE:20271128
+DTEND;VALUE=DATE:20271129
+UID:yahrzeit-5788-717629ec-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering יצחק בן אברהם\, who
+ se 22nd Yahrzeit occurs on Sunday\, November 28\, corresponding to the 28t
+ h of Cheshvan\, 5788.\n\nיצחק בן אברהם’s Yahrzeit begins at s
+ undown on Saturday\, November 27 and continues until sundown on the day of
+  observance. It is customary to light a memorial candle at nightfall as th
+ e Yahrzeit begins.\n\nMay your loved one’s soul be bound up in the bond 
+ of eternal life and may their memory serve as a continued source of inspir
+ ation and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:יום נישואין 22 לשרה (כ״ח חשון)
+DTSTART;VALUE=DATE:20271128
+DTEND;VALUE=DATE:20271129
+UID:anniversary-5788-b89e130f-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring שרה\, whose 22nd Hebrew Annive
+ rsary occurs on Sunday\, November 28\, corresponding to the 28th of Cheshv
+ an\, 5788.\n\nשרה’s Hebrew Anniversary begins at sundown on Saturday\
+ , November 27 and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ יום הולדת 25 לרבקה (כ״ז אדר)
+DTSTART;VALUE=DATE:20280325
+DTEND;VALUE=DATE:20280326
+UID:birthday-5788-c20dc649-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring רבקה\, whose 25th Hebrew Birt
+ hday occurs on Saturday\, March 25\, corresponding to the 27th of Adar\, 5
+ 788.\n\nרבקה’s Hebrew Birthday begins at sundown on Friday\, March 2
+ 4 and continues until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+END:VCALENDAR

@@ -19,6 +19,8 @@ require (
 	github.com/prometheus/client_golang v1.25.0
 	github.com/prometheus/client_model v0.6.3
 	github.com/ringsaturn/tzf/v2 v2.3.0
+	github.com/rivo/uniseg v0.4.7
+	github.com/twmb/murmur3 v1.2.2
 	golang.org/x/image v0.47.0
 	golang.org/x/sync v0.24.0
 	golang.org/x/text v0.43.0

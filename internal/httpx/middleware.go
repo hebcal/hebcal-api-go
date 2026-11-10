@@ -229,7 +229,8 @@ func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 					body = compress(enc, body)
 					bw.header.Set("Content-Encoding", enc)
 				}
-				bw.header.Set("Vary", "Accept-Encoding")
+				// Added, not set: a handler may already vary on something else.
+				bw.header.Add("Vary", "Accept-Encoding")
 			}
 		}
 

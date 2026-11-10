@@ -1,0 +1,123 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Yahrzeit: David Ben-Gurion
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+X-WR-TIMEZONE;VALUE=TEXT:Asia/Jerusalem
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Yom Kippur)
+DTSTART;VALUE=DATE:20260921
+DTEND;VALUE=DATE:20260922
+UID:yizkor-20260921-c1c09604
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shmini Atzeret)
+DTSTART;VALUE=DATE:20261003
+DTEND;VALUE=DATE:20261004
+UID:yizkor-20261003-102d7737
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ David Ben-Gurion Yahrzeit reminder
+DTSTART;TZID=Asia/Jerusalem:20270214T163000
+DTEND;TZID=Asia/Jerusalem:20270214T163000
+UID:reminder-20270214-308720c8-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering David Ben-Gurion\, whose 16th 
+ Yahrzeit occurs on Monday\, February 15\, corresponding to the 8th of Adar
+  I\, 5787.\n\nDavid Ben-Gurion’s Yahrzeit begins at sundown on Sunday\, 
+ February 14 and continues until sundown on the day of observance. It is cu
+ stomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay 
+ your loved one’s soul be bound up in the bond of eternal life and may th
+ eir memory serve as a continued source of inspiration and comfort to you.
+GEO:31.76904;35.21633
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ David Ben-Gurion’s 16th Yahrzeit
+DTSTART;VALUE=DATE:20270215
+DTEND;VALUE=DATE:20270216
+UID:yahrzeit-5787-308720c8-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering David Ben-Gurion\, whose 16th 
+ Yahrzeit occurs on Monday\, February 15\, corresponding to the 8th of Adar
+  I\, 5787.\n\nDavid Ben-Gurion’s Yahrzeit begins at sundown on Sunday\, 
+ February 14 and continues until sundown on the day of observance. It is cu
+ stomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay 
+ your loved one’s soul be bound up in the bond of eternal life and may th
+ eir memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Pesach VII)
+DTSTART;VALUE=DATE:20270428
+DTEND;VALUE=DATE:20270429
+UID:yizkor-20270428-269ab9d7
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shavuot)
+DTSTART;VALUE=DATE:20270611
+DTEND;VALUE=DATE:20270612
+UID:yizkor-20270611-8cc79abb
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+END:VCALENDAR

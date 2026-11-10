@@ -263,8 +263,9 @@ APIs are unaffected.
   identifier and the `ladeg`/`lamin`/`ladir` degrees-and-minutes form — are
   resolved rather than dropped, which is what these URLs rendered before
   hebcal-web's redirect was added. Only
-  `.pdf` and `.csv` under `/v2/h/` are served: the `.ics` feeds and the yahrzeit
-  calendars sharing that prefix get `404`, as does a URL with no `v=`.
+  `.pdf` and `.csv` under `/v2/h/` are served: the holiday `.ics` feeds sharing
+  that prefix get `404`, as does a URL with no `v=`. (The Yahrzeit calendars
+  under `/v2/y/` are served; see [iCalendar feeds](#icalendar-feeds).)
 - `GET|HEAD /holidays/hebcal-<year>.pdf` — render a year of Jewish
   holidays, the calendar www.hebcal.com links from its holiday pages. A
   year of 3761 or more is a Hebrew year, as is the Gregorian-span form the
@@ -280,6 +281,37 @@ APIs are unaffected.
   handling. Nothing else under `/holidays/` belongs to this service: the
   HTML pages there are still hebcal-web's, and this route answers them
   `404`.
+
+### iCalendar feeds
+
+The personal **Yahrzeit + Anniversary** calendars of download.hebcal.com, as
+subscribable `.ics` feeds -- the legacy URLs that carry the whole calendar in
+the URL and need no database:
+
+- `GET|HEAD /v2/y/<base64 query string>/<filename>.ics`
+- `GET|HEAD /yahrzeit/yahrzeit.cgi/<filename>.ics?<query>`
+- `GET|HEAD /export/[<dir>/]<filename>.ics?<query>` when the query names a
+  personal calendar (`v=yahrzeit`, or no `v=` and a first entry's date)
+
+The query string may separate its parameters with `&` or `;`, and may be
+percent-encoded a second time; all are served in place with a `200`.
+
+Each numbered entry is `n1` (name), `t1` (Yahrzeit, Birthday, Anniversary or
+Other), `y1`/`m1`/`d1` (Gregorian date) and `s1=on` (after sunset). Calendar
+options: `years` (2-50, default 20), `hebdate=on` (Hebrew date in the title),
+`yizkor=on`, `i=on` (Israel), `yrem=0` (no day-before Yahrzeit reminders),
+`an=off` (no anniversary numbers), `dl=1` (one-time download rather than a
+subscription), `emoji=0`, `color`.
+
+Output is byte-identical to hebcal-web's for the same URL on the same day,
+event UIDs included, so a subscriber sees no duplicate events when a feed moves
+here. Feeds sent to Google Calendar's importer pin the reminder events to a
+time zone and embed its `VTIMEZONE`, read from the vzic-generated files under
+`-zoneinfo` (default `/var/www/zoneinfo`).
+
+Not served yet: the saved calendars under `/v3/` (which need MySQL), the
+`.csv` form of a Yahrzeit calendar, and the holiday `.ics` feeds. The plan for
+those is in [iCalendar-port.md](iCalendar-port.md).
 
 #### Daily learning
 
@@ -476,6 +508,8 @@ internal/
                            shaping, fonts, links
     holidaypdf/            /holidays/hebcal-<year>.pdf URL parsing
     csv/                   /v4/ CSV calendars: rows and their descriptions
+    yahrzeit/              Yahrzeit + Anniversary iCalendar feeds: URL shapes,
+                           events, titles and descriptions
   repository/
     readings/              client for the readings-svc sidecar (/leyning
                            for /shabbat, /learning for the PDF calendars)
@@ -492,6 +526,8 @@ pkg/
   geoip/                 client for the geoip2 unix-socket lookup service
   downloadpb/            the Download protobuf a /v4/ URL carries, shared
                          with hebcal-web
+  icalendar/             RFC 5545 writer: VEVENT/VALARM/VTIMEZONE, line
+                         folding; a Go port of @hebcal/icalendar
 tools/                   porting tools: PDF comparison, width measurement,
                          locale and URL dumps (not part of the build)
 ```
@@ -570,7 +606,10 @@ its access log to `/var/log/hebcal/api.log` (same directory hebcal-web
 uses), rotated daily; logrotate signals the service with `SIGUSR1` to
 reopen the file after rotation.
 
-Varnish decides which URLs reach this service. `download.hebcal.com/v4/**.csv`
+Varnish decides which URLs reach this service. The Yahrzeit `.ics` feeds
+(`/v2/y/**.ics`, and `/yahrzeit/yahrzeit.cgi/*.ics` and `/export/**.ics` when
+the query says `v=yahrzeit`) are routed here by hebcal-devops'
+`etc/varnish/download.vcl`; `/v3/` and every holiday `.ics` stay with Node. `download.hebcal.com/v4/**.csv`
 (and its legacy `/v2/h/**.csv` and `/hebcal/index.cgi/*.csv` spellings)
 can be routed here too; until it is, hebcal-web keeps serving it. Alongside
 the JSON APIs, two PDF families now belong here rather than to the Node.js

@@ -1,0 +1,51 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Hebrew Anniversaries: Golda Meir\, Jane Doe
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ Jane Doe’s Hebrew Birthday (23rd of Tevet)
+DTSTART;VALUE=DATE:20270102
+DTEND;VALUE=DATE:20270103
+UID:birthday-5787-674b229b-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Jane Doe\, whose Hebrew Birthday 
+ occurs on Saturday\, January 2\, corresponding to the 23rd of Tevet\, 5787
+ .\n\nJane Doe’s Hebrew Birthday begins at sundown on Friday\, January 1 
+ and continues until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Golda Meir’s Yahrzeit (8th of Adar I)
+DTSTART;VALUE=DATE:20270215
+DTEND;VALUE=DATE:20270216
+UID:yahrzeit-5787-0a1da0e9-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Golda Meir\, whose Yahrzeit oc
+ curs on Monday\, February 15\, corresponding to the 8th of Adar I\, 5787.\
+ n\nGolda Meir’s Yahrzeit begins at sundown on Sunday\, February 14 and c
+ ontinues until sundown on the day of observance. It is customary to light 
+ a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved one’
+ s soul be bound up in the bond of eternal life and may their memory serve 
+ as a continued source of inspiration and comfort to you.
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,277 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Yahrzeit: Chaim Weizmann
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Yom Kippur)
+DTSTART;VALUE=DATE:19390923
+DTEND;VALUE=DATE:19390924
+UID:yizkor-19390923-c1c09604
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shmini Atzeret)
+DTSTART;VALUE=DATE:19391005
+DTEND;VALUE=DATE:19391006
+UID:yizkor-19391005-102d7737
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Pesach VIII)
+DTSTART;VALUE=DATE:19400430
+DTEND;VALUE=DATE:19400501
+UID:yizkor-19400430-2a3f9c25
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shavuot II)
+DTSTART;VALUE=DATE:19400613
+DTEND;VALUE=DATE:19400614
+UID:yizkor-19400613-2336d7cc
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Yom Kippur)
+DTSTART;VALUE=DATE:19401012
+DTEND;VALUE=DATE:19401013
+UID:yizkor-19401012-c1c09604
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shmini Atzeret)
+DTSTART;VALUE=DATE:19401024
+DTEND;VALUE=DATE:19401025
+UID:yizkor-19401024-102d7737
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Pesach VIII)
+DTSTART;VALUE=DATE:19410419
+DTEND;VALUE=DATE:19410420
+UID:yizkor-19410419-2a3f9c25
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shavuot II)
+DTSTART;VALUE=DATE:19410602
+DTEND;VALUE=DATE:19410603
+UID:yizkor-19410602-2336d7cc
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Chaim Weizmann Yahrzeit reminder
+DTSTART:19531029T163000
+DTEND:19531029T163000
+UID:reminder-19531029-b67273bb-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Chaim Weizmann\, whose 1st Yah
+ rzeit occurs on Friday\, October 30\, corresponding to the 21st of Cheshva
+ n\, 5714.\n\nChaim Weizmann’s Yahrzeit begins at sundown on Thursday\, O
+ ctober 29 and continues until sundown on the day of observance. It is cust
+ omary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay yo
+ ur loved one’s soul be bound up in the bond of eternal life and may thei
+ r memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Chaim Weizmann’s 1st Yahrzeit
+DTSTART;VALUE=DATE:19531030
+DTEND;VALUE=DATE:19531031
+UID:yahrzeit-5714-b67273bb-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Chaim Weizmann\, whose 1st Yah
+ rzeit occurs on Friday\, October 30\, corresponding to the 21st of Cheshva
+ n\, 5714.\n\nChaim Weizmann’s Yahrzeit begins at sundown on Thursday\, O
+ ctober 29 and continues until sundown on the day of observance. It is cust
+ omary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay yo
+ ur loved one’s soul be bound up in the bond of eternal life and may thei
+ r memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Chaim Weizmann Yahrzeit reminder
+DTSTART:19541116T163000
+DTEND:19541116T163000
+UID:reminder-19541116-b67273bb-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Chaim Weizmann\, whose 2nd Yah
+ rzeit occurs on Wednesday\, November 17\, corresponding to the 21st of Che
+ shvan\, 5715.\n\nChaim Weizmann’s Yahrzeit begins at sundown on Tuesday\
+ , November 16 and continues until sundown on the day of observance. It is 
+ customary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMa
+ y your loved one’s soul be bound up in the bond of eternal life and may 
+ their memory serve as a continued source of inspiration and comfort to you
+ .
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Chaim Weizmann’s 2nd Yahrzeit
+DTSTART;VALUE=DATE:19541117
+DTEND;VALUE=DATE:19541118
+UID:yahrzeit-5715-b67273bb-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Chaim Weizmann\, whose 2nd Yah
+ rzeit occurs on Wednesday\, November 17\, corresponding to the 21st of Che
+ shvan\, 5715.\n\nChaim Weizmann’s Yahrzeit begins at sundown on Tuesday\
+ , November 16 and continues until sundown on the day of observance. It is 
+ customary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMa
+ y your loved one’s soul be bound up in the bond of eternal life and may 
+ their memory serve as a continued source of inspiration and comfort to you
+ .
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Chaim Weizmann Yahrzeit reminder
+DTSTART:19551105T200000
+DTEND:19551105T200000
+UID:reminder-19551105-b67273bb-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Chaim Weizmann\, whose 3rd Yah
+ rzeit occurs on Sunday\, November 6\, corresponding to the 21st of Cheshva
+ n\, 5716.\n\nChaim Weizmann’s Yahrzeit begins at sundown on Saturday\, N
+ ovember 5 and continues until sundown on the day of observance. It is cust
+ omary to light a memorial candle at nightfall as the Yahrzeit begins.\n\nM
+ ay your loved one’s soul be bound up in the bond of eternal life and may
+  their memory serve as a continued source of inspiration and comfort to yo
+ u.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Chaim Weizmann’s 3rd Yahrzeit
+DTSTART;VALUE=DATE:19551106
+DTEND;VALUE=DATE:19551107
+UID:yahrzeit-5716-b67273bb-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Chaim Weizmann\, whose 3rd Yah
+ rzeit occurs on Sunday\, November 6\, corresponding to the 21st of Cheshva
+ n\, 5716.\n\nChaim Weizmann’s Yahrzeit begins at sundown on Saturday\, N
+ ovember 5 and continues until sundown on the day of observance. It is cust
+ omary to light a memorial candle at nightfall as the Yahrzeit begins.\n\nM
+ ay your loved one’s soul be bound up in the bond of eternal life and may
+  their memory serve as a continued source of inspiration and comfort to yo
+ u.
+END:VEVENT
+END:VCALENDAR

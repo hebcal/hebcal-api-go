@@ -1,0 +1,358 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Hebrew Anniversaries: Theodor Herzl\, גולדה\, Foo\, bar\
+ ; baz\, Av...
+X-WR-CALDESC:Hebcal Hebrew Anniversaries: Theodor Herzl\, גולדה\, Foo
+ \, bar\; baz\, Avraham & Sarah
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Yom Kippur)
+DTSTART;VALUE=DATE:20260921
+DTEND;VALUE=DATE:20260922
+UID:yizkor-20260921-c1c09604
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shmini Atzeret)
+DTSTART;VALUE=DATE:20261003
+DTEND;VALUE=DATE:20261004
+UID:yizkor-20261003-102d7737
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:Foo\, bar\; baz (3rd of Kislev)
+DTSTART;VALUE=DATE:20261113
+DTEND;VALUE=DATE:20261114
+UID:other-5787-a8ef8d40-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Foo\, bar\; baz occurs on Friday\, November 13\, corresponding
+  to the 3rd of Kislev\, 5787.\n\nFoo\, bar\; baz begins at sundown on Thur
+ sday\, November 12 and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Theodor Herzl Yahrzeit reminder
+DTSTART:20270214T163000
+DTEND:20270214T163000
+UID:reminder-20270214-c09d46fd-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Theodor Herzl\, whose 16th Yah
+ rzeit occurs on Monday\, February 15\, corresponding to the 8th of Adar I\
+ , 5787.\n\nTheodor Herzl’s Yahrzeit begins at sundown on Sunday\, Februa
+ ry 14 and continues until sundown on the day of observance. It is customar
+ y to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Theodor Herzl’s 16th Yahrzeit (8th of Adar I)
+DTSTART;VALUE=DATE:20270215
+DTEND;VALUE=DATE:20270216
+UID:yahrzeit-5787-c09d46fd-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Theodor Herzl\, whose 16th Yah
+ rzeit occurs on Monday\, February 15\, corresponding to the 8th of Adar I\
+ , 5787.\n\nTheodor Herzl’s Yahrzeit begins at sundown on Sunday\, Februa
+ ry 14 and continues until sundown on the day of observance. It is customar
+ y to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Pesach VIII)
+DTSTART;VALUE=DATE:20270429
+DTEND;VALUE=DATE:20270430
+UID:yizkor-20270429-2a3f9c25
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ יום הולדת 29 לגולדה (ח׳ אייר)
+DTSTART;VALUE=DATE:20270515
+DTEND;VALUE=DATE:20270516
+UID:birthday-5787-ad8ec8b6-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring גולדה\, whose 29th Hebrew Bi
+ rthday occurs on Saturday\, May 15\, corresponding to the 8th of Iyyar\, 5
+ 787.\n\nגולדה’s Hebrew Birthday begins at sundown on Friday\, May 1
+ 4 and continues until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shavuot II)
+DTSTART;VALUE=DATE:20270612
+DTEND;VALUE=DATE:20270613
+UID:yizkor-20270612-2336d7cc
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:Avraham & Sarah’s 37th Hebrew Anniversary (25th of Sivan)
+DTSTART;VALUE=DATE:20270630
+DTEND;VALUE=DATE:20270701
+UID:anniversary-5787-aef1005c-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Avraham & Sarah\, whose 37th Hebr
+ ew Anniversary occurs on Wednesday\, June 30\, corresponding to the 25th o
+ f Sivan\, 5787.\n\nAvraham & Sarah’s Hebrew Anniversary begins at sundow
+ n on Tuesday\, June 29 and continues until sundown on the day of observanc
+ e.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Yom Kippur)
+DTSTART;VALUE=DATE:20271011
+DTEND;VALUE=DATE:20271012
+UID:yizkor-20271011-c1c09604
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shmini Atzeret)
+DTSTART;VALUE=DATE:20271023
+DTEND;VALUE=DATE:20271024
+UID:yizkor-20271023-102d7737
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:Foo\, bar\; baz (3rd of Kislev)
+DTSTART;VALUE=DATE:20271203
+DTEND;VALUE=DATE:20271204
+UID:other-5788-a8ef8d40-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Foo\, bar\; baz occurs on Friday\, December 3\, corresponding 
+ to the 3rd of Kislev\, 5788.\n\nFoo\, bar\; baz begins at sundown on Thurs
+ day\, December 2 and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Theodor Herzl Yahrzeit reminder
+DTSTART:20280305T163000
+DTEND:20280305T163000
+UID:reminder-20280305-c09d46fd-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Theodor Herzl\, whose 17th Yah
+ rzeit occurs on Monday\, March 6\, corresponding to the 8th of Adar\, 5788
+ .\n\nTheodor Herzl’s Yahrzeit begins at sundown on Sunday\, March 5 and 
+ continues until sundown on the day of observance. It is customary to light
+  a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved one
+ ’s soul be bound up in the bond of eternal life and may their memory ser
+ ve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Theodor Herzl’s 17th Yahrzeit (8th of Adar)
+DTSTART;VALUE=DATE:20280306
+DTEND;VALUE=DATE:20280307
+UID:yahrzeit-5788-c09d46fd-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Theodor Herzl\, whose 17th Yah
+ rzeit occurs on Monday\, March 6\, corresponding to the 8th of Adar\, 5788
+ .\n\nTheodor Herzl’s Yahrzeit begins at sundown on Sunday\, March 5 and 
+ continues until sundown on the day of observance. It is customary to light
+  a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved one
+ ’s soul be bound up in the bond of eternal life and may their memory ser
+ ve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Pesach VIII)
+DTSTART;VALUE=DATE:20280418
+DTEND;VALUE=DATE:20280419
+UID:yizkor-20280418-2a3f9c25
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🎂✡️ יום הולדת 30 לגולדה (ח׳ אייר)
+DTSTART;VALUE=DATE:20280504
+DTEND;VALUE=DATE:20280505
+UID:birthday-5788-ad8ec8b6-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring גולדה\, whose 30th Hebrew Bi
+ rthday occurs on Thursday\, May 4\, corresponding to the 8th of Iyyar\, 57
+ 88.\n\nגולדה’s Hebrew Birthday begins at sundown on Wednesday\, May
+  3 and continues until sundown on the day of observance.\n\nMazel Tov!
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yizkor (Shavuot II)
+DTSTART;VALUE=DATE:20280601
+DTEND;VALUE=DATE:20280602
+UID:yizkor-20280601-2336d7cc
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:Avraham & Sarah’s 38th Hebrew Anniversary (25th of Sivan)
+DTSTART;VALUE=DATE:20280619
+DTEND;VALUE=DATE:20280620
+UID:anniversary-5788-aef1005c-4
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in honoring Avraham & Sarah\, whose 38th Hebr
+ ew Anniversary occurs on Monday\, June 19\, corresponding to the 25th of S
+ ivan\, 5788.\n\nAvraham & Sarah’s Hebrew Anniversary begins at sundown o
+ n Sunday\, June 18 and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,2457 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Yahrzeit: Yitzhak ben Avraham\, Rivka bat Betuel\, Yaakov ben
+  Y...
+X-WR-CALDESC:Hebcal Yahrzeit: Yitzhak ben Avraham\, Rivka bat Betuel\, Yaa
+ kov ben Yitzhak
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20270117T163000
+DTEND:20270117T163000
+UID:reminder-20270117-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 55
+ th Yahrzeit occurs on Monday\, January 18\, corresponding to the 10th of S
+ h’vat\, 5787.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, January 17 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle at dusk as the Yahrzeit begins.\
+ n\nMay your loved one’s soul be bound up in the bond of eternal life and
+  may their memory serve as a continued source of inspiration and comfort t
+ o you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 55th Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20270118
+DTEND;VALUE=DATE:20270119
+UID:yahrzeit-5787-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 55
+ th Yahrzeit occurs on Monday\, January 18\, corresponding to the 10th of S
+ h’vat\, 5787.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, January 17 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle at dusk as the Yahrzeit begins.\
+ n\nMay your loved one’s soul be bound up in the bond of eternal life and
+  may their memory serve as a continued source of inspiration and comfort t
+ o you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20270508T200000
+DTEND:20270508T200000
+UID:reminder-20270508-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 32nd 
+ Yahrzeit occurs on Sunday\, May 9\, corresponding to the 2nd of Iyyar\, 57
+ 87.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Saturday\, May 8
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at nightfall as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 32nd Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20270509
+DTEND;VALUE=DATE:20270510
+UID:yahrzeit-5787-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 32nd 
+ Yahrzeit occurs on Sunday\, May 9\, corresponding to the 2nd of Iyyar\, 57
+ 87.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Saturday\, May 8
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at nightfall as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20270721T163000
+DTEND:20270721T163000
+UID:reminder-20270721-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 11t
+ h Yahrzeit occurs on Thursday\, July 22\, corresponding to the 17th of Tam
+ uz\, 5787.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Wednesd
+ ay\, July 21 and continues until sundown on the day of observance. It is c
+ ustomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay
+  your loved one’s soul be bound up in the bond of eternal life and may t
+ heir memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 11th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20270722
+DTEND;VALUE=DATE:20270723
+UID:yahrzeit-5787-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 11t
+ h Yahrzeit occurs on Thursday\, July 22\, corresponding to the 17th of Tam
+ uz\, 5787.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Wednesd
+ ay\, July 21 and continues until sundown on the day of observance. It is c
+ ustomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay
+  your loved one’s soul be bound up in the bond of eternal life and may t
+ heir memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20280206T163000
+DTEND:20280206T163000
+UID:reminder-20280206-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 56
+ th Yahrzeit occurs on Monday\, February 7\, corresponding to the 10th of S
+ h’vat\, 5788.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, February 6 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle at dusk as the Yahrzeit begins.\
+ n\nMay your loved one’s soul be bound up in the bond of eternal life and
+  may their memory serve as a continued source of inspiration and comfort t
+ o you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 56th Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20280207
+DTEND;VALUE=DATE:20280208
+UID:yahrzeit-5788-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 56
+ th Yahrzeit occurs on Monday\, February 7\, corresponding to the 10th of S
+ h’vat\, 5788.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, February 6 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle at dusk as the Yahrzeit begins.\
+ n\nMay your loved one’s soul be bound up in the bond of eternal life and
+  may their memory serve as a continued source of inspiration and comfort t
+ o you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20280427T163000
+DTEND:20280427T163000
+UID:reminder-20280427-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 33rd 
+ Yahrzeit occurs on Friday\, April 28\, corresponding to the 2nd of Iyyar\,
+  5788.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, Ap
+ ril 27 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 33rd Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20280428
+DTEND;VALUE=DATE:20280429
+UID:yahrzeit-5788-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 33rd 
+ Yahrzeit occurs on Friday\, April 28\, corresponding to the 2nd of Iyyar\,
+  5788.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, Ap
+ ril 27 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20280710T163000
+DTEND:20280710T163000
+UID:reminder-20280710-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 12t
+ h Yahrzeit occurs on Tuesday\, July 11\, corresponding to the 17th of Tamu
+ z\, 5788.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\,
+  July 10 and continues until sundown on the day of observance. It is custo
+ mary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 12th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20280711
+DTEND;VALUE=DATE:20280712
+UID:yahrzeit-5788-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 12t
+ h Yahrzeit occurs on Tuesday\, July 11\, corresponding to the 17th of Tamu
+ z\, 5788.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\,
+  July 10 and continues until sundown on the day of observance. It is custo
+ mary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20290125T163000
+DTEND:20290125T163000
+UID:reminder-20290125-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 57
+ th Yahrzeit occurs on Friday\, January 26\, corresponding to the 10th of S
+ h’vat\, 5789.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on T
+ hursday\, January 25 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle at dusk as the Yahrzeit begins
+ .\n\nMay your loved one’s soul be bound up in the bond of eternal life a
+ nd may their memory serve as a continued source of inspiration and comfort
+  to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 57th Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20290126
+DTEND;VALUE=DATE:20290127
+UID:yahrzeit-5789-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 57
+ th Yahrzeit occurs on Friday\, January 26\, corresponding to the 10th of S
+ h’vat\, 5789.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on T
+ hursday\, January 25 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle at dusk as the Yahrzeit begins
+ .\n\nMay your loved one’s soul be bound up in the bond of eternal life a
+ nd may their memory serve as a continued source of inspiration and comfort
+  to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20290416T163000
+DTEND:20290416T163000
+UID:reminder-20290416-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 34th 
+ Yahrzeit occurs on Tuesday\, April 17\, corresponding to the 2nd of Iyyar\
+ , 5789.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Monday\, Apr
+ il 16 and continues until sundown on the day of observance. It is customar
+ y to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 34th Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20290417
+DTEND;VALUE=DATE:20290418
+UID:yahrzeit-5789-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 34th 
+ Yahrzeit occurs on Tuesday\, April 17\, corresponding to the 2nd of Iyyar\
+ , 5789.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Monday\, Apr
+ il 16 and continues until sundown on the day of observance. It is customar
+ y to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20290629T143000
+DTEND:20290629T143000
+UID:reminder-20290629-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 13t
+ h Yahrzeit occurs on Saturday\, June 30\, corresponding to the 17th of Tam
+ uz\, 5789.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Friday\
+ , June 29 and continues until sundown on the day of observance. It is cust
+ omary to light a memorial candle before sundown as the Yahrzeit begins.\n\
+ nMay your loved one’s soul be bound up in the bond of eternal life and m
+ ay their memory serve as a continued source of inspiration and comfort to 
+ you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 13th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20290630
+DTEND;VALUE=DATE:20290701
+UID:yahrzeit-5789-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 13t
+ h Yahrzeit occurs on Saturday\, June 30\, corresponding to the 17th of Tam
+ uz\, 5789.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Friday\
+ , June 29 and continues until sundown on the day of observance. It is cust
+ omary to light a memorial candle before sundown as the Yahrzeit begins.\n\
+ nMay your loved one’s soul be bound up in the bond of eternal life and m
+ ay their memory serve as a continued source of inspiration and comfort to 
+ you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20300113T163000
+DTEND:20300113T163000
+UID:reminder-20300113-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 58
+ th Yahrzeit occurs on Monday\, January 14\, corresponding to the 10th of S
+ h’vat\, 5790.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, January 13 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle at dusk as the Yahrzeit begins.\
+ n\nMay your loved one’s soul be bound up in the bond of eternal life and
+  may their memory serve as a continued source of inspiration and comfort t
+ o you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 58th Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20300114
+DTEND;VALUE=DATE:20300115
+UID:yahrzeit-5790-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 58
+ th Yahrzeit occurs on Monday\, January 14\, corresponding to the 10th of S
+ h’vat\, 5790.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, January 13 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle at dusk as the Yahrzeit begins.\
+ n\nMay your loved one’s soul be bound up in the bond of eternal life and
+  may their memory serve as a continued source of inspiration and comfort t
+ o you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20300504T200000
+DTEND:20300504T200000
+UID:reminder-20300504-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 35th 
+ Yahrzeit occurs on Sunday\, May 5\, corresponding to the 2nd of Iyyar\, 57
+ 90.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Saturday\, May 4
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at nightfall as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 35th Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20300505
+DTEND;VALUE=DATE:20300506
+UID:yahrzeit-5790-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 35th 
+ Yahrzeit occurs on Sunday\, May 5\, corresponding to the 2nd of Iyyar\, 57
+ 90.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Saturday\, May 4
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at nightfall as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20300717T163000
+DTEND:20300717T163000
+UID:reminder-20300717-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 14t
+ h Yahrzeit occurs on Thursday\, July 18\, corresponding to the 17th of Tam
+ uz\, 5790.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Wednesd
+ ay\, July 17 and continues until sundown on the day of observance. It is c
+ ustomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay
+  your loved one’s soul be bound up in the bond of eternal life and may t
+ heir memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 14th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20300718
+DTEND;VALUE=DATE:20300719
+UID:yahrzeit-5790-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 14t
+ h Yahrzeit occurs on Thursday\, July 18\, corresponding to the 17th of Tam
+ uz\, 5790.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Wednesd
+ ay\, July 17 and continues until sundown on the day of observance. It is c
+ ustomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay
+  your loved one’s soul be bound up in the bond of eternal life and may t
+ heir memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20310202T163000
+DTEND:20310202T163000
+UID:reminder-20310202-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 59
+ th Yahrzeit occurs on Monday\, February 3\, corresponding to the 10th of S
+ h’vat\, 5791.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, February 2 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle at dusk as the Yahrzeit begins.\
+ n\nMay your loved one’s soul be bound up in the bond of eternal life and
+  may their memory serve as a continued source of inspiration and comfort t
+ o you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 59th Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20310203
+DTEND;VALUE=DATE:20310204
+UID:yahrzeit-5791-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 59
+ th Yahrzeit occurs on Monday\, February 3\, corresponding to the 10th of S
+ h’vat\, 5791.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, February 2 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle at dusk as the Yahrzeit begins.\
+ n\nMay your loved one’s soul be bound up in the bond of eternal life and
+  may their memory serve as a continued source of inspiration and comfort t
+ o you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20310424T163000
+DTEND:20310424T163000
+UID:reminder-20310424-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 36th 
+ Yahrzeit occurs on Friday\, April 25\, corresponding to the 2nd of Iyyar\,
+  5791.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, Ap
+ ril 24 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 36th Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20310425
+DTEND;VALUE=DATE:20310426
+UID:yahrzeit-5791-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 36th 
+ Yahrzeit occurs on Friday\, April 25\, corresponding to the 2nd of Iyyar\,
+  5791.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, Ap
+ ril 24 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20310707T163000
+DTEND:20310707T163000
+UID:reminder-20310707-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 15t
+ h Yahrzeit occurs on Tuesday\, July 8\, corresponding to the 17th of Tamuz
+ \, 5791.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\, 
+ July 7 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 15th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20310708
+DTEND;VALUE=DATE:20310709
+UID:yahrzeit-5791-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 15t
+ h Yahrzeit occurs on Tuesday\, July 8\, corresponding to the 17th of Tamuz
+ \, 5791.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\, 
+ July 7 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20320122T163000
+DTEND:20320122T163000
+UID:reminder-20320122-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 60
+ th Yahrzeit occurs on Friday\, January 23\, corresponding to the 10th of S
+ h’vat\, 5792.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on T
+ hursday\, January 22 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle at dusk as the Yahrzeit begins
+ .\n\nMay your loved one’s soul be bound up in the bond of eternal life a
+ nd may their memory serve as a continued source of inspiration and comfort
+  to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 60th Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20320123
+DTEND;VALUE=DATE:20320124
+UID:yahrzeit-5792-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 60
+ th Yahrzeit occurs on Friday\, January 23\, corresponding to the 10th of S
+ h’vat\, 5792.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on T
+ hursday\, January 22 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle at dusk as the Yahrzeit begins
+ .\n\nMay your loved one’s soul be bound up in the bond of eternal life a
+ nd may their memory serve as a continued source of inspiration and comfort
+  to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20320412T163000
+DTEND:20320412T163000
+UID:reminder-20320412-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 37th 
+ Yahrzeit occurs on Tuesday\, April 13\, corresponding to the 2nd of Iyyar\
+ , 5792.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Monday\, Apr
+ il 12 and continues until sundown on the day of observance. It is customar
+ y to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 37th Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20320413
+DTEND;VALUE=DATE:20320414
+UID:yahrzeit-5792-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 37th 
+ Yahrzeit occurs on Tuesday\, April 13\, corresponding to the 2nd of Iyyar\
+ , 5792.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Monday\, Apr
+ il 12 and continues until sundown on the day of observance. It is customar
+ y to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20320625T143000
+DTEND:20320625T143000
+UID:reminder-20320625-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 16t
+ h Yahrzeit occurs on Saturday\, June 26\, corresponding to the 17th of Tam
+ uz\, 5792.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Friday\
+ , June 25 and continues until sundown on the day of observance. It is cust
+ omary to light a memorial candle before sundown as the Yahrzeit begins.\n\
+ nMay your loved one’s soul be bound up in the bond of eternal life and m
+ ay their memory serve as a continued source of inspiration and comfort to 
+ you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 16th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20320626
+DTEND;VALUE=DATE:20320627
+UID:yahrzeit-5792-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 16t
+ h Yahrzeit occurs on Saturday\, June 26\, corresponding to the 17th of Tam
+ uz\, 5792.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Friday\
+ , June 25 and continues until sundown on the day of observance. It is cust
+ omary to light a memorial candle before sundown as the Yahrzeit begins.\n\
+ nMay your loved one’s soul be bound up in the bond of eternal life and m
+ ay their memory serve as a continued source of inspiration and comfort to 
+ you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20330109T163000
+DTEND:20330109T163000
+UID:reminder-20330109-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 61
+ st Yahrzeit occurs on Monday\, January 10\, corresponding to the 10th of S
+ h’vat\, 5793.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, January 9 and continues until sundown on the day of observance. It
+  is customary to light a memorial candle at dusk as the Yahrzeit begins.\n
+ \nMay your loved one’s soul be bound up in the bond of eternal life and 
+ may their memory serve as a continued source of inspiration and comfort to
+  you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 61st Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20330110
+DTEND;VALUE=DATE:20330111
+UID:yahrzeit-5793-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 61
+ st Yahrzeit occurs on Monday\, January 10\, corresponding to the 10th of S
+ h’vat\, 5793.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, January 9 and continues until sundown on the day of observance. It
+  is customary to light a memorial candle at dusk as the Yahrzeit begins.\n
+ \nMay your loved one’s soul be bound up in the bond of eternal life and 
+ may their memory serve as a continued source of inspiration and comfort to
+  you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20330430T200000
+DTEND:20330430T200000
+UID:reminder-20330430-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 38th 
+ Yahrzeit occurs on Sunday\, May 1\, corresponding to the 2nd of Iyyar\, 57
+ 93.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Saturday\, April
+  30 and continues until sundown on the day of observance. It is customary 
+ to light a memorial candle at nightfall as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 38th Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20330501
+DTEND;VALUE=DATE:20330502
+UID:yahrzeit-5793-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 38th 
+ Yahrzeit occurs on Sunday\, May 1\, corresponding to the 2nd of Iyyar\, 57
+ 93.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Saturday\, April
+  30 and continues until sundown on the day of observance. It is customary 
+ to light a memorial candle at nightfall as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20330713T163000
+DTEND:20330713T163000
+UID:reminder-20330713-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 17t
+ h Yahrzeit occurs on Thursday\, July 14\, corresponding to the 17th of Tam
+ uz\, 5793.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Wednesd
+ ay\, July 13 and continues until sundown on the day of observance. It is c
+ ustomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay
+  your loved one’s soul be bound up in the bond of eternal life and may t
+ heir memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 17th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20330714
+DTEND;VALUE=DATE:20330715
+UID:yahrzeit-5793-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 17t
+ h Yahrzeit occurs on Thursday\, July 14\, corresponding to the 17th of Tam
+ uz\, 5793.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Wednesd
+ ay\, July 13 and continues until sundown on the day of observance. It is c
+ ustomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay
+  your loved one’s soul be bound up in the bond of eternal life and may t
+ heir memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20340129T163000
+DTEND:20340129T163000
+UID:reminder-20340129-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 62
+ nd Yahrzeit occurs on Monday\, January 30\, corresponding to the 10th of S
+ h’vat\, 5794.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, January 29 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle at dusk as the Yahrzeit begins.\
+ n\nMay your loved one’s soul be bound up in the bond of eternal life and
+  may their memory serve as a continued source of inspiration and comfort t
+ o you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 62nd Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20340130
+DTEND;VALUE=DATE:20340131
+UID:yahrzeit-5794-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 62
+ nd Yahrzeit occurs on Monday\, January 30\, corresponding to the 10th of S
+ h’vat\, 5794.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, January 29 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle at dusk as the Yahrzeit begins.\
+ n\nMay your loved one’s soul be bound up in the bond of eternal life and
+  may their memory serve as a continued source of inspiration and comfort t
+ o you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20340420T163000
+DTEND:20340420T163000
+UID:reminder-20340420-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 39th 
+ Yahrzeit occurs on Friday\, April 21\, corresponding to the 2nd of Iyyar\,
+  5794.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, Ap
+ ril 20 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 39th Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20340421
+DTEND;VALUE=DATE:20340422
+UID:yahrzeit-5794-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 39th 
+ Yahrzeit occurs on Friday\, April 21\, corresponding to the 2nd of Iyyar\,
+  5794.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, Ap
+ ril 20 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20340703T163000
+DTEND:20340703T163000
+UID:reminder-20340703-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 18t
+ h Yahrzeit occurs on Tuesday\, July 4\, corresponding to the 17th of Tamuz
+ \, 5794.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\, 
+ July 3 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 18th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20340704
+DTEND;VALUE=DATE:20340705
+UID:yahrzeit-5794-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 18t
+ h Yahrzeit occurs on Tuesday\, July 4\, corresponding to the 17th of Tamuz
+ \, 5794.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\, 
+ July 3 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20350119T143000
+DTEND:20350119T143000
+UID:reminder-20350119-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 63
+ rd Yahrzeit occurs on Saturday\, January 20\, corresponding to the 10th of
+  Sh’vat\, 5795.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on
+  Friday\, January 19 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle before sundown as the Yahrzeit
+  begins.\n\nMay your loved one’s soul be bound up in the bond of eternal
+  life and may their memory serve as a continued source of inspiration and 
+ comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 63rd Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20350120
+DTEND;VALUE=DATE:20350121
+UID:yahrzeit-5795-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 63
+ rd Yahrzeit occurs on Saturday\, January 20\, corresponding to the 10th of
+  Sh’vat\, 5795.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on
+  Friday\, January 19 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle before sundown as the Yahrzeit
+  begins.\n\nMay your loved one’s soul be bound up in the bond of eternal
+  life and may their memory serve as a continued source of inspiration and 
+ comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20350510T163000
+DTEND:20350510T163000
+UID:reminder-20350510-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 40th 
+ Yahrzeit occurs on Friday\, May 11\, corresponding to the 2nd of Iyyar\, 5
+ 795.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, May 
+ 10 and continues until sundown on the day of observance. It is customary t
+ o light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your love
+ d one’s soul be bound up in the bond of eternal life and may their memor
+ y serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 40th Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20350511
+DTEND;VALUE=DATE:20350512
+UID:yahrzeit-5795-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 40th 
+ Yahrzeit occurs on Friday\, May 11\, corresponding to the 2nd of Iyyar\, 5
+ 795.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, May 
+ 10 and continues until sundown on the day of observance. It is customary t
+ o light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your love
+ d one’s soul be bound up in the bond of eternal life and may their memor
+ y serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20350723T163000
+DTEND:20350723T163000
+UID:reminder-20350723-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 19t
+ h Yahrzeit occurs on Tuesday\, July 24\, corresponding to the 17th of Tamu
+ z\, 5795.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\,
+  July 23 and continues until sundown on the day of observance. It is custo
+ mary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 19th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20350724
+DTEND;VALUE=DATE:20350725
+UID:yahrzeit-5795-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 19t
+ h Yahrzeit occurs on Tuesday\, July 24\, corresponding to the 17th of Tamu
+ z\, 5795.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\,
+  July 23 and continues until sundown on the day of observance. It is custo
+ mary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20360207T163000
+DTEND:20360207T163000
+UID:reminder-20360207-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 64
+ th Yahrzeit occurs on Friday\, February 8\, corresponding to the 10th of S
+ h’vat\, 5796.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on T
+ hursday\, February 7 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle at dusk as the Yahrzeit begins
+ .\n\nMay your loved one’s soul be bound up in the bond of eternal life a
+ nd may their memory serve as a continued source of inspiration and comfort
+  to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 64th Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20360208
+DTEND;VALUE=DATE:20360209
+UID:yahrzeit-5796-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 64
+ th Yahrzeit occurs on Friday\, February 8\, corresponding to the 10th of S
+ h’vat\, 5796.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on T
+ hursday\, February 7 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle at dusk as the Yahrzeit begins
+ .\n\nMay your loved one’s soul be bound up in the bond of eternal life a
+ nd may their memory serve as a continued source of inspiration and comfort
+  to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20360428T163000
+DTEND:20360428T163000
+UID:reminder-20360428-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 41st 
+ Yahrzeit occurs on Tuesday\, April 29\, corresponding to the 2nd of Iyyar\
+ , 5796.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Monday\, Apr
+ il 28 and continues until sundown on the day of observance. It is customar
+ y to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 41st Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20360429
+DTEND;VALUE=DATE:20360430
+UID:yahrzeit-5796-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 41st 
+ Yahrzeit occurs on Tuesday\, April 29\, corresponding to the 2nd of Iyyar\
+ , 5796.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Monday\, Apr
+ il 28 and continues until sundown on the day of observance. It is customar
+ y to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20360711T143000
+DTEND:20360711T143000
+UID:reminder-20360711-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 20t
+ h Yahrzeit occurs on Saturday\, July 12\, corresponding to the 17th of Tam
+ uz\, 5796.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Friday\
+ , July 11 and continues until sundown on the day of observance. It is cust
+ omary to light a memorial candle before sundown as the Yahrzeit begins.\n\
+ nMay your loved one’s soul be bound up in the bond of eternal life and m
+ ay their memory serve as a continued source of inspiration and comfort to 
+ you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 20th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20360712
+DTEND;VALUE=DATE:20360713
+UID:yahrzeit-5796-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 20t
+ h Yahrzeit occurs on Saturday\, July 12\, corresponding to the 17th of Tam
+ uz\, 5796.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Friday\
+ , July 11 and continues until sundown on the day of observance. It is cust
+ omary to light a memorial candle before sundown as the Yahrzeit begins.\n\
+ nMay your loved one’s soul be bound up in the bond of eternal life and m
+ ay their memory serve as a continued source of inspiration and comfort to 
+ you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20370125T163000
+DTEND:20370125T163000
+UID:reminder-20370125-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 65
+ th Yahrzeit occurs on Monday\, January 26\, corresponding to the 10th of S
+ h’vat\, 5797.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, January 25 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle at dusk as the Yahrzeit begins.\
+ n\nMay your loved one’s soul be bound up in the bond of eternal life and
+  may their memory serve as a continued source of inspiration and comfort t
+ o you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 65th Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20370126
+DTEND;VALUE=DATE:20370127
+UID:yahrzeit-5797-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 65
+ th Yahrzeit occurs on Monday\, January 26\, corresponding to the 10th of S
+ h’vat\, 5797.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, January 25 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle at dusk as the Yahrzeit begins.\
+ n\nMay your loved one’s soul be bound up in the bond of eternal life and
+  may their memory serve as a continued source of inspiration and comfort t
+ o you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20370416T163000
+DTEND:20370416T163000
+UID:reminder-20370416-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 42nd 
+ Yahrzeit occurs on Friday\, April 17\, corresponding to the 2nd of Iyyar\,
+  5797.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, Ap
+ ril 16 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 42nd Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20370417
+DTEND;VALUE=DATE:20370418
+UID:yahrzeit-5797-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 42nd 
+ Yahrzeit occurs on Friday\, April 17\, corresponding to the 2nd of Iyyar\,
+  5797.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, Ap
+ ril 16 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20370629T163000
+DTEND:20370629T163000
+UID:reminder-20370629-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 21s
+ t Yahrzeit occurs on Tuesday\, June 30\, corresponding to the 17th of Tamu
+ z\, 5797.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\,
+  June 29 and continues until sundown on the day of observance. It is custo
+ mary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 21st Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20370630
+DTEND;VALUE=DATE:20370701
+UID:yahrzeit-5797-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 21s
+ t Yahrzeit occurs on Tuesday\, June 30\, corresponding to the 17th of Tamu
+ z\, 5797.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\,
+  June 29 and continues until sundown on the day of observance. It is custo
+ mary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20380115T143000
+DTEND:20380115T143000
+UID:reminder-20380115-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 66
+ th Yahrzeit occurs on Saturday\, January 16\, corresponding to the 10th of
+  Sh’vat\, 5798.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on
+  Friday\, January 15 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle before sundown as the Yahrzeit
+  begins.\n\nMay your loved one’s soul be bound up in the bond of eternal
+  life and may their memory serve as a continued source of inspiration and 
+ comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 66th Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20380116
+DTEND;VALUE=DATE:20380117
+UID:yahrzeit-5798-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 66
+ th Yahrzeit occurs on Saturday\, January 16\, corresponding to the 10th of
+  Sh’vat\, 5798.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on
+  Friday\, January 15 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle before sundown as the Yahrzeit
+  begins.\n\nMay your loved one’s soul be bound up in the bond of eternal
+  life and may their memory serve as a continued source of inspiration and 
+ comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20380506T163000
+DTEND:20380506T163000
+UID:reminder-20380506-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 43rd 
+ Yahrzeit occurs on Friday\, May 7\, corresponding to the 2nd of Iyyar\, 57
+ 98.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, May 6
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved 
+ one’s soul be bound up in the bond of eternal life and may their memory 
+ serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 43rd Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20380507
+DTEND;VALUE=DATE:20380508
+UID:yahrzeit-5798-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 43rd 
+ Yahrzeit occurs on Friday\, May 7\, corresponding to the 2nd of Iyyar\, 57
+ 98.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, May 6
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved 
+ one’s soul be bound up in the bond of eternal life and may their memory 
+ serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20380719T163000
+DTEND:20380719T163000
+UID:reminder-20380719-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 22n
+ d Yahrzeit occurs on Tuesday\, July 20\, corresponding to the 17th of Tamu
+ z\, 5798.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\,
+  July 19 and continues until sundown on the day of observance. It is custo
+ mary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 22nd Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20380720
+DTEND;VALUE=DATE:20380721
+UID:yahrzeit-5798-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 22n
+ d Yahrzeit occurs on Tuesday\, July 20\, corresponding to the 17th of Tamu
+ z\, 5798.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\,
+  July 19 and continues until sundown on the day of observance. It is custo
+ mary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20390203T163000
+DTEND:20390203T163000
+UID:reminder-20390203-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 67
+ th Yahrzeit occurs on Friday\, February 4\, corresponding to the 10th of S
+ h’vat\, 5799.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on T
+ hursday\, February 3 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle at dusk as the Yahrzeit begins
+ .\n\nMay your loved one’s soul be bound up in the bond of eternal life a
+ nd may their memory serve as a continued source of inspiration and comfort
+  to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 67th Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20390204
+DTEND;VALUE=DATE:20390205
+UID:yahrzeit-5799-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 67
+ th Yahrzeit occurs on Friday\, February 4\, corresponding to the 10th of S
+ h’vat\, 5799.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on T
+ hursday\, February 3 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle at dusk as the Yahrzeit begins
+ .\n\nMay your loved one’s soul be bound up in the bond of eternal life a
+ nd may their memory serve as a continued source of inspiration and comfort
+  to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20390425T163000
+DTEND:20390425T163000
+UID:reminder-20390425-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 44th 
+ Yahrzeit occurs on Tuesday\, April 26\, corresponding to the 2nd of Iyyar\
+ , 5799.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Monday\, Apr
+ il 25 and continues until sundown on the day of observance. It is customar
+ y to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 44th Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20390426
+DTEND;VALUE=DATE:20390427
+UID:yahrzeit-5799-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 44th 
+ Yahrzeit occurs on Tuesday\, April 26\, corresponding to the 2nd of Iyyar\
+ , 5799.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Monday\, Apr
+ il 25 and continues until sundown on the day of observance. It is customar
+ y to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20390708T143000
+DTEND:20390708T143000
+UID:reminder-20390708-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 23r
+ d Yahrzeit occurs on Saturday\, July 9\, corresponding to the 17th of Tamu
+ z\, 5799.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Friday\,
+  July 8 and continues until sundown on the day of observance. It is custom
+ ary to light a memorial candle before sundown as the Yahrzeit begins.\n\nM
+ ay your loved one’s soul be bound up in the bond of eternal life and may
+  their memory serve as a continued source of inspiration and comfort to yo
+ u.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 23rd Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20390709
+DTEND;VALUE=DATE:20390710
+UID:yahrzeit-5799-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 23r
+ d Yahrzeit occurs on Saturday\, July 9\, corresponding to the 17th of Tamu
+ z\, 5799.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Friday\,
+  July 8 and continues until sundown on the day of observance. It is custom
+ ary to light a memorial candle before sundown as the Yahrzeit begins.\n\nM
+ ay your loved one’s soul be bound up in the bond of eternal life and may
+  their memory serve as a continued source of inspiration and comfort to yo
+ u.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20400124T163000
+DTEND:20400124T163000
+UID:reminder-20400124-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 68
+ th Yahrzeit occurs on Wednesday\, January 25\, corresponding to the 10th o
+ f Sh’vat\, 5800.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown o
+ n Tuesday\, January 24 and continues until sundown on the day of observanc
+ e. It is customary to light a memorial candle at dusk as the Yahrzeit begi
+ ns.\n\nMay your loved one’s soul be bound up in the bond of eternal life
+  and may their memory serve as a continued source of inspiration and comfo
+ rt to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 68th Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20400125
+DTEND;VALUE=DATE:20400126
+UID:yahrzeit-5800-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 68
+ th Yahrzeit occurs on Wednesday\, January 25\, corresponding to the 10th o
+ f Sh’vat\, 5800.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown o
+ n Tuesday\, January 24 and continues until sundown on the day of observanc
+ e. It is customary to light a memorial candle at dusk as the Yahrzeit begi
+ ns.\n\nMay your loved one’s soul be bound up in the bond of eternal life
+  and may their memory serve as a continued source of inspiration and comfo
+ rt to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20400414T200000
+DTEND:20400414T200000
+UID:reminder-20400414-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 45th 
+ Yahrzeit occurs on Sunday\, April 15\, corresponding to the 2nd of Iyyar\,
+  5800.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Saturday\, Ap
+ ril 14 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at nightfall as the Yahrzeit begins.\n\nMay 
+ your loved one’s soul be bound up in the bond of eternal life and may th
+ eir memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 45th Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20400415
+DTEND;VALUE=DATE:20400416
+UID:yahrzeit-5800-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 45th 
+ Yahrzeit occurs on Sunday\, April 15\, corresponding to the 2nd of Iyyar\,
+  5800.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Saturday\, Ap
+ ril 14 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at nightfall as the Yahrzeit begins.\n\nMay 
+ your loved one’s soul be bound up in the bond of eternal life and may th
+ eir memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20400627T163000
+DTEND:20400627T163000
+UID:reminder-20400627-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 24t
+ h Yahrzeit occurs on Thursday\, June 28\, corresponding to the 17th of Tam
+ uz\, 5800.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Wednesd
+ ay\, June 27 and continues until sundown on the day of observance. It is c
+ ustomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay
+  your loved one’s soul be bound up in the bond of eternal life and may t
+ heir memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 24th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20400628
+DTEND;VALUE=DATE:20400629
+UID:yahrzeit-5800-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 24t
+ h Yahrzeit occurs on Thursday\, June 28\, corresponding to the 17th of Tam
+ uz\, 5800.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Wednesd
+ ay\, June 27 and continues until sundown on the day of observance. It is c
+ ustomary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay
+  your loved one’s soul be bound up in the bond of eternal life and may t
+ heir memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20410111T143000
+DTEND:20410111T143000
+UID:reminder-20410111-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 69
+ th Yahrzeit occurs on Saturday\, January 12\, corresponding to the 10th of
+  Sh’vat\, 5801.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on
+  Friday\, January 11 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle before sundown as the Yahrzeit
+  begins.\n\nMay your loved one’s soul be bound up in the bond of eternal
+  life and may their memory serve as a continued source of inspiration and 
+ comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 69th Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20410112
+DTEND;VALUE=DATE:20410113
+UID:yahrzeit-5801-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 69
+ th Yahrzeit occurs on Saturday\, January 12\, corresponding to the 10th of
+  Sh’vat\, 5801.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on
+  Friday\, January 11 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle before sundown as the Yahrzeit
+  begins.\n\nMay your loved one’s soul be bound up in the bond of eternal
+  life and may their memory serve as a continued source of inspiration and 
+ comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20410502T163000
+DTEND:20410502T163000
+UID:reminder-20410502-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 46th 
+ Yahrzeit occurs on Friday\, May 3\, corresponding to the 2nd of Iyyar\, 58
+ 01.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, May 2
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved 
+ one’s soul be bound up in the bond of eternal life and may their memory 
+ serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 46th Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20410503
+DTEND;VALUE=DATE:20410504
+UID:yahrzeit-5801-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 46th 
+ Yahrzeit occurs on Friday\, May 3\, corresponding to the 2nd of Iyyar\, 58
+ 01.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, May 2
+  and continues until sundown on the day of observance. It is customary to 
+ light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved 
+ one’s soul be bound up in the bond of eternal life and may their memory 
+ serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20410715T163000
+DTEND:20410715T163000
+UID:reminder-20410715-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 25t
+ h Yahrzeit occurs on Tuesday\, July 16\, corresponding to the 17th of Tamu
+ z\, 5801.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\,
+  July 15 and continues until sundown on the day of observance. It is custo
+ mary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 25th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20410716
+DTEND;VALUE=DATE:20410717
+UID:yahrzeit-5801-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 25t
+ h Yahrzeit occurs on Tuesday\, July 16\, corresponding to the 17th of Tamu
+ z\, 5801.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\,
+  July 15 and continues until sundown on the day of observance. It is custo
+ mary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20420130T163000
+DTEND:20420130T163000
+UID:reminder-20420130-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 70
+ th Yahrzeit occurs on Friday\, January 31\, corresponding to the 10th of S
+ h’vat\, 5802.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on T
+ hursday\, January 30 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle at dusk as the Yahrzeit begins
+ .\n\nMay your loved one’s soul be bound up in the bond of eternal life a
+ nd may their memory serve as a continued source of inspiration and comfort
+  to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 70th Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20420131
+DTEND;VALUE=DATE:20420201
+UID:yahrzeit-5802-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 70
+ th Yahrzeit occurs on Friday\, January 31\, corresponding to the 10th of S
+ h’vat\, 5802.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on T
+ hursday\, January 30 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle at dusk as the Yahrzeit begins
+ .\n\nMay your loved one’s soul be bound up in the bond of eternal life a
+ nd may their memory serve as a continued source of inspiration and comfort
+  to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20420421T163000
+DTEND:20420421T163000
+UID:reminder-20420421-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 47th 
+ Yahrzeit occurs on Tuesday\, April 22\, corresponding to the 2nd of Iyyar\
+ , 5802.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Monday\, Apr
+ il 21 and continues until sundown on the day of observance. It is customar
+ y to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 47th Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20420422
+DTEND;VALUE=DATE:20420423
+UID:yahrzeit-5802-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 47th 
+ Yahrzeit occurs on Tuesday\, April 22\, corresponding to the 2nd of Iyyar\
+ , 5802.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Monday\, Apr
+ il 21 and continues until sundown on the day of observance. It is customar
+ y to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your l
+ oved one’s soul be bound up in the bond of eternal life and may their me
+ mory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20420704T143000
+DTEND:20420704T143000
+UID:reminder-20420704-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 26t
+ h Yahrzeit occurs on Saturday\, July 5\, corresponding to the 17th of Tamu
+ z\, 5802.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Friday\,
+  July 4 and continues until sundown on the day of observance. It is custom
+ ary to light a memorial candle before sundown as the Yahrzeit begins.\n\nM
+ ay your loved one’s soul be bound up in the bond of eternal life and may
+  their memory serve as a continued source of inspiration and comfort to yo
+ u.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 26th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20420705
+DTEND;VALUE=DATE:20420706
+UID:yahrzeit-5802-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 26t
+ h Yahrzeit occurs on Saturday\, July 5\, corresponding to the 17th of Tamu
+ z\, 5802.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Friday\,
+  July 4 and continues until sundown on the day of observance. It is custom
+ ary to light a memorial candle before sundown as the Yahrzeit begins.\n\nM
+ ay your loved one’s soul be bound up in the bond of eternal life and may
+  their memory serve as a continued source of inspiration and comfort to yo
+ u.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20430120T163000
+DTEND:20430120T163000
+UID:reminder-20430120-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 71
+ st Yahrzeit occurs on Wednesday\, January 21\, corresponding to the 10th o
+ f Sh’vat\, 5803.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown o
+ n Tuesday\, January 20 and continues until sundown on the day of observanc
+ e. It is customary to light a memorial candle at dusk as the Yahrzeit begi
+ ns.\n\nMay your loved one’s soul be bound up in the bond of eternal life
+  and may their memory serve as a continued source of inspiration and comfo
+ rt to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 71st Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20430121
+DTEND;VALUE=DATE:20430122
+UID:yahrzeit-5803-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 71
+ st Yahrzeit occurs on Wednesday\, January 21\, corresponding to the 10th o
+ f Sh’vat\, 5803.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown o
+ n Tuesday\, January 20 and continues until sundown on the day of observanc
+ e. It is customary to light a memorial candle at dusk as the Yahrzeit begi
+ ns.\n\nMay your loved one’s soul be bound up in the bond of eternal life
+  and may their memory serve as a continued source of inspiration and comfo
+ rt to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20430511T163000
+DTEND:20430511T163000
+UID:reminder-20430511-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 48th 
+ Yahrzeit occurs on Tuesday\, May 12\, corresponding to the 2nd of Iyyar\, 
+ 5803.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Monday\, May 1
+ 1 and continues until sundown on the day of observance. It is customary to
+  light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved
+  one’s soul be bound up in the bond of eternal life and may their memory
+  serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 48th Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20430512
+DTEND;VALUE=DATE:20430513
+UID:yahrzeit-5803-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 48th 
+ Yahrzeit occurs on Tuesday\, May 12\, corresponding to the 2nd of Iyyar\, 
+ 5803.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Monday\, May 1
+ 1 and continues until sundown on the day of observance. It is customary to
+  light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your loved
+  one’s soul be bound up in the bond of eternal life and may their memory
+  serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20430724T143000
+DTEND:20430724T143000
+UID:reminder-20430724-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 27t
+ h Yahrzeit occurs on Saturday\, July 25\, corresponding to the 17th of Tam
+ uz\, 5803.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Friday\
+ , July 24 and continues until sundown on the day of observance. It is cust
+ omary to light a memorial candle before sundown as the Yahrzeit begins.\n\
+ nMay your loved one’s soul be bound up in the bond of eternal life and m
+ ay their memory serve as a continued source of inspiration and comfort to 
+ you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 27th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20430725
+DTEND;VALUE=DATE:20430726
+UID:yahrzeit-5803-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 27t
+ h Yahrzeit occurs on Saturday\, July 25\, corresponding to the 17th of Tam
+ uz\, 5803.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Friday\
+ , July 24 and continues until sundown on the day of observance. It is cust
+ omary to light a memorial candle before sundown as the Yahrzeit begins.\n\
+ nMay your loved one’s soul be bound up in the bond of eternal life and m
+ ay their memory serve as a continued source of inspiration and comfort to 
+ you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20440207T163000
+DTEND:20440207T163000
+UID:reminder-20440207-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 72
+ nd Yahrzeit occurs on Monday\, February 8\, corresponding to the 10th of S
+ h’vat\, 5804.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, February 7 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle at dusk as the Yahrzeit begins.\
+ n\nMay your loved one’s soul be bound up in the bond of eternal life and
+  may their memory serve as a continued source of inspiration and comfort t
+ o you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 72nd Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20440208
+DTEND;VALUE=DATE:20440209
+UID:yahrzeit-5804-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 72
+ nd Yahrzeit occurs on Monday\, February 8\, corresponding to the 10th of S
+ h’vat\, 5804.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on S
+ unday\, February 7 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle at dusk as the Yahrzeit begins.\
+ n\nMay your loved one’s soul be bound up in the bond of eternal life and
+  may their memory serve as a continued source of inspiration and comfort t
+ o you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20440428T163000
+DTEND:20440428T163000
+UID:reminder-20440428-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 49th 
+ Yahrzeit occurs on Friday\, April 29\, corresponding to the 2nd of Iyyar\,
+  5804.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, Ap
+ ril 28 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 49th Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20440429
+DTEND;VALUE=DATE:20440430
+UID:yahrzeit-5804-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 49th 
+ Yahrzeit occurs on Friday\, April 29\, corresponding to the 2nd of Iyyar\,
+  5804.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Thursday\, Ap
+ ril 28 and continues until sundown on the day of observance. It is customa
+ ry to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your 
+ loved one’s soul be bound up in the bond of eternal life and may their m
+ emory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20440711T163000
+DTEND:20440711T163000
+UID:reminder-20440711-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 28t
+ h Yahrzeit occurs on Tuesday\, July 12\, corresponding to the 17th of Tamu
+ z\, 5804.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\,
+  July 11 and continues until sundown on the day of observance. It is custo
+ mary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 28th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20440712
+DTEND;VALUE=DATE:20440713
+UID:yahrzeit-5804-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 28t
+ h Yahrzeit occurs on Tuesday\, July 12\, corresponding to the 17th of Tamu
+ z\, 5804.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Monday\,
+  July 11 and continues until sundown on the day of observance. It is custo
+ mary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham Yahrzeit reminder
+DTSTART:20450127T143000
+DTEND:20450127T143000
+UID:reminder-20450127-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 73
+ rd Yahrzeit occurs on Saturday\, January 28\, corresponding to the 10th of
+  Sh’vat\, 5805.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on
+  Friday\, January 27 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle before sundown as the Yahrzeit
+  begins.\n\nMay your loved one’s soul be bound up in the bond of eternal
+  life and may their memory serve as a continued source of inspiration and 
+ comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yitzhak ben Avraham’s 73rd Yahrzeit (10th of Sh’vat)
+DTSTART;VALUE=DATE:20450128
+DTEND;VALUE=DATE:20450129
+UID:yahrzeit-5805-355a72f2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yitzhak ben Avraham\, whose 73
+ rd Yahrzeit occurs on Saturday\, January 28\, corresponding to the 10th of
+  Sh’vat\, 5805.\n\nYitzhak ben Avraham’s Yahrzeit begins at sundown on
+  Friday\, January 27 and continues until sundown on the day of observance.
+  It is customary to light a memorial candle before sundown as the Yahrzeit
+  begins.\n\nMay your loved one’s soul be bound up in the bond of eternal
+  life and may their memory serve as a continued source of inspiration and 
+ comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel Yahrzeit reminder
+DTSTART:20450418T163000
+DTEND:20450418T163000
+UID:reminder-20450418-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 50th 
+ Yahrzeit occurs on Wednesday\, April 19\, corresponding to the 2nd of Iyya
+ r\, 5805.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Tuesday\, 
+ April 18 and continues until sundown on the day of observance. It is custo
+ mary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Rivka bat Betuel’s 50th Yahrzeit (2nd of Iyyar)
+DTSTART;VALUE=DATE:20450419
+DTEND;VALUE=DATE:20450420
+UID:yahrzeit-5805-adfc216c-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Rivka bat Betuel\, whose 50th 
+ Yahrzeit occurs on Wednesday\, April 19\, corresponding to the 2nd of Iyya
+ r\, 5805.\n\nRivka bat Betuel’s Yahrzeit begins at sundown on Tuesday\, 
+ April 18 and continues until sundown on the day of observance. It is custo
+ mary to light a memorial candle at dusk as the Yahrzeit begins.\n\nMay you
+ r loved one’s soul be bound up in the bond of eternal life and may their
+  memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak Yahrzeit reminder
+DTSTART:20450701T200000
+DTEND:20450701T200000
+UID:reminder-20450701-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 29t
+ h Yahrzeit occurs on Sunday\, July 2\, corresponding to the 17th of Tamuz\
+ , 5805.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Saturday\,
+  July 1 and continues until sundown on the day of observance. It is custom
+ ary to light a memorial candle at nightfall as the Yahrzeit begins.\n\nMay
+  your loved one’s soul be bound up in the bond of eternal life and may t
+ heir memory serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Yaakov ben Yitzhak’s 29th Yahrzeit (17th of Tamuz)
+DTSTART;VALUE=DATE:20450702
+DTEND;VALUE=DATE:20450703
+UID:yahrzeit-5805-28e1a7a3-3
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Yaakov ben Yitzhak\, whose 29t
+ h Yahrzeit occurs on Sunday\, July 2\, corresponding to the 17th of Tamuz\
+ , 5805.\n\nYaakov ben Yitzhak’s Yahrzeit begins at sundown on Saturday\,
+  July 1 and continues until sundown on the day of observance. It is custom
+ ary to light a memorial candle at nightfall as the Yahrzeit begins.\n\nMay
+  your loved one’s soul be bound up in the bond of eternal life and may t
+ heir memory serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,139 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Hebrew Anniversary: Erev Rosh Hashana\, New Year
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Erev Rosh Hashana Yahrzeit reminder
+DTSTART:20250922T163000
+DTEND:20250922T163000
+UID:reminder-20250922-69c47b58-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Erev Rosh Hashana\, whose 10th
+  Yahrzeit occurs on Tuesday\, September 23\, corresponding to the 1st of T
+ ishrei\, 5786.\n\nErev Rosh Hashana’s Yahrzeit begins at sundown on Mond
+ ay\, September 22 and continues until sundown on the day of observance. It
+  is customary to light a memorial candle at dusk as the Yahrzeit begins.\n
+ \nMay your loved one’s soul be bound up in the bond of eternal life and 
+ may their memory serve as a continued source of inspiration and comfort to
+  you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Erev Rosh Hashana’s 10th Yahrzeit (1st of Tishrei)
+DTSTART;VALUE=DATE:20250923
+DTEND;VALUE=DATE:20250924
+UID:yahrzeit-5786-69c47b58-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Erev Rosh Hashana\, whose 10th
+  Yahrzeit occurs on Tuesday\, September 23\, corresponding to the 1st of T
+ ishrei\, 5786.\n\nErev Rosh Hashana’s Yahrzeit begins at sundown on Mond
+ ay\, September 22 and continues until sundown on the day of observance. It
+  is customary to light a memorial candle at dusk as the Yahrzeit begins.\n
+ \nMay your loved one’s soul be bound up in the bond of eternal life and 
+ may their memory serve as a continued source of inspiration and comfort to
+  you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:New Year (23rd of Tevet)
+DTSTART;VALUE=DATE:20260112
+DTEND;VALUE=DATE:20260113
+UID:other-5786-7106ca38-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:New Year occurs on Monday\, January 12\, corresponding to the 
+ 23rd of Tevet\, 5786.\n\nNew Year begins at sundown on Sunday\, January 11
+  and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Erev Rosh Hashana Yahrzeit reminder
+DTSTART:20260911T143000
+DTEND:20260911T143000
+UID:reminder-20260911-69c47b58-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Erev Rosh Hashana\, whose 11th
+  Yahrzeit occurs on Saturday\, September 12\, corresponding to the 1st of 
+ Tishrei\, 5787.\n\nErev Rosh Hashana’s Yahrzeit begins at sundown on Fri
+ day\, September 11 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle before sundown as the Yahrzeit b
+ egins.\n\nMay your loved one’s soul be bound up in the bond of eternal l
+ ife and may their memory serve as a continued source of inspiration and co
+ mfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Erev Rosh Hashana’s 11th Yahrzeit (1st of Tishrei)
+DTSTART;VALUE=DATE:20260912
+DTEND;VALUE=DATE:20260913
+UID:yahrzeit-5787-69c47b58-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Erev Rosh Hashana\, whose 11th
+  Yahrzeit occurs on Saturday\, September 12\, corresponding to the 1st of 
+ Tishrei\, 5787.\n\nErev Rosh Hashana’s Yahrzeit begins at sundown on Fri
+ day\, September 11 and continues until sundown on the day of observance. I
+ t is customary to light a memorial candle before sundown as the Yahrzeit b
+ egins.\n\nMay your loved one’s soul be bound up in the bond of eternal l
+ ife and may their memory serve as a continued source of inspiration and co
+ mfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:New Year (23rd of Tevet)
+DTSTART;VALUE=DATE:20270102
+DTEND;VALUE=DATE:20270103
+UID:other-5787-7106ca38-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:New Year occurs on Saturday\, January 2\, corresponding to the
+  23rd of Tevet\, 5787.\n\nNew Year begins at sundown on Friday\, January 1
+  and continues until sundown on the day of observance.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT12H0M0S
+END:VALARM
+END:VEVENT
+END:VCALENDAR

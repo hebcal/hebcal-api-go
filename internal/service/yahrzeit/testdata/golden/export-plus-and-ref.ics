@@ -1,0 +1,95 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+X-WR-CALNAME:Yahrzeit: Savta Sarah\, Abba
+X-WR-CALDESC:Personal anniversaries from Hebcal.com
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Abba Yahrzeit reminder
+DTSTART:20261002T143000
+DTEND:20261002T143000
+UID:reminder-20261002-e4a4ae09-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Abba\, whose 52nd Yahrzeit occ
+ urs on Saturday\, October 3\, corresponding to the 22nd of Tishrei\, 5787.
+ \n\nAbba’s Yahrzeit begins at sundown on Friday\, October 2 and continue
+ s until sundown on the day of observance. It is customary to light a memor
+ ial candle before sundown as the Yahrzeit begins.\n\nMay your loved one’
+ s soul be bound up in the bond of eternal life and may their memory serve 
+ as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Abba’s 52nd Yahrzeit
+DTSTART;VALUE=DATE:20261003
+DTEND;VALUE=DATE:20261004
+UID:yahrzeit-5787-e4a4ae09-2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Abba\, whose 52nd Yahrzeit occ
+ urs on Saturday\, October 3\, corresponding to the 22nd of Tishrei\, 5787.
+ \n\nAbba’s Yahrzeit begins at sundown on Friday\, October 2 and continue
+ s until sundown on the day of observance. It is customary to light a memor
+ ial candle before sundown as the Yahrzeit begins.\n\nMay your loved one’
+ s soul be bound up in the bond of eternal life and may their memory serve 
+ as a continued source of inspiration and comfort to you.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Savta Sarah Yahrzeit reminder
+DTSTART:20270131T163000
+DTEND:20270131T163000
+UID:reminder-20270131-ed2c44e2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+DESCRIPTION:Hebcal joins you in remembering Savta Sarah\, whose 62nd Yahrz
+ eit occurs on Monday\, February 1\, corresponding to the 24th of Sh’vat\
+ , 5787.\n\nSavta Sarah’s Yahrzeit begins at sundown on Sunday\, January 
+ 31 and continues until sundown on the day of observance. It is customary t
+ o light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your love
+ d one’s soul be bound up in the bond of eternal life and may their memor
+ y serve as a continued source of inspiration and comfort to you.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:P0DT0H0M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260101T000000Z
+SEQUENCE:1
+CATEGORIES:Personal
+SUMMARY:🕯️ Savta Sarah’s 62nd Yahrzeit
+DTSTART;VALUE=DATE:20270201
+DTEND;VALUE=DATE:20270202
+UID:yahrzeit-5787-ed2c44e2-1
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DESCRIPTION:Hebcal joins you in remembering Savta Sarah\, whose 62nd Yahrz
+ eit occurs on Monday\, February 1\, corresponding to the 24th of Sh’vat\
+ , 5787.\n\nSavta Sarah’s Yahrzeit begins at sundown on Sunday\, January 
+ 31 and continues until sundown on the day of observance. It is customary t
+ o light a memorial candle at dusk as the Yahrzeit begins.\n\nMay your love
+ d one’s soul be bound up in the bond of eternal life and may their memor
+ y serve as a continued source of inspiration and comfort to you.
+END:VEVENT
+END:VCALENDAR

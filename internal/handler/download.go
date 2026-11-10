@@ -9,6 +9,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	"github.com/hebcal/hebcal-api-go/internal/service/holidaypdf"
+	"github.com/hebcal/hebcal-api-go/internal/service/yahrzeit"
 )
 
 // This file is the transport shared by every calendar the download service
@@ -19,7 +20,19 @@ import (
 // download serves a calendar download: csvDownload when the path ends in .csv,
 // pdfDownload for everything else. All three download URL shapes -- /v4/,
 // /v2/h/ and /hebcal/index.cgi/ -- serve both formats.
+//
+// A personal Yahrzeit + Anniversary calendar shares those URL shapes and is
+// told apart by its query (v=yahrzeit), so it is looked for first.
 func (s *Server) download(w http.ResponseWriter, r *http.Request) {
+	if req, ok := yahrzeit.ParseRequest(r.RequestURI); ok && req.IsYahrzeit() {
+		s.yahrzeitDownload(w, r, req)
+		return
+	}
+	if strings.HasPrefix(r.URL.Path, "/yahrzeit/") {
+		// The CGI path serves personal calendars only.
+		http.Error(w, "Invalid download URL: v=undefined", http.StatusNotFound)
+		return
+	}
 	if strings.HasSuffix(r.URL.Path, ".csv") {
 		s.csvDownload(w, r)
 		return
