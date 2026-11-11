@@ -386,9 +386,9 @@ download.hebcal.com's halachic-times subscriptions, for any location the
 - `GET|HEAD /zmanim[/<filename>.ics]?<location>` -- every zman as a timed
   event, from yesterday to 60 days ahead. With `cfg=json` the same path is the
   JSON API instead.
-- `GET|HEAD /zmanim2[/<filename>.ics]?<location>` -- one all-day event per day
+- `GET|HEAD /zmanim2?<location>` -- one all-day event per day
   for 90 days, titled with the Hebrew date, listing that day's times
-- `GET|HEAD /sunrs[/<filename>.ics]?<location>` -- sunrise and sunset for a
+- `GET|HEAD /sunrs?<location>` -- sunrise and sunset for a
   year
 
 `lg` translates the titles (`lg=he`, `lg=a`, ...). "Today" is the date in the

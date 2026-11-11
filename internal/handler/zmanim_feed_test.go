@@ -189,3 +189,18 @@ func TestZmanimJSONPolarNull(t *testing.T) {
 		t.Errorf("body %s", body)
 	}
 }
+
+// Only the bare /zmanim2 and /sunrs paths are feeds; nothing ever linked a
+// file name or a trailing slash after them.
+func TestZmanimFeedNoSubpaths(t *testing.T) {
+	for _, path := range []string{
+		"/zmanim2/?geonameid=5128581",
+		"/zmanim2/hebcal.ics?geonameid=5128581",
+		"/sunrs/?geonameid=5128581",
+		"/sunrs/sunrise.ics?geonameid=5128581",
+	} {
+		if resp, _ := getFeed(t, path); resp.StatusCode != http.StatusNotFound {
+			t.Errorf("%s: status %d, want 404", path, resp.StatusCode)
+		}
+	}
+}
