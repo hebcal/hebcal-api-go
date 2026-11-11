@@ -32,8 +32,8 @@ github.com/hebcal/hebcal-go v0.26.2 h1:j2oo463q10QYgMlvlUiyhmcW27MQrp3MgOzp6PdqW
 github.com/hebcal/hebcal-go v0.26.2/go.mod h1:nIs1yb48wcTb9S2Hu71kiouUVm1d01EFq3n5TdEkYRQ=
 github.com/hebcal/learning v0.6.0 h1:UO85tMCUgaizKFx/N82uez0WZaT0hdEwRJLbiW5++so=
 github.com/hebcal/learning v0.6.0/go.mod h1:iICUhlMtAvbAYKRTDM9Xo+jObZEvkGA74LYl9WXYzbs=
-github.com/hebcal/locales v1.1.3 h1:lGLm3B5XFbzjJaLfjeFJbA39vAqZmuVRcNqdiIieKP0=
-github.com/hebcal/locales v1.1.3/go.mod h1:KzagA5BjUI9Eh8BxLMmt0J91ByjeeswM54abysBdxXI=
+github.com/hebcal/locales v1.1.4 h1:WdDvhv8cT7K+XFhJfFVd0lqnKY64AsnfXJXrACItnXU=
+github.com/hebcal/locales v1.1.4/go.mod h1:KzagA5BjUI9Eh8BxLMmt0J91ByjeeswM54abysBdxXI=
 github.com/hebcal/noaa-go v1.0.0 h1:cBWBBUtYkHiPptKjZTJ9LooUxmhn/++35j+HWd7TQv4=
 github.com/hebcal/noaa-go v1.0.0/go.mod h1:Q6VV/PXu+gYXaVtcv9Q61hD7W7DswAunPfY4uHi5f6M=
 github.com/klauspost/compress v1.20.3 h1:zWNoFqq/lSuYQRim3dUXlXeA0IqwuZGicdG5ZTfY5j4=

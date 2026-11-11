@@ -110,27 +110,20 @@ func prodidLang(lg string) string {
 	return "en"
 }
 
-// translateTitle translates a zman's title. The feed's own translations
-// (zmanTitleTranslations) come first; he-x-NoNikud falls back to the Hebrew
-// one with its nikud stripped, and everything else to the locales package.
-func translateTitle(title, locale string) string {
-	switch strings.ToLower(locale) {
-	case "he":
-		locale = "he"
-	case "he-x-nonikud":
-		if s, ok := zmanTitleTranslations["he-x-NoNikud"][title]; ok {
-			return s
-		}
-		if s, ok := zmanTitleTranslations["he"][title]; ok {
-			return locales.HebrewStripNikkud(s)
-		}
-	case "ashkenazi":
-		locale = "ashkenazi"
-	}
-	if s, ok := zmanTitleTranslations[locale][title]; ok {
+// zmanTitle is a zman's English event title, untranslated: the key its
+// translation is looked up by and the string its UID hashes.
+func zmanTitle(name string) string {
+	s, _ := locales.LookupTranslation("TITLE:"+name, "en")
+	return s
+}
+
+// zmanMemo is a zman's English explanation, an event's DESCRIPTION; empty
+// when the catalog has none.
+func zmanMemo(name string) string {
+	if s, ok := locales.LookupTranslation("MEMO:"+name, "en"); ok {
 		return s
 	}
-	return model.Gettext(title, locale)
+	return ""
 }
 
 // Variant is what the feed depends on beyond its URL, for the ETag: the date
@@ -255,7 +248,7 @@ func (f *Feed) timedEvents(days []dayTimes) []icalendar.Event {
 	geo := &icalendar.Geo{Latitude: f.Loc.Latitude, Longitude: f.Loc.Longitude}
 	events := make([]icalendar.Event, len(all))
 	for i, tt := range all {
-		title := zmanTitles[tt.nt.name]
+		title := zmanTitle(tt.nt.name)
 		t := tt.nt.t
 		if tz != nil {
 			t = t.In(tz)
@@ -263,7 +256,7 @@ func (f *Feed) timedEvents(days []dayTimes) []icalendar.Event {
 		date := icalendar.Date{Year: tt.date.Year, Month: tt.date.Month, Day: tt.date.Day}
 		events[i] = icalendar.Event{
 			UID:         icalendar.DefaultUID(date, title, place),
-			Summary:     translateTitle(title, f.locale),
+			Summary:     model.Gettext(title, f.locale),
 			Date:        date,
 			Timed:       true,
 			Hour:        t.Hour(),
@@ -271,7 +264,7 @@ func (f *Feed) timedEvents(days []dayTimes) []icalendar.Event {
 			TZID:        f.Loc.TimeZoneID,
 			Category:    tt.nt.name,
 			Private:     true,
-			Description: zmanMemos[tt.nt.name],
+			Description: zmanMemo(tt.nt.name),
 			Location:    shortName,
 			Geo:         geo,
 		}
@@ -309,7 +302,7 @@ func (f *Feed) allDayEvents(days []dayTimes) []icalendar.Event {
 			if h, _, _ := strings.Cut(str, ":"); len(h) != 2 {
 				prefix = " "
 			}
-			lines[j] = prefix + str + " " + translateTitle(zmanTitles[nt.name], f.locale)
+			lines[j] = prefix + str + " " + model.Gettext(zmanTitle(nt.name), f.locale)
 		}
 		date := icalendar.Date{Year: day.date.Year, Month: day.date.Month, Day: day.date.Day}
 		hd := hdate.FromGregorian(day.date.Year, day.date.Month, day.date.Day)

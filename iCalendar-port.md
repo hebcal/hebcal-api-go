@@ -256,51 +256,33 @@ changed UID is not.
   is not the cost; event generation and the memo lookups are. Hold a download
   limiter slot, as PDF and CSV do.
 
-## Translations that live in hebcal-web, not in `locales`
+## Translations that live in hebcal-web: now in `locales` (v1.1.4)
 
-Found while porting the zmanim feeds, and it will come up again in phase 3.
+Found while porting the zmanim feeds, and worth knowing for phase 3.
 hebcal-web loads its own `po/*.po` catalogs **on top of** `@hebcal/core`'s
 (`src/locale.js`: `Locale.addTranslations` per locale, then `he-x-NoNikud`
 derived from `he` by `copyLocaleNoNikud` with `po/he-x-NoNikud.po` over it).
-github.com/hebcal/locales is generated from the `@hebcal/*` packages only, so
-anything Go renders through `locales.LookupTranslation` misses hebcal-web's
-additions and loses where hebcal-web overrides a core string.
+Up to v1.1.3, github.com/hebcal/locales was generated from the `@hebcal/*`
+packages only, so it lacked hebcal-web's additions -- above all the zman
+`TITLE:`/`MEMO:` keys and their Hebrew titles -- and lost where hebcal-web
+overrides a core string (seven Hebrew nikud spellings of zman names). The
+zmanim feed vendored those strings in a generated `titles.go` meanwhile.
 
-Measured against locales v1.1.3 (November 2026):
+**Resolved in locales v1.1.4** (November 2026), which adds hebcal-web's `po/`
+with that precedence. Re-measured against it: every entry of `po/en.po`,
+`he.po`, `he-x-NoNikud.po`, `ashkenazi.po`, `es.po`, `fr.po`, `nl.po` and
+`pt.po` is present and identical, and the vendored table was removed after a
+string-by-string comparison (42 titles and memos, eight locales, no
+differences).
 
-| hebcal-web catalog | same in `locales` | different | missing |
-|---|---|---|---|
-| `po/en.po` | -- | -- | all 84: the `TITLE:<zman>` / `MEMO:<zman>` keys |
-| `po/he.po` | 10 | 7 | 27 |
-| `po/ashkenazi.po` | 4 | 0 | 1 |
-| `po/es.po`, `fr.po`, `nl.po`, `pt.po` | 0 | 0 | 4 each |
+What remains for phase 3:
 
-Nearly all of it is the zman titles. The rest are web and email strings
-("Shabbat Times for", "This week's Torah portion is", "occurs on"), and the 7
-differing Hebrew entries are nikud spellings of zman names ("חֲצוֹת הַלַיְלָה"
-in hebcal-web against "חֲצוֹת הַלַּיְלָה" in `locales`).
-
-**Today** the zmanim feed vendors what it needs: `tools/zmanim-titles.py`
-generates `internal/service/zmanim/titles.go` from hebcal-web's `po/` with the
-same precedence, and `translateTitle` consults that table before `locales`.
-
-**The proper fix** is to have github.com/hebcal/po2catalog read hebcal-web's
-`po/` (or move those strings into a package it already reads) so that
-`locales` carries them, with hebcal-web's catalog taking precedence over
-`@hebcal/core`'s exactly as `src/locale.js` loads them. Things to settle
-first:
-
-- whether po2catalog accepts msgids that are keys rather than English text
-  (`TITLE:sunrise`), and whether adding those to `locales`' `en` catalog
-  changes any other lookup;
-- precedence: a hebcal-web string must win over the core one it overrides,
-  in `he` and in the derived `he-x-NoNikud` alike;
-- after that, delete `titles.go`, `zmanTitleTranslations` and the script, and
-  re-run the zmanim feed comparison (`CLAUDE.md`, "The zmanim feeds").
-
-Phase 3 should check its strings the same way before trusting `locales`:
-holiday descriptions and the memo labels (`createMemo()`'s "Torah:",
-"Haftarah:") may come from hebcal-web's catalogs too.
+- a string added to or edited in hebcal-web's `po/` reaches Go only through a
+  new `locales` release, so check that the release in `go.mod` is current
+  before measuring parity;
+- holiday descriptions and the memo labels (`createMemo()`'s "Torah:",
+  "Haftarah:") should be checked against `locales` the same way before
+  trusting it -- the comparison is a dozen lines of Go over hebcal-web's `po/`.
 
 ---
 

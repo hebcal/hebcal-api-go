@@ -909,17 +909,18 @@ sunrise-derived times one library computes and the other does not.
 
 Things that are not obvious:
 
-- **The zman titles and memos are hebcal-web's, vendored.** `TITLE:<zman>` /
-  `MEMO:<zman>` live in hebcal-web's `po/en.po`, and the Hebrew titles in its
-  `po/he.po` (plus four Kiddush Levana overrides in `he-x-NoNikud.po` and
-  `ashkenazi.po`), which hebcal-web loads *over* `@hebcal/core`'s catalogs.
-  github.com/hebcal/locales is generated from the `@hebcal/*` packages only,
-  so it lacks most of them and spells several differently ("חֲצוֹת הַלַּיְלָה"
-  against hebcal-web's "חֲצוֹת הַלַיְלָה", "נֵץ הַחַמָּה" against
-  "הַנֵץ הַחַמָּה"). `tools/zmanim-titles.py` generates `titles.go` from
-  hebcal-web's `po/`; `translateTitle` consults it first, then `locales`. The
-  plan is to move those strings into `locales` via po2catalog (see
-  iCalendar-port.md) and delete the table.
+- **The zman titles and memos come from hebcal-web's catalogs, via
+  `locales`.** `TITLE:<zman>` / `MEMO:<zman>` are keys in hebcal-web's
+  `po/en.po`, and the Hebrew titles live in its `po/he.po` (plus Kiddush
+  Levana overrides in `he-x-NoNikud.po` and `ashkenazi.po`), which hebcal-web
+  loads *over* `@hebcal/core`'s and which spell several titles differently
+  ("חֲצוֹת הַלַיְלָה" where core has "חֲצוֹת הַלַּיְלָה"). github.com/hebcal/locales
+  carries all of it, with that precedence, from v1.1.4: `zmanTitle` and
+  `zmanMemo` look up the keys in `en`, and the title is translated with
+  `model.Gettext` like everything else. (Until then a generated `titles.go`
+  vendored them; removing it was checked string by string, all 42 titles and
+  memos in eight locales identical.) A zman title or memo edited in hebcal-web
+  reaches this service only through a new `locales` release.
 - **Kiddush Levana times are moved to the night** in the feed (to tzeit 8.5°
   that evening, or back to alot hashachar that morning), and dropped on a day
   with no alot or tzeit; the JSON API reports them unadjusted. `klAtNight`.
@@ -1197,6 +1198,11 @@ github.com/hebcal/learning v0.5.0 adds the `URL()` method to every schedule
 event, which is what closed the daily-learning link gap (see "Where things
 stand"). The empty URLs it returns for Schottenstein Yerushalmi and multi-reading
 Rambam 3-chapter days are deliberate and match @hebcal/core, not omissions.
+
+github.com/hebcal/locales v1.1.4 came out of the zmanim feed port too: it
+adds hebcal-web's own `po/` catalogs (the zman `TITLE:`/`MEMO:` keys, the
+Hebrew zman titles, a few web strings) over `@hebcal/core`'s, as hebcal-web's
+`src/locale.js` loads them, which let the vendored `titles.go` go.
 
 hebcal-go v0.26.2 came out of the zmanim feed port: `MinchaGedolaMGA` and
 `MinchaKetanaMGA` return the zero time, not an offset from it, when the sun
@@ -1787,10 +1793,10 @@ Levana alos/tzeit adjustment. `hasSolarTimes` ← `hasSolarTimes()`.
 `timedEvents` ← `makeEvents()` + `makeTimedEvent()`; `allDayEvents` ←
 `makeAllDayEvents()`. `place` ← `IcalEvent.getUid()`'s
 `getGeoId() || makeAnchor(getName())`. `prodidLang` ← `makeIcalPreamble()`'s
-`localeMap` after `lgToLocale`. `translateTitle` ← hebcal-web's
-`Locale.addTranslations` precedence (`src/locale.js`, `copyLocaleNoNikud`).
-`titles.go` ← `po/en.po`, `po/he.po`, `po/he-x-NoNikud.po`,
-`po/ashkenazi.po`. `handler.zmanimFeed` ← the headers `zmanimIcalendar()`
+`localeMap` after `lgToLocale`.
+`zmanTitle` / `zmanMemo` ← `Locale.lookupTranslation(TITLE_PREFIX + zman, 'en')`
+and its `MEMO_PREFIX` twin, over hebcal-web's `po/*.po` as carried by
+github.com/hebcal/locales v1.1.4+. `handler.zmanimFeed` ← the headers `zmanimIcalendar()`
 sets (`CACHE_CONTROL_7DAYS` after the 400s; `checkFreshETag` with `dt`).
 
 ### `internal/handler/pdf.go`, `download.go`
