@@ -101,7 +101,11 @@ var allTimesOrder = append(append([]string{}, timesOrder...), tzeitOrder...)
 // null.
 type moladTime struct {
 	name string
+	// fn computes the molad itself; klFn a Kiddush Levana time, which can be
+	// moved to the night given that day's alot hashachar and tzeit (zero
+	// values leave it where it falls).
 	fn   func(z *zman.Zmanim) time.Time
+	klFn func(z *zman.Zmanim, alos, tzeit time.Time) time.Time
 	// round rounds to the minute. The earliest Kiddush Levana times round up
 	// and the latest round down, so that rounding never widens the period in
 	// which it may be said.
@@ -109,23 +113,13 @@ type moladTime struct {
 }
 
 // moladTimes are the molad and Kiddush Levana times, in output order, after
-// the tzeit times. They are reported as computed, even when they fall during
-// the day, when Kiddush Levana is not said; alotHaShachar and tzeit85deg are
-// in the same response for a consumer that wants to move them to the night.
+// the tzeit times.
 var moladTimes = []moladTime{
-	{"molad", (*zman.Zmanim).ZmanMolad, RoundTime},
-	{"tchilasZmanKidushLevana3Days", func(z *zman.Zmanim) time.Time {
-		return z.TchilasZmanKidushLevana3Days(time.Time{}, time.Time{})
-	}, ceilMinute},
-	{"tchilasZmanKidushLevana7Days", func(z *zman.Zmanim) time.Time {
-		return z.TchilasZmanKidushLevana7Days(time.Time{}, time.Time{})
-	}, ceilMinute},
-	{"sofZmanKidushLevanaBetweenMoldos", func(z *zman.Zmanim) time.Time {
-		return z.SofZmanKidushLevanaBetweenMoldos(time.Time{}, time.Time{})
-	}, floorMinute},
-	{"sofZmanKidushLevana15Days", func(z *zman.Zmanim) time.Time {
-		return z.SofZmanKidushLevana15Days(time.Time{}, time.Time{})
-	}, floorMinute},
+	{name: "molad", fn: (*zman.Zmanim).ZmanMolad, round: RoundTime},
+	{name: "tchilasZmanKidushLevana3Days", klFn: (*zman.Zmanim).TchilasZmanKidushLevana3Days, round: ceilMinute},
+	{name: "tchilasZmanKidushLevana7Days", klFn: (*zman.Zmanim).TchilasZmanKidushLevana7Days, round: ceilMinute},
+	{name: "sofZmanKidushLevanaBetweenMoldos", klFn: (*zman.Zmanim).SofZmanKidushLevanaBetweenMoldos, round: floorMinute},
+	{name: "sofZmanKidushLevana15Days", klFn: (*zman.Zmanim).SofZmanKidushLevana15Days, round: floorMinute},
 }
 
 // RoundTime discards seconds, rounding to the nearest minute (>= 30s rounds
@@ -178,12 +172,27 @@ func forDate(d model.GregDate, loc *geodb.Location, useElevation bool) zman.Zman
 	return z
 }
 
-// Times returns the halachic times for a single date as an ordered object
-// of name -> ISO 8601 string (or null).
-func Times(d model.GregDate, loc *geodb.Location, roundMinute, useElevation bool) jsutil.OrderedObj {
+// namedTime is one zman on one date. A zero T is a time that does not occur
+// that day (e.g. at polar latitudes).
+type namedTime struct {
+	name string
+	t    time.Time
+}
+
+// computeTimes returns the times for a single date in output order: the fixed
+// and degree-based times, the tzeit variants (zero when they do not occur),
+// then those molad times that fall on the date.
+//
+// klAtNight moves a Kiddush Levana time that falls during the day to the
+// night -- an earliest time to tzeit (8.5°) that evening, a latest one back to
+// alot hashachar (16.1°) that morning -- the way the Latest Kiddush Levana
+// calendar event places it. When either of those does not occur that day,
+// there is no telling day from night and the Kiddush Levana times are
+// omitted.
+func computeTimes(d model.GregDate, loc *geodb.Location, names []string, roundMinute, useElevation, klAtNight bool) []namedTime {
 	z := forDate(d, loc, useElevation)
-	out := make(jsutil.OrderedObj, 0, len(allTimesOrder))
-	for _, name := range allTimesOrder {
+	out := make([]namedTime, 0, len(names)+len(moladTimes))
+	for _, name := range names {
 		var dt time.Time
 		switch {
 		case seaLevelTimes[name] && !useElevation:
@@ -202,17 +211,47 @@ func Times(d model.GregDate, loc *geodb.Location, roundMinute, useElevation bool
 		if roundMinute {
 			dt = RoundTime(dt)
 		}
-		out = append(out, jsutil.KV{Key: name, Val: formatISOWithTimeZone(dt)})
+		out = append(out, namedTime{name, dt})
+	}
+	if len(names) != len(allTimesOrder) {
+		return out
+	}
+	var alos, tzeit time.Time
+	if klAtNight {
+		alos = z.AlotHaShachar()
+		tzeit = z.Tzeit(zman.Tzeit3SmallStars)
 	}
 	for _, mt := range moladTimes {
-		dt := mt.fn(&z)
+		var dt time.Time
+		switch {
+		case mt.klFn == nil:
+			dt = mt.fn(&z)
+		case !klAtNight:
+			dt = mt.klFn(&z, time.Time{}, time.Time{})
+		case alos.IsZero() || tzeit.IsZero():
+			continue
+		default:
+			dt = mt.klFn(&z, alos, tzeit)
+		}
 		if dt.IsZero() {
 			continue
 		}
 		if roundMinute {
 			dt = mt.round(dt)
 		}
-		out = append(out, jsutil.KV{Key: mt.name, Val: formatISOWithTimeZone(dt)})
+		out = append(out, namedTime{mt.name, dt})
+	}
+	return out
+}
+
+// Times returns the halachic times for a single date as an ordered object
+// of name -> ISO 8601 string (or null). Kiddush Levana times are reported as
+// computed, even when they fall during the day.
+func Times(d model.GregDate, loc *geodb.Location, roundMinute, useElevation bool) jsutil.OrderedObj {
+	times := computeTimes(d, loc, allTimesOrder, roundMinute, useElevation, false)
+	out := make(jsutil.OrderedObj, 0, len(times))
+	for _, nt := range times {
+		out = append(out, jsutil.KV{Key: nt.name, Val: formatISOWithTimeZone(nt.t)})
 	}
 	return out
 }

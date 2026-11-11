@@ -9,6 +9,9 @@ Currently implemented:
 
 - **Hebrew Date Converter** (JSON and XML) — ported from `src/converter.js`
 - **Zmanim** (halachic times, JSON) — ported from `src/zmanim.js`
+- **Zmanim iCalendar feeds** — download.hebcal.com's `/zmanim`, `/zmanim2`
+  and `/sunrs` subscriptions (ported from `src/zmanimDownload.js`; see
+  [Zmanim feeds](#zmanim-feeds))
 - **Assur Melacha** ("is work prohibited right now", JSON) — the `im=1` mode
   of the zmanim API
 - **Shabbat** (candle-lighting / Torah portion, JSON) — ported from
@@ -375,6 +378,27 @@ delays the response.
 Not served yet: the holiday `.ics` feeds. The plan for those is in
 [iCalendar-port.md](iCalendar-port.md).
 
+#### Zmanim feeds
+
+download.hebcal.com's halachic-times subscriptions, for any location the
+`/zmanim` API accepts (see [Location resolution](#location-resolution)):
+
+- `GET|HEAD /zmanim?<location>` -- every zman as a timed
+  event, from yesterday to 60 days ahead. With `cfg=json` the same path is the
+  JSON API instead.
+- `GET|HEAD /zmanim2?<location>` -- one all-day event per day
+  for 90 days, titled with the Hebrew date, listing that day's times
+- `GET|HEAD /sunrs?<location>` -- sunrise and sunset for a
+  year
+
+`lg` translates the titles (`lg=he`, `lg=a`, ...). "Today" is the date in the
+location's time zone; the response is cacheable for a week, and its ETag covers
+that date. No location is `400`, an unknown one `404`, and a location where the
+sun neither rises nor sets in the whole range `400`. Output matches hebcal-web's
+for the same URL on the same day, UIDs included, but for the occasional
+one-minute zmanim difference noted under
+[Known differences](#known-differences-from-the-nodejs-implementation).
+
 ### Short URL redirects
 
 - `GET /h/<slug>`, `/o/<path>` — `302` to `https://www.hebcal.com/holidays/<slug>`
@@ -521,7 +545,8 @@ internal/
   handler/               transport layer: one file per route, plus the mux
   service/               business logic, one package per route
     converter/             /converter parsing and JSON/XML/CSV rendering
-    zmanim/                /zmanim halachic times and date resolution
+    zmanim/                /zmanim halachic times and date resolution, and
+                           the /zmanim, /zmanim2 and /sunrs iCalendar feeds
     shabbat/               /shabbat calendar, candle options, item rendering
     complete/              /complete result serialization
     location/              query -> location, and the two location JSON shapes
@@ -634,7 +659,8 @@ reopen the file after rotation.
 
 Varnish decides which URLs reach this service. The Yahrzeit feeds and their
 `.csv` exports (`/v3/**.ics|csv`, `/v2/y/**.ics|csv`, and `/yahrzeit/yahrzeit.cgi/*.ics|csv` and
-`/export/**.ics|csv` when the query says `v=yahrzeit`) are routed here by hebcal-devops'
+`/export/**.ics|csv` when the query says `v=yahrzeit`) and the zmanim feeds
+(`/zmanim`, `/zmanim2`, `/sunrs`) are routed here by hebcal-devops'
 `etc/varnish/download.vcl`; every holiday `.ics` stays with Node. `download.hebcal.com/v4/**.csv`
 (and its legacy `/v2/h/**.csv` and `/hebcal/index.cgi/*.csv` spellings)
 can be routed here too; until it is, hebcal-web keeps serving it. Alongside

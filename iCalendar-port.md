@@ -11,7 +11,8 @@ its notes have moved into `CLAUDE.md`.
 | 1 | Yahrzeit feeds that carry their calendar in the URL: `/v2/y/`, `/yahrzeit/yahrzeit.cgi/`, `/export/…?v=yahrzeit` | **done** (November 2026), `.csv` included |
 | 2 | Saved Yahrzeit calendars: `/v3/<ulid>/<name>.ics` (MySQL) | **done** (November 2026), `.csv` included; notes in `CLAUDE.md`, "Saved calendars: `/v3/` and MySQL" |
 | 3 | Holiday feeds: `/v4/`, `/v2/h/`, `/hebcal/index.cgi/`, `/export/…?v=1` | planned below |
-| 4 | Left on Node until someone decides otherwise: `/zmanim` and `/sunrs` feeds, the static `/ical/*.ics` files | notes at the end |
+| 4a | Zmanim feeds: `/zmanim`, `/zmanim2`, `/sunrs` | **done** (November 2026); notes in `CLAUDE.md`, "The zmanim feeds" |
+| 4b | Left on Node until someone decides otherwise: the static `/ical/*.ics` files | notes at the end |
 
 ## What phases 1 and 2 left you
 
@@ -255,6 +256,34 @@ changed UID is not.
   is not the cost; event generation and the memo lookups are. Hold a download
   limiter slot, as PDF and CSV do.
 
+## Translations that live in hebcal-web: now in `locales` (v1.1.4)
+
+Found while porting the zmanim feeds, and worth knowing for phase 3.
+hebcal-web loads its own `po/*.po` catalogs **on top of** `@hebcal/core`'s
+(`src/locale.js`: `Locale.addTranslations` per locale, then `he-x-NoNikud`
+derived from `he` by `copyLocaleNoNikud` with `po/he-x-NoNikud.po` over it).
+Up to v1.1.3, github.com/hebcal/locales was generated from the `@hebcal/*`
+packages only, so it lacked hebcal-web's additions -- above all the zman
+`TITLE:`/`MEMO:` keys and their Hebrew titles -- and lost where hebcal-web
+overrides a core string (seven Hebrew nikud spellings of zman names). The
+zmanim feed vendored those strings in a generated `titles.go` meanwhile.
+
+**Resolved in locales v1.1.4** (November 2026), which adds hebcal-web's `po/`
+with that precedence. Re-measured against it: every entry of `po/en.po`,
+`he.po`, `he-x-NoNikud.po`, `ashkenazi.po`, `es.po`, `fr.po`, `nl.po` and
+`pt.po` is present and identical, and the vendored table was removed after a
+string-by-string comparison (42 titles and memos, eight locales, no
+differences).
+
+What remains for phase 3:
+
+- a string added to or edited in hebcal-web's `po/` reaches Go only through a
+  new `locales` release, so check that the release in `go.mod` is current
+  before measuring parity;
+- holiday descriptions and the memo labels (`createMemo()`'s "Torah:",
+  "Haftarah:") should be checked against `locales` the same way before
+  trusting it -- the comparison is a dozen lines of Go over hebcal-web's `po/`.
+
 ---
 
 ## Phase 4 and loose ends
@@ -262,8 +291,9 @@ changed UID is not.
 - **Yahrzeit `.csv`**: done for the legacy URLs (November 2026), written in
   the holiday CSV service's format rather than `eventsToCsv()`'s -- see
   CLAUDE.md, "The Yahrzeit `.csv`". `/v3/…csv` is served too.
-- **`/zmanim` and `/sunrs` feeds** (`zmanimDownload.js`): a different event
-  source and their own caching. Not planned.
+- **`/zmanim`, `/zmanim2` and `/sunrs` feeds**: done (November 2026), in
+  `internal/service/zmanim/feed.go`, routed by `download.vcl`. hebcal-web's
+  `zmanimDownload.js` is left in place as the fallback.
 - **`/ical/*.ics`**: static files written weekly by `makeStaticCalendars.js`
   on the Node hosts. Porting the feeds does not move these; the cron would
   need its own Go command, built on the phase 3 service.

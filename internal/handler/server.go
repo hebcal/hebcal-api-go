@@ -7,6 +7,7 @@ package handler
 import (
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
@@ -30,6 +31,9 @@ type Server struct {
 	// Now supplies "today" for the routes that have no location of their own;
 	// tests replace it to pin a date.
 	Now func() model.GregDate
+	// Clock supplies the current instant for the routes that work out "today"
+	// in a location's own time zone (the zmanim feeds); nil means time.Now.
+	Clock func() time.Time
 	// PingFile is served by /ping.
 	PingFile string
 	// Hostname is advertised in the X-Backend response header.
@@ -102,8 +106,12 @@ func (s *Server) Routes() http.Handler {
 	mux.HandleFunc("/converter/csv", mw.Serve(s.converterCSV))
 	mux.HandleFunc("/converter", mw.Serve(s.converter))
 	mux.HandleFunc("/converter/", mw.Serve(s.converter))
+	// /zmanim with cfg=json is the JSON API; without it, and the two other
+	// paths, are download.hebcal.com's zmanim iCalendar feeds. Only the bare
+	// paths: nothing ever linked a file name or a trailing slash after them.
 	mux.HandleFunc("/zmanim", mw.Serve(s.zmanim))
-	mux.HandleFunc("/zmanim/", mw.Serve(s.zmanim))
+	mux.HandleFunc("/zmanim2", mw.Serve(s.DownloadLimiter.Wrap(s.zmanimFeed)))
+	mux.HandleFunc("/sunrs", mw.Serve(s.DownloadLimiter.Wrap(s.zmanimFeed)))
 	mux.HandleFunc("/shabbat", mw.Serve(s.shabbat))
 	mux.HandleFunc("/shabbat/", mw.Serve(s.shabbat))
 	mux.HandleFunc("/geo", mw.Serve(s.geo))
