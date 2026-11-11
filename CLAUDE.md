@@ -16,18 +16,15 @@ Guidance for Claude Code (claude.ai/code) working in this repository.
   `/zmanim2` and `/sunrs` -- ported from `src/zmanimDownload.js`. The holiday
   feeds are planned in [iCalendar-port.md](iCalendar-port.md);
 - the **PDF calendars** — `download.hebcal.com/v4/…pdf` (and its legacy
-  `/v2/h/…pdf` spelling) and `www.hebcal.com/holidays/hebcal-<year>.pdf`. These
-  arrived from the separate `hebcal-pdf-go` repository in August 2026, which
-  this repository replaces; most of this file is that service's engineering
-  notes.
+  `/v2/h/…pdf` spelling) and `www.hebcal.com/holidays/hebcal-<year>.pdf`. Much of this
+  file is that service's engineering notes.
 
 See [README.md](README.md) for the endpoints, the package layout and how to run
 it.
 
 **Provenance of the PDF calendars.** The renderer began as a port of the Node.js
-service in hebcal-web (`src/pdf.js`, `src/holidayPdf.js`), first as the separate
-`hebcal-pdf-go` repository and then merged here. That JavaScript implementation
-has been retired: there is one implementation, nothing to compare against, and
+service in hebcal-web (`src/pdf.js`, `src/holidayPdf.js`). That JavaScript
+implementation has been retired: there is one implementation, nothing to compare against, and
 this code is the definition of what a calendar looks like. A change to
 rendering is verified by the tests in `internal/service/pdf` and by inspecting
 the output with tools that understand PDFs (`pdftotext -bbox`, `pdffonts`,
@@ -36,7 +33,7 @@ the output with tools that understand PDFs (`pdftotext -bbox`, `pdffonts`,
 ## Comments and port lineage
 
 Almost every file here is a port of something in `hebcal-web`, `@hebcal/*`,
-`hebcal-mcp` or `hebcal-pdf-go`, and it is likely more will be ported over time.
+`hebcal-mcp`, and it is likely more will be ported over time.
 Keep that lineage **out of the `*.go` doc comments** and **in this file**:
 
 - A Go doc comment describes what the function *does* and why, in Go terms, and

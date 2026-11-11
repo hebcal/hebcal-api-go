@@ -22,8 +22,7 @@ Currently implemented:
 - **Geo autocomplete** (`/complete`) — city/ZIP typeahead, JSON
 - **PDF calendars** — the `download.hebcal.com/v4/…pdf` downloads (ported
   from `src/pdf.js`) and `www.hebcal.com/holidays/hebcal-<year>.pdf`
-  (ported from `src/holidayPdf.js`). These came from the separate
-  hebcal-pdf-go service, which this repository replaces.
+  (ported from `src/holidayPdf.js`).
 - **CSV calendars** — the `download.hebcal.com/v4/…csv` Outlook-compatible
   exports of the same calendars (ported from `@hebcal/rest-api`'s
   `eventToCsv()` and hebcal-web's `eventsWithParshaToCsv()`)
@@ -711,6 +710,4 @@ the JSON APIs, two PDF families now belong here rather than to the Node.js
 service:
 `download.hebcal.com/v4/**.pdf` (with its legacy `/v2/h/**.pdf` spelling)
 and `www.hebcal.com/holidays/hebcal-*.pdf` (and nothing else under
-`/holidays/`). Both used to be served by the
-separate hebcal-pdf-go process on port 8083, which this service replaces —
-route them to 8082 and retire that backend.
+`/holidays/`). Route them to 8082.
