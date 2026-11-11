@@ -12,7 +12,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"strconv"
 	"strings"
 	"time"
 
@@ -197,20 +196,13 @@ func setCandleOptions(o *hebcal.CalOptions, q url.Values, loc *geodb.Location) {
 const DefaultCandleMins = 18
 
 // locationDefaultCandleMins returns the customary candle-lighting offset for a
-// location. hebcal-go applies the same custom, but keys the Israeli cities by
-// name, and this service passes the full "Jerusalem, Israel" form as the
-// location name, so those lookups would miss.
+// location: 18 minutes, or in Israel the city's own custom.
 func locationDefaultCandleMins(loc *geodb.Location) int {
 	if !loc.IsIsrael() {
 		return DefaultCandleMins
 	}
-	switch loc.GeonameID {
-	case 281184: // Jerusalem
-		return 40
-	case 294801, 293067: // Haifa, Zikhron Ya'akov
-		return 30
-	}
-	return 20
+	zl := loc.ZmanimLocation()
+	return hebcal.IsraelCandleLightingMins(&zl)
 }
 
 // FilterYomTovOnly keeps only the Yom Tov days, for yto=on. The filter is
@@ -418,14 +410,6 @@ func announcedMolad(hd hdate.HDate) (molad.Molad, string) {
 	return molad.New(hyear, monNext), model.MonthNameEn(monNext, hyear)
 }
 
-// moladDesc is the untranslated description of a molad announcement,
-// e.g. "Molad Elul 5786". hebcal-go's molad event renders the whole sentence
-// instead, and keeps its month and year unexported.
-func moladDesc(hd hdate.HDate) string {
-	_, monthEn := announcedMolad(hd)
-	return fmt.Sprintf("Molad %s %d", monthEn, hd.Year())
-}
-
 // moladObj builds the `molad` member of a molad announcement item.
 func moladObj(hd hdate.HDate) jsutil.OrderedObj {
 	m, monthEn := announcedMolad(hd)
@@ -457,34 +441,10 @@ func moladInstant(m molad.Molad) string {
 // "ru", "en").
 func MevarchimMoladMemo(hd hdate.HDate, locale, cc string, il bool, hour12 *bool) string {
 	m, monthEn := announcedMolad(hd)
-	// Hebrew uses a distinct sentence structure; hebcal-go's moladEvent renders
-	// it, so reuse it.
-	if locale == "he" || locale == "he-x-nonikud" {
-		return event.NewMoladEvent(m.Date, m, monthEn, cc).Render(locale)
+	if cc == "" && il {
+		cc = "IL"
 	}
-	// Other locales: "Molad <month>: <weekday>, <time> and <n> chalakim", with
-	// the month localized and the time formatted per the location's country.
-	// The apostrophe in the month name is curled ("Sh'vat" => "Sh’vat"), and
-	// only here — the Hebrew sentence above does not.
-	month := jsutil.SmartApostrophe(model.Gettext(monthEn, locale))
-	dow := moladDayName(m.Date.Weekday(), locale)
-	fmtTime := reformatTimeStr(fmt.Sprintf("%d:%02d", m.Hours, m.Minutes), "pm", cc, il, hour12)
-	result := model.Gettext("Molad", locale) + " " + month + ": " + dow + ", " + fmtTime
-	if m.Chalakim != 0 {
-		result += " " + model.Gettext("and", locale) + " " + strconv.Itoa(m.Chalakim) + " " + model.Gettext("chalakim", locale)
-	}
-	return result
-}
-
-// moladDayName returns the weekday of the molad. French has its own names for
-// this one sentence and everything else falls back to English; the Hebrew
-// names live in hebcal-go's molad renderer, which handles the Hebrew sentence.
-func moladDayName(dow time.Weekday, locale string) string {
-	if locale == "fr" {
-		return [...]string{"Dimanche", "Lundi", "Mardi", "Mercredi",
-			"Jeudi", "Vendredi", "Samedi"}[dow]
-	}
-	return dow.String()
+	return event.RenderMolad(m, monthEn, locale, cc, hour12)
 }
 
 // normMonth normalizes hebcal-go's "Tammuz" to the "Tamuz" spelling this API
@@ -507,19 +467,13 @@ func normMonth(s string) string {
 // descOf returns the canonical (untranslated) description used for category
 // lookup and title_orig.
 func descOf(ev event.CalEvent) string {
-	// hebcal-go's molad event has no description of its own: Render() returns
-	// the whole announcement sentence and the month and year it was built
-	// from are unexported, so rebuild "Molad <month> <year>".
-	if ev.GetFlags().Has(event.MOLAD) {
-		return moladDesc(ev.GetDate())
-	}
 	switch e := ev.(type) {
 	case hebcal.TimedEvent:
 		return e.Desc
 	case event.HolidayEvent:
 		return normMonth(e.Desc)
 	default:
-		return normMonth(ev.Render("en"))
+		return normMonth(event.Desc(ev))
 	}
 }
 
@@ -529,16 +483,9 @@ func renderBriefLike(ev event.CalEvent, locale string) string {
 	if e, ok := ev.(hebcal.TimedEvent); ok {
 		return timedEventLabel(e, locale)
 	}
-	// Rosh Hashana renders the year as a number in every locale, rather than
-	// hebcal-go's gematriya.
-	if he, ok := ev.(event.HolidayEvent); ok &&
-		he.Date.Month() == hdate.Tishrei && he.Date.Day() == 1 &&
-		strings.HasPrefix(he.Desc, "Rosh Hashana") {
-		return model.Gettext("Rosh Hashana", locale) + " " + strconv.Itoa(he.Date.Year())
-	}
 	r := ev.Render(locale)
 	if ev.GetFlags().Has(event.SHABBAT_MEVARCHIM) {
-		r = stripMevarchimPrefix(r)
+		r = event.RenderBrief(ev, locale) // "Mevarchim Chodesh Kislev"
 	}
 	return jsutil.SmartApostrophe(normMonth(r))
 }
@@ -556,15 +503,6 @@ func timedEventLabel(ev hebcal.TimedEvent, locale string) string {
 	// ("Chanukah: 8 Candles: 4:37pm") splits correctly too
 	if i := strings.LastIndex(s, ": "); i >= 0 {
 		return s[:i]
-	}
-	return s
-}
-
-// stripMevarchimPrefix drops the first (space-delimited) word from a Shabbat
-// Mevarchim title across locales (e.g. "Shabbat "/"שַׁבַּת "/"Шаббат "/"Shabbos ").
-func stripMevarchimPrefix(s string) string {
-	if i := strings.Index(s, " "); i >= 0 {
-		return s[i+1:]
 	}
 	return s
 }

@@ -66,6 +66,7 @@ func (g *Location) ZmanimLocation() zmanim.Location {
 		Longitude:   g.Longitude,
 		Elevation:   elev,
 		TimeZoneId:  g.TimeZoneID,
+		GeoNameID:   g.GeonameID,
 	}
 }
 

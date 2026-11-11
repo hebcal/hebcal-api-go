@@ -11,13 +11,11 @@
 package ical
 
 import (
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
-	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/hebcal-go/omer"
 
 	"github.com/hebcal/hebcal-api-go/internal/model"
@@ -118,7 +116,7 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 	hd := ev.GetDate()
 	subj := download.RenderSubject(ev, o.Locale, download.ShouldRenderBrief(ev, flags, false))
 	if o.Emoji {
-		if emoji := emojiOf(ev); emoji != "" {
+		if emoji := ev.GetEmoji(); emoji != "" {
 			if flags.Has(event.OMER_COUNT) {
 				subj += " " + emoji
 			} else {
@@ -198,14 +196,8 @@ func ownMemo(ev event.CalEvent, flags event.HolidayFlags, o *Options) string {
 	switch {
 	case flags.Has(event.SHABBAT_MEVARCHIM):
 		return shabbat.MevarchimMoladMemo(ev.GetDate(), strings.ToLower(o.Locale), "", o.IL, nil)
-	case flags.Has(event.YOM_KIPPUR_KATAN):
-		month := strings.TrimPrefix(download.UntranslatedDesc(ev), "Yom Kippur Katan ")
-		return "Minor Day of Atonement on the day preceeding Rosh Chodesh " + month
 	}
-	if m, ok := ev.(interface{ Memo(string) string }); ok {
-		return m.Memo(o.Locale)
-	}
-	return ""
+	return model.FixMonthSpelling(event.Memo(ev, o.Locale))
 }
 
 // noReading are the events that never have a Torah reading of their own.
@@ -223,14 +215,6 @@ func torahMemo(ev event.CalEvent, flags event.HolidayFlags, o *Options) string {
 // must never change: a different UID duplicates the event for every
 // subscriber.
 func uidDesc(ev event.CalEvent) string {
-	switch e := ev.(type) {
-	case event.HolidayEvent:
-		return model.FixMonthSpelling(e.Desc)
-	case hebcal.YizkorEvent:
-		return "Yizkor"
-	case omer.OmerEvent:
-		return "Omer " + strconv.Itoa(e.OmerDay)
-	}
 	if ev.GetFlags().HasAny(download.LearningFlags) {
 		// A reading without its series name, and for Tanakh Yomi without its
 		// verses: "Bava Batra 21", "Daniel Seder 1".
@@ -243,19 +227,9 @@ func uidDesc(ev event.CalEvent) string {
 	if ev.GetFlags().Has(event.HEBREW_DATE) {
 		return model.HDateString(ev.GetDate()) // "30 Av 5786"
 	}
-	return model.FixMonthSpelling(ev.Render("en"))
-}
-
-// emojiOf is the emoji a title is decorated with. A night of Chanukah adds
-// its candle count as a keycap digit ("🕎3️⃣").
-func emojiOf(ev event.CalEvent) string {
-	emoji := ev.GetEmoji()
-	if he, ok := ev.(event.HolidayEvent); ok && strings.HasPrefix(he.Desc, "Chanukah: ") {
-		if n := he.Desc[len("Chanukah: ")]; n >= '1' && n <= '8' && strings.Contains(he.Desc, "Candle") {
-			emoji += string(n) + "\uFE0F\u20E3"
-		}
-	}
-	return emoji
+	// "Pesach II", "Omer 7", "Yizkor", "Parashat Re'eh" -- never the
+	// rendered title, whose apostrophes are typographic.
+	return model.FixMonthSpelling(event.Desc(ev))
 }
 
 func appendParagraph(memo, s string) string {

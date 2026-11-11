@@ -147,9 +147,7 @@ var Feeds = []Feed{
 		Desc:   "Shabbat announcing new month,Prior to Rosh Chodesh",
 		Color:  holidayColor,
 		Locale: "en", Years: 10,
-		// A mask rather than NoHolidays, which suppresses Shabbat Mevarchim
-		// along with the holidays in hebcal-go.
-		Opts: hebcal.CalOptions{ShabbatMevarchim: true, Mask: event.SHABBAT_MEVARCHIM},
+		Opts: hebcal.CalOptions{ShabbatMevarchim: true, NoHolidays: true},
 	},
 	{
 		File: "yizkor-diaspora", Title: "Yizkor (Diaspora)",

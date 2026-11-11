@@ -21,7 +21,6 @@ import (
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
 	"github.com/hebcal/hebcal-go/hebcal"
-	"github.com/hebcal/hebcal-go/sedra"
 
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
@@ -314,7 +313,7 @@ var category = map[string]string{
 // eventToCSV renders one event as the fields of a CSV row.
 func eventToCSV(ev event.CalEvent, p *download.Params) []string {
 	flags := ev.GetFlags()
-	timed, isTimed := download.AsTimedEvent(ev)
+	timed, isTimed := hebcal.AsTimedEvent(ev)
 	subj := download.RenderSubject(ev, p.Locale, download.ShouldRenderBrief(ev, flags, isTimed))
 	hebrew := ""
 	if p.AppendHebrew {
@@ -449,49 +448,25 @@ func memo(ev event.CalEvent, flags event.HolidayFlags, p *download.Params) strin
 // The Kiddush Levana times are deliberately left out: that event's memo is on
 // its way out of the website, so the CSV starts without it.
 func ownMemo(ev event.CalEvent, flags event.HolidayFlags, p *download.Params) string {
-	hd := ev.GetDate()
 	switch {
 	case flags.Has(event.SHABBAT_MEVARCHIM):
 		cc := ""
 		if p.Opts.Location != nil {
 			cc = p.Opts.Location.CountryCode
 		}
-		return shabbat.MevarchimMoladMemo(hd, strings.ToLower(p.Locale), cc, p.Opts.IL, hour12(p))
-	case flags.Has(event.YOM_KIPPUR_KATAN) && !isTimedEv(ev):
-		// untranslated, as the website has it
-		month := strings.TrimPrefix(download.UntranslatedDesc(ev), "Yom Kippur Katan ")
-		return "Minor Day of Atonement on the day preceeding Rosh Chodesh " + month
+		return shabbat.MevarchimMoladMemo(ev.GetDate(), strings.ToLower(p.Locale), cc, p.Opts.IL, hour12(p))
+	case isKiddushLevana(ev):
+		return ""
 	}
-	if timed, ok := ev.(hebcal.TimedEvent); ok && timed.Desc == "Candle lighting" &&
-		hd.Weekday() == time.Friday && p.Opts.Sedrot {
-		// Erev-Shabbat candle-lighting names the coming Shabbat's portion --
-		// or, when a festival displaces it, the festival. Candle-lighting
-		// before a Yom Tov that falls on Friday night links to the holiday
-		// instead, and gets the holiday's name below.
-		if timed.LinkedEvent == nil || isParsha(timed.LinkedEvent) {
-			sy := sedra.New(hd.Year(), p.Opts.IL)
-			parsha := sy.LookupByRD(hd.Abs())
-			if parsha.Chag {
-				return model.Gettext(parsha.Name[0], p.Locale)
-			}
-			if timed.LinkedEvent != nil {
-				return download.RenderSubject(timed.LinkedEvent, p.Locale, false)
-			}
-		}
-	}
-	if m, ok := ev.(interface{ Memo(string) string }); ok && !isKiddushLevana(ev) {
-		return m.Memo(p.Locale)
-	}
-	return ""
+	// Yom Kippur Katan's meaning (untranslated, as the website has it), the
+	// coming portion or festival reading for erev-Shabbat candle-lighting, a
+	// daily-learning reading's details.
+	return model.FixMonthSpelling(event.Memo(ev, p.Locale))
 }
 
 func isTimedEv(ev event.CalEvent) bool {
-	_, ok := download.AsTimedEvent(ev)
+	_, ok := hebcal.AsTimedEvent(ev)
 	return ok
-}
-
-func isParsha(ev event.CalEvent) bool {
-	return ev.GetFlags() == event.PARSHA_HASHAVUA
 }
 
 func isKiddushLevana(ev event.CalEvent) bool {

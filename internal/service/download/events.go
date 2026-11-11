@@ -79,17 +79,3 @@ func EventCategories(ev event.CalEvent) []string {
 	}
 	return ev.GetCategories()
 }
-
-// AsTimedEvent returns the TimedEvent behind ev. KiddushLevanaEvent embeds a
-// TimedEvent but is a type of its own, so a plain type assertion misses it and
-// its time would stay baked into the subject instead of being drawn like every
-// other clock time.
-func AsTimedEvent(ev event.CalEvent) (hebcal.TimedEvent, bool) {
-	switch e := ev.(type) {
-	case hebcal.TimedEvent:
-		return e, true
-	case hebcal.KiddushLevanaEvent:
-		return e.TimedEvent, true
-	}
-	return hebcal.TimedEvent{}, false
-}

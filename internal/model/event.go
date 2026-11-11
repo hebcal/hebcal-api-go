@@ -61,11 +61,7 @@ func (h HolidayEv) Render(lg string) string {
 		month := strings.ReplaceAll(strings.TrimPrefix(h.Ev.Desc, "Rosh Chodesh "), "Tammuz", "Tamuz")
 		return jsutil.SmartApostrophe(Gettext("Rosh Chodesh", locale) + " " + Gettext(month, locale))
 	}
-	if h.Ev.Date.Month() == hdate.Tishrei && h.Ev.Date.Day() == 1 {
-		// Rosh Hashana: the year renders as a number in all locales
-		return Gettext("Rosh Hashana", locale) + " " + strconv.Itoa(h.Ev.Date.Year())
-	}
-	return jsutil.SmartApostrophe(h.Ev.Render(locale))
+	return h.Ev.Render(locale)
 }
 
 // URL returns the holiday's page on hebcal.com. hebcal-go builds it, which

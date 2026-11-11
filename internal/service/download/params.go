@@ -311,23 +311,13 @@ func setFastTimes(o *hebcal.CalOptions, msg *downloadpb.Download) {
 // are lit.
 const defaultCandleMins = 18
 
-// geonameIDCandleOffset holds the Israeli cities whose customary candle-lighting
-// offset is larger than the 20-minute default.
-var geonameIDCandleOffset = map[int]int{
-	281184: 40, // Jerusalem
-	294801: 30, // Haifa
-	293067: 30, // Zikhron Yaakov
-}
-
 // locationDefaultCandleMins reports the default candle-lighting offset for a
 // location: an Israeli location lights candles earlier than the diaspora
-// default, either by a city-specific amount or by the 20-minute fallback.
+// default, by a city-specific amount or by the 20-minute fallback.
 func locationDefaultCandleMins(loc *geodb.Location) int {
 	if loc.IsIsrael() {
-		if off, ok := geonameIDCandleOffset[loc.GeonameID]; ok {
-			return off
-		}
-		return 20
+		zl := loc.ZmanimLocation()
+		return hebcal.IsraelCandleLightingMins(&zl)
 	}
 	return defaultCandleMins
 }

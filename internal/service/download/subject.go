@@ -1,10 +1,8 @@
 package download
 
 import (
-	"strconv"
 	"strings"
 
-	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
 	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/locales"
@@ -36,19 +34,11 @@ func ShouldRenderBrief(ev event.CalEvent, flags event.HolidayFlags, timed bool) 
 }
 
 // RenderSubject renders an event's title in locale, in its brief or full form,
-// without emoji. Rosh Hashana renders the year as a number in every locale,
-// Hebrew included.
+// without emoji.
 func RenderSubject(ev event.CalEvent, locale string, brief bool) string {
-	var s string
-	hd := ev.GetDate()
-	switch he, isHoliday := ev.(event.HolidayEvent); {
-	case isHoliday && hd.Month() == hdate.Tishrei && hd.Day() == 1 &&
-		strings.HasPrefix(he.Desc, "Rosh Hashana"):
-		s = model.Gettext("Rosh Hashana", locale) + " " + strconv.Itoa(hd.Year())
-	case brief:
+	s := ev.Render(locale)
+	if brief {
 		s = event.RenderBrief(ev, locale)
-	default:
-		s = ev.Render(locale)
 	}
 	s = StripEmoji(s)
 	// Daily-learning readings keep their typewriter apostrophes ("Fourth
@@ -97,7 +87,7 @@ func ParshaSummary(ev event.CalEvent, locale string) string {
 	if !ev.GetFlags().Has(event.PARSHA_HASHAVUA) {
 		return ""
 	}
-	name := strings.TrimPrefix(ev.Render("en"), "Parashat ")
+	name := strings.TrimPrefix(event.Desc(ev), "Parashat ")
 	if IsHebrewLocale(locale) {
 		if s := parshaSummary(name, "he"); s != "" {
 			return s
@@ -127,13 +117,8 @@ func lookupMemo(key, localeName string) string {
 }
 
 // Basename is the event's description without the qualifiers that tell the
-// days of one holiday apart ("Sukkot III (CH’’M)" => "Sukkot"). Chanukah
-// candle-lighting is the holiday itself, so it takes the holiday's.
+// days of one holiday apart ("Sukkot III (CH’’M)" => "Sukkot").
 func Basename(ev event.CalEvent) string {
-	if timed, ok := ev.(hebcal.TimedEvent); ok && timed.LinkedEvent != nil &&
-		timed.Flags.Has(event.CHANUKAH_CANDLES) {
-		return timed.LinkedEvent.Basename()
-	}
 	return model.FixMonthSpelling(ev.Basename())
 }
 
@@ -143,8 +128,11 @@ func UntranslatedDesc(ev event.CalEvent) string {
 	if he, ok := ev.(event.HolidayEvent); ok {
 		return model.FixMonthSpelling(he.Desc)
 	}
-	if te, ok := AsTimedEvent(ev); ok {
+	if te, ok := hebcal.AsTimedEvent(ev); ok {
 		return te.Desc
+	}
+	if d, ok := ev.(event.Descer); ok {
+		return model.FixMonthSpelling(d.GetDesc())
 	}
 	return model.FixMonthSpelling(ev.Render("en"))
 }

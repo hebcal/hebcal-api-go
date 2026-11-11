@@ -187,7 +187,7 @@ func use12Hour(p *download.Params) bool {
 // comes from TimedEvent.EventTime rather than from parsing hebcal-go's
 // "Havdalah: 8:51" description back apart.
 func timeStringOf(ev event.CalEvent, p *download.Params) string {
-	te, ok := download.AsTimedEvent(ev)
+	te, ok := hebcal.AsTimedEvent(ev)
 	if !ok {
 		return ""
 	}
@@ -211,29 +211,23 @@ func timeStringOf(ev event.CalEvent, p *download.Params) string {
 }
 
 // renderSubject renders an event's subject for a calendar cell, which is narrow
-// enough that the brief form is wanted over the full one.
-//
-// Only the cases this service can generate are handled. Timed events are
-// already brief by construction -- Generate splits the clock time out of the
-// subject.
+// enough that the shorter form is wanted. Timed events keep the full render,
+// from which Generate splits the clock time.
 func renderSubject(ev event.CalEvent, flags event.HolidayFlags, locale string) string {
-	full := ev.Render(locale)
 	switch {
 	case flags.Has(event.SHABBAT_MEVARCHIM):
-		// "Shabbat Mevarchim Chodesh Sh'vat" -> "Mevarchim Chodesh Sh'vat".
-		// Drop everything up to the first space, in whatever language, rather
-		// than matching on the English word.
-		if i := strings.Index(full, " "); i >= 0 {
-			return full[i+1:]
-		}
+		return event.RenderBrief(ev, locale) // "Mevarchim Chodesh Sh’vat"
 	case flags.HasAny(download.LearningFlags):
-		// The daily-learning series render as "Daf Yomi: Berakhot 2"; the cell
-		// shows only the reading.
+		// "Daf Yomi: Berakhot 2" => "Berakhot 2". Not RenderBrief, which
+		// would also drop "Yerushalmi", 929's chapter count and Tanakh
+		// Yomi's "Seder".
+		full := ev.Render(locale)
 		if i := strings.Index(full, ": "); i >= 0 {
 			return full[i+2:]
 		}
+		return full
 	}
-	return full
+	return ev.Render(locale)
 }
 
 // altDateRank puts an alternate-date event ahead of a day's other events, as
