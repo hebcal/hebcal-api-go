@@ -189,7 +189,7 @@ func TestNumYears(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if got := numYears(tc.msg, p, tc.unsup); got != tc.want {
+			if got := download.NumYears(tc.msg, p, tc.unsup); got != tc.want {
 				t.Errorf("got %d, want %d", got, tc.want)
 			}
 		})
@@ -219,7 +219,7 @@ func TestLearningRange(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			first, last := learningRange(p)
+			first, last := download.LearningRange(p)
 			if got := first.Format("2006-01-02") + ".." + last.Format("2006-01-02"); got != tc.want {
 				t.Errorf("got %s, want %s", got, tc.want)
 			}

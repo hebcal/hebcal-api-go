@@ -13,8 +13,9 @@ Guidance for Claude Code (claude.ai/code) working in this repository.
   two older spellings, and the saved `/v3/<ulid>/…ics` calendars read from
   MySQL — ported from `@hebcal/icalendar` (as `pkg/icalendar`) and
   `src/yahrzeitDownload.js`; and the **zmanim feeds** -- `/zmanim`,
-  `/zmanim2` and `/sunrs` -- ported from `src/zmanimDownload.js`. The holiday
-  feeds are planned in [iCalendar-port.md](iCalendar-port.md);
+  `/zmanim2` and `/sunrs` -- ported from `src/zmanimDownload.js`; and the
+  **holiday feeds** -- `download.hebcal.com/v4/…ics` and its two legacy
+  spellings -- ported from `src/hebcal-download.js` and `src/icalCommon.js`;
 - the **PDF calendars** — `download.hebcal.com/v4/…pdf` (and its legacy
   `/v2/h/…pdf` spelling) and `www.hebcal.com/holidays/hebcal-<year>.pdf`. Much of this
   file is that service's engineering notes.
@@ -302,11 +303,11 @@ fields last), and `start`/`end`, which travel as the ISO string the message can
 also carry rather than as epoch seconds — the same date, without a trip through
 the server's local timezone.
 
-Only `/v2/h/` and only `.pdf` and `.csv` are ours on this path. The holiday
-`.ics` feeds are still hebcal-web's, so those are 404, as is a URL with no
-`v=`. A URL whose `v=` names a Yahrzeit calendar never reaches this code: it
-is served by `yahrzeitDownload` (see "The iCalendar feeds"), which answers a
-`.pdf` 404 and serves a `.csv` as the Yahrzeit CSV export.
+Only `/v2/h/` and only `.pdf`, `.csv` and `.ics` are ours on this path (an
+`.ics` is "The holiday feeds"), and a URL with no `v=` is 404. A URL whose
+`v=` names a Yahrzeit calendar never reaches this code: it is served by
+`yahrzeitDownload` (see "The iCalendar feeds"), which answers a `.pdf` 404 and
+serves a `.csv` as the Yahrzeit CSV export.
 
 ### The classic /hebcal/index.cgi/ URL is a query string in two encodings
 
@@ -329,7 +330,7 @@ query can be percent-encoded a second time, its `;` as `%3B` and usually its
 `unescape`d -- a **Latin-1** decode that leaves `+` alone, not
 `decodeURIComponent` -- before splitting (`unescapeLatin1`).
 
-The status codes: only `.pdf` and `.csv` are ours (a holiday `.ics` is 404), a
+The status codes: only `.pdf`, `.csv` and `.ics` are ours, a
 URL naming no `v=` is 404 (which is why `hebcal_2028_may.pdf` with no query
 string is 404, not a calendar), and a `v=` naming a Yahrzeit calendar goes to
 `yahrzeitDownload`. The finite `redirectDownload.json` map of specific no-query
@@ -557,10 +558,10 @@ byte-identical):
 ## The iCalendar feeds (`pkg/icalendar`, Yahrzeit first)
 
 Every Yahrzeit + Anniversary feed is served here, the saved `/v3/` calendars
-included. The static `/ical/` calendars are generated here too, though not
-yet in production (see "The static calendars"). No `/v4/` holiday `.ics`
-feed is; [iCalendar-port.md](iCalendar-port.md) is the plan, written to be
-picked up cold.
+included, and so is every holiday feed ("The holiday feeds" below). The static
+`/ical/` calendars are generated here too, though not yet in production (see
+"The static calendars"). [iCalendar-port.md](iCalendar-port.md) has what is
+left, and how to stand up the reference server.
 
 `pkg/icalendar` is a port of `@hebcal/icalendar` (hebcal-icalendar 7.0.6), and
 `internal/service/yahrzeit` of hebcal-web's `yahrzeitDownload.js`,
@@ -874,9 +875,8 @@ hebcal-devops' `etc/cron.d/hebcal-api-ical` is meant to run it weekly on the
 api hosts and rsync `ical/` into `/var/www/html/ical`; production has not cut
 over yet, and the Node dl hosts still build the feeds.
 
-The pieces: `internal/service/ical` is the **event adapter** phase 3 of
-[iCalendar-port.md](iCalendar-port.md) calls for (item A, plus the memo, B,
-and the Torah memo, C, for all-day events); `internal/service/staticcal`
+The pieces: `internal/service/ical` is the **event adapter** the holiday
+feeds share ("The holiday feeds"); `internal/service/staticcal`
 holds the feed table (`Feeds`, from both JSON configs), `Window`, `Render` and
 Kindness; `readings.Client.TorahMemos` is readings-svc's `/torahMemo`. The
 `.csv` side goes through `csv.Render`, so the static CSVs share the `/v4/`
@@ -950,6 +950,134 @@ Deliberate divergences:
   `pkg/icalendar`: its preamble gains `X-LOTUS-CHARSET` and
   `REFRESH-INTERVAL`, and `CLASS:PUBLIC` precedes `DESCRIPTION` rather than
   following it.
+
+## The holiday feeds (`/v4/…ics`)
+
+`internal/service/ical` and `internal/handler/ics.go` serve
+`download.hebcal.com/v4/<data>/<name>.ics` and its two legacy spellings, `/v2/h/`
+and the classic `/hebcal/index.cgi/` and `/export/` query strings -- the
+holiday calendar subscribed to or saved from the website. It is a port of
+`hebcalDownload()` (`src/hebcal-download.js`), `createMemo()` and
+`makeIcalEvents()` (`src/icalCommon.js`), `makeKiddushLevanaMemo()` and
+`makeIcalOpts()`, and it shares everything up to the event list with the PDF and
+CSV: `download.Decode`, `ParamsFromMessage`, `NumYears` and
+`GenerateCalEvents`. Like them it goes through the download concurrency
+limiter, holds a 14-day `Cache-Control`, and answers `304` from its ETag before
+generating anything.
+
+**Measured, not assumed.** `tools/ics-sweep.sh tools/ics-cases.txt` renders
+about 50 URLs -- every locale family, Israel, lat/long locations (Sydney, and
+Tromsø inside the Arctic Circle), Hebrew years and months, Hebrew-month alternate dates,
+daily learning, Omer with a location, titles and colours, tracking parameters --
+in all three URL shapes against a local hebcal-web, and a second sweep over
+nineteen years from 1760 to 2450 on both schedules diffed every UID. Everything
+is byte-identical except the cases below. `internal/service/ical`'s `TestGolden`
+pins twelve of them (`tools/ics-goldens.sh` regenerates the goldens); run the
+sweep again before changing anything in the package. The Torah text comes from
+`tools/readings-stub.mjs`, which runs hebcal-web's own `makeTorahMemoText()`
+behind a unix socket, so the comparison needs no readings-svc.
+
+Things that are not obvious:
+
+- **A /v4/ URL's own query string is laid over what its payload says**, and a
+  legacy URL's query string *is* the request. The options the `Download`
+  message has no room for -- `title`, `caldesc`, `color`, `relcalid`,
+  `publishedTTL`, `emoji`, `utm_*` -- come from that effective query
+  (`download.DecodeICS` returns it as `ICSQuery`). Whether the feed is a file to
+  save is the same query's `subscribe`: any value makes it inline, but only `1`
+  lets it name itself.
+- **Titles follow `getCalendarTitle()`, which is not the PDF's.** A multi-year
+  feed is "Hebcal Diaspora 2026-2032" (the year and `ny`), a Hebrew year or an
+  empty calendar the year alone, anything else the span of its events; a
+  subscription has no dates. The location is named by its *short* name, taken
+  from the location rather than from the typeahead text (`Sydney, Australia` is
+  "Sydney"). A subscription with no location and no `title=` names itself from
+  what it subscribes to -- "Hebcal Israel - Torah Readings" -- and describes
+  itself in `X-WR-CALDESC` when it leaves out the major holidays; the list
+  order, and an empty entry for Shemirat HaLashon, are the website's
+  (`download.ICSQuery.OptionNames`).
+- **The tracking campaign is `ical-` and the title's slug**, built from the
+  plain-ASCII geonames name as the PDF's is. A `utm_campaign` that does not start
+  with `ical-` or `pdf-` makes hebcal.com links carry `us=ical&um=icalendar` as
+  well as `uc=` (`download.EventLinkFrom`).
+- **Timed events** (candle lighting, Havdalah, fast start and end, Chanukah
+  candles, Kiddush Levana) start in the location's zone (`DTSTART;TZID=`), carry
+  its short name as `LOCATION` and its position as `GEO`, and take the location
+  into their UID: `hebcal-<date>-<murmur32 of the untranslated description>-` plus
+  the geonameid, the ZIP code, or the anchor of the *full* location name
+  (`Params.Place`; the short name would give another UID). `GEO` is the
+  coordinates as the request spelled them -- a /v4/ URL stores them as a 32-bit
+  float, so `40.7` reads back as `40.70000076293945` there and nowhere else.
+  Candle lighting alone has an alarm, ten minutes before.
+- **The Omer's alarm is at nightfall of the evening it begins** when the
+  calendar has a location: half an hour before sunset on a Friday, 8.5° on a
+  Saturday, dusk otherwise, as an absolute `TRIGGER;VALUE=DATE-TIME`. The event
+  is then named for the location -- `hebcal-omer-<Hebrew year>-day<n>-<geoid>`,
+  the Hebrew year despite what the Gregorian date of the evening says, and only
+  for a geonames or ZIP location -- and gains its `LOCATION`.
+- **A candle-lighting or Havdalah memo is the event's own and nothing else**,
+  with no link. **Kiddush Levana's** is four labelled lines in the calendar's
+  language -- the dates by the Intl rules of each locale, which Go has no CLDR
+  for, so `tools/dump-kl-dates.mjs` writes them out (`kldates.go`; it uses the
+  plain space `format()` writes where `formatToParts()` has a narrow no-break
+  one) -- and, on the Maharil line, "(adjusted to 4:22pm Candle lighting)" when
+  hebcal-go moved the event. Whether it did is worked out the way hebcal-go does
+  (the raw time between alot hashachar and 8.5°, else the event's time not being
+  the raw one), so that line can differ from hebcal-web's when the two zmanim
+  libraries put alot hashachar a few seconds apart.
+- **A holiday with no Hebrew description gets its English one** in a Hebrew
+  feed, as in the website's `localizedHolidayDescription()`; the static feeds'
+  guard against it was wrong, and removing it changed nothing they publish.
+- **The Torah text is fetched per (Hebrew year, schedule)**, once however many
+  feeds ask: `Service.torahMemos` finds the years that hold an event that can
+  have a reading (not a timed one, not the Omer, Mevarchim, Hebrew dates, or
+  learning), asks `/torahMemo` for each through an LRU with `singleflight`, and
+  fetches nothing for a feed with no such event. A readings-svc that does not
+  answer is a 503 with `Retry-After` and none configured a 501, never a feed
+  with its readings missing (`ical.ReadingsError`). **Deploy readings-svc first**:
+  it answers an unknown route 404, which the client rightly takes for an error.
+- **A subscription is cut at 2399 events.** Past that, what is older than twelve
+  weeks goes; if that is not enough it is truncated and ends with a "Hebcal
+  calendar feed truncated" event the day after the last. Only a cut feed depends
+  on the week, so only then does the ETag gain the Sunday (a second check
+  after generating, like the original's); a file to save is never cut.
+  `Service.Limit` counts every event, the readings-svc rows and Hebrew-month
+  Gregorian dates included.
+- **An empty calendar is a placeholder, not an error** (a 400 for the PDF, a
+  header row for the CSV): one private "Calendar contains no events" event
+  dated today, a UID hashing the request's own URL (x64 128-bit murmur, where
+  production uses the x86 variant -- it changes daily anyway), no
+  `REFRESH-INTERVAL`, `max-age=86400` and no ETag.
+- **Errors carry no `Cache-Control`**, except the 410 for a year outside the
+  narrow range. hebcal-web's dispatcher sets the 14 days before the handler has
+  decided whether the request is any good, and some of its errors keep it; the
+  PDF and CSV drop it, and so does this.
+- **There is no `Access-Control-Allow-Origin`**: nothing fetches an `.ics`
+  cross-origin, and hebcal-web sends none.
+- **Yom Kippur Katan's emoji (✡️) is added here**: hebcal-go's event has none,
+  @hebcal/core's does. Not on the fast times it is linked to. It belongs
+  upstream.
+
+Known differences from production (every other line of the sweeps is
+identical):
+
+1. Minutes of zmanim, as everywhere (noaa-go against `@hebcal/core`): a
+   `DTSTART`, the Omer alarm, a candle lighting inside a Kiddush Levana
+   description. The UID does not change, so the event moves a minute. At
+   Tromsø in late April civil dusk is a time one library computes and the other
+   does not, so the Omer's alarm there is the generic one here and an absolute
+   one in hebcal-web.
+2. Rosh Hashana's year is gematriya in Hebrew ("תשפ״ז"), a number in
+   hebcal-web -- deliberate, as in the CSV and the PDF.
+3. A legacy URL that names both a `year` and a `start`/`end` renders the year
+   (the form its `/v4/` equivalent takes); hebcal-web renders the range. The
+   website sends one or the other.
+4. Hebrew-month calendars (`mm=1`/`mm=2`) append the next Tishrei from
+   `year+numYears`, not `year+1`, as in the CSV (see there).
+5. `nh=on` is understood only in the classic `/hebcal/index.cgi/` form, and
+   `v=now` is served here though hebcal-web answers it 404.
+6. In a pre-1900 year, a zone's local mean time is not a whole number of
+   minutes, so a Kiddush Levana time can be a minute off in Jerusalem.
 
 ## The readings-svc sidecar
 
@@ -1522,6 +1650,25 @@ prefix/suffix, `appendHebrewToSubject`), `CATEGORY` table (`categories`),
 `normalize()` included) and, with `firstSentence` false and the English
 fallback, `localizedHolidayDescription()`. `download.EventLink` ←
 `appendIsraelAndTracking()` + `shortenSedrotUrl()` (moved from `pdf/links.go`).
+
+### `internal/service/ical/feed.go`, `kiddushlevana.go`, `torahmemo.go` -- `src/hebcal-download.js`, `src/icalCommon.js`
+
+`Service.Parse` / `Generate` ← `hebcalDownload()` and `makeHebrewCalendar()`
+(`download.NumYears` ← `getNumYears()`); `Service.Marshal` ← the rest of
+`hebcalDownload()` and `icalEventsToString()`. `calendarTitle` ←
+`getCalendarTitle()` (`@hebcal/rest-api`); `campaignName` ← its `campaignName()`;
+`subscriptionTitle` ← `makeIcalOpts()` with `makeCalendarSubtitleFromOpts()` and
+`queryDescription()` (`download.ICSQuery.OptionNames`, from `queryToName` and
+`queryLongDescr` in `src/urlArgs.js`). `Service.Limit` ←
+`limitIcsFeedLength()` and `makeTruncationNoticeEvent()`; `placeholder` ←
+`makeDummyEvent()`. `Event`'s timed half and `Options.omerAlarm` ← the
+`IcalEvent` constructor and `addLocationOmerAlarms()`; `kiddushLevanaMemo` ←
+`makeKiddushLevanaMemo()` (`src/kiddushLevanaMemo.js`, dates by
+`klDateFormats`); `Feed.addGregorianDates` ← `GregorianDateEvent` and the loop
+in `makeHebrewCalendar()`; `Service.torahMemos` ← `makeTorahMemoText()`, run by
+readings-svc. `handler.icsDownload` ← the headers `hebcalDownload()` sets and
+the dispatcher's 14-day `Cache-Control`. `tools/readings-stub.mjs` runs the
+last of those for comparing without a sidecar.
 
 ### `internal/service/staticcal/`, `cmd/hebcal-static-ical/` — `src/staticCalendars.js`, `src/makeStaticCalendars.js`, `src/kindness.js`
 

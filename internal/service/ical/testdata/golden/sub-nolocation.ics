@@ -1,0 +1,241 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P7D
+X-PUBLISHED-TTL:P7D
+X-WR-CALNAME:Hebcal Diaspora
+X-APPLE-CALENDAR-COLOR:#800002
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:Ta’anit Esther
+DTSTART;VALUE=DATE:20260302
+DTEND;VALUE=DATE:20260303
+UID:hebcal-20260302-65e47969
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Fast of Esther\n\nTorah: Exodus 32:11-14\, 34:1-10\n\nhttps://
+ hebcal.com/h/taanit-esther-2026?uc=ical-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:Erev Purim
+DTSTART;VALUE=DATE:20260302
+DTEND;VALUE=DATE:20260303
+UID:hebcal-20260302-4fdbaae2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Celebration of Jewish deliverance as told by Megilat Esther. I
+ t commemorates a time when the Jewish people living in Persia were saved f
+ rom extermination\n\nTorah: Esther 1:1-10:3\n\nhttps://hebcal.com/h/purim-
+ 2026?uc=ical-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:Purim
+DTSTART;VALUE=DATE:20260303
+DTEND;VALUE=DATE:20260304
+UID:hebcal-20260303-b59993b2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Celebration of Jewish deliverance as told by Megilat Esther. I
+ t commemorates a time when the Jewish people living in Persia were saved f
+ rom extermination\n\nTorah: Exodus 17:8-16\; Esther 1:1-10:3\n\nhttps://he
+ bcal.com/h/purim-2026?uc=ical-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:Shushan Purim
+DTSTART;VALUE=DATE:20260304
+DTEND;VALUE=DATE:20260305
+UID:hebcal-20260304-12d3cbc7
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Purim celebrated in Jerusalem and walled cities\n\nhttps://heb
+ cal.com/h/shushan-purim-2026?uc=ical-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Parsha
+SUMMARY:Parashat Ki Tisa
+DTSTART;VALUE=DATE:20260307
+DTEND;VALUE=DATE:20260308
+UID:hebcal-20260307-213849be
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Ki-Tisa (“When You Elevate”) opens as God tells Moses to c
+ ollect a half-shekel donation from all Israelite adult males and to anoint
+  the Mishkan (Tabernacle)\, its vessels\, and the priests. The Israelites 
+ worship the golden calf\, and Moses breaks the tablets. Moses beseeches Go
+ d to forgive\, returning with a second set of tablets.\n\nTorah: Exodus 30
+ :11-34:35\; Numbers 19:1-22\nHaftarah: Ezekiel 36:16-38 | Shabbat Parah\nH
+ aftarah for Sephardim: Ezekiel 36:16-36\n\nhttps://hebcal.com/s/5786/21?uc
+ =ical-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:Shabbat Parah
+DTSTART;VALUE=DATE:20260307
+DTEND;VALUE=DATE:20260308
+UID:hebcal-20260307-1624bd32
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Shabbat of the Red Heifer. Shabbat before Shabbat HaChodesh\, 
+ in preparation for Passover\n\nHaftarah: Ezekiel 36:16-38\nHaftarah for Se
+ phardim: Ezekiel 36:16-36\n\nhttps://hebcal.com/h/shabbat-parah-2026?uc=ic
+ al-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Parsha
+SUMMARY:Parashat Vayakhel-Pekudei
+DTSTART;VALUE=DATE:20260314
+DTEND;VALUE=DATE:20260315
+UID:hebcal-20260314-c188da63
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Vayakhel (“He Assembled”) opens as God commands the Israel
+ ites to observe the Sabbath. Moses asks for material donations for the bui
+ lding of the Mishkan (Tabernacle)\, and the people donate. A group of arti
+ sans designated by God begin building the Mishkan and its vessels.\n Pekud
+ ei (“Accountings Of”) is the final Torah reading in the book of Exodus
+ . It describes the making of priestly garments worn in the Mishkan (Tabern
+ acle) and the completion of its construction. At God’s command\, Moses e
+ rects the Mishkan and puts its vessels in place\, and God’s presence fil
+ ls the Mishkan.\n\nTorah: Exodus 35:1-40:38\, 12:1-20\nHaftarah: Ezekiel 4
+ 5:16-46:18 | Shabbat HaChodesh\nHaftarah for Sephardim: Ezekiel 45:18-46:1
+ 5\n\nhttps://hebcal.com/s/5786/22d?uc=ical-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:Shabbat HaChodesh
+DTSTART;VALUE=DATE:20260314
+DTEND;VALUE=DATE:20260315
+UID:hebcal-20260314-3e8a7379
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Shabbat before Rosh Chodesh Nissan. Read in preparation for Pa
+ ssover\n\nHaftarah: Ezekiel 45:16-46:18\nHaftarah for Sephardim: Ezekiel 4
+ 5:18-46:15\n\nhttps://hebcal.com/h/shabbat-hachodesh-2026?uc=ical-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+SUMMARY:Mevarchim Chodesh Nisan
+DTSTART;VALUE=DATE:20260314
+DTEND;VALUE=DATE:20260315
+UID:hebcal-20260314-d006cb53
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Molad Nisan: Wednesday\, 4:34pm and 13 chalakim
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:Rosh Chodesh Nisan
+DTSTART;VALUE=DATE:20260319
+DTEND;VALUE=DATE:20260320
+UID:hebcal-20260319-26a17e2b
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Start of month of Nisan on the Hebrew calendar. נִיסָן (
+ transliterated Nisan or Nissan) is the 7th month of the civil Hebrew year 
+ (8th on leap years) and the 1st month of the biblical Hebrew year. It has 
+ 30 days and corresponds to March or April on the Gregorian calendar. רֹ
+ אשׁ חוֹדֶשׁ\, transliterated Rosh Chodesh or Rosh Hodesh\, is a 
+ minor holiday that occurs at the beginning of every month in the Hebrew ca
+ lendar. It is marked by the birth of a new moon\n\nTorah: Numbers 28:1-15\
+ n\nhttps://hebcal.com/h/rosh-chodesh-nisan-2026?uc=ical-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Parsha
+SUMMARY:Parashat Vayikra
+DTSTART;VALUE=DATE:20260321
+DTEND;VALUE=DATE:20260322
+UID:hebcal-20260321-fef12dca
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:In Vayikra (“He Called”)\, the first Torah portion in the 
+ book of Leviticus\, God tells Moses about the sacrifices offered in the Mi
+ shkan (Tabernacle). Among these are sacrifices entirely burnt on the altar
+ \, meal offerings made of flour and oil\, peace offerings\, and sacrifices
+  brought for sinning inadvertently.\n\nTorah: Leviticus 1:1-5:26\nHaftarah
+ : Isaiah 43:21-44:23\n\nhttps://hebcal.com/s/5786/24?uc=ical-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Parsha
+SUMMARY:Parashat Tzav
+DTSTART;VALUE=DATE:20260328
+DTEND;VALUE=DATE:20260329
+UID:hebcal-20260328-b025cb50
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:In Tzav (“Command”)\, God tells Moses about the sacrifices
+  offered in the Tabernacle (portable sanctuary)\, including a meal offerin
+ g brought by the high priest\, guilt offerings\, and offerings of thanks. 
+ Moses initiates Aaron and Aaron’s sons for priestly service in the Taber
+ nacle.\n\nTorah: Leviticus 6:1-8:36\nHaftarah: Malachi 3:4-24 | Shabbat Ha
+ Gadol\n\nhttps://hebcal.com/s/5786/25?uc=ical-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:Shabbat HaGadol
+DTSTART;VALUE=DATE:20260328
+DTEND;VALUE=DATE:20260329
+UID:hebcal-20260328-2e333569
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Shabbat before Pesach (The Great Shabbat)\n\nHaftarah: Malachi
+  3:4-24\n\nhttps://hebcal.com/h/shabbat-hagadol-2026?uc=ical-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:Yom HaAliyah
+DTSTART;VALUE=DATE:20260328
+DTEND;VALUE=DATE:20260329
+UID:hebcal-20260328-7ef10a7e
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Recognizes Aliyah\, immigration to the Jewish State of Israel\
+ n\nhttps://hebcal.com/h/yom-haaliyah-2026?uc=ical-diaspora
+END:VEVENT
+END:VCALENDAR

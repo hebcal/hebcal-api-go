@@ -1,0 +1,491 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P7D
+X-PUBLISHED-TTL:P7D
+X-WR-CALNAME:Hebcal New York
+X-APPLE-CALENDAR-COLOR:#800002
+X-WR-TIMEZONE;VALUE=TEXT:America/New_York
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🕎1️⃣ Chanukah: 1 Candle
+DTSTART;TZID=America/New_York:20261204T161000
+DTEND;TZID=America/New_York:20261204T161000
+UID:hebcal-20261204-1c6fa26d-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Hanukkah\, the Jewish festival of rededication. Also known as 
+ the Festival of Lights\, the eight-day festival is observed by lighting th
+ e candles of a hanukkiah (menorah)\n\nhttps://hebcal.com/h/chanukah-2026?u
+ c=ical-new-york
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🕯️ Candle lighting
+DTSTART;TZID=America/New_York:20261204T161000
+DTEND;TZID=America/New_York:20261204T161000
+UID:hebcal-20261204-37b70ea1-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Parashat Vayeshev
+LOCATION:New York
+GEO:40.71427;-74.00597
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT0H10M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Parsha
+SUMMARY:Parashat Vayeshev
+DTSTART;VALUE=DATE:20261205
+DTEND;VALUE=DATE:20261206
+UID:hebcal-20261205-b2a8edf8
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Vayeshev (“He Settled”) begins the story of Joseph\, descr
+ ibing his rivalry with his brothers\, slavery in Egypt\, and imprisonment 
+ after his master’s wife frames him in response to Joseph’s refusal of 
+ her advances. It also contains the story of Tamar\, her husbands\, and her
+  father-in-law\, Judah.\n\nTorah: Genesis 37:1-40:23\; Numbers 7:1-17\nHaf
+ tarah: Zechariah 2:14-4:7 | Chanukah Day 1 (on Shabbat)\n\nhttps://hebcal.
+ com/s/5787/9?uc=ical-new-york
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+SUMMARY:Mevarchim Chodesh Tevet
+DTSTART;VALUE=DATE:20261205
+DTEND;VALUE=DATE:20261206
+UID:hebcal-20261205-e0441a9f
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Molad Tevet: Wednesday\, 11:11am and 4 chalakim
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🕎2️⃣ Chanukah: 2 Candles
+DTSTART;TZID=America/New_York:20261205T171400
+DTEND;TZID=America/New_York:20261205T171400
+UID:hebcal-20261205-bf71330e-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Hanukkah\, the Jewish festival of rededication. Also known as 
+ the Festival of Lights\, the eight-day festival is observed by lighting th
+ e candles of a hanukkiah (menorah)\n\nhttps://hebcal.com/h/chanukah-2026?u
+ c=ical-new-york
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:✨ Havdalah
+DTSTART;TZID=America/New_York:20261205T171400
+DTEND;TZID=America/New_York:20261205T171400
+UID:hebcal-20261205-a35a8505-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🕎3️⃣ Chanukah: 3 Candles
+DTSTART;TZID=America/New_York:20261206T165200
+DTEND;TZID=America/New_York:20261206T165200
+UID:hebcal-20261206-3a5e82d5-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Hanukkah\, the Jewish festival of rededication. Also known as 
+ the Festival of Lights\, the eight-day festival is observed by lighting th
+ e candles of a hanukkiah (menorah)\n\nhttps://hebcal.com/h/chanukah-2026?u
+ c=ical-new-york
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🕎4️⃣ Chanukah: 4 Candles
+DTSTART;TZID=America/New_York:20261207T165200
+DTEND;TZID=America/New_York:20261207T165200
+UID:hebcal-20261207-8341b82a-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Hanukkah\, the Jewish festival of rededication. Also known as 
+ the Festival of Lights\, the eight-day festival is observed by lighting th
+ e candles of a hanukkiah (menorah)\n\nhttps://hebcal.com/h/chanukah-2026?u
+ c=ical-new-york
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🕎5️⃣ Chanukah: 5 Candles
+DTSTART;TZID=America/New_York:20261208T165200
+DTEND;TZID=America/New_York:20261208T165200
+UID:hebcal-20261208-841127b9-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Hanukkah\, the Jewish festival of rededication. Also known as 
+ the Festival of Lights\, the eight-day festival is observed by lighting th
+ e candles of a hanukkiah (menorah)\n\nhttps://hebcal.com/h/chanukah-2026?u
+ c=ical-new-york
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🕎6️⃣ Chanukah: 6 Candles
+DTSTART;TZID=America/New_York:20261209T165200
+DTEND;TZID=America/New_York:20261209T165200
+UID:hebcal-20261209-9733c9a9-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Hanukkah\, the Jewish festival of rededication. Also known as 
+ the Festival of Lights\, the eight-day festival is observed by lighting th
+ e candles of a hanukkiah (menorah)\n\nhttps://hebcal.com/h/chanukah-2026?u
+ c=ical-new-york
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:✡️ Chag HaBanot
+DTSTART;VALUE=DATE:20261210
+DTEND;VALUE=DATE:20261211
+UID:hebcal-20261210-0139c73e
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:North African Chanukah festival of daughters. Called Eid al-Ba
+ nat in Arabic\, the holiday was most preserved in Tunisia\n\nhttps://hebca
+ l.com/h/chag-habanot-2026?uc=ical-new-york
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🌒 Rosh Chodesh Tevet
+DTSTART;VALUE=DATE:20261210
+DTEND;VALUE=DATE:20261211
+UID:hebcal-20261210-e83ced3d
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Start of month of Tevet on the Hebrew calendar. Tevet (טֵ
+ בֵת) is the 4th month of the civil Hebrew year and the 10th month of th
+ e biblical Hebrew year. It has 29 days and corresponds to December or Janu
+ ary on the Gregorian calendar. רֹאשׁ חוֹדֶשׁ\, transliterated 
+ Rosh Chodesh or Rosh Hodesh\, is a minor holiday that occurs at the beginn
+ ing of every month in the Hebrew calendar. It is marked by the birth of a 
+ new moon\n\nTorah: Numbers 28:1-15\, 7:42-47\n\nhttps://hebcal.com/h/rosh-
+ chodesh-tevet-2026?uc=ical-new-york
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🕎7️⃣ Chanukah: 7 Candles
+DTSTART;TZID=America/New_York:20261210T165200
+DTEND;TZID=America/New_York:20261210T165200
+UID:hebcal-20261210-635c3774-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Hanukkah\, the Jewish festival of rededication. Also known as 
+ the Festival of Lights\, the eight-day festival is observed by lighting th
+ e candles of a hanukkiah (menorah)\n\nhttps://hebcal.com/h/chanukah-2026?u
+ c=ical-new-york
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🌒 Rosh Chodesh Tevet
+DTSTART;VALUE=DATE:20261211
+DTEND;VALUE=DATE:20261212
+UID:hebcal-20261211-e83ced3d
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Start of month of Tevet on the Hebrew calendar. Tevet (טֵ
+ בֵת) is the 4th month of the civil Hebrew year and the 10th month of th
+ e biblical Hebrew year. It has 29 days and corresponds to December or Janu
+ ary on the Gregorian calendar. רֹאשׁ חוֹדֶשׁ\, transliterated 
+ Rosh Chodesh or Rosh Hodesh\, is a minor holiday that occurs at the beginn
+ ing of every month in the Hebrew calendar. It is marked by the birth of a 
+ new moon\n\nTorah: Numbers 28:1-15\, 7:48-53\n\nhttps://hebcal.com/h/rosh-
+ chodesh-tevet-2026?uc=ical-new-york
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🕎8️⃣ Chanukah: 8 Candles
+DTSTART;TZID=America/New_York:20261211T161000
+DTEND;TZID=America/New_York:20261211T161000
+UID:hebcal-20261211-d85c28dc-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Hanukkah\, the Jewish festival of rededication. Also known as 
+ the Festival of Lights\, the eight-day festival is observed by lighting th
+ e candles of a hanukkiah (menorah)\n\nhttps://hebcal.com/h/chanukah-2026?u
+ c=ical-new-york
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🕯️ Candle lighting
+DTSTART;TZID=America/New_York:20261211T161000
+DTEND;TZID=America/New_York:20261211T161000
+UID:hebcal-20261211-37b70ea1-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Parashat Miketz
+LOCATION:New York
+GEO:40.71427;-74.00597
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT0H10M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Parsha
+SUMMARY:Parashat Miketz
+DTSTART;VALUE=DATE:20261212
+DTEND;VALUE=DATE:20261213
+UID:hebcal-20261212-b3d4a417
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Mikketz (“After”) follows Joseph as he interprets Pharaoh
+ ’s dreams and rises to become second-in-command to Pharaoh. When Joseph
+ ’s brothers come to Egypt seeking food during a famine\, Joseph accuses 
+ them of spying. He insists that they return with their youngest brother\, 
+ Benjamin\, and later plants a goblet in Benjamin’s bag.\n\nTorah: Genesi
+ s 41:1-44:17\; Numbers 7:54-8:4\nHaftarah: I Kings 7:40-50 | Chanukah Day 
+ 8 (on Shabbat)\n\nhttps://hebcal.com/s/5787/10?uc=ical-new-york
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🕎 Chanukah: 8th Day
+DTSTART;VALUE=DATE:20261212
+DTEND;VALUE=DATE:20261213
+UID:hebcal-20261212-7c4cd5b6
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Hanukkah\, the Jewish festival of rededication. Also known as 
+ the Festival of Lights\, the eight-day festival is observed by lighting th
+ e candles of a hanukkiah (menorah)\n\nHaftarah: I Kings 7:40-50\n\nhttps:/
+ /hebcal.com/h/chanukah-2026?uc=ical-new-york
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:✨ Havdalah
+DTSTART;TZID=America/New_York:20261212T171400
+DTEND;TZID=America/New_York:20261212T171400
+UID:hebcal-20261212-a35a8505-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🕯️ Candle lighting
+DTSTART;TZID=America/New_York:20261218T161200
+DTEND;TZID=America/New_York:20261218T161200
+UID:hebcal-20261218-37b70ea1-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Parashat Vayigash
+LOCATION:New York
+GEO:40.71427;-74.00597
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT0H10M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Parsha
+SUMMARY:Parashat Vayigash
+DTSTART;VALUE=DATE:20261219
+DTEND;VALUE=DATE:20261220
+UID:hebcal-20261219-b9528bad
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Vayiggash (“He Approached”) opens as Judah pleads with Jos
+ eph not to keep Benjamin as a prisoner. Joseph reveals his true identity t
+ o his brothers\, crying and kissing them. The brothers bring Jacob from Ca
+ naan to Egypt\, and Jacob and his children settle in Goshen. The portion e
+ nds as Joseph buys most of Egypt’s land in exchange for food.\n\nTorah: 
+ Genesis 44:18-47:27\nHaftarah: Ezekiel 37:15-28\n\nhttps://hebcal.com/s/57
+ 87/11?uc=ical-new-york
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:✨ Havdalah
+DTSTART;TZID=America/New_York:20261219T171600
+DTEND;TZID=America/New_York:20261219T171600
+UID:hebcal-20261219-a35a8505-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+SUMMARY:Fast begins
+DTSTART;TZID=America/New_York:20261220T054800
+DTEND;TZID=America/New_York:20261220T054800
+UID:hebcal-20261220-fd646bb5-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Asara B’Tevet
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:✡️ Asara B’Tevet
+DTSTART;VALUE=DATE:20261220
+DTEND;VALUE=DATE:20261221
+UID:hebcal-20261220-16d2435e
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Fast commemorating the siege of Jerusalem\n\nTorah: Exodus 32:
+ 11-14\, 34:1-10\n\nhttps://hebcal.com/h/asara-btevet-20261220?uc=ical-new-
+ york
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+SUMMARY:Fast ends
+DTSTART;TZID=America/New_York:20261220T170900
+DTEND;TZID=America/New_York:20261220T170900
+UID:hebcal-20261220-82e6d873-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Asara B’Tevet
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+SUMMARY:🌔 Latest Kiddush Levana
+DTSTART;TZID=America/New_York:20261223T221200
+DTEND;TZID=America/New_York:20261223T221200
+UID:hebcal-20261223-cc2199b9-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Earliest Kiddush Levana (3 days): Sat\, Dec 12\, 2026\, 3:51am
+ \nEarliest Kiddush Levana (7 days): Wed\, Dec 16\, 2026\, 3:51am\nLatest K
+ iddush Levana (Maharil): Wed\, Dec 23\, 2026\, 10:12pm\nLatest Kiddush Lev
+ ana (15 days): Thu\, Dec 24\, 2026\, 3:50am
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:🕯️ Candle lighting
+DTSTART;TZID=America/New_York:20261225T161600
+DTEND;TZID=America/New_York:20261225T161600
+UID:hebcal-20261225-37b70ea1-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+DESCRIPTION:Parashat Vayechi
+LOCATION:New York
+GEO:40.71427;-74.00597
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Event reminder
+TRIGGER:-P0DT0H10M0S
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Parsha
+SUMMARY:Parashat Vayechi
+DTSTART;VALUE=DATE:20261226
+DTEND;VALUE=DATE:20261227
+UID:hebcal-20261226-34317a08
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Vayechi (“He Lived”) is the final Torah portion in the Boo
+ k of Genesis. It opens as Jacob prepares for his death\, making his son Jo
+ seph swear to bury him in the Cave of Machpelah. Jacob blesses Joseph’s 
+ two sons and his own 12 sons and then dies. Jacob’s sons bury him. The p
+ ortion ends with Joseph’s death.\n\nTorah: Genesis 47:28-50:26\nHaftarah
+ : I Kings 2:1-12\n\nhttps://hebcal.com/s/5787/12?uc=ical-new-york
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:✨ Havdalah
+DTSTART;TZID=America/New_York:20261226T172000
+DTEND;TZID=America/New_York:20261226T172000
+UID:hebcal-20261226-a35a8505-5128581
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+CLASS:PUBLIC
+LOCATION:New York
+GEO:40.71427;-74.00597
+END:VEVENT
+END:VCALENDAR

@@ -111,7 +111,7 @@ func TestParseV2Path(t *testing.T) {
 		wantErr bool
 	}{
 		{"well formed", v2Prefix + data + "/hebcal_2026.pdf", false},
-		{"an ics feed, not ours", v2Prefix + data + "/hebcal.ics", true},
+		{"an ics feed, when a pdf is asked for", v2Prefix + data + "/hebcal.ics", true},
 		// parseV2Path() defaults a filename-less path to hebcal.ics.
 		{"no filename", v2Prefix + data, true},
 		{"empty payload", v2Prefix + "/hebcal_2026.pdf", true},

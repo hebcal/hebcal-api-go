@@ -166,7 +166,9 @@ func ParseV2Path(path, ext string) (v2Query, error) {
 	// The error is deliberately ignored: a stray percent sign has to leave the
 	// other parameters intact rather than fail the request, and url.ParseQuery
 	// returns what it could parse alongside the error.
-	values, _ := url.ParseQuery(string(raw))
+	// A semicolon is part of a value here, not a separator, though Go's parser
+	// would drop the pair that holds one.
+	values, _ := url.ParseQuery(strings.ReplaceAll(string(raw), ";", "%3B"))
 	q := make(v2Query, len(values))
 	for key, vals := range values {
 		q[key] = vals[len(vals)-1]

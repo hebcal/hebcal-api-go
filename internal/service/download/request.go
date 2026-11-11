@@ -52,14 +52,30 @@ func (e *UnsupportedSeriesError) Header() string { return strings.Join(e.Series,
 // stands for in the request log, under its "qs" key. The classic form carries
 // its query in the logged URL already.
 func Decode(ctx context.Context, u *url.URL, ext string) (*downloadpb.Download, error) {
-	msg, err := decode(u, ext)
+	msg, _, err := decodeWithQuery(ctx, u, ext)
+	return msg, err
+}
+
+// DecodeICS is Decode for an .ics feed, which also reads the options a query
+// string can carry that the message cannot: the calendar's title, colour and
+// tracking parameters.
+func DecodeICS(ctx context.Context, u *url.URL) (*downloadpb.Download, *ICSQuery, error) {
+	msg, q, err := decodeWithQuery(ctx, u, ".ics")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
+	}
+	return msg, newICSQuery(q), nil
+}
+
+func decodeWithQuery(ctx context.Context, u *url.URL, ext string) (*downloadpb.Download, v2Query, error) {
+	msg, q, err := decode(u, ext)
+	if err != nil {
+		return nil, nil, err
 	}
 	if isOpaquePath(u.Path) {
 		reqlog.FromContext(ctx).SetQuery(MessageToQuery(msg))
 	}
-	return msg, nil
+	return msg, q, nil
 }
 
 // isOpaquePath reports whether a download URL hides its calendar options behind
@@ -68,24 +84,29 @@ func isOpaquePath(path string) bool {
 	return !isCGIPath(path)
 }
 
-func decode(u *url.URL, ext string) (*downloadpb.Download, error) {
+// decode returns the message and the query string the request stands for, as
+// hebcal.com reads it: the legacy forms carry theirs, and a /v4/ URL gets the
+// one its message renders to with the URL's own query laid over it.
+func decode(u *url.URL, ext string) (*downloadpb.Download, v2Query, error) {
 	switch path := u.Path; {
 	case isCGIPath(path):
 		q, err := ParseCGIPath(path, u.RawQuery, ext)
 		if err != nil {
-			return nil, NotFoundf("%s", err.Error())
+			return nil, nil, NotFoundf("%s", err.Error())
 		}
-		return DecodeV2(q)
+		msg, err := DecodeV2(q)
+		return msg, q, err
 	case strings.HasPrefix(path, "/v2/"):
 		q, err := ParseV2Path(path, ext)
 		if err != nil {
-			return nil, NotFoundf("%s", err.Error())
+			return nil, nil, NotFoundf("%s", err.Error())
 		}
-		return DecodeV2(q)
+		msg, err := DecodeV2(q)
+		return msg, q, err
 	default:
 		payload, err := ParsePath(path, ext)
 		if err != nil {
-			return nil, NotFoundf("%s", err.Error())
+			return nil, nil, NotFoundf("%s", err.Error())
 		}
 		msg, err := DecodeMessage(payload)
 		if err != nil {
@@ -93,8 +114,16 @@ func decode(u *url.URL, ext string) (*downloadpb.Download, error) {
 			// path lowercased, which breaks the mixed-case base64 and the
 			// protobuf it decodes to. An undecodable payload names no
 			// calendar, so it is 404, the same as an unparseable path.
-			return nil, NotFoundf("%s", err.Error())
+			return nil, nil, NotFoundf("%s", err.Error())
 		}
-		return msg, nil
+		q := make(v2Query)
+		vals, _ := url.ParseQuery(MessageToQuery(msg))
+		for k, v := range vals {
+			q[k] = v[len(v)-1]
+		}
+		for k, v := range u.Query() {
+			q[k] = v[len(v)-1]
+		}
+		return msg, q, nil
 	}
 }

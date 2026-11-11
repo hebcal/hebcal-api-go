@@ -18,7 +18,7 @@ import (
 // maps to. pdf.go and csv.go hold what differs.
 
 // download serves a calendar download: csvDownload when the path ends in .csv,
-// pdfDownload for everything else. All three download URL shapes -- /v4/,
+// icsDownload for .ics, pdfDownload for everything else. All three download URL shapes -- /v4/,
 // /v2/h/ and /hebcal/index.cgi/ -- serve both formats.
 //
 // A personal Yahrzeit + Anniversary calendar shares those URL shapes and is
@@ -33,11 +33,14 @@ func (s *Server) download(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid download URL: v=undefined", http.StatusNotFound)
 		return
 	}
-	if strings.HasSuffix(r.URL.Path, ".csv") {
+	switch {
+	case strings.HasSuffix(r.URL.Path, ".csv"):
 		s.csvDownload(w, r)
-		return
+	case strings.HasSuffix(r.URL.Path, ".ics"):
+		s.icsDownload(w, r)
+	default:
+		s.pdfDownload(w, r)
 	}
-	s.pdfDownload(w, r)
 }
 
 // downloadMethodAllowed rejects the methods a calendar has no answer for.
@@ -77,6 +80,9 @@ func writeDownloadError(w http.ResponseWriter, err error) {
 	httpx.RecordError(w, err)
 	var oor *download.OutOfRangeError
 	var unsup *download.UnsupportedSeriesError
+	if writeReadingsError(w, err) {
+		return
+	}
 	switch {
 	case errors.As(err, &oor):
 		w.Header().Set("Cache-Control", httpx.CacheControl14Days)

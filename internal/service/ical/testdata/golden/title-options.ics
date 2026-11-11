@@ -1,0 +1,66 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:PT12H
+X-PUBLISHED-TTL:PT12H
+X-WR-CALNAME:Ploni's Holidays
+X-WR-CALDESC:Jewish holidays\; for Ploni
+X-WR-RELCALID:ploni-1
+X-APPLE-CALENDAR-COLOR:#ABCDEF
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:Erev Purim
+DTSTART;VALUE=DATE:20260302
+DTEND;VALUE=DATE:20260303
+UID:hebcal-20260302-4fdbaae2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Celebration of Jewish deliverance as told by Megilat Esther. I
+ t commemorates a time when the Jewish people living in Persia were saved f
+ rom extermination\n\nTorah: Esther 1:1-10:3\n\nhttps://hebcal.com/h/purim-
+ 2026?us=ical&um=icalendar&uc=ploni
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:Purim
+DTSTART;VALUE=DATE:20260303
+DTEND;VALUE=DATE:20260304
+UID:hebcal-20260303-b59993b2
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Celebration of Jewish deliverance as told by Megilat Esther. I
+ t commemorates a time when the Jewish people living in Persia were saved f
+ rom extermination\n\nTorah: Exodus 17:8-16\; Esther 1:1-10:3\n\nhttps://he
+ bcal.com/h/purim-2026?us=ical&um=icalendar&uc=ploni
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:Rosh Chodesh Nisan
+DTSTART;VALUE=DATE:20260319
+DTEND;VALUE=DATE:20260320
+UID:hebcal-20260319-26a17e2b
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Start of month of Nisan on the Hebrew calendar. נִיסָן (
+ transliterated Nisan or Nissan) is the 7th month of the civil Hebrew year 
+ (8th on leap years) and the 1st month of the biblical Hebrew year. It has 
+ 30 days and corresponds to March or April on the Gregorian calendar. רֹ
+ אשׁ חוֹדֶשׁ\, transliterated Rosh Chodesh or Rosh Hodesh\, is a 
+ minor holiday that occurs at the beginning of every month in the Hebrew ca
+ lendar. It is marked by the birth of a new moon\n\nTorah: Numbers 28:1-15\
+ n\nhttps://hebcal.com/h/rosh-chodesh-nisan-2026?us=ical&um=icalendar&uc=pl
+ oni
+END:VEVENT
+END:VCALENDAR

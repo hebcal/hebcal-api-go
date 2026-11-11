@@ -59,3 +59,33 @@ must not be numbered `adar-i`, and Erev Pesach and Erev Sukkot were missing the
 fixes are in hebcal-go v0.19.0. The Go half of that comparison was a throwaway
 `cmd/` program in hebcal-go; if the comparison is worth repeating, it is worth
 rewriting there rather than keeping a copy here.
+
+## ics-compare.sh, ics-sweep.sh, ics-v4.mjs, readings-stub.mjs
+
+Compare the holiday `.ics` feeds with hebcal-web's. Run hebcal-web's download
+app (`cd ../hebcal-web && npm install && npm run dev:download`, port 8081), this
+service on :8082 with `-readings-socket` pointing at the stub, and the stub:
+
+```sh
+node tools/readings-stub.mjs /tmp/readings.sock &
+./hebcal-api -port 8082 -zips-db ../hebcal-web/zips.sqlite3 \
+  -geonames-db ../hebcal-web/geonames.sqlite3 -readings-socket /tmp/readings.sock
+tools/ics-sweep.sh tools/ics-cases.txt
+```
+
+`readings-stub.mjs` answers readings-svc's `/torahMemo` with hebcal-web's own
+`makeTorahMemoText()`, so the descriptions can be compared without the sidecar.
+`ics-compare.sh <url>` diffs one URL (`TIMES=1` to see the minute-level time
+differences it hides; Rosh Hashana's year, which differs on purpose, is always
+hidden). `ics-sweep.sh <file>` runs every query string in a file (one per line;
+`ics-cases.txt` is the set the port was measured with) in the classic, `/v2/h/`
+and `/v4/` forms -- `ics-v4.mjs` builds the last with hebcal-web's own encoder
+-- and prints the ones that differ. `CGI_ONLY=1` skips the other two forms.
+
+## ics-goldens.sh, dump-kl-dates.mjs
+
+`ics-goldens.sh` regenerates `internal/service/ical/testdata` -- the golden feeds
+hebcal-web renders for `cases.tsv`, and the readings the tests answer in place of
+readings-svc -- and `dump-kl-dates.mjs` writes `internal/service/ical/kldates.go`,
+how `Intl` formats the dates in a Kiddush Levana description in each locale
+(Go has no CLDR). Re-run the second if hebcal-web's locale list grows.

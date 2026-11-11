@@ -32,8 +32,12 @@ Currently implemented:
   `/yahrzeit/yahrzeit.cgi/`, `/export/`) and the saved `/v3/<id>/` calendars
   read from MySQL. Ported from `@hebcal/icalendar` (as `pkg/icalendar`) and
   hebcal-web's `src/yahrzeitDownload.js`; see
-  [iCalendar feeds](#icalendar-feeds). The holiday `.ics` feeds are not
-  ported yet.
+  [iCalendar feeds](#icalendar-feeds).
+- **Holiday iCalendar feeds** — the `download.hebcal.com/v4/…ics` calendars
+  (and the legacy `/v2/h/`, `/hebcal/index.cgi/` and `/export/` spellings of
+  them): holidays, Torah readings, Omer, candle lighting and the rest,
+  subscribable or saved. Ported from hebcal-web's `src/hebcal-download.js` and
+  `src/icalCommon.js`; see [Holiday feeds](#holiday-feeds).
 - **Static calendars** (`/ical/`) — download.hebcal.com's multi-year holiday,
   Torah reading, Hebrew date, Omer, Yizkor and daily-learning feeds, written
   weekly by `cmd/hebcal-static-ical` (ported from hebcal-web's
@@ -278,8 +282,8 @@ APIs are unaffected.
   identifier and the `ladeg`/`lamin`/`ladir` degrees-and-minutes form — are
   resolved rather than dropped, which is what these URLs rendered before
   hebcal-web's redirect was added. Only
-  `.pdf` and `.csv` under `/v2/h/` are served: the holiday `.ics` feeds sharing
-  that prefix get `404`, as does a URL with no `v=`. (The Yahrzeit calendars
+  `.pdf`, `.csv` and `.ics` under `/v2/h/` are served, and a URL with no `v=`
+  gets `404`. (The Yahrzeit calendars
   under `/v2/y/` are served; see [iCalendar feeds](#icalendar-feeds).)
 - `GET|HEAD /holidays/hebcal-<year>.pdf` — render a year of Jewish
   holidays, the calendar www.hebcal.com links from its holiday pages. A
@@ -379,9 +383,37 @@ keeps working. Each fetch -- `304`s included -- records an access time and, the
 first time, marks the calendar downloaded, on a background worker that never
 delays the response.
 
-Not served yet: the holiday `.ics` feeds (`/v4/…ics`). The plan for those is
-in [iCalendar-port.md](iCalendar-port.md); their event and description
-rendering already exists for the static calendars below.
+#### Holiday feeds
+
+The calendar the website's download page builds, as an `.ics` file:
+
+- `GET|HEAD /v4/<base64 protobuf>/<filename>.ics` -- the current URL form, the
+  same payload the PDF and CSV downloads carry
+- `GET|HEAD /v2/h/<base64 query string>/<filename>.ics` -- the legacy form
+- `GET|HEAD /hebcal/index.cgi/<filename>.ics?v=1&<query>` and
+  `/export/[<dir>/]<filename>.ics?v=1&<query>` -- the classic query string (`;`
+  separators and double-encoded queries included)
+
+A request without `subscribe` is a file to save (`Content-Disposition:
+attachment`); with it, a subscription that names itself ("Hebcal Diaspora")
+instead of by its years. Over 2399 events a subscription is cut to what is
+recent or to come and ends with a notice. `title`, `caldesc`, `color`,
+`relcalid`, `publishedTTL`, `emoji` and `utm_source`/`utm_medium`/`utm_campaign`
+may be added to any form's query string. The calendar's time zone and its
+`VTIMEZONE` (from `-zoneinfo`) are included when it has a location. A calendar
+with nothing in it is a `200` holding one placeholder event, good for a day.
+
+The Torah and Haftarah text in each description comes from readings-svc's
+`/torahMemo`, once for each Hebrew year and schedule; a feed that needs it is
+`503` with `Retry-After` while readings-svc is down and `501` when none is
+configured, never served without it. Deploy readings-svc first.
+
+Output is byte-identical to hebcal-web's for the same URL, UIDs and
+descriptions included, apart from a minute in the odd time computed from the
+sun and Rosh Hashana's year, which is gematriya in Hebrew; see CLAUDE.md for
+the full list. To check a change, `tools/ics-sweep.sh` renders a list of URLs
+in all three forms against a local hebcal-web and diffs them (see
+`tools/README.md`).
 
 #### Zmanim feeds
 
@@ -597,7 +629,8 @@ internal/
     yahrzeit/              Yahrzeit + Anniversary iCalendar feeds: URL shapes,
                            events, titles and descriptions
     ical/                  holiday-calendar event -> VEVENT: title, emoji,
-                           category, description, UID
+                           category, description, UID; and the /v4/ holiday
+                           feeds: titles, limits, Torah text per Hebrew year
     staticcal/             the static /ical/ calendars and their feed list
   repository/
     readings/              client for the readings-svc sidecar (/leyning

@@ -464,7 +464,7 @@ func TestPDFLegacyV2Errors(t *testing.T) {
 		path string
 		want int
 	}{
-		{"an ics feed", "/v2/h/" + enc("v=1&year=2026&maj=on") + "/hebcal.ics", http.StatusNotFound},
+		{"an unknown format", "/v2/h/" + enc("v=1&year=2026&maj=on") + "/hebcal.txt", http.StatusNotFound},
 		{"a yahrzeit calendar", "/v2/y/" + enc("v=yahrzeit") + "/yahrzeit.pdf", http.StatusNotFound},
 		{"no v at all", "/v2/h/" + enc("year=2026&maj=on") + "/x.pdf", http.StatusNotFound},
 		{"not base64", "/v2/h/!!!!/x.pdf", http.StatusNotFound},
@@ -608,7 +608,7 @@ func TestPDFLegacyCGIErrors(t *testing.T) {
 	}{
 		{"no query at all", "/hebcal/index.cgi/hebcal_2028_may.pdf", http.StatusNotFound},
 		{"no v", "/hebcal/index.cgi/x.pdf?year=2026&maj=on", http.StatusNotFound},
-		{"an ics feed", "/hebcal/index.cgi/hebcal.ics?v=1&year=2026&maj=on", http.StatusNotFound},
+		{"an unknown format", "/hebcal/index.cgi/hebcal.txt?v=1&year=2026&maj=on", http.StatusNotFound},
 		{"a yahrzeit v=", "/hebcal/index.cgi/x.pdf?v=yahrzeit&y1=1990", http.StatusNotFound},
 		{"an out-of-range year", "/hebcal/index.cgi/x.pdf?v=1&year=9999&maj=on", http.StatusGone},
 	}

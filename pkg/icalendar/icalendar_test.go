@@ -365,3 +365,21 @@ func TestCalendarTimezone(t *testing.T) {
 		t.Error("nil Zones should behave like a missing definition")
 	}
 }
+
+// A summary is escaped, its suffix is not: the " / " and Hebrew name of an
+// English-and-Hebrew calendar go out as they are.
+func TestSummarySuffix(t *testing.T) {
+	got := marshal(t, &Calendar{Title: "t"}, Event{
+		UID: "u", Summary: "Rosh Hashana, 5787", SummarySuffix: " / רֹאשׁ הַשָּׁנָה, א",
+		Date: Date{2026, time.September, 12},
+	})
+	var summary string
+	for _, l := range got {
+		if strings.HasPrefix(l, "SUMMARY:") {
+			summary = l
+		}
+	}
+	if want := "SUMMARY:Rosh Hashana\\, 5787 / רֹאשׁ הַשָּׁנָה, א"; summary != want {
+		t.Errorf("got %q, want %q", summary, want)
+	}
+}
