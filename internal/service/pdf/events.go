@@ -71,7 +71,7 @@ func Generate(p *download.Params) ([]Event, error) {
 		hd := ev.GetDate()
 		subject := model.FixMonthSpelling(jsutil.SmartApostrophe(renderSubject(ev, flags, p.Locale)))
 		if !p.Emoji {
-			subject = stripEmoji(subject)
+			subject = download.StripEmoji(subject)
 		}
 		// hebcal-go renders timed events as "Candle lighting: 6:56pm", but the
 		// PDF draws the time separately in bold at a smaller size, so it has to
@@ -210,10 +210,6 @@ func timeStringOf(ev event.CalEvent, p *download.Params) string {
 	return fmt.Sprintf("%d:%02d%s", h12, m, suffix)
 }
 
-// learningFlags are the daily-learning series flags.
-const learningFlags = event.DAF_YOMI | event.MISHNA_YOMI |
-	event.NACH_YOMI | event.YERUSHALMI_YOMI | event.DAILY_LEARNING
-
 // renderSubject renders an event's subject for a calendar cell, which is narrow
 // enough that the brief form is wanted over the full one.
 //
@@ -230,7 +226,7 @@ func renderSubject(ev event.CalEvent, flags event.HolidayFlags, locale string) s
 		if i := strings.Index(full, " "); i >= 0 {
 			return full[i+1:]
 		}
-	case flags.HasAny(learningFlags):
+	case flags.HasAny(download.LearningFlags):
 		// The daily-learning series render as "Daf Yomi: Berakhot 2"; the cell
 		// shows only the reading.
 		if i := strings.Index(full, ": "); i >= 0 {
@@ -238,18 +234,6 @@ func renderSubject(ev event.CalEvent, flags event.HolidayFlags, locale string) s
 		}
 	}
 	return full
-}
-
-// stripEmoji removes trailing holiday emoji from a rendered description when
-// the request did not ask for them.
-func stripEmoji(s string) string {
-	out := strings.Map(func(r rune) rune {
-		if r >= 0x1F000 || (r >= 0x2600 && r <= 0x27BF) || r == 0xFE0F {
-			return -1
-		}
-		return r
-	}, s)
-	return strings.TrimSpace(out)
 }
 
 // altDateRank puts an alternate-date event ahead of a day's other events, as

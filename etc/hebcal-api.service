@@ -14,6 +14,7 @@ ExecStart=/usr/local/bin/hebcal-api \
   -geonames-db /var/www/geonames.sqlite3 \
   -fonts /var/www/fonts \
   -zoneinfo /var/www/zoneinfo \
+  -document-root /var/www/html \
   -ini /etc/hebcal-dot-com.ini \
   -download-max-concurrency 16
 # SIGUSR1 (or SIGHUP) reopens the access log after rotation and checks

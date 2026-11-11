@@ -73,24 +73,11 @@ func keepEvent(ev event.CalEvent, flags event.HolidayFlags, p *Params) bool {
 // MINOR_HOLIDAY, which is what keeps them in a calendar that asked only for
 // major holidays while Tu BiShvat and Rosh Hashana LaBehemot drop out.
 func EventCategories(ev event.CalEvent) []string {
-	d := untranslatedDesc(ev)
+	d := UntranslatedDesc(ev)
 	if d == "Purim" || d == "Erev Purim" || strings.HasPrefix(d, "Chanukah: ") {
 		return []string{"holiday", "major"}
 	}
 	return ev.GetCategories()
-}
-
-// untranslatedDesc returns the event's English description, which is what the
-// category rules key on.
-func untranslatedDesc(ev event.CalEvent) string {
-	switch e := ev.(type) {
-	case event.HolidayEvent:
-		return e.Desc
-	}
-	if te, ok := AsTimedEvent(ev); ok {
-		return te.Desc
-	}
-	return ev.Render("en")
 }
 
 // AsTimedEvent returns the TimedEvent behind ev. KiddushLevanaEvent embeds a

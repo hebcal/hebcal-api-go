@@ -128,6 +128,9 @@ type Event struct {
 	Geo *Geo
 	// URL is the RFC 5545 URL property; empty omits it.
 	URL string
+	// RRule repeats the event, an RFC 5545 recurrence rule such as
+	// "FREQ=YEARLY;INTERVAL=1;BYMONTH=3"; empty omits it.
+	RRule string
 	// Alarm adds a display reminder; nil means none.
 	Alarm *Alarm
 }
@@ -293,6 +296,9 @@ func (e *Event) write(buf *bytes.Buffer, dtstamp string) {
 	}
 	if e.URL != "" {
 		line(buf, "URL:", e.URL)
+	}
+	if e.RRule != "" {
+		line(buf, "RRULE:", e.RRule)
 	}
 	if e.Alarm != nil {
 		line(buf, "BEGIN:VALARM")

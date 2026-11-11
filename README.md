@@ -35,6 +35,11 @@ Currently implemented:
   hebcal-web's `src/yahrzeitDownload.js`; see
   [iCalendar feeds](#icalendar-feeds). The holiday `.ics` feeds are not
   ported yet.
+- **Static calendars** (`/ical/`) — download.hebcal.com's multi-year holiday,
+  Torah reading, Hebrew date, Omer, Yizkor and daily-learning feeds, written
+  weekly by `cmd/hebcal-static-ical` (ported from hebcal-web's
+  `src/makeStaticCalendars.js` and `src/staticCalendars.js`) and served with
+  their precompressed copies; see [Static calendars](#static-calendars)
 - **Short URL redirects** (`/h/`, `/s/`, `/o/`) — www.hebcal.com's short
   links to holiday, Torah portion and Omer pages, ported from hebcal-web's
   `src/shortUrlRedir.js`
@@ -375,8 +380,9 @@ keeps working. Each fetch -- `304`s included -- records an access time and, the
 first time, marks the calendar downloaded, on a background worker that never
 delays the response.
 
-Not served yet: the holiday `.ics` feeds. The plan for those is in
-[iCalendar-port.md](iCalendar-port.md).
+Not served yet: the holiday `.ics` feeds (`/v4/…ics`). The plan for those is
+in [iCalendar-port.md](iCalendar-port.md); their event and description
+rendering already exists for the static calendars below.
 
 #### Zmanim feeds
 
@@ -398,6 +404,38 @@ sun neither rises nor sets in the whole range `400`. Output matches hebcal-web's
 for the same URL on the same day, UIDs included, but for the occasional
 one-minute zmanim difference noted under
 [Known differences](#known-differences-from-the-nodejs-implementation).
+
+#### Static calendars
+
+- `GET|HEAD /ical/<name>.ics`, `/ical/<name>.csv` -- the files in the
+  `ical/` subdirectory of `-document-root` (default `/var/www/html`, or
+  `DOCUMENT_ROOT`), the directory static files are served from
+
+When the client accepts brotli and `<name>.ics.br` exists, that copy is sent
+as is with `Content-Encoding: br`; failing that `<name>.ics.gz` for gzip;
+otherwise the file itself, compressed on the fly like any other response.
+`Last-Modified` is the modification time of the file sent, and an
+`If-Modified-Since` no earlier than it is answered `304`. Responses are
+cacheable for 7 days; a missing file is `404` with no caching. Only a plain
+file name is served: no subdirectories and no dot files.
+
+The files are written by **`hebcal-static-ical`**, which `gen-static-ical.sh`
+runs weekly (it also fetches the Chabad special-dates calendar from this
+service's own `/v3/` route):
+
+```bash
+hebcal-static-ical -dir ical -readings-socket /run/hebcal/readings-svc.sock
+```
+
+It writes every feed in `staticcal.Feeds` plus Kindness a Day, each as `.ics`
+and `.csv` with `.br` and `.gz` copies, every file stamped with the minute the
+run started (its `DTSTAMP` and its mtime). Flags: `-nocompress` (and remove
+stale copies), `-only <name>`, `-today YYYY-MM-DD`, `-quiet`, `-verbose`.
+readings-svc supplies the Torah readings (`/torahMemo`) and the daily-learning
+series hebcal-go has no schedule for (`/learning`); a feed that fails is
+reported and keeps its previous files, and the command exits non-zero. The
+`.ics` files are byte-identical to hebcal-web's for the same day, UIDs
+included; the `.csv` files use this service's CSV format.
 
 ### Short URL redirects
 
@@ -540,6 +578,7 @@ dependencies and starts the listener, `internal` holds the application, and
 
 ```
 cmd/hebcal-api/          main: config, logger, data sources, HTTP listener
+cmd/hebcal-static-ical/  weekly generator of the static /ical/ calendars
 internal/
   config/                flag/env configuration and build metadata
   handler/               transport layer: one file per route, plus the mux
@@ -558,10 +597,14 @@ internal/
     csv/                   /v4/ CSV calendars: rows and their descriptions
     yahrzeit/              Yahrzeit + Anniversary iCalendar feeds: URL shapes,
                            events, titles and descriptions
+    ical/                  holiday-calendar event -> VEVENT: title, emoji,
+                           category, description, UID
+    staticcal/             the static /ical/ calendars and their feed list
   repository/
     readings/              client for the readings-svc sidecar (/leyning
-                           for /shabbat, /learning for the PDF calendars)
-                           over its unix domain socket
+                           for /shabbat, /learning for the PDF calendars,
+                           /torahMemo for the iCalendar descriptions) over
+                           its unix domain socket
     yahrzeitdb/            MySQL reader for the saved Yahrzeit calendars
                            (/v3/), with its fire-and-forget access writes
   model/                 domain layer: dates, locales, calendar events, errors
@@ -602,7 +645,7 @@ must be built with the `sqlite_fts5` tag so the `/complete` full-text
 queries work; the `Makefile` targets pass it for you.
 
 ```bash
-make build     # builds ./hebcal-api from ./cmd/hebcal-api (CGO_ENABLED=1)
+make build     # builds ./hebcal-api (CGO_ENABLED=1) and ./hebcal-static-ical
 make test      # checks gofmt, then runs the unit tests
 make vet       # go vet
 make fmt       # gofmt -w .
@@ -650,7 +693,7 @@ sudo make install       # installs binary, systemd unit, logrotate config
 sudo systemctl start hebcal-api
 ```
 
-`make install` installs the binary to `/usr/local/bin`, the systemd unit
+`make install` installs the binaries (`hebcal-api` and `hebcal-static-ical`) to `/usr/local/bin`, the systemd unit
 to `/etc/systemd/system/hebcal-api.service`, and the logrotate drop-in to
 `/etc/logrotate.d/hebcal-api`. The service runs as `www-data` and writes
 its access log to `/var/log/hebcal/api.log` (same directory hebcal-web

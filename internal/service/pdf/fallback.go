@@ -2,7 +2,6 @@ package pdf
 
 import (
 	"context"
-	"net/url"
 	"time"
 
 	"github.com/hebcal/hdate"
@@ -34,30 +33,11 @@ func fetchLearning(ctx context.Context, f *download.LearningFetcher, series []st
 			Greg:     day,
 			Subject:  jsutil.SmartApostrophe(title),
 			Learning: true,
-			URL:      canonicalLearningURL(it.Link),
+			URL:      download.CanonicalLearningURL(it.Link),
 			rank:     hebcal.TimeOfDayLearning,
 		})
 	}
 	return out, nil
-}
-
-// canonicalLearningURL strips the tracking parameters the sidecar already
-// added, since the renderer applies its own campaign. A Sefaria link is left
-// otherwise intact.
-func canonicalLearningURL(link string) string {
-	if link == "" {
-		return ""
-	}
-	u, err := url.Parse(link)
-	if err != nil {
-		return ""
-	}
-	q := u.Query()
-	q.Del("utm_source")
-	q.Del("utm_medium")
-	q.Del("utm_campaign")
-	u.RawQuery = q.Encode()
-	return u.String()
 }
 
 // mergeLearning inserts fetched rows into a generated calendar and restores the

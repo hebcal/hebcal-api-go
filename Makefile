@@ -1,5 +1,8 @@
 BIN := hebcal-api
 CMD := ./cmd/hebcal-api
+# The weekly generator of the static /ical/ calendars, run by gen-static-ical.sh.
+STATIC_BIN := hebcal-static-ical
+STATIC_CMD := ./cmd/hebcal-static-ical
 PREFIX := /usr/local
 SVCUSER := www-data
 SVCGROUP := hebcal
@@ -22,6 +25,7 @@ GEO_DIR := ../hebcal-web
 
 build:
 	CGO_ENABLED=1 go build -tags $(GOTAGS) -trimpath -ldflags="-s -w" -o $(BIN) $(CMD)
+	go build -trimpath -ldflags="-s -w" -o $(STATIC_BIN) $(STATIC_CMD)
 
 # Runs the server for local development, listening on :8082 (the port
 # hebcal-web's dev servers already point their PDF links at). Rebuilds first,
@@ -51,12 +55,13 @@ fmtcheck:
 	fi
 
 clean:
-	rm -f $(BIN)
+	rm -f $(BIN) $(STATIC_BIN)
 
 # Installs the binary, systemd service, and logrotate config on a
 # Debian 13 server. Run as root: make install
 install: build
 	install -m 0755 $(BIN) $(PREFIX)/bin/$(BIN)
+	install -m 0755 $(STATIC_BIN) $(PREFIX)/bin/$(STATIC_BIN)
 	install -d -m 0775 -o $(SVCUSER) -g $(SVCGROUP) /var/log/hebcal
 	install -m 0644 etc/$(BIN).service /etc/systemd/system/$(BIN).service
 	install -m 0644 etc/$(BIN).logrotate /etc/logrotate.d/$(BIN)
@@ -72,5 +77,5 @@ uninstall:
 	-systemctl disable --now $(BIN).service
 	rm -f /etc/systemd/system/$(BIN).service
 	rm -f /etc/logrotate.d/$(BIN)
-	rm -f $(PREFIX)/bin/$(BIN)
+	rm -f $(PREFIX)/bin/$(BIN) $(PREFIX)/bin/$(STATIC_BIN)
 	systemctl daemon-reload

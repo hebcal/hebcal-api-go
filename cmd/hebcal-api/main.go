@@ -132,6 +132,7 @@ func main() {
 	// The VTIMEZONE definitions the iCalendar feeds embed are read on demand,
 	// so a missing directory only costs the feeds their definitions.
 	app.Zones = icalendar.NewZoneInfo(cfg.ZoneInfoDir)
+	app.DocumentRoot = cfg.DocumentRoot
 	if _, err := os.Stat(cfg.ZoneInfoDir); err != nil {
 		lg.Warn("no zoneinfo directory; iCalendar feeds will carry no VTIMEZONE: " + err.Error())
 	}

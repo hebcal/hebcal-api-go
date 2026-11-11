@@ -12,7 +12,7 @@ its notes have moved into `CLAUDE.md`.
 | 2 | Saved Yahrzeit calendars: `/v3/<ulid>/<name>.ics` (MySQL) | **done** (November 2026), `.csv` included; notes in `CLAUDE.md`, "Saved calendars: `/v3/` and MySQL" |
 | 3 | Holiday feeds: `/v4/`, `/v2/h/`, `/hebcal/index.cgi/`, `/export/…?v=1` | planned below |
 | 4a | Zmanim feeds: `/zmanim`, `/zmanim2`, `/sunrs` | **done** (November 2026); notes in `CLAUDE.md`, "The zmanim feeds" |
-| 4b | Left on Node until someone decides otherwise: the static `/ical/*.ics` files | notes at the end |
+| 4b | The static `/ical/*.ics` and `.csv` files | **done** (November 2026): `cmd/hebcal-static-ical` + `/ical/`; notes in `CLAUDE.md`, "The static calendars". Varnish still routes `/ical/` to Node |
 
 ## What phases 1 and 2 left you
 
@@ -101,6 +101,22 @@ pipeline is done (`CLAUDE.md`, "The CSV calendars"):
   `DefaultUID`.
 
 ### What has to be built
+
+**Much of A, B and C now exists, for all-day events** (November 2026, built
+for the static `/ical/` feeds -- CLAUDE.md, "The static calendars"):
+`internal/service/ical` resolves holidays, parshiyot, Hebrew dates, the Omer,
+Mevarchim, Yom Kippur Katan, Yizkor and daily learning (readings-svc rows
+included) into `icalendar.Event`, UIDs and descriptions byte-identical to
+production over 36 feeds; `readings.Client.TorahMemos` is the `/torahMemo`
+route C proposes (it exists in readings-svc -- mind the date bug noted in
+CLAUDE.md); parsha summaries come from github.com/hebcal/locales, not a
+vendored table. What is left of A and B: **timed events** (candle lighting,
+fast start/end, Havdalah, Chanukah candles, Kiddush Levana and its memo --
+`ical.Options` has no location yet), the location's `LOCATION`/`GEO`/`TZID`
+and UID suffix, `addLocationOmerAlarms()`, a memo for the Kiddush Levana and
+erev-Shabbat candle events, and all of D. The per-`(Hebrew year, il)` LRU
+below is not built either: the static feeds make one `/torahMemo` call per
+feed.
 
 **A. The event adapter** (`internal/service/ical`, new): `event.CalEvent` →
 `icalendar.Event`. This is the half of the `IcalEvent` constructor that
@@ -294,9 +310,12 @@ What remains for phase 3:
 - **`/zmanim`, `/zmanim2` and `/sunrs` feeds**: done (November 2026), in
   `internal/service/zmanim/feed.go`, routed by `download.vcl`. hebcal-web's
   `zmanimDownload.js` is left in place as the fallback.
-- **`/ical/*.ics`**: static files written weekly by `makeStaticCalendars.js`
-  on the Node hosts. Porting the feeds does not move these; the cron would
-  need its own Go command, built on the phase 3 service.
+- **`/ical/*.ics`**: done (November 2026). `cmd/hebcal-static-ical`, run
+  weekly by `gen-static-ical.sh` from hebcal-devops' `cron.d/hebcal-api-ical`
+  on the api hosts, and served by `/ical/`. To switch, route
+  `download.hebcal.com/ical/` to the api backend in `download.vcl`; the Node
+  hosts' cron (`cron.d/hebcal-download`) can go once nothing serves from
+  them.
 - **`redirectDownload.json`**: hebcal-web 301s a curated list of old
   `/export/` URLs with no query string. Varnish's `download-redir.vcl`
   already holds them.

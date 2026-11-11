@@ -22,7 +22,7 @@ func TestMinorHolidayFilterUsesCategories(t *testing.T) {
 	seen := map[string]bool{}
 	for _, ev := range evs {
 		if keepEvent(ev, ev.GetFlags(), majorOnly) {
-			seen[untranslatedDesc(ev)] = true
+			seen[UntranslatedDesc(ev)] = true
 		}
 	}
 	for _, want := range []string{"Purim", "Erev Purim"} {
@@ -52,7 +52,7 @@ func TestMinorHolidaysKeptWhenRequested(t *testing.T) {
 	evs, _ := hebcal.HebrewCalendar(&opts)
 	all := &Params{}
 	for _, ev := range evs {
-		if untranslatedDesc(ev) == "Tu BiShvat" && !keepEvent(ev, ev.GetFlags(), all) {
+		if UntranslatedDesc(ev) == "Tu BiShvat" && !keepEvent(ev, ev.GetFlags(), all) {
 			t.Error("Tu BiShvat should be kept when minor holidays were requested")
 		}
 	}
@@ -65,7 +65,7 @@ func TestYomTovOnlyKeepsOnlyChagim(t *testing.T) {
 	for _, ev := range evs {
 		keep := keepEvent(ev, ev.GetFlags(), p)
 		if keep && !ev.GetFlags().Has(event.CHAG) {
-			t.Errorf("%q is not a chag but survived yomTovOnly", untranslatedDesc(ev))
+			t.Errorf("%q is not a chag but survived yomTovOnly", UntranslatedDesc(ev))
 		}
 	}
 }

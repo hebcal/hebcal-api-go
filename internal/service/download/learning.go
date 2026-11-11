@@ -3,6 +3,7 @@ package download
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
@@ -71,4 +72,31 @@ func (f *LearningFetcher) FetchItems(ctx context.Context, series []string, lg st
 		}
 	}
 	return out, nil
+}
+
+// CanonicalLearningURL strips the tracking parameters readings-svc already
+// added to a link, so the document can apply its own campaign. A Sefaria link is left
+// otherwise intact.
+func CanonicalLearningURL(link string) string {
+	if link == "" {
+		return ""
+	}
+	u, err := url.Parse(link)
+	if err != nil {
+		return ""
+	}
+	q := u.Query()
+	q.Del("utm_source")
+	q.Del("utm_medium")
+	q.Del("utm_campaign")
+	u.RawQuery = q.Encode()
+	return u.String()
+}
+
+// LearningQueryCode is the readings-svc /learning query code that selects a
+// daily-learning series hebcal-go has no schedule for ("dcc" for
+// chofetzChaim), and false for any other series.
+func LearningQueryCode(series string) (string, bool) {
+	code, ok := fallbackSeries[series]
+	return code, ok
 }

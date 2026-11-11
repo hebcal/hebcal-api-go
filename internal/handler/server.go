@@ -54,6 +54,9 @@ type Server struct {
 	PDF *pdf.Service
 	// CSV renders the Outlook CSV calendars served from the same /v4/ URLs.
 	CSV *csvsvc.Service
+	// DocumentRoot is the directory static files are served from; /ical/
+	// maps to its ical/ subdirectory. Empty answers every static path 404.
+	DocumentRoot string
 	// Zones supplies the VTIMEZONE definitions the iCalendar feeds embed. Nil
 	// serves the feeds without them.
 	Zones *icalendar.ZoneInfo
@@ -166,6 +169,10 @@ func (s *Server) Routes() http.Handler {
 	// whose parameters live in the MySQL database rather than the URL.
 	mux.HandleFunc("/v3/", limited(s.yahrzeitSaved))
 	mux.HandleFunc("/holidays/", limited(s.pdfHoliday))
+	// The static calendars cmd/hebcal-static-ical writes weekly into
+	// DocumentRoot/ical, sent precompressed when a .br or .gz copy is on
+	// disk. Reading a file is cheap, so these hold no download slot.
+	mux.HandleFunc("/ical/", mw.Serve(s.staticICal))
 	mux.HandleFunc("/", mw.Serve(s.notFound))
 	return s.withBackend(mux)
 }

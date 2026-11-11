@@ -107,13 +107,13 @@ func subjects(evs []Event) string {
 }
 
 func TestStripEmoji(t *testing.T) {
-	if got := stripEmoji("Chanukah: 1 Candle 🕎"); got != "Chanukah: 1 Candle" {
-		t.Errorf("stripEmoji() = %q", got)
+	if got := download.StripEmoji("Chanukah: 1 Candle 🕎"); got != "Chanukah: 1 Candle" {
+		t.Errorf("download.StripEmoji() = %q", got)
 	}
 	// Hebrew and Latin text must survive untouched.
 	for _, s := range []string{"Parashat Eikev", "פָּרָשַׁת עֵקֶב"} {
-		if got := stripEmoji(s); got != s {
-			t.Errorf("stripEmoji(%q) = %q, want it unchanged", s, got)
+		if got := download.StripEmoji(s); got != s {
+			t.Errorf("download.StripEmoji(%q) = %q, want it unchanged", s, got)
 		}
 	}
 }

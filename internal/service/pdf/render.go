@@ -70,7 +70,7 @@ func rgb(hex string) color.Color {
 // an event can carry several flags and the first match wins.
 func eventColor(f event.HolidayFlags) color.Color {
 	switch {
-	case f.HasAny(learningFlags | event.OMER_COUNT | event.HEBREW_DATE):
+	case f.HasAny(download.LearningFlags | event.OMER_COUNT | event.HEBREW_DATE):
 		return colorLearning
 	case f.Has(event.ROSH_CHODESH):
 		return colorRoshChod

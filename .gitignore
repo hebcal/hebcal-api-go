@@ -1,4 +1,7 @@
 /hebcal-api
+/hebcal-static-ical
+# gen-static-ical.sh output
+/ical/
 /hebcal-api-go
 *.log
 
