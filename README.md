@@ -383,7 +383,7 @@ Not served yet: the holiday `.ics` feeds. The plan for those is in
 download.hebcal.com's halachic-times subscriptions, for any location the
 `/zmanim` API accepts (see [Location resolution](#location-resolution)):
 
-- `GET|HEAD /zmanim[/<filename>.ics]?<location>` -- every zman as a timed
+- `GET|HEAD /zmanim?<location>` -- every zman as a timed
   event, from yesterday to 60 days ahead. With `cfg=json` the same path is the
   JSON API instead.
 - `GET|HEAD /zmanim2?<location>` -- one all-day event per day

@@ -106,10 +106,10 @@ func (s *Server) Routes() http.Handler {
 	mux.HandleFunc("/converter/csv", mw.Serve(s.converterCSV))
 	mux.HandleFunc("/converter", mw.Serve(s.converter))
 	mux.HandleFunc("/converter/", mw.Serve(s.converter))
-	// /zmanim with cfg=json is the JSON API; anything else under it, and the
-	// two other paths, are download.hebcal.com's zmanim iCalendar feeds.
+	// /zmanim with cfg=json is the JSON API; without it, and the two other
+	// paths, are download.hebcal.com's zmanim iCalendar feeds. Only the bare
+	// paths: nothing ever linked a file name or a trailing slash after them.
 	mux.HandleFunc("/zmanim", mw.Serve(s.zmanim))
-	mux.HandleFunc("/zmanim/", mw.Serve(s.zmanim))
 	mux.HandleFunc("/zmanim2", mw.Serve(s.DownloadLimiter.Wrap(s.zmanimFeed)))
 	mux.HandleFunc("/sunrs", mw.Serve(s.DownloadLimiter.Wrap(s.zmanimFeed)))
 	mux.HandleFunc("/shabbat", mw.Serve(s.shabbat))

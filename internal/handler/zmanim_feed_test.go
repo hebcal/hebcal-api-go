@@ -82,7 +82,7 @@ func TestZmanimFeed(t *testing.T) {
 }
 
 func TestZmanimFeedKiddushLevanaMovedToNight(t *testing.T) {
-	_, body := getFeed(t, "/zmanim/hebcal.ics?geonameid=281184")
+	_, body := getFeed(t, "/zmanim?geonameid=281184")
 	requireLines(t, body,
 		"X-WR-CALDESC:Halachic times for Jerusalem\\, Israel",
 		"CATEGORIES:tchilasZmanKidushLevana3Days\r\n"+
@@ -190,10 +190,13 @@ func TestZmanimJSONPolarNull(t *testing.T) {
 	}
 }
 
-// Only the bare /zmanim2 and /sunrs paths are feeds; nothing ever linked a
-// file name or a trailing slash after them.
+// Only the bare /zmanim, /zmanim2 and /sunrs paths are served, feed or JSON;
+// nothing ever linked a file name or a trailing slash after them.
 func TestZmanimFeedNoSubpaths(t *testing.T) {
 	for _, path := range []string{
+		"/zmanim/?geonameid=5128581",
+		"/zmanim/hebcal.ics?geonameid=5128581",
+		"/zmanim/?cfg=json&geonameid=5128581",
 		"/zmanim2/?geonameid=5128581",
 		"/zmanim2/hebcal.ics?geonameid=5128581",
 		"/sunrs/?geonameid=5128581",
