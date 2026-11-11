@@ -337,6 +337,27 @@ func TestAccessLogRecordsUnsupportedSeries(t *testing.T) {
 	}
 }
 
+func TestRouteLabel(t *testing.T) {
+	for path, want := range map[string]string{
+		"/complete": "complete", "/complete.php": "complete", "/geo": "complete",
+		"/h/passover": "redir", "/o": "redir", "/s/5786/12": "redir",
+		"/v2/h/abc/x.pdf": "cal-dl", "/export/x.csv": "cal-dl", "/hebcal/index.cgi/x.pdf": "cal-dl",
+		"/v4/abc/x.pdf":   "cal-dl",
+		"/v3/01abc/x.ics": "yahrzeit", "/v2/y/abc/x.ics": "yahrzeit", "/yahrzeit/yahrzeit.cgi/x.ics": "yahrzeit",
+		"/mcp": "mcp", "/holidays/hebcal-2026.pdf": "holiday-pdf",
+		"/converter": "converter", "/converter/": "converter", "/converter/csv": "converter-csv",
+		"/shabbat": "shabbat-json", "/shabbat/": "shabbat-json",
+		"/zmanim": "zmanim", "/zmanim2": "zmanim", "/sunrs": "zmanim",
+		"/ical/x.ics": "static", "/favicon.ico": "static", "/robots.txt": "static",
+		"/": "other", "/ping": "other", "/shabbatx": "other", "/v2/z": "other",
+	} {
+		r := httptest.NewRequest("GET", path, nil)
+		if got := routeLabel(r); got != want {
+			t.Errorf("routeLabel(%q) = %q, want %q", path, got, want)
+		}
+	}
+}
+
 func TestRequestDurationRouteLabel(t *testing.T) {
 	mux := http.NewServeMux()
 	lg, err := logger.New(filepath.Join(t.TempDir(), "api.log"))
@@ -345,11 +366,11 @@ func TestRequestDurationRouteLabel(t *testing.T) {
 	}
 	mw := &Middleware{Logger: lg}
 	mux.HandleFunc("/shabbat/", mw.Serve(func(w http.ResponseWriter, r *http.Request) {}))
-	before := histogramCount(t, "/shabbat")
+	before := histogramCount(t, "shabbat-json")
 	req := httptest.NewRequest("GET", "/shabbat/?cfg=json", nil)
 	mux.ServeHTTP(httptest.NewRecorder(), req)
-	if got := histogramCount(t, "/shabbat") - before; got != 1 {
-		t.Errorf("observations for route /shabbat = %d, want 1", got)
+	if got := histogramCount(t, "shabbat-json") - before; got != 1 {
+		t.Errorf("observations for route shabbat-json = %d, want 1", got)
 	}
 }
 
@@ -370,9 +391,9 @@ func TestRequestDurationSkipsPing(t *testing.T) {
 	}
 	mw := &Middleware{Logger: lg}
 	mux.HandleFunc("/ping", mw.Serve(func(w http.ResponseWriter, r *http.Request) {}))
-	before := histogramCount(t, "/ping")
+	before := histogramCount(t, "other")
 	mux.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/ping", nil))
-	if got := histogramCount(t, "/ping") - before; got != 0 {
-		t.Errorf("observations for route /ping = %d, want 0", got)
+	if got := histogramCount(t, "other") - before; got != 0 {
+		t.Errorf("observations for route other = %d, want 0", got)
 	}
 }

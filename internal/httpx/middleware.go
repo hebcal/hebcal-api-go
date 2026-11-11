@@ -30,26 +30,62 @@ var httpRequestsTotal = promauto.NewCounterVec(prometheus.CounterOpts{
 // are dense below 200ms, where nearly every response lands: the JSON routes sit
 // under a millisecond, and a third of /v4 lands in 10-20ms. The tail to 10s
 // is mostly the download limiter: a request refused after its 5s queue wait is
-// recorded just past 5s, so the 5-10s bucket is shed traffic, not slow renders. route is the
-// registered mux pattern, never the URL, so its cardinality is bounded by the
-// routes in server.go.
+// recorded just past 5s, so the 5-10s bucket is shed traffic, not slow renders.
+// route is one of the groups in routeGroups (or "other"), never the URL, so its
+// cardinality is bounded.
 var httpRequestDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
 	Name:    "http_request_duration_seconds",
 	Help:    "HTTP request latency in seconds, by route",
 	Buckets: []float64{0.0005, 0.001, 0.0025, 0.005, 0.01, 0.015, 0.02, 0.03, 0.05, 0.075, 0.1, 0.15, 0.2, 0.3, 0.5, 0.75, 1, 2.5, 5, 10},
 }, []string{"route"})
 
-// routeLabel names the mux pattern that matched r, without a trailing slash so
-// "/shabbat" and "/shabbat/" count as one route. The catch-all "/" stays "/".
+// routeGroups buckets URL paths into the route label of the latency histogram.
+// A prefix matches a whole path segment ("/s" matches "/s/5786" but not
+// "/shabbat"), and the longest matching prefix wins, so "/converter/csv" is
+// not counted as "/converter" and "/v2/y" is not counted as "/v2/h".
+var routeGroups = []struct{ label, prefix string }{
+	{"complete", "/complete"},
+	{"complete", "/complete.php"},
+	{"complete", "/geo"},
+	{"redir", "/h"},
+	{"redir", "/o"},
+	{"redir", "/s"},
+	{"cal-dl", "/v2/h"},
+	{"cal-dl", "/export"},
+	{"cal-dl", "/hebcal/index.cgi"},
+	{"cal-dl", "/v4"},
+	{"yahrzeit", "/v3"},
+	{"yahrzeit", "/v2/y"},
+	{"yahrzeit", "/yahrzeit/yahrzeit.cgi"},
+	{"mcp", "/mcp"},
+	{"holiday-pdf", "/holidays"},
+	{"converter", "/converter"},
+	{"converter-csv", "/converter/csv"},
+	{"shabbat-json", "/shabbat"},
+	{"zmanim", "/zmanim"},
+	{"zmanim", "/zmanim2"},
+	{"zmanim", "/sunrs"},
+	{"static", "/ical"},
+	{"static", "/favicon.ico"},
+	{"static", "/robots.txt"},
+}
+
+// routeLabel names the group r's URL path belongs to, so the histogram has a
+// fixed, small set of label values whatever the URL. A path outside every
+// group (including "/ping", which the caller skips) is "other".
 func routeLabel(r *http.Request) string {
-	p := r.Pattern
-	if p == "" {
-		return "unknown"
+	path := r.URL.Path
+	label, best := "other", 0
+	for _, g := range routeGroups {
+		n := len(g.prefix)
+		if n <= best || !strings.HasPrefix(path, g.prefix) {
+			continue
+		}
+		if len(path) == n || path[n] == '/' {
+			label, best = g.label, n
+		}
 	}
-	if len(p) > 1 {
-		p = strings.TrimSuffix(p, "/")
-	}
-	return p
+	return label
 }
 
 // bufWriter buffers the response so the middleware can compress it, set
@@ -253,8 +289,8 @@ func (m *Middleware) Serve(h http.HandlerFunc) http.HandlerFunc {
 		httpRequestsTotal.WithLabelValues(r.Method, strconv.Itoa(bw.status)).Inc()
 		// Health probes arrive every few seconds and answer in microseconds, which
 		// would drag every aggregate percentile toward zero.
-		if route := routeLabel(r); route != "/ping" {
-			httpRequestDuration.WithLabelValues(route).Observe(durMs / 1000)
+		if r.URL.Path != "/ping" {
+			httpRequestDuration.WithLabelValues(routeLabel(r)).Observe(durMs / 1000)
 		}
 		m.logAccess(r, bw, uncompressedLen, start, calls)
 	}
