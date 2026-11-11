@@ -163,10 +163,9 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 // tracked link.
 func Memo(ev event.CalEvent, o *Options) string {
 	flags := ev.GetFlags()
-	if oe, ok := ev.(omer.OmerEvent); ok && oe.OmerDay >= 1 && oe.OmerDay <= len(omerText) {
-		t := omerText[oe.OmerDay-1]
-		return t.todayIsEn + "\n\n" + t.todayIsHe + "\n\n" +
-			oe.Sefira("en") + "\n" + t.sefiraHe + "\n" + oe.Sefira("translit")
+	if oe, ok := ev.(omer.OmerEvent); ok {
+		return oe.TodayIs("en") + "\n\n" + oe.TodayIs("he") + "\n\n" +
+			oe.Sefira("en") + "\n" + oe.Sefira("he") + "\n" + oe.Sefira("translit")
 	}
 	memo := ownMemo(ev, flags, o)
 	if memo == "" {

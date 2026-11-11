@@ -1008,15 +1008,12 @@ Things that are not obvious:
   holiday descriptions, `download.HolidayDescription` returns nothing for a
   parsha, as `@hebcal/rest-api` 7.3.3 does; without that guard the locales
   bump put the summary's first sentence into every `/v4/` CSV parsha row.
-- **Two hebcal-go gaps are worked around here, not fixed.** Shabbat
+- **A hebcal-go gap is worked around here, not fixed.** Shabbat
   Mevarchim is generated only when `NoHolidays` is off, where `@hebcal/core`
   makes it whatever the holiday options, so that feed uses
   `Mask: SHABBAT_MEVARCHIM` (as the Rosh Chodesh feed uses `Mask:
-  ROSH_CHODESH`, from its JSON). And hebcal-go's Omer text differs from
-  `@hebcal/core`'s ("which is 1 week" for "which are 1 week", Hebrew without
-  the meteg and dagesh), so `ical/omer.go` is generated from `@hebcal/core`
-  by `tools/dump-omer.mjs`. Both belong upstream; drop the workaround when
-  hebcal-go agrees.
+  ROSH_CHODESH`, from its JSON). It belongs upstream; drop the workaround
+  when hebcal-go agrees.
 - **The Chanukah emoji carries the candle count** as a keycap digit
   ("🕎3️⃣"); hebcal-go's `GetEmoji()` has only the menorah (`ical.emojiOf`).
 - **Chofetz Chaim's title is the full render**, which for the preface adds
@@ -1327,6 +1324,15 @@ github.com/hebcal/locales v1.1.4 came out of the zmanim feed port too: it
 adds hebcal-web's own `po/` catalogs (the zman `TITLE:`/`MEMO:` keys, the
 Hebrew zman titles, a few web strings) over `@hebcal/core`'s, as hebcal-web's
 `src/locale.js` loads them, which let the vendored `titles.go` go.
+
+hebcal-go v0.26.3 came out of the static calendars port: `omer.OmerEvent`'s
+`TodayIs("en")` says "which are" for every count of weeks, and
+`TodayIs("he")` and `Sefira("he")` are @hebcal/core's strings byte for byte
+(הַיּוֹם with a dagesh, the meteg in לָעֽוֹמֶר and שָׁבֽוּעַ, שֶׁהֵם rather than the
+misvocalized שְׁהֵם, the וּ/וַ/וְ conjunctions, and core's two hard-coded sefira
+tables). That let the static Omer feed drop `ical/omer.go`, the table
+`tools/dump-omer.mjs` generated from @hebcal/core; the `omer` golden in
+`staticcal.TestGolden` is the check.
 
 hebcal-go v0.26.2 came out of the zmanim feed port: `MinchaGedolaMGA` and
 `MinchaKetanaMGA` return the zero time, not an offset from it, when the sun
@@ -1930,8 +1936,7 @@ prefix/suffix, `appendHebrewToSubject`), `CATEGORY` table (`categories`),
 `locationName` for learning (`seriesNames`, the `@hebcal/learning` events'
 `category`), CHAG → OOF, `getAlarm()`, `getUid()` (`uidDesc` ← `getDesc()`).
 `Memo` ← `createMemo()`; `ownMemo` ← `ev.memo`; the Omer branch ←
-`getTodayIs()` / `sefira()` (`omer.go` generated from `@hebcal/core` by
-`tools/dump-omer.mjs`). `torahMemo` / `noReading` ← `makeTorahMemoText()` /
+`getTodayIs()` / `sefira()`, via hebcal-go's `TodayIs` / `Sefira`. `torahMemo` / `noReading` ← `makeTorahMemoText()` /
 `HOLIDAY_IGNORE_MASK` (`src/torahMemo.js`, now run by readings-svc).
 `emojiOf` ← `ChanukahEvent.getEmoji()`'s keycap digits. `LearningLink` ←
 `appendTrackingToUrl()`. `download.ParshaSummary` ← `getParshaSummary()` +
