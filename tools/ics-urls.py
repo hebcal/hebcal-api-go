@@ -14,7 +14,8 @@ a sun-derived DTSTART/DTEND or absolute alarm, Rosh Hashana's year in Hebrew,
 the order of the VEVENTs (which no calendar client depends on), and the
 documented differences in CLAUDE.md that recur in every sweep -- Yom Kippur
 Katan's emoji and apostrophe, the candle-lighting time inside a Kiddush Levana
-description, and the Hebrew half of an lg=ah/sh Mevarchim title.
+description, the Hebrew half of an lg=ah/sh Mevarchim title, and the escaping
+of commas in the Hebrew half of any lg=ah/sh title.
 """
 import sys, re, itertools, threading, concurrent.futures as cf, urllib.request, urllib.error, difflib, json, os
 WEBS=os.environ.get('WEB','localhost:8081').split(','); API=os.environ.get('API','localhost:8082')
@@ -57,6 +58,10 @@ def blocks(lines):
                 l=re.sub(r'\(([^()]*?)\d{1,2}:\d{2}(am|pm)?',r'(\1T',l)
             if l.startswith('SUMMARY:') and re.search('Mev[oa]r[cg]him Chodesh',l):
                 l=l.split(' / ')[0]
+            if l.startswith('SUMMARY:') and ' / ' in l:
+                # lg=ah/sh: hebcal-web leaves the Hebrew half's commas bare
+                a,_,b=l.partition(' / ')
+                l=a+' / '+b.replace('\\,',',')
             e[i]=l
     evs.sort(key=lambda e:'\n'.join(e))
     return head+[l for e in evs for l in e]

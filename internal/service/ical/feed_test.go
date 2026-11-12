@@ -276,6 +276,11 @@ func TestSubscriptionLimit(t *testing.T) {
 	if s.Limit(feed) || feed.Events() != total {
 		t.Error("a file to save was cut")
 	}
+	// The notice has no Hebrew name; lg=ah repeats the English.
+	body = strings.ReplaceAll(string(render(t, s, big+"&subscribe=1&lg=ah").Body), "\r\n ", "")
+	if !strings.Contains(body, "SUMMARY:Hebcal calendar feed truncated / Hebcal calendar feed truncated\r\n") {
+		t.Error("lg=ah: the truncation notice should repeat its title")
+	}
 }
 
 func TestWeek(t *testing.T) {
@@ -342,5 +347,23 @@ func TestOmerAlarmFallsBackToTzeit(t *testing.T) {
 	if !regexp.MustCompile(`TRIGGER;VALUE=DATE-TIME:20270606T\d{6}Z`).MatchString(day46) ||
 		!strings.Contains(day46, "LOCATION:") {
 		t.Errorf("46th day, want a dusk alarm and a LOCATION:\n%s", day46)
+	}
+}
+
+// The campaign is the title's slug, and the title's dates span every event --
+// the readings-svc rows too, which are the whole of a Chofetz Chaim calendar.
+func TestCampaignCountsFetchedLearning(t *testing.T) {
+	s, _ := testService(t)
+	u, _ := url.Parse("/hebcal/index.cgi/h.ics?v=1&start=2026-08-01&end=2027-12-31&dcc=on")
+	req, err := s.Parse(context.Background(), u)
+	if err != nil {
+		t.Fatal(err)
+	}
+	items := []readings.Item{
+		{Date: "2026-08-01", Title: "Hilchos Rechilus 2.3-2.4", Category: "chofetzChaim"},
+		{Date: "2027-12-31", Title: "Hilchos Rechilus 2.5", Category: "chofetzChaim"},
+	}
+	if got, want := campaignName(req.Params, req.Query, nil, items), "diaspora-2026-2027"; got != want {
+		t.Errorf("campaignName = %q, want %q", got, want)
 	}
 }

@@ -98,7 +98,9 @@ func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
 type row struct {
 	abs  int64
 	rank int
-	line []string
+	// series orders the learning rows within the learning slot.
+	series int
+	line   []string
 }
 
 // Render writes the whole CSV document: the byte order mark, the header row,
@@ -112,25 +114,30 @@ func Render(cal *Calendar) []byte {
 			rank = -1 // the date leads its day
 		}
 		rows = append(rows, row{
-			abs:  ev.GetDate().Abs(),
-			rank: rank,
-			line: eventToCSV(ev, p),
+			abs:    ev.GetDate().Abs(),
+			rank:   rank,
+			series: download.EventLearningOrder(ev),
+			line:   eventToCSV(ev, p),
 		})
 	}
 	for i := range cal.Learning {
 		it := &cal.Learning[i]
 		if day, err := time.Parse("2006-01-02", it.Date); err == nil {
 			hd := hdate.FromTime(day)
-			rows = append(rows, row{abs: hd.Abs(), rank: hebcal.TimeOfDayLearning, line: learningToCSV(it, hd, p)})
+			rows = append(rows, row{abs: hd.Abs(), rank: hebcal.TimeOfDayLearning,
+				series: download.LearningOrder(it.Category), line: learningToCSV(it, hd, p)})
 		}
 	}
 	// hebcal-go already orders each day by time of day; the stable sort keeps
-	// that and moves the fetched learning rows into the learning slot.
+	// that and moves the fetched learning rows into place in the learning slot.
 	sort.SliceStable(rows, func(i, j int) bool {
 		if rows[i].abs != rows[j].abs {
 			return rows[i].abs < rows[j].abs
 		}
-		return rows[i].rank < rows[j].rank
+		if rows[i].rank != rows[j].rank {
+			return rows[i].rank < rows[j].rank
+		}
+		return rows[i].series < rows[j].series
 	})
 
 	lines := make([][]string, len(rows))

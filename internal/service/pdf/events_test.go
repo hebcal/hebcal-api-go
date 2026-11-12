@@ -21,12 +21,19 @@ func ev(desc string, flags event.HolidayFlags, timeStr string) Event {
 // Levana and Mishna Yomi, as subjects in the order sortDay leaves them.
 func generateDay(t *testing.T, year int, month time.Month, day int, learning []Event) string {
 	t.Helper()
+	return generateDayWith(t, year, month, day, nil, learning)
+}
+
+// generateDayWith is generateDay with more of hebcal-go's learning series.
+func generateDayWith(t *testing.T, year int, month time.Month, day int, series []string, learning []Event) string {
+	t.Helper()
 	d := hdate.FromGregorian(year, month, day)
 	toronto := zmanim.NewLocation("Toronto", "CA", 43.70011, -79.4163, 0, "America/Toronto")
 	p := &download.Params{Locale: "en", MonthMode: download.GregorianArabic}
 	p.Opts = hebcal.CalOptions{
 		Start: d, End: d, Location: &toronto, CandleLighting: true, HavdalahMins: 42,
 		Sedrot: true, KiddushLevanaMaharil: true, MishnaYomi: true,
+		DailyLearning: series,
 	}
 	events, err := Generate(p)
 	if err != nil {
@@ -72,9 +79,23 @@ func TestSortDayKeepsHebcalTimeOfDayOrder(t *testing.T) {
 // mergeLearning, and sortDay moves it up to the learning slot: after the
 // series hebcal-go generated, ahead of the evening's holiday and timed events.
 func TestSortDayPutsFetchedLearningInTheLearningSlot(t *testing.T) {
-	psalms := Event{Subject: "Psalms 60-65", Learning: true, rank: hebcal.TimeOfDayLearning}
-	got := generateDay(t, 2027, time.October, 15, []Event{psalms})
-	want := "Latest Kiddush Levana | Berakhot 8:5-6 | Psalms 60-65 | Erev Sukkot | Candle lighting"
+	tanya := Event{Subject: "Likkutei Amarim 6", Learning: true, rank: hebcal.TimeOfDayLearning,
+		series: download.LearningOrder("tanyaYomi")}
+	got := generateDay(t, 2027, time.October, 15, []Event{tanya})
+	want := "Latest Kiddush Levana | Berakhot 8:5-6 | Likkutei Amarim 6 | Erev Sukkot | Candle lighting"
+	if got != want {
+		t.Errorf("got  %s\nwant %s", got, want)
+	}
+}
+
+// Within the learning slot the series keep the download form's order, which
+// interleaves the fetched ones with the generated: Sefer HaMitzvot comes after
+// Mishna Yomi and before Yerushalmi Yomi, not after both.
+func TestSortDayInterleavesFetchedLearning(t *testing.T) {
+	sm := Event{Subject: "Day 317: N294, N290", Learning: true, rank: hebcal.TimeOfDayLearning,
+		series: download.LearningOrder("seferHaMitzvot")}
+	got := generateDayWith(t, 2027, time.October, 15, []string{"yerushalmi-vilna"}, []Event{sm})
+	want := "Latest Kiddush Levana | Berakhot 8:5-6 | Day 317: N294, N290 | Yerushalmi Terumot 19 | Erev Sukkot | Candle lighting"
 	if got != want {
 		t.Errorf("got  %s\nwant %s", got, want)
 	}

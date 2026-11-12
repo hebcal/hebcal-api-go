@@ -473,7 +473,14 @@ func applyDateRange(msg *downloadpb.Download, p *Params) error {
 		o.Year = time.Now().Year()
 	}
 
-	if m := msg.GetMonth(); m >= 1 && m <= 12 {
+	if m := int(msg.GetMonth()); o.IsHebrewYear && m >= 1 && m <= 12 {
+		// A Hebrew month (Nisan is 1) runs from its 1st to the 1st of the
+		// month after, inclusive: one day longer than the month. Every year
+		// has months 1-12; Adar II, 13, cannot be asked for.
+		start := hdate.New(o.Year, hdate.HMonth(m), 1)
+		o.Start = start
+		o.End = hdate.FromRD(start.Abs() + int64(start.DaysInMonth()))
+	} else if m >= 1 && m <= 12 {
 		o.Month = time.Month(m)
 	}
 	if n := msg.GetNumYears(); n > 1 {

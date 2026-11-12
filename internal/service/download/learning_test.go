@@ -1,13 +1,18 @@
 package download
 
 import (
+	"context"
+	"fmt"
+	"net/http"
 	"testing"
+	"time"
 
 	"github.com/hebcal/hebcal-go/dailylearning"
 	"github.com/hebcal/hebcal-go/event"
 	"github.com/hebcal/hebcal-go/hebcal"
 	_ "github.com/hebcal/learning"
 
+	"github.com/hebcal/hebcal-api-go/internal/repository/readings/readingstest"
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 )
 
@@ -61,6 +66,10 @@ func TestEachLearningScheduleGeneratesEvents(t *testing.T) {
 			}
 			if withURL == 0 && s.name != "yerushalmi-schottenstein" {
 				t.Errorf("%q produced %d events but none carry a URL", s.name, len(evs))
+			}
+			if o := EventLearningOrder(evs[0]); o >= len(learningOrder) {
+				t.Errorf("%q: category %q has no place in learningOrder",
+					s.name, EventCategories(evs[0])[0])
 			}
 		})
 	}
@@ -134,5 +143,58 @@ func TestEveryUnsupportedSeriesHasAQueryParameter(t *testing.T) {
 	if len(fallbackSeries) != len(UnsupportedSeries(msg)) {
 		t.Errorf("fallbackSeries has %d entries but %d series are unsupported; "+
 			"the two lists have drifted", len(fallbackSeries), len(UnsupportedSeries(msg)))
+	}
+}
+
+// The rows readings-svc supplies interleave with the ones hebcal-go generates:
+// Sefer HaMitzvot sits between Rambam and Yerushalmi, Daf Weekly and Pirkei
+// Avot between Dirshu Amud HaYomi and Arukh HaShulchan. Every fetched series
+// has a place, keyed by the category readings-svc reports, which is the
+// series name.
+func TestLearningOrderInterleavesFetchedSeries(t *testing.T) {
+	for series := range fallbackSeries {
+		if LearningOrder(series) >= len(learningOrder) {
+			t.Errorf("%q has no place in learningOrder", series)
+		}
+	}
+	in := []string{"929", "rambam3", "seferHaMitzvot", "yerushalmi",
+		"dirshuAmudYomi", "dafWeekly", "pirkeiAvotSummer", "arukhHaShulchanYomi"}
+	for i := 1; i < len(in); i++ {
+		if LearningOrder(in[i-1]) >= LearningOrder(in[i]) {
+			t.Errorf("%q should come before %q", in[i-1], in[i])
+		}
+	}
+	if LearningOrder("unknown") != len(learningOrder) {
+		t.Error("an unknown series should go last")
+	}
+}
+
+// lg=ah and lg=sh append the brief Hebrew title, which has nikud; an item's
+// own Hebrew field has none, so the rows are fetched in Hebrew as well.
+func TestFetchItemsHebrewWithNikud(t *testing.T) {
+	var langs []string
+	client := readingstest.Serve(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		lg := r.URL.Query().Get("lg")
+		langs = append(langs, lg)
+		title := "Chazarah Mishnah Berurah 451:4-14"
+		if lg == "he" {
+			title = "חֲזָרָה מִשְׁנָה בְּרוּרָה תנא:ד-יד"
+		}
+		fmt.Fprintf(w, `{"items":[{"title":%q,"date":"2026-12-06","category":"dirshuDafHalacha","hebrew":"חזרה משנה ברורה תנא:ד-יד"}]}`, title)
+	}))
+	f := NewLearningFetcher(client)
+	day := time.Date(2026, 12, 6, 0, 0, 0, 0, time.UTC)
+	for _, tt := range []struct{ lg, want string }{
+		{"ah", "חֲזָרָה מִשְׁנָה בְּרוּרָה תנא:ד-יד"},
+		{"a", "חזרה משנה ברורה תנא:ד-יד"},
+	} {
+		langs = nil
+		items, err := f.FetchItems(context.Background(), []string{"dirshuDafHalacha"}, tt.lg, day, day)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(items) != 1 || items[0].Hebrew != tt.want || items[0].Title != "Chazarah Mishnah Berurah 451:4-14" {
+			t.Errorf("lg=%s: items = %+v (requests %v)", tt.lg, items, langs)
+		}
 	}
 }

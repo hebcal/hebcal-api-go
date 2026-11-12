@@ -6,8 +6,47 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/hebcal/hebcal-go/event"
+
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
 )
+
+// learningOrder is the order of a day's daily-learning rows, by event
+// category: the download form's, except that 929 comes first. It interleaves
+// the series hebcal-go generates with those readings-svc supplies (Sefer
+// HaMitzvot falls between Rambam and Yerushalmi, Daf Weekly and Pirkei Avot
+// between Dirshu Amud HaYomi and Arukh HaShulchan), so the fetched rows cannot
+// simply follow the generated ones. It decides which rows survive when a
+// subscription is cut at its event limit, and which row overflows a crowded
+// PDF cell.
+var learningOrder = []string{
+	"929", "dafyomi", "mishnayomi", "perekYomi", "nachyomi", "tanakhYomi",
+	"dailyPsalms", "rambam1", "rambam3", "seferHaMitzvot", "yerushalmi",
+	"chofetzChaim", "shemiratHaLashon", "dirshuAmudYomi", "dafWeekly",
+	"pirkeiAvotSummer", "arukhHaShulchanYomi", "kitzurShulchanAruch",
+	"dirshuDafHalacha", "tanyaYomi",
+}
+
+// LearningOrder places a daily-learning series, named by its event category
+// (a readings-svc item's Category), among a day's learning rows. Sort a day by
+// time of day first and by this second; an unknown series goes last.
+func LearningOrder(category string) int {
+	for i, c := range learningOrder {
+		if c == category {
+			return i
+		}
+	}
+	return len(learningOrder)
+}
+
+// EventLearningOrder is LearningOrder for one of hebcal-go's events, and 0
+// for an event that is not daily learning.
+func EventLearningOrder(ev event.CalEvent) int {
+	if !ev.GetFlags().HasAny(LearningFlags) {
+		return 0
+	}
+	return LearningOrder(EventCategories(ev)[0])
+}
 
 // fallbackSeries maps a daily-learning series with no schedule in
 // github.com/hebcal/learning to the readings-svc /learning query code that
@@ -58,17 +97,38 @@ func (f *LearningFetcher) FetchItems(ctx context.Context, series []string, lg st
 		wanted[s] = true
 	}
 
-	items, err := f.Client.Learning(ctx, codes, lg, start, end)
-	if err != nil {
-		return nil, fmt.Errorf("fetching daily learning: %w", err)
+	fetch := func(lg string) ([]readings.Item, error) {
+		items, err := f.Client.Learning(ctx, codes, lg, start, end)
+		if err != nil {
+			return nil, fmt.Errorf("fetching daily learning: %w", err)
+		}
+		out := items[:0]
+		for _, it := range items {
+			// The response can carry other rows if the sidecar decides to add
+			// something by default; take only what was asked for.
+			if wanted[it.Category] {
+				out = append(out, it)
+			}
+		}
+		return out, nil
 	}
-
-	out := items[:0]
-	for _, it := range items {
-		// The response can carry other rows if the sidecar decides to add
-		// something by default; take only what was asked for.
-		if wanted[it.Category] {
-			out = append(out, it)
+	out, err := fetch(lg)
+	if err != nil || (lg != "ah" && lg != "sh") {
+		return out, err
+	}
+	// The Hebrew name lg=ah and lg=sh append is the brief Hebrew title, with
+	// nikud ("חֲזָרָה מִשְׁנָה בְּרוּרָה"); an item's own Hebrew field is
+	// rendered without. The same query in Hebrew lists the same rows in the
+	// same order.
+	he, err := fetch("he")
+	if err != nil {
+		return nil, err
+	}
+	if len(he) == len(out) {
+		for i := range out {
+			if he[i].Date == out[i].Date && he[i].Category == out[i].Category && he[i].Title != "" {
+				out[i].Hebrew = he[i].Title
+			}
 		}
 	}
 	return out, nil

@@ -128,7 +128,9 @@ func (r *Request) Attachment() bool { return r.Query.Attachment() }
 type entry struct {
 	abs  int64
 	rank int
-	e    icalendar.Event
+	// series orders the learning rows within the learning slot.
+	series int
+	e      icalendar.Event
 }
 
 // Feed is a calendar's events, resolved and in order.
@@ -171,7 +173,7 @@ func (s *Service) Generate(ctx context.Context, r *Request) (*Feed, error) {
 		}
 	}
 
-	opt := s.options(r, events)
+	opt := s.options(r, events, items)
 	memos, err := s.torahMemos(ctx, events, opt.IL)
 	if err != nil {
 		return nil, err
@@ -185,22 +187,26 @@ func (s *Service) Generate(ctx context.Context, r *Request) (*Feed, error) {
 		if ev.GetFlags().Has(event.HEBREW_DATE) {
 			rank = -1 // the date leads its day
 		}
-		f.entries = append(f.entries, entry{ev.GetDate().Abs(), rank, Event(ev, opt)})
+		f.entries = append(f.entries, entry{ev.GetDate().Abs(), rank, download.EventLearningOrder(ev), Event(ev, opt)})
 	}
 	for i := range items {
 		if e, ok := LearningItem(&items[i], opt); ok {
 			day, _ := time.Parse(time.DateOnly, items[i].Date)
-			f.entries = append(f.entries, entry{hdate.FromTime(day).Abs(), hebcal.TimeOfDayLearning, e})
+			f.entries = append(f.entries, entry{hdate.FromTime(day).Abs(), hebcal.TimeOfDayLearning,
+				download.LearningOrder(items[i].Category), e})
 		}
 	}
 	// hebcal-go orders each day already; the stable sort keeps that and moves
-	// the fetched learning rows into the learning slot.
+	// the fetched learning rows into place in the learning slot.
 	sort.SliceStable(f.entries, func(i, j int) bool {
 		a, b := &f.entries[i], &f.entries[j]
 		if a.abs != b.abs {
 			return a.abs < b.abs
 		}
-		return a.rank < b.rank
+		if a.rank != b.rank {
+			return a.rank < b.rank
+		}
+		return a.series < b.series
 	})
 	if n := len(f.entries); n > 0 {
 		f.span = span{f.entries[0].e.Date, f.entries[n-1].e.Date, n}
@@ -209,7 +215,7 @@ func (s *Service) Generate(ctx context.Context, r *Request) (*Feed, error) {
 }
 
 // options derives the per-event choices from the request.
-func (s *Service) options(r *Request, events []event.CalEvent) *Options {
+func (s *Service) options(r *Request, events []event.CalEvent, items []readings.Item) *Options {
 	p, q := r.Params, r.Query
 	emoji := p.Emoji
 	if q.Emoji != nil {
@@ -245,7 +251,7 @@ func (s *Service) options(r *Request, events []event.CalEvent) *Options {
 		o.ShortName = p.LocationShortName
 	}
 	if o.Campaign == "" {
-		o.Campaign = "ical-" + campaignName(p, r.Query, events)
+		o.Campaign = "ical-" + campaignName(p, r.Query, events, items)
 	}
 	return o
 }
@@ -290,7 +296,7 @@ func (s *Service) Limit(f *Feed) bool {
 		hd := hdate.FromRD(last)
 		date := icalendar.DateOf(hd.Gregorian())
 		const desc = "Hebcal calendar feed truncated"
-		kept = append(kept, entry{last, 0, icalendar.Event{
+		notice := icalendar.Event{
 			UID:      icalendar.DefaultUID(date, desc, ""),
 			Summary:  desc,
 			Date:     date,
@@ -298,7 +304,12 @@ func (s *Service) Limit(f *Feed) bool {
 			Private:  true,
 			Description: "Your Hebcal calendar subscription exceeded the maximum number of events and has been truncated. " +
 				"Visit https://www.hebcal.com/home/1398/number-of-years-in-calendar-feed-subscriptions to learn more about the feed length limit.",
-		}})
+		}
+		if f.opts.AppendHebrew {
+			// The notice has no Hebrew name, so lg=ah/sh repeat the English one.
+			notice.SummarySuffix = " / " + desc
+		}
+		kept = append(kept, entry{last, 0, 0, notice})
 	}
 	f.entries = kept
 	return true
@@ -390,7 +401,8 @@ func calendarTitle(p *download.Params, q *download.ICSQuery, sp span, preferAsci
 	o := &p.Opts
 	year, numYears := o.Year, o.NumYears
 	switch {
-	case year != 0 && numYears > 1 && o.Month == 0:
+	case year != 0 && numYears > 1 && o.Month == 0 && o.Start.Abs() == 0:
+		// a Gregorian month sets Month, a Hebrew month Start and End
 		return title + " " + strconv.Itoa(year) + "-" + strconv.Itoa(year+numYears-1)
 	case year != 0 && (o.IsHebrewYear || sp.n == 0):
 		return title + " " + strconv.Itoa(year)
@@ -410,12 +422,31 @@ func calendarTitle(p *download.Params, q *download.ICSQuery, sp span, preferAsci
 
 // campaignName is what follows "ical-" in the tracking campaign: the title
 // without its "Hebcal", slugified.
-func campaignName(p *download.Params, q *download.ICSQuery, events []event.CalEvent) string {
-	// The title's dates come from the events' first and last day.
-	var sp span
+func campaignName(p *download.Params, q *download.ICSQuery, events []event.CalEvent, items []readings.Item) string {
+	// The title's dates come from the first and last day of the calendar's
+	// events, the readings-svc rows included: a calendar of only those has
+	// no hebcal-go events at all.
+	var first, last time.Time
+	add := func(t time.Time) {
+		if first.IsZero() || t.Before(first) {
+			first = t
+		}
+		if t.After(last) {
+			last = t
+		}
+	}
 	if len(events) > 0 {
-		first, last := events[0], events[len(events)-1]
-		sp = span{icalendar.DateOf(first.GetDate().Gregorian()), icalendar.DateOf(last.GetDate().Gregorian()), len(events)}
+		add(events[0].GetDate().Gregorian())
+		add(events[len(events)-1].GetDate().Gregorian())
+	}
+	for i := range items {
+		if day, err := time.Parse(time.DateOnly, items[i].Date); err == nil {
+			add(day)
+		}
+	}
+	var sp span
+	if n := len(events) + len(items); !first.IsZero() {
+		sp = span{icalendar.DateOf(first), icalendar.DateOf(last), n}
 	}
 	title := calendarTitle(p, q, sp, true)
 	for i, c := range title {

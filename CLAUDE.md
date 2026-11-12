@@ -239,11 +239,12 @@ weekday reads "Fast begins", "Ta'anit Bechorot", the two chametz deadlines,
 the learning rows, "Erev Pesach", "Candle lighting".
 
 The PDF keeps that order rather than re-deriving it. `Event.rank` carries
-`TimeOfDay()` from `Generate`, and `sortDay` is a stable sort on it alone, so
-it changes nothing hebcal-go produced. What it is *for* is the learning rows
-`fallback.go` fetches from readings-svc: `mergeLearning` appends them at the end
-of the day, and with `rank` `TimeOfDayLearning` they move up to sit after the
-series hebcal-go generated and before the evening holiday.
+`TimeOfDay()` from `Generate`, and `sortDay` is a stable sort on it and then
+on `Event.series`, so it changes nothing hebcal-go produced. What it is *for*
+is the learning rows `fallback.go` fetches from readings-svc: `mergeLearning`
+appends them at the end of the day, and with `rank` `TimeOfDayLearning` they
+move up into the learning slot, before the evening holiday, and into their
+places among the series hebcal-go generated (see "Daily-learning order").
 
 **Latest Kiddush Levana is a timed event too, but not a `hebcal.TimedEvent`.**
 `hebcal.KiddushLevanaEvent` embeds one, so a plain `ev.(hebcal.TimedEvent)`
@@ -552,11 +553,11 @@ Things that are not obvious:
 - **Daily-learning subjects keep typewriter apostrophes** ("Fourth Year's
   Fruit"); every other subject is smartened.
 - **A Hebrew date leads its day**, and the readings-svc learning rows sit in
-  the learning slot after the series hebcal-go generated. The order within the
-  slot is `learningSchedules`': the download form's, with **929 first** --
-  hebcal-web keeps the selected series in a JavaScript object, whose
-  integer-like key `929` iterates before every other. That order fixed the
-  same cells in the PDF.
+  the learning slot, interleaved with the series hebcal-go generated in
+  `download.learningOrder` (see "Daily-learning order"): the download form's,
+  with **929 first** -- hebcal-web keeps the selected series in a JavaScript
+  object, whose integer-like key `929` iterates before every other. That order
+  fixed the same cells in the PDF.
 
 Known differences from production (every other row of the sweep is
 byte-identical):
@@ -1051,6 +1052,16 @@ Things that are not obvious:
   hebcal-go moved the event (`KiddushLevanaEvent.AdjustedTo`, hebcal-go 0.27.1+),
   so that line can differ from hebcal-web's when the two zmanim libraries put
   alot hashachar a few seconds apart.
+- **The Hebrew half of an `lg=ah`/`sh` readings-svc row has nikud.** An
+  item's `hebrew` field is the classic API's, rendered without it; the title
+  the feed appends is the brief Hebrew one ("חֲזָרָה מִשְׁנָה בְּרוּרָה"). So for
+  those two locales `FetchItems` asks for the same rows in `he` as well and
+  takes their titles -- one more sidecar request, only for those calendars.
+  The truncation notice, which has no Hebrew name, repeats its English one
+  after the " / ".
+- **A calendar of only readings-svc rows names its campaign from their dates**
+  (`ical-diaspora-2026-2027`), as its title does: `campaignName` spans the
+  fetched rows as well as hebcal-go's events, of which there are none.
 - **A holiday with no Hebrew description gets its English one** in a Hebrew
   feed, as in the website's `localizedHolidayDescription()`; the static feeds'
   guard against it was wrong, and removing it changed nothing they publish.
@@ -1372,6 +1383,12 @@ reveals. Each has a regression test in `calendar_port_test.go`.
   is Hebrew 5513-6260 / Gregorian 1752-2499, and applies to both dates of a
   start/end range and to the `/holidays/` calendars as well.
 - **Explicit `numYears` is capped at 10** (`maxNumYears`).
+- **A month in a Hebrew-year calendar is a Hebrew month** (Nisan is 1, 1-12
+  only, so Adar II cannot be named), set as an explicit `Start`/`End` because
+  hebcal-go's `CalOptions.Month` is Gregorian. The range runs from the 1st
+  through the 1st of the following month, inclusive -- one day more than the
+  month, as `@hebcal/core` has it. A feed's title then names the year alone
+  (`calendarTitle` checks `Start` as well as `Month`).
 - **Havdalah is suppressed when `M=off` and `m=0`** — the default for a download
   that did not set a Havdalah time. A zero `m` means "no Havdalah", but
   hebcal-go reads a zero `HavdalahMins` as "use the default tzeit" and would
@@ -1479,11 +1496,21 @@ every supported schedule but Schottenstein produces at least one URL.
 
 ### Daily-learning order
 
-The daily-learning **rows sort into one slot in the order the request listed
-them**. Only four of the thirteen schedules have a flag of their own; the rest
-carry the generic `DAILY_LEARNING`, so hebcal-go's `TimeOfDay()` keys on
-`DAILY_LEARNING` as well as the four named flags, and
-`internal/service/pdf/events_test.go` pins the resulting order.
+The daily-learning **rows sort into one slot, in the download form's order
+with 929 first** (`dailyLearningConfig.json`, read through a JavaScript object
+whose integer-like key iterates first). Only four of the thirteen schedules
+have a flag of their own; the rest carry the generic `DAILY_LEARNING`, so
+hebcal-go's `TimeOfDay()` keys on `DAILY_LEARNING` as well as the four named
+flags, and `internal/service/pdf/events_test.go` pins the resulting order.
+
+hebcal-go orders the series it generates by the `DailyLearning` list, which is
+already in that order. The readings-svc series do not come after them, though:
+Sefer HaMitzvot sits between Rambam and Yerushalmi, Daf Weekly and Pirkei Avot
+between Dirshu Amud HaYomi and Arukh HaShulchan. So every format sorts a day by
+`TimeOfDay` and then by `download.LearningOrder` of the event's category (an
+item's `Category`), the table in `learning.go`; appending the fetched rows
+after the generated ones was visible on any day carrying both kinds, and
+decided which rows a subscription cut at 2399 events kept on its last day.
 
 On a crowded day the last row overflows its cell, so a different order loses a
 different link: a link-set difference between two calendars is not evidence
@@ -1539,6 +1566,7 @@ JavaScript sources.
 |---|---|
 | `ParamsFromMessage`, `Params` struct | `deserializeDownload()` → the calendar-relevant parts of `makeDownloadProps.js`; writes straight to `hebcal.CalOptions` instead of a query map |
 | `maxNumYears` (10) | `getNumYears()` in `src/calendar.js` |
+| Hebrew-year month → `Start`/`End` | `startEndHebrew()` (`@hebcal/core` `getStartAndEnd.js`), with `makeHebcalOptions`' 1-12 month check |
 | `decodeBase64` | Node `Buffer.from(s,'base64')` permissiveness |
 | Shabbat Mevarchim implication (RC + specialShabbat + sedrot) | `src/calendar.js` sets the `SHABBAT_MEVARCHIM` query-mask bit |
 | Gregorian vs Hebrew alt-date branch | `src/calendar.js` sets `addHebrewDates` only when `!hebrewMonths` |
@@ -1593,6 +1621,10 @@ as `%20`, not `+`).
 
 ### `internal/service/download/learning.go`, `links.go`
 
+`learningOrder` / `LearningOrder` ← the order of `dailyLearningConfig.json`
+as hebcal-web's `options.dailyLearning` object iterates it (`929` first, an
+integer-like key). The `lg=he` second fetch in `FetchItems` ← the
+`IcalEvent` constructor's `ev.renderBrief('he')` for `appendHebrewToSubject`.
 `fallbackSeries` codes ← readings-svc's documented codes (also hebcal-web's
 `/hebcal` query params). `canonicalLearningURL` ← strips `@hebcal/rest-api`'s
 `utm_*` tracking. `links.go` UTM defaults ← `appendIsraelAndTracking`.
