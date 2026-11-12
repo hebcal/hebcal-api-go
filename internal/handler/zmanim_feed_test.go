@@ -190,8 +190,29 @@ func TestZmanimJSONPolarNull(t *testing.T) {
 	}
 }
 
-// Only the bare /zmanim, /zmanim2 and /sunrs paths are served, feed or JSON;
-// nothing ever linked a file name or a trailing slash after them.
+// The .ics aliases serve the same feed as their bare paths, byte for byte.
+func TestZmanimFeedIcsAliases(t *testing.T) {
+	for _, pair := range [][2]string{
+		{"/zmanim?geonameid=5128581", "/zmanim.ics?geonameid=5128581"},
+		{"/zmanim2?geonameid=281184&lg=he", "/zmanim2.ics?geonameid=281184&lg=he"},
+		{"/sunrs?geonameid=5128581", "/sunrs.ics?geonameid=5128581"},
+	} {
+		respBare, bare := getFeed(t, pair[0])
+		respAlias, alias := getFeed(t, pair[1])
+		if respBare.StatusCode != http.StatusOK {
+			t.Fatalf("%s: status %d, want 200", pair[0], respBare.StatusCode)
+		}
+		if respAlias.StatusCode != http.StatusOK {
+			t.Fatalf("%s: status %d, want 200", pair[1], respAlias.StatusCode)
+		}
+		if alias != bare {
+			t.Errorf("%s body differs from %s", pair[1], pair[0])
+		}
+	}
+}
+
+// Only the bare /zmanim, /zmanim2 and /sunrs paths (and their .ics aliases)
+// are served, feed or JSON; a trailing slash or a file name after them is 404.
 func TestZmanimFeedNoSubpaths(t *testing.T) {
 	for _, path := range []string{
 		"/zmanim/?geonameid=5128581",
