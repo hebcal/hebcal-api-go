@@ -297,6 +297,15 @@ Three things about the rest of the conversion look wrong and are not:
   mapping, whose last entry maps the `s` parameter to the protobuf's `sedrot`.
   That mapping is one more copy of the one named under "Daily learning" below.
 
+**Location precedence is spelled out twice.** `location.FromQuery` (the JSON
+routes) and `applyV2Location` (every download URL, which produces a protobuf
+rather than a `geodb.Location`) both pick geonameid, ZIP, `city`, decimal
+lat/long, then degrees/minutes, in that order; they must agree. In particular
+`geo=pos` says nothing by itself -- an old form's degrees/minutes URL carries
+it too -- so the decimal branch needs `latitude` *and* `longitude`, as
+`FromQuery` does. The degrees/minutes arithmetic and the name it gives live
+once, in `location.FromLegacyLatLong`.
+
 Two encodings deliberately differ from what hebcal.com itself writes, neither
 observable in the rendered calendar: protobuf field order (Go writes `oneof`
 fields last), and `start`/`end`, which travel as the ISO string the message can

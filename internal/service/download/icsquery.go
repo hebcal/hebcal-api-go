@@ -3,6 +3,8 @@ package download
 import (
 	"strconv"
 	"strings"
+
+	"github.com/hebcal/hebcal-api-go/internal/service/location"
 )
 
 // ICSQuery is what an iCalendar feed's query string says beyond the calendar
@@ -140,5 +142,13 @@ func (c *ICSQuery) describe(text func(int) string) string {
 func (c *ICSQuery) Coordinates() (lat, long float64, ok bool) {
 	lat, err1 := strconv.ParseFloat(c.q["latitude"], 64)
 	long, err2 := strconv.ParseFloat(c.q["longitude"], 64)
-	return lat, long, err1 == nil && err2 == nil
+	if err1 == nil && err2 == nil {
+		return lat, long, true
+	}
+	// The degrees-and-minutes form, which the same resolver every other route
+	// uses turns into decimal degrees.
+	if loc, err := location.FromLegacyLatLong(c.q.values()); err == nil && loc != nil {
+		return loc.Latitude, loc.Longitude, true
+	}
+	return 0, 0, false
 }

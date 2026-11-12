@@ -352,7 +352,10 @@ func DecodeV2(q v2Query) (*downloadpb.Download, error) {
 // city name.
 func applyV2Location(q v2Query, msg *downloadpb.Download) error {
 	switch {
-	case q["geo"] == "pos":
+	case q["geo"] == "pos" && !q.empty("latitude") && !q.empty("longitude"):
+		// geo=pos only says the position is given; a form that spells it as
+		// degrees and minutes (below) carries geo=pos as well, and must not be
+		// taken for a decimal one with no coordinates.
 		msg.GeoPos = true
 		if lat, ok := q.getFloat("latitude"); ok {
 			msg.LatOneof = &downloadpb.Download_Latitude{Latitude: float32(lat)}

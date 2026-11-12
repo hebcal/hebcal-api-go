@@ -253,3 +253,25 @@ func TestICSVTimezone(t *testing.T) {
 		}
 	}
 }
+
+// The degrees-and-minutes location of the oldest calendar links is a location
+// like any other: it names the calendar and positions its events.
+func TestICSLegacyLatLong(t *testing.T) {
+	_, srv := icsServer(t)
+	resp, body := get(t, srv, "/export/ca/x.ics?subscribe=1&year=5774&yt=H&v=1&nx=on&c=on&geo=pos"+
+		"&ladeg=53&lamin=59&ladir=n&lodeg=1&lomin=33&lodir=w&tzid=Europe%2FLondon&m=42")
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d: %s", resp.StatusCode, body)
+	}
+	for _, want := range []string{
+		"X-WR-CALNAME:Hebcal 53°59′N 1°33′W Europe/London\r\n",
+		"GEO:53.983333333333334;-1.55\r\n",
+	} {
+		if !strings.Contains(body, want) {
+			t.Errorf("missing %q", want)
+		}
+	}
+	if strings.Contains(body, "GEO:0;0") {
+		t.Error("the position was lost")
+	}
+}

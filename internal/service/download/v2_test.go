@@ -519,3 +519,22 @@ func TestParseV2PathLastValueWins(t *testing.T) {
 		t.Errorf("year = %q, want the last value 2026", q["year"])
 	}
 }
+
+// A degrees-and-minutes location that also says geo=pos (the old form's own
+// hidden field does) is that location, not a decimal one with no coordinates.
+func TestDecodeV2LegacyLatLongWithGeoPos(t *testing.T) {
+	msg := decodeV2(t, "v=1&c=on&geo=pos&ladeg=53&lamin=59&ladir=n&lodeg=1&lomin=33&lodir=w&tzid=Europe%2FLondon")
+	if !msg.GetGeoPos() {
+		t.Fatal("no position")
+	}
+	if lat, long := msg.GetLatitude(), msg.GetLongitude(); lat < 53.98 || lat > 53.99 || long > -1.54 || long < -1.56 {
+		t.Errorf("position = %v, %v, want 53.983, -1.55", lat, long)
+	}
+	if got, want := msg.GetCityName(), "53°59′N 1°33′W Europe/London"; got != want {
+		t.Errorf("cityName = %q, want %q", got, want)
+	}
+	// geo=pos with no coordinates at all names no location.
+	if msg := decodeV2(t, "v=1&c=on&geo=pos"); msg.GetGeoPos() {
+		t.Error("geo=pos alone made a position")
+	}
+}
