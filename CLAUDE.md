@@ -1068,9 +1068,8 @@ Things that are not obvious:
   (`min=...`) is still in subscribers' URLs, and without this their calendars
   lose Tu BiShvat and the other minor holidays. `download.DecodeICS` sets the
   message's `minor` flag for it, on the legacy shapes only.
-- **Yom Kippur Katan's emoji (✡️) is added here**: hebcal-go's event has none,
-  @hebcal/core's does. Not on the fast times it is linked to. It belongs
-  upstream.
+- **Yom Kippur Katan has no emoji**, deliberately: hebcal-go's event carries
+  none and this service adds none.
 
 Known differences from production (every other line of the sweeps is
 identical):
@@ -1104,9 +1103,7 @@ identical):
    Teves" (the month left in English, a side effect of when the event
    translates it); this service writes the month in Hebrew ("טֵבֵת"), as for the
    CSV. Only the title differs; the UID does not.
-8. Family Day's emoji is the generic ✡️ here and 🇮🇱 in hebcal-web: hebcal-go
-   lacks it for that one holiday (an upstream gap; every other holiday's emoji
-   matches across three years and both schedules).
+8. Yom Kippur Katan has no emoji here (intentional); hebcal-web writes ✡️.
 9. In a pre-1900 year, a zone's local mean time is not a whole number of
    minutes, so a Kiddush Levana time can be a minute off in Jerusalem.
 

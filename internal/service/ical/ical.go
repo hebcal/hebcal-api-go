@@ -148,9 +148,6 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 	subj := download.RenderSubject(ev, o.Locale, download.ShouldRenderBrief(ev, flags, isTimed))
 	if o.Emoji {
 		emoji := ev.GetEmoji()
-		if emoji == "" && flags.Has(event.YOM_KIPPUR_KATAN) && !isTimed {
-			emoji = "✡️"
-		}
 		if emoji != "" {
 			if flags.Has(event.OMER_COUNT) {
 				subj += " " + emoji
