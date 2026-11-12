@@ -304,6 +304,46 @@ func TestDecodeV2GeoNoneDropsTimes(t *testing.T) {
 	}
 }
 
+// The very old a=on asks for Ashkenazi transliterations, unless lg names a
+// locale.
+func TestDecodeV2AshkenaziFlag(t *testing.T) {
+	for qs, want := range map[string]string{
+		"v=1&a=on":      "a",
+		"v=1&a=1":       "a",
+		"v=1&a=on&lg=h": "h",
+		"v=1&a=off":     "",
+	} {
+		if got := decodeV2(t, qs).GetLocale(); got != want {
+			t.Errorf("%s: locale %q, want %q", qs, got, want)
+		}
+	}
+}
+
+// A ZIP code typed into the location box is the location, even under the
+// geo=none or geo=geoname the form submitted with it, and it keeps the
+// candle-lighting and Havdalah offsets geo=none would otherwise drop. A
+// geonameid still wins.
+func TestDecodeV2TypeaheadZip(t *testing.T) {
+	for _, tt := range []struct {
+		qs, zip string
+		geoid   int32
+		mins    int32
+	}{
+		{"v=1&geo=none&geonameid=&city-typeahead=10977&b=18&m=50", "10977", 0, 50},
+		{"v=1&geo=geoname&geonameid=&city-typeahead=84124-1234&m=50", "84124", 0, 50},
+		{"v=1&geo=none&city-typeahead=Spring+Valley,+NY+10977&m=50", "10977", 0, 50},
+		{"v=1&geo=zip&zip=02021&city-typeahead=Spring+Valley,+NY+10977", "02021", 0, 0},
+		{"v=1&geo=geoname&geonameid=5128581&city-typeahead=10977", "", 5128581, 0},
+		{"v=1&geo=none&city-typeahead=Spring+Valley", "", 0, 0},
+	} {
+		msg := decodeV2(t, tt.qs)
+		if msg.GetZip() != tt.zip || msg.GetGeonameid() != tt.geoid || msg.GetHavdalahMins() != tt.mins {
+			t.Errorf("%s: zip %q geonameid %d m %d, want %q %d %d", tt.qs,
+				msg.GetZip(), msg.GetGeonameid(), msg.GetHavdalahMins(), tt.zip, tt.geoid, tt.mins)
+		}
+	}
+}
+
 // Production's 301 has no branch for either of these, so it hands /v4/ a
 // calendar with no location -- and, since a location implies candle-lighting,
 // no times. Both are resolved here instead. See applyV2Location.

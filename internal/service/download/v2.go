@@ -12,6 +12,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/service/location"
 	"github.com/hebcal/hebcal-api-go/pkg/downloadpb"
+	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 )
 
 // The legacy /v2/h/<base64-querystring>/<filename>.pdf download URLs, still
@@ -145,6 +146,37 @@ func (q v2Query) normalize() {
 	delete(q, "vis")
 }
 
+// typeaheadZip reads a ZIP code typed into the location box as the location:
+// a city-typeahead that is a 5-digit ZIP replaces zip, and one ending in a
+// space and five digits ("Spring Valley, NY 10977") fills an empty zip. A
+// geonameid still wins. The form submitted such URLs with geo=none or
+// geo=geoname and an empty geonameid, so geo becomes zip, keeping the ZIP
+// and the candle-lighting and Havdalah options geo=none would drop.
+func (q v2Query) typeaheadZip() {
+	ta := strings.TrimSpace(q["city-typeahead"])
+	if ta == "" || !q.empty("geonameid") {
+		return
+	}
+	switch {
+	case geodb.Is5DigitZip(ta):
+		q["zip"] = ta[:5] // a ZIP+4 is truncated, as for zip itself
+	case q.empty("zip") && len(ta) > 6 && ta[len(ta)-6] == ' ' && allDigits(ta[len(ta)-5:]):
+		q["zip"] = ta[len(ta)-5:]
+	default:
+		return
+	}
+	q["geo"] = "zip"
+}
+
+func allDigits(s string) bool {
+	for i := 0; i < len(s); i++ {
+		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return true
+}
+
 // ParseV2Path decodes a legacy /v2/h/<base64>/<filename><ext> path into the
 // query string it carries.
 func ParseV2Path(path, ext string) (v2Query, error) {
@@ -192,7 +224,13 @@ func DecodeV2(q v2Query) (*downloadpb.Download, error) {
 	default:
 		return nil, model.BadRequest("Invalid download URL: v=%s", q["v"])
 	}
+	q.typeaheadZip()
 	q.normalize()
+	// The very old a=on asks for Ashkenazi transliterations, when lg does not
+	// name a locale.
+	if (q["a"] == "on" || q["a"] == "1") && q.empty("lg") {
+		q["lg"] = "a"
+	}
 
 	msg := &downloadpb.Download{}
 	msg.Major = q.on("maj")

@@ -284,6 +284,17 @@ coordinates in the rendered name are one arc-minute below the input
 truncation -- `60 * (31.766666666666666 - 31)` is `45.99999999999994` in any
 IEEE-754 double.
 
+**Two very old parameters are read the way the feeds read them.** A
+`city-typeahead` that is a ZIP code -- five digits, or a label ending in a
+space and five digits when `zip` is empty -- is the location unless a
+geonameid is given, whatever `geo` says: the form submitted such URLs with
+`geo=none` or `geo=geoname&geonameid=`, and `typeaheadZip` turns them into
+`geo=zip` before `normalize` so the ZIP and its `b`/`m` survive. And `a=on`
+(or `a=1`) with no `lg` is `lg=a`, Ashkenazi transliterations. Both are
+`getLocationFromQuery` / `makeHebcalOptions` behaviour that `downloadHref2`
+never needed, since the website's form never produced them; about 200 of the
+legacy feed URLs crawled from production carry one or the other.
+
 Three things about the rest of the conversion look wrong and are not:
 
 - **`euro` and `subscribe` are bare truthiness tests, `h12` an off-test.**
@@ -1024,7 +1035,13 @@ Things that are not obvious:
   Saturday, dusk otherwise, as an absolute `TRIGGER;VALUE=DATE-TIME`. The event
   is then named for the location -- `hebcal-omer-<Hebrew year>-day<n>-<geoid>`,
   the Hebrew year despite what the Gregorian date of the evening says, and only
-  for a geonames or ZIP location -- and gains its `LOCATION`.
+  for a geonames or ZIP location -- and gains its `LOCATION`. **On a night
+  with no such time** (a high-latitude summer, where the sun never sinks
+  8.5° or to civil dusk: Stockholm and Tallinn in June) a calendar with
+  candle-lighting falls back to tzeit at 7.083° without elevation, still
+  absolute, but the event keeps its plain UID and has no `LOCATION`; only
+  where that fails too (a polar summer) is the alarm the generic
+  `-P0DT3H30M0S`. `TestOmerAlarmFallsBackToTzeit`.
 - **A candle-lighting or Havdalah memo is the event's own and nothing else**,
   with no link. **Kiddush Levana's** is four labelled lines in the calendar's
   language -- the dates by the Intl rules of each locale, which Go has no CLDR
@@ -1076,10 +1093,7 @@ identical):
 
 1. Minutes of zmanim, as everywhere (noaa-go against `@hebcal/core`): a
    `DTSTART`, the Omer alarm, a candle lighting inside a Kiddush Levana
-   description. The UID does not change, so the event moves a minute. At
-   Tromsø in late April civil dusk is a time one library computes and the other
-   does not, so the Omer's alarm there is the generic one here and an absolute
-   one in hebcal-web.
+   description. The UID does not change, so the event moves a minute.
 2. Rosh Hashana's year is gematriya in Hebrew ("תשפ״ז"), a number in
    hebcal-web -- deliberate, as in the CSV and the PDF.
 3. A legacy URL that names both a `year` and a `start`/`end` renders the year
@@ -1106,6 +1120,10 @@ identical):
 8. Yom Kippur Katan has no emoji here (intentional); hebcal-web writes ✡️.
 9. In a pre-1900 year, a zone's local mean time is not a whole number of
    minutes, so a Kiddush Levana time can be a minute off in Jerusalem.
+10. `lg=ah` and `lg=sh` titles containing a comma ("Hakdamah 28, 33, 34",
+   "Day 202: P107, P113"): hebcal-web escapes the transliteration but appends
+   the Hebrew after escaping, so its commas go out bare; here the whole
+   `SUMMARY` is escaped, as RFC 5545 requires. Deliberate.
 
 ## The readings-svc sidecar
 
@@ -1552,6 +1570,9 @@ branch ← `getLocationFromQuery` legacy branch, and is a **deliberate divergenc
 from the 301**. `applyV2DailyLearning` ← `downloadHref2`'s `dailyLearningConfig`
 loop. The fast fields ← `downloadHref2`'s `getFastTimeOpts(q)` block; the
 fast keys in `geoKeysToRemove("none")` ← `fastTimeKeys` in `getGeoKeysToRemove()`. `checkISODate` ← `isoDateStringToDate()` 400 guard.
+`typeaheadZip` ← the `city-typeahead` → `zip` lines at the top of
+`getLocationFromQuery` (`src/location.js`); the `a=on` → `lg=a` rewrite ←
+`makeHebcalOptions`' `options.ashkenazi && empty(query.lg)` (`src/calendar.js`).
 
 ### `internal/service/download/cgi.go` — `makeHebcalOptions(query)` path
 
@@ -1689,7 +1710,8 @@ fallback, `localizedHolidayDescription()`. `download.EventLink` ←
 `queryLongDescr` in `src/urlArgs.js`). `Service.Limit` ←
 `limitIcsFeedLength()` and `makeTruncationNoticeEvent()`; `placeholder` ←
 `makeDummyEvent()`. `Event`'s timed half and `Options.omerAlarm` ← the
-`IcalEvent` constructor and `addLocationOmerAlarms()`; `kiddushLevanaMemo` ←
+`IcalEvent` constructor and `addLocationOmerAlarms()`, its 7.083° fallback ←
+`makeOmerEvent()` (`@hebcal/core`); `kiddushLevanaMemo` ←
 `makeKiddushLevanaMemo()` (`src/kiddushLevanaMemo.js`, dates by
 `klDateFormats`); `Service.torahMemos` ← `makeTorahMemoText()`, run by
 readings-svc. `handler.icsDownload` ← the headers `hebcalDownload()` sets and
