@@ -15,13 +15,14 @@ the order of the VEVENTs (which no calendar client depends on), and the
 documented differences in CLAUDE.md that recur in every sweep -- Yom Kippur
 Katan's emoji and apostrophe, the candle-lighting time inside a Kiddush Levana
 description, the Hebrew half of an lg=ah/sh Mevarchim title, and the escaping
-of commas in the Hebrew half of any lg=ah/sh title.
+of commas and the nikud in the Hebrew half of any lg=ah/sh title.
 """
 import sys, re, itertools, threading, concurrent.futures as cf, urllib.request, urllib.error, difflib, json, os
 WEBS=os.environ.get('WEB','localhost:8081').split(','); API=os.environ.get('API','localhost:8082')
 _web=itertools.cycle(WEBS); _lock=threading.Lock()
 def next_web():
     with _lock: return next(_web)
+nikud=re.compile('[\u0591-\u05bd\u05bf\u05c1\u05c2\u05c4\u05c5\u05c7]')
 hashana=re.compile(r'((רֹאשׁ הַשָּׁנָה|ראש השנה)) [^ \\]*')
 def fetch(host,u):
     req=urllib.request.Request('http://'+host+u, headers={'User-Agent':os.environ.get('AGENT','curl')})
@@ -61,7 +62,8 @@ def blocks(lines):
             if l.startswith('SUMMARY:') and ' / ' in l:
                 # lg=ah/sh: hebcal-web leaves the Hebrew half's commas bare
                 a,_,b=l.partition(' / ')
-                l=a+' / '+b.replace('\\,',',')
+                # and writes nikud there for readings-svc series; this does not
+                l=a+' / '+nikud.sub('',b.replace('\\,',','))
             e[i]=l
     evs.sort(key=lambda e:'\n'.join(e))
     return head+[l for e in evs for l in e]

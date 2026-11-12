@@ -1052,13 +1052,8 @@ Things that are not obvious:
   hebcal-go moved the event (`KiddushLevanaEvent.AdjustedTo`, hebcal-go 0.27.1+),
   so that line can differ from hebcal-web's when the two zmanim libraries put
   alot hashachar a few seconds apart.
-- **The Hebrew half of an `lg=ah`/`sh` readings-svc row has nikud.** An
-  item's `hebrew` field is the classic API's, rendered without it; the title
-  the feed appends is the brief Hebrew one ("חֲזָרָה מִשְׁנָה בְּרוּרָה"). So for
-  those two locales `FetchItems` asks for the same rows in `he` as well and
-  takes their titles -- one more sidecar request, only for those calendars.
-  The truncation notice, which has no Hebrew name, repeats its English one
-  after the " / ".
+- **The truncation notice has no Hebrew name**, so with `lg=ah`/`sh` it
+  repeats its English one after the " / ".
 - **A calendar of only readings-svc rows names its campaign from their dates**
   (`ical-diaspora-2026-2027`), as its title does: `campaignName` spans the
   fetched rows as well as hebcal-go's events, of which there are none.
@@ -1135,6 +1130,12 @@ identical):
    "Day 202: P107, P113"): hebcal-web escapes the transliteration but appends
    the Hebrew after escaping, so its commas go out bare; here the whole
    `SUMMARY` is escaped, as RFC 5545 requires. Deliberate.
+11. `lg=ah` and `lg=sh` titles of a readings-svc series (Chofetz Chaim, Daf
+   HaYomi B'Halacha, Tanya Yomi, ...): hebcal-web appends the Hebrew with
+   nikud (`renderBrief('he')`); here it is readings-svc's `hebrew` field,
+   without. Deliberate -- `ah`/`sh` never promised nikud, and hebcal.com's
+   own pages show none for them; getting it would cost a second readings-svc
+   request.
 
 ## The readings-svc sidecar
 
@@ -1623,8 +1624,7 @@ as `%20`, not `+`).
 
 `learningOrder` / `LearningOrder` ← the order of `dailyLearningConfig.json`
 as hebcal-web's `options.dailyLearning` object iterates it (`929` first, an
-integer-like key). The `lg=he` second fetch in `FetchItems` ← the
-`IcalEvent` constructor's `ev.renderBrief('he')` for `appendHebrewToSubject`.
+integer-like key).
 `fallbackSeries` codes ← readings-svc's documented codes (also hebcal-web's
 `/hebcal` query params). `canonicalLearningURL` ← strips `@hebcal/rest-api`'s
 `utm_*` tracking. `links.go` UTM defaults ← `appendIsraelAndTracking`.

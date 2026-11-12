@@ -97,38 +97,17 @@ func (f *LearningFetcher) FetchItems(ctx context.Context, series []string, lg st
 		wanted[s] = true
 	}
 
-	fetch := func(lg string) ([]readings.Item, error) {
-		items, err := f.Client.Learning(ctx, codes, lg, start, end)
-		if err != nil {
-			return nil, fmt.Errorf("fetching daily learning: %w", err)
-		}
-		out := items[:0]
-		for _, it := range items {
-			// The response can carry other rows if the sidecar decides to add
-			// something by default; take only what was asked for.
-			if wanted[it.Category] {
-				out = append(out, it)
-			}
-		}
-		return out, nil
-	}
-	out, err := fetch(lg)
-	if err != nil || (lg != "ah" && lg != "sh") {
-		return out, err
-	}
-	// The Hebrew name lg=ah and lg=sh append is the brief Hebrew title, with
-	// nikud ("חֲזָרָה מִשְׁנָה בְּרוּרָה"); an item's own Hebrew field is
-	// rendered without. The same query in Hebrew lists the same rows in the
-	// same order.
-	he, err := fetch("he")
+	items, err := f.Client.Learning(ctx, codes, lg, start, end)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("fetching daily learning: %w", err)
 	}
-	if len(he) == len(out) {
-		for i := range out {
-			if he[i].Date == out[i].Date && he[i].Category == out[i].Category && he[i].Title != "" {
-				out[i].Hebrew = he[i].Title
-			}
+
+	out := items[:0]
+	for _, it := range items {
+		// The response can carry other rows if the sidecar decides to add
+		// something by default; take only what was asked for.
+		if wanted[it.Category] {
+			out = append(out, it)
 		}
 	}
 	return out, nil
