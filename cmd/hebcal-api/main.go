@@ -184,8 +184,8 @@ func main() {
 		IdleTimeout:       120 * time.Second,
 	}
 
-	// SIGHUP or SIGUSR1 reopens the access log for logrotate, and checks the
-	// geonames database for replacement
+	// SIGHUP or SIGUSR1 reopens the access log for logrotate, checks the
+	// geonames database for replacement, and flushes the VTIMEZONE cache
 	rotate := make(chan os.Signal, 1)
 	signal.Notify(rotate, syscall.SIGHUP, syscall.SIGUSR1)
 	go func() {
@@ -196,6 +196,8 @@ func main() {
 				lg.Info("reopened access log on " + sig.String())
 			}
 			reloadGeonames(sig.String())
+			// A new tzdata release may have been installed.
+			app.Zones.Flush()
 		}
 	}()
 

@@ -47,6 +47,14 @@ func (z *ZoneInfo) VTimezone(tzid string) (string, bool) {
 	return vtz, true
 }
 
+// Flush drops every cached VTIMEZONE, so the next request for a zone rereads
+// its file -- for after a new tzdata release has been installed.
+func (z *ZoneInfo) Flush() {
+	if z != nil {
+		z.cache.Clear()
+	}
+}
+
 // validTZID accepts identifiers shaped like the IANA database's, and so keeps
 // one taken from a request from naming a file outside the directory.
 func validTZID(tzid string) bool {

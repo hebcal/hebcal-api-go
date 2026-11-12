@@ -325,6 +325,12 @@ func TestVTimezone(t *testing.T) {
 	if !ok || first != second || first != "BEGIN:VTIMEZONE\r\nTZID:Asia/Jerusalem\r\nEND:VTIMEZONE" {
 		t.Errorf("cache: %q / %q", first, second)
 	}
+	// Flush forgets it: the removed file is now gone.
+	z2.Flush()
+	if _, ok := z2.VTimezone("Asia/Jerusalem"); ok {
+		t.Error("Flush did not clear the cache")
+	}
+	(*ZoneInfo)(nil).Flush()
 
 	for _, tzid := range []string{"", "Mars/Olympus_Mons", "../zoneinfo/America/Los_Angeles", "/etc/passwd",
 		"America/../America/Los_Angeles", "America/Los_Angeles\x00", "America\\Los_Angeles", strings.Repeat("a", 100)} {
