@@ -82,6 +82,17 @@ hidden). `ics-sweep.sh <file>` runs every query string in a file (one per line;
 and `/v4/` forms -- `ics-v4.mjs` builds the last with hebcal-web's own encoder
 -- and prints the ones that differ. `CGI_ONLY=1` skips the other two forms.
 
+`ics-urls.py <file> <result.json>` takes whole URL paths instead -- a list
+crawled from a production access log, say -- fetches each from both servers in
+parallel (`J`, default 6), and writes the ones that differ to a JSON file. It
+compares the events as a set and masks the documented differences that recur in
+every sweep (see its header), so what is left is new. `WEB` takes a
+comma-separated list of hebcal-web servers, used round-robin: one Node process
+is the bottleneck, so on a machine with cores to spare start several
+(`NODE_PORT=8084 node src/app-download.js`, …). hebcal-web needs
+`zips.sqlite3`, `geonames.sqlite3` and `zoneinfo/` in its working directory
+(symlinks to `/var/www/` will do) and an empty `hebcal-dot-com.ini`.
+
 ## ics-goldens.sh, dump-kl-dates.mjs
 
 `ics-goldens.sh` regenerates `internal/service/ical/testdata` -- the golden feeds
