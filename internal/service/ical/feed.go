@@ -216,14 +216,15 @@ func (s *Service) options(r *Request, events []event.CalEvent) *Options {
 		emoji = *q.Emoji
 	}
 	o := &Options{
-		Locale:       p.Locale,
-		IL:           p.Opts.IL,
-		Emoji:        emoji,
-		AppendHebrew: p.AppendHebrew,
-		UTMSource:    q.UTMSource,
-		UTMMedium:    q.UTMMedium,
-		Campaign:     q.UTMCampaign,
-		UseElevation: p.Opts.UseElevation,
+		Locale:         p.Locale,
+		IL:             p.Opts.IL,
+		Emoji:          emoji,
+		AppendHebrew:   p.AppendHebrew,
+		UTMSource:      q.UTMSource,
+		UTMMedium:      q.UTMMedium,
+		Campaign:       q.UTMCampaign,
+		UseElevation:   p.Opts.UseElevation,
+		CandleLighting: p.Opts.CandleLighting,
 	}
 	switch p.Hour12 {
 	case 1:

@@ -317,3 +317,30 @@ func TestHebrewMonthModeIsIgnored(t *testing.T) {
 		t.Error("the Hebrew dates are missing")
 	}
 }
+
+// The Omer's location alarm is sunset less half an hour on a Friday, 8.5° on
+// a Saturday and civil dusk otherwise. In Stockholm in early June the sun
+// never sinks 8.5°, so the 45th day (counted from Saturday night 5 June 2027)
+// falls back to tzeit at 7.083° -- still an absolute time, but without the
+// location's name -- while the 46th keeps its dusk alarm and LOCATION.
+func TestOmerAlarmFallsBackToTzeit(t *testing.T) {
+	s, _ := testService(t)
+	res := render(t, s, "/hebcal/index.cgi/h.ics?v=1&o=on&c=on&start=2027-06-06&end=2027-06-07"+
+		"&geo=pos&latitude=59.32938&longitude=18.06871&tzid=Europe/Stockholm")
+	body := strings.ReplaceAll(string(res.Body), "\r\n ", "")
+	events := map[string]string{}
+	for _, ev := range strings.Split(body, "BEGIN:VEVENT")[1:] {
+		if m := regexp.MustCompile(`SUMMARY:(\d+)th day of the Omer`).FindStringSubmatch(ev); m != nil {
+			events[m[1]] = ev
+		}
+	}
+	day45, day46 := events["45"], events["46"]
+	if !regexp.MustCompile(`TRIGGER;VALUE=DATE-TIME:20270605T2[01]\d{4}Z`).MatchString(day45) ||
+		strings.Contains(day45, "LOCATION:") {
+		t.Errorf("45th day, want a 7.083° alarm and no LOCATION:\n%s", day45)
+	}
+	if !regexp.MustCompile(`TRIGGER;VALUE=DATE-TIME:20270606T\d{6}Z`).MatchString(day46) ||
+		!strings.Contains(day46, "LOCATION:") {
+		t.Errorf("46th day, want a dusk alarm and a LOCATION:\n%s", day46)
+	}
+}

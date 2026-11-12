@@ -70,6 +70,9 @@ type Options struct {
 	// UseElevation makes the Omer's evening alarm account for the location's
 	// elevation.
 	UseElevation bool
+	// CandleLighting is the calendar's candle-lighting option. With it, an
+	// Omer day whose evening has no time of its own is reminded at tzeit.
+	CandleLighting bool
 	// TorahMemos holds the Torah and Haftarah readings to append to the
 	// description of each event that has one.
 	TorahMemos TorahMemos
@@ -204,12 +207,18 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 // calendar with a location: half an hour before sunset on a Friday, nightfall
 // on a Saturday and dusk on any other day. The evening's own date and the
 // location's geonameid or ZIP name the event, so a subscriber's reminder is
-// kept apart from the same day's in another city. Where the evening has no
-// sunset (a polar summer) the generic reminder stays.
+// kept apart from the same day's in another city.
+//
+// Where the evening has no such time (a summer night when the sun stays
+// above 8.5° or the civil-dusk angle), a calendar with candle-lighting falls
+// back to tzeit at 7.083°, ignoring elevation, and the event keeps its
+// ordinary UID and no LOCATION; failing that too (a polar summer), the generic
+// reminder stays.
 func (o *Options) omerAlarm(e *icalendar.Event, oe omer.OmerEvent) {
 	eve := oe.Date.Prev()
 	y, m, d := eve.Greg()
-	z := zmanim.New(o.Location, time.Date(y, m, d, 0, 0, 0, 0, time.UTC))
+	day := time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
+	z := zmanim.New(o.Location, day)
 	z.UseElevation = o.UseElevation
 	var at time.Time
 	switch eve.Weekday() {
@@ -221,6 +230,12 @@ func (o *Options) omerAlarm(e *icalendar.Event, oe omer.OmerEvent) {
 		at = z.Dusk()
 	}
 	if at.IsZero() {
+		if o.CandleLighting {
+			z := zmanim.New(o.Location, day)
+			if tzeit := z.Tzeit(zmanim.Tzeit3MediumStars); !tzeit.IsZero() {
+				e.Alarm = icalendar.AbsoluteAlarm(tzeit)
+			}
+		}
 		return
 	}
 	e.Alarm = icalendar.AbsoluteAlarm(at)
