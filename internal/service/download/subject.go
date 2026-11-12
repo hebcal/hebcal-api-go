@@ -167,3 +167,14 @@ func StripEmoji(s string) string {
 	}, s)
 	return strings.TrimSpace(out)
 }
+
+// OwnMemo is the memo an event carries by itself, as a feed or spreadsheet
+// writes it. Yom Kippur Katan's names the coming month with a straight
+// apostrophe ("Sh'vat"), where the same month in a title is smartened.
+func OwnMemo(ev event.CalEvent, locale string) string {
+	memo := event.Memo(ev, locale)
+	if ev.GetFlags().Has(event.YOM_KIPPUR_KATAN) {
+		memo = strings.ReplaceAll(memo, "’", "'")
+	}
+	return memo
+}

@@ -1022,10 +1022,9 @@ Things that are not obvious:
   for, so `tools/dump-kl-dates.mjs` writes them out (`kldates.go`; it uses the
   plain space `format()` writes where `formatToParts()` has a narrow no-break
   one) -- and, on the Maharil line, "(adjusted to 4:22pm Candle lighting)" when
-  hebcal-go moved the event. Whether it did is worked out the way hebcal-go does
-  (the raw time between alot hashachar and 8.5°, else the event's time not being
-  the raw one), so that line can differ from hebcal-web's when the two zmanim
-  libraries put alot hashachar a few seconds apart.
+  hebcal-go moved the event (`KiddushLevanaEvent.AdjustedTo`, hebcal-go 0.27.1+),
+  so that line can differ from hebcal-web's when the two zmanim libraries put
+  alot hashachar a few seconds apart.
 - **A holiday with no Hebrew description gets its English one** in a Hebrew
   feed, as in the website's `localizedHolidayDescription()`; the static feeds'
   guard against it was wrong, and removing it changed nothing they publish.
@@ -1054,6 +1053,9 @@ Things that are not obvious:
   PDF and CSV drop it, and so does this.
 - **There is no `Access-Control-Allow-Origin`**: nothing fetches an `.ics`
   cross-origin, and hebcal-web sends none.
+- **Yom Kippur Katan's memo keeps a straight apostrophe** ("Sh'vat"), as
+  hebcal-web writes it; hebcal-go 0.27.1 smartens it, so `download.OwnMemo`
+  undoes that for the feeds and the CSV.
 - **Yom Kippur Katan's emoji (✡️) is added here**: hebcal-go's event has none,
   @hebcal/core's does. Not on the fast times it is linked to. It belongs
   upstream.

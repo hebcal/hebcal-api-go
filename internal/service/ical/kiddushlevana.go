@@ -7,7 +7,6 @@ import (
 
 	"github.com/hebcal/hebcal-go/event"
 	"github.com/hebcal/hebcal-go/hebcal"
-	"github.com/hebcal/hebcal-go/zmanim"
 
 	"github.com/hebcal/hebcal-api-go/internal/model"
 )
@@ -28,8 +27,7 @@ func kiddushLevanaMemo(ev event.CalEvent, o *Options) string {
 	clock := func(t time.Time) string {
 		return event.ReformatTimeStr(t.Format("15:04"), "pm", cc, o.Hour12)
 	}
-	rawMaharil := kl.Molad.SofZmanKidushLevanaBetweenMoldos()
-	maharil := rawMaharil.Truncate(time.Minute)
+	maharil := kl.Molad.SofZmanKidushLevanaBetweenMoldos().Truncate(time.Minute)
 	rows := []struct {
 		label string
 		t     time.Time
@@ -44,7 +42,7 @@ func kiddushLevanaMemo(ev event.CalEvent, o *Options) string {
 		t := r.t.In(tz)
 		line := model.Gettext(r.label, o.Locale) + ": " + formatDate(t, o.Locale) + ", " + clock(t)
 		if i == 2 {
-			if zman := adjustedTo(kl, rawMaharil, tz, o); zman != "" {
+			if zman := adjustedTo(kl); zman != "" {
 				line += " (" + model.Gettext("adjusted to", o.Locale) + " " + clock(kl.EventTime) + " " +
 					model.Gettext(zman, o.Locale) + ")"
 			}
@@ -55,26 +53,15 @@ func kiddushLevanaMemo(ev event.CalEvent, o *Options) string {
 }
 
 // adjustedTo names what the event's time was moved to from the Maharil's, as
-// "Alot haShachar" or "Candle lighting", or "" when it was not moved. A time
-// in the day is moved back to alot hashachar that morning, and one on Shabbat
-// or a festival to candle lighting before it; the event's time is what
-// tells the two apart.
-func adjustedTo(kl hebcal.KiddushLevanaEvent, raw time.Time, tz *time.Location, o *Options) string {
-	local := raw.In(tz)
-	y, m, d := local.Date()
-	z := zmanim.New(o.Location, time.Date(y, m, d, 0, 0, 0, 0, time.UTC))
-	z.UseElevation = o.UseElevation
-	alos, tzeit := z.AlotHaShachar(), z.Tzeit(zmanim.Tzeit3SmallStars)
-	if !alos.IsZero() && !tzeit.IsZero() && raw.After(alos) && raw.Before(tzeit) {
-		if kl.EventTime.Equal(alos.Truncate(time.Minute)) {
-			return "Alot haShachar"
-		}
+// "Alot haShachar" or "Candle lighting", or "" when it was not moved.
+func adjustedTo(kl hebcal.KiddushLevanaEvent) string {
+	switch kl.AdjustedTo {
+	case hebcal.KiddushLevanaAlot:
+		return "Alot haShachar"
+	case hebcal.KiddushLevanaCandleLighting:
 		return "Candle lighting"
 	}
-	if kl.EventTime.Equal(raw.Truncate(time.Minute)) {
-		return ""
-	}
-	return "Candle lighting"
+	return ""
 }
 
 // ceilMinute rounds up to the next whole minute.
