@@ -5,6 +5,7 @@
 package handler
 
 import (
+	"io"
 	"net/http"
 	"os"
 	"time"
@@ -105,6 +106,7 @@ func (s *Server) Routes() http.Handler {
 	mw := &httpx.Middleware{Logger: s.Logger}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/ping", mw.Serve(s.ping))
+	mux.HandleFunc("/robots.txt", mw.Serve(s.robots))
 	mux.Handle("/metrics", promhttp.Handler())
 	mux.HandleFunc("/converter/csv", mw.Serve(s.converterCSV))
 	mux.HandleFunc("/converter", mw.Serve(s.converter))
@@ -192,6 +194,20 @@ func (s *Server) ping(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", httpx.ContentTypeText)
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Write(body)
+}
+
+// robotsTxt is the body of /robots.txt: every crawler may fetch every path.
+const robotsTxt = "User-agent: *\nAllow: /\n"
+
+// robots serves the static robots.txt for GET and HEAD, one day cacheable.
+func (s *Server) robots(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet && r.Method != http.MethodHead {
+		httpx.MethodNotAllowed(w, r.Method, "GET, HEAD")
+		return
+	}
+	w.Header().Set("Content-Type", httpx.ContentTypeText)
+	w.Header().Set("Cache-Control", httpx.CacheControl1Day)
+	io.WriteString(w, robotsTxt)
 }
 
 func (s *Server) notFound(w http.ResponseWriter, r *http.Request) {
