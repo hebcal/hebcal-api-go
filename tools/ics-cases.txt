@@ -22,8 +22,6 @@ v=1&year=2026&maj=on&yto=on&c=on&geonameid=5128581&b=18&M=on&lg=h&subscribe=1
 v=1&year=2026&maj=on&fsd=19.8&fed=8.5&tbed=8.5&mf=on&c=on&geonameid=5128581&b=18&M=on
 v=1&year=2026&F=on&myomi=on&dpy=on&nyomi=on&dty=on&dps=on&d929=on&dr1=on&dr3=on&yyomi=on&yys=on&dw=on&dpa=on&lg=s
 v=1&year=2026&maj=on&F=on&nyomi=on&lg=he&subscribe=1
-v=1&year=5787&yt=H&maj=on&min=on&nx=on&mf=on&ss=on&mm=1&d=on&subscribe=1
-v=1&year=5787&yt=H&maj=on&min=on&nx=on&mf=on&ss=on&mm=2&D=on&lg=h
 v=1&year=5787&yt=H&maj=on&min=on&nx=on&mf=on&ss=on&ny=3&c=on&geonameid=5128581&b=18&M=on
 v=1&start=2026-03-01&end=2026-04-30&maj=on&min=on&nx=on&ss=on
 v=1&year=2026&month=4&maj=on&min=on&c=on&geonameid=281184&i=on&M=on&lg=h

@@ -551,9 +551,10 @@ byte-identical):
 3. `lg=ah` Shabbat Mevarchim: production appends "מְבָרְכִים חוֹדֶשׁ Teves",
    because `MevarchimChodeshEvent` translates the month into the calendar's
    locale in its constructor; this service writes "טֵבֵת". Not reproduced.
-4. Hebrew-month (`mm=1`/`mm=2`) multi-year calendars: production appends the
-   next Tishrei from `year+1` rather than `year+numYears`, duplicating that
-   month's rows; this service inherits the PDF's corrected anchoring.
+4. Hebrew-month (`mm=1`/`mm=2`) is ignored, as in the iCalendar feeds (see
+   "The holiday feeds"): production appends the next Tishrei from `year+1`
+   and adds Gregorian-date rows; here the request is read as a Gregorian-month
+   one.
 
 ## The iCalendar feeds (`pkg/icalendar`, Yahrzeit first)
 
@@ -967,7 +968,7 @@ generating anything.
 
 **Measured, not assumed.** `tools/ics-sweep.sh tools/ics-cases.txt` renders
 about 50 URLs -- every locale family, Israel, lat/long locations (Sydney, and
-Tromsø inside the Arctic Circle), Hebrew years and months, Hebrew-month alternate dates,
+Tromsø inside the Arctic Circle), Hebrew years and months,
 daily learning, Omer with a location, titles and colours, tracking parameters --
 in all three URL shapes against a local hebcal-web, and a second sweep over
 nineteen years from 1760 to 2450 on both schedules diffed every UID. Everything
@@ -1041,8 +1042,7 @@ Things that are not obvious:
   calendar feed truncated" event the day after the last. Only a cut feed depends
   on the week, so only then does the ETag gain the Sunday (a second check
   after generating, like the original's); a file to save is never cut.
-  `Service.Limit` counts every event, the readings-svc rows and Hebrew-month
-  Gregorian dates included.
+  `Service.Limit` counts every event, the readings-svc rows included.
 - **An empty calendar is a placeholder, not an error** (a 400 for the PDF, a
   header row for the CSV): one private "Calendar contains no events" event
   dated today, a UID hashing the request's own URL (x64 128-bit murmur, where
@@ -1072,8 +1072,13 @@ identical):
 3. A legacy URL that names both a `year` and a `start`/`end` renders the year
    (the form its `/v4/` equivalent takes); hebcal-web renders the range. The
    website sends one or the other.
-4. Hebrew-month calendars (`mm=1`/`mm=2`) append the next Tishrei from
-   `year+numYears`, not `year+1`, as in the CSV (see there).
+4. Hebrew-month mode (`mm=1`/`mm=2`) is ignored on purpose
+   (`download.IgnoreMonthMode`, also applied to the CSV): it lays out a printed
+   page, and a list of events has no months to count. hebcal-web honours it,
+   appending the next Tishrei and a "Nov 10"-style Gregorian-date event on
+   each day when `d=on`/`D=on`; here the request is the same feed as one with
+   `mm=0`, so those events cannot appear, even from a `/v4/` URL that has the
+   setting baked into its protobuf.
 5. `nh=on` is understood only in the classic `/hebcal/index.cgi/` form, and
    `v=now` is served here though hebcal-web answers it 404.
 6. In a pre-1900 year, a zone's local mean time is not a whole number of
@@ -1560,7 +1565,6 @@ locale)`. `memo` ← `options.memo || ev.memo || getHolidayDescription() ||
 linkedEvent.render()`. `ownMemo` ← `ev.memo`, which hebcal-go carries as `event.Memo`. `parshaMemo` ← `getCsvParshaMemo()`. `Render` ←
 `eventsWithParshaToCsv()` + `byteOrderMark()` (now unconditional).
 `numYears` ← `getNumYears()` + `maxNumYear` (`src/calendar.js`).
-`addGregorianDates` ← `makeHebrewCalendar()`'s `GregorianDateEvent` loop.
 `learningToCSV` renders readings-svc's classic-API items.
 
 ### `pkg/icalendar/` — `@hebcal/icalendar` (hebcal-icalendar 7.0.6)
@@ -1664,8 +1668,7 @@ fallback, `localizedHolidayDescription()`. `download.EventLink` ←
 `makeDummyEvent()`. `Event`'s timed half and `Options.omerAlarm` ← the
 `IcalEvent` constructor and `addLocationOmerAlarms()`; `kiddushLevanaMemo` ←
 `makeKiddushLevanaMemo()` (`src/kiddushLevanaMemo.js`, dates by
-`klDateFormats`); `Feed.addGregorianDates` ← `GregorianDateEvent` and the loop
-in `makeHebrewCalendar()`; `Service.torahMemos` ← `makeTorahMemoText()`, run by
+`klDateFormats`); `Service.torahMemos` ← `makeTorahMemoText()`, run by
 readings-svc. `handler.icsDownload` ← the headers `hebcalDownload()` sets and
 the dispatcher's 14-day `Cache-Control`. `tools/readings-stub.mjs` runs the
 last of those for comparing without a sidecar.

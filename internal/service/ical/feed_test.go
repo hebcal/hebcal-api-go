@@ -296,3 +296,24 @@ func TestProdidLang(t *testing.T) {
 		}
 	}
 }
+
+// Counting in Hebrew months lays out a printed page; a feed has no months, so
+// a request that asks for it is the same feed as one that does not -- with
+// Hebrew dates, never Gregorian ones, and no extra Tishrei.
+func TestHebrewMonthModeIsIgnored(t *testing.T) {
+	s, _ := testService(t)
+	const base = "/hebcal/index.cgi/h.ics?v=1&start=2026-11-10&end=2026-12-10&maj=on&nx=on&D=on"
+	want := render(t, s, base).Body
+	for _, mm := range []string{"1", "2"} {
+		got := render(t, s, base+"&mm="+mm).Body
+		if string(got) != string(want) {
+			t.Errorf("mm=%s renders differently from mm=0", mm)
+		}
+	}
+	if regexp.MustCompile(`SUMMARY:(Nov|Dec) \d`).Match(want) {
+		t.Error("a Gregorian date became an event")
+	}
+	if !strings.Contains(string(want), "Kislev") {
+		t.Error("the Hebrew dates are missing")
+	}
+}

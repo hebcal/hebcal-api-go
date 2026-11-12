@@ -68,6 +68,7 @@ func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
 	if err != nil {
 		return nil, err
 	}
+	download.IgnoreMonthMode(msg)
 	params, err := download.ParamsFromMessage(msg, s.Geo)
 	if err != nil {
 		return nil, err
@@ -123,11 +124,6 @@ func Render(cal *Calendar) []byte {
 			rows = append(rows, row{abs: hd.Abs(), rank: hebcal.TimeOfDayLearning, line: learningToCSV(it, hd, p)})
 		}
 	}
-	// A Hebrew-month calendar shows the Gregorian date as its alternate date,
-	// which hebcal-go does not generate, ahead of each day's other events.
-	if p.MonthMode != download.GregorianArabic && (p.AddAltDates || p.AddAltDatesForEvents) && len(rows) > 0 {
-		rows = addGregorianDates(rows, p)
-	}
 	// hebcal-go already orders each day by time of day; the stable sort keeps
 	// that and moves the fetched learning rows into the learning slot.
 	sort.SliceStable(rows, func(i, j int) bool {
@@ -175,30 +171,6 @@ func FormatDate(y int, m time.Month, d int, euro bool) string {
 // CSV writer would otherwise have to quote across lines.
 func FlattenNewlines(s string) string {
 	return strings.ReplaceAll(s, "\n", " / ")
-}
-
-// addGregorianDates adds a Gregorian-date row on every day from the first row
-// to the last (AddAltDates), or on every day that has a row
-// (AddAltDatesForEvents).
-func addGregorianDates(rows []row, p *download.Params) []row {
-	days := make(map[int64]bool, len(rows))
-	lo, hi := rows[0].abs, rows[0].abs
-	for _, r := range rows {
-		days[r.abs] = true
-		lo, hi = min(lo, r.abs), max(hi, r.abs)
-	}
-	for abs := lo; abs <= hi; abs++ {
-		if p.AddAltDates || days[abs] {
-			hd := hdate.FromRD(abs)
-			subj := download.GregorianDateText(hd, p.Locale)
-			hebrew := ""
-			if p.AppendHebrew {
-				hebrew = download.GregorianDateText(hd, "he")
-			}
-			rows = append(rows, row{abs: abs, rank: -1, line: formatRow(hd, subj, hebrew, "", false, "", 3, "Jewish Holidays", p)})
-		}
-	}
-	return rows
 }
 
 // category maps an event category to the Location column of an all-day row.

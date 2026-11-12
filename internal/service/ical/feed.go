@@ -104,6 +104,7 @@ func (s *Service) Parse(ctx context.Context, u *url.URL) (*Request, error) {
 	if err != nil {
 		return nil, err
 	}
+	download.IgnoreMonthMode(msg)
 	params, err := download.ParamsFromMessage(msg, s.Geo)
 	if err != nil {
 		return nil, err
@@ -192,9 +193,6 @@ func (s *Service) Generate(ctx context.Context, r *Request) (*Feed, error) {
 			f.entries = append(f.entries, entry{hdate.FromTime(day).Abs(), hebcal.TimeOfDayLearning, e})
 		}
 	}
-	if p.MonthMode != download.GregorianArabic && (p.AddAltDates || p.AddAltDatesForEvents) && len(f.entries) > 0 {
-		f.addGregorianDates()
-	}
 	// hebcal-go orders each day already; the stable sort keeps that and moves
 	// the fetched learning rows into the learning slot.
 	sort.SliceStable(f.entries, func(i, j int) bool {
@@ -249,38 +247,6 @@ func (s *Service) options(r *Request, events []event.CalEvent) *Options {
 		o.Campaign = "ical-" + campaignName(p, r.Query, events)
 	}
 	return o
-}
-
-// addGregorianDates adds the Gregorian date as an event on every day (or every
-// day with an event) of a calendar that counts in Hebrew months, as the
-// alternate date the Hebrew one is the main date for.
-func (f *Feed) addGregorianDates() {
-	p := f.req.Params
-	days := make(map[int64]bool, len(f.entries))
-	lo, hi := f.entries[0].abs, f.entries[0].abs
-	for _, en := range f.entries {
-		days[en.abs] = true
-		lo, hi = min(lo, en.abs), max(hi, en.abs)
-	}
-	for abs := lo; abs <= hi; abs++ {
-		if !p.AddAltDates && !days[abs] {
-			continue
-		}
-		hd := hdate.FromRD(abs)
-		g := icalendar.DateOf(hd.Gregorian())
-		desc := hd.Gregorian().Format(time.DateOnly)
-		e := icalendar.Event{
-			UID:     icalendar.DefaultUID(g, desc, ""),
-			Summary: download.GregorianDateText(hd, f.opts.Locale),
-			Date:    g,
-			Private: true,
-			Alarm:   icalendar.AlarmUserEvent,
-		}
-		if f.opts.AppendHebrew {
-			e.SummarySuffix = " / " + download.GregorianDateText(hd, "he")
-		}
-		f.entries = append(f.entries, entry{abs, -1, e})
-	}
 }
 
 // Result is a rendered feed.

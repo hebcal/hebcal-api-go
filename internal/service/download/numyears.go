@@ -60,8 +60,8 @@ func NumYears(msg *downloadpb.Download, p *Params, numUnsupported int) int {
 // LearningRange is the span to fetch daily learning for: the calendar's own
 // date range, the same days hebcal-go generates the other series over. A
 // whole Hebrew year starts on Erev Rosh Hashana, a Gregorian one may be a
-// single month, and a Hebrew-month calendar also carries the following
-// Tishrei.
+// single month. (A PDF in Hebrew-month mode also carries the following
+// Tishrei, and has its own range.)
 func LearningRange(p *Params) (time.Time, time.Time) {
 	o := &p.Opts
 	if o.Start.Abs() != 0 && o.End.Abs() != 0 {
@@ -83,9 +83,6 @@ func LearningRange(p *Params) (time.Time, time.Time) {
 			first = first.AddDate(0, 0, -1)
 		}
 		last := hdate.New(year+n, hdate.Tishrei, 1).Gregorian().AddDate(0, 0, -1)
-		if p.MonthMode != GregorianArabic {
-			last = hdate.New(year+n, hdate.Tishrei, 30).Gregorian()
-		}
 		return first, last
 	}
 	if o.Month >= time.January && o.Month <= time.December {
@@ -95,4 +92,14 @@ func LearningRange(p *Params) (time.Time, time.Time) {
 	first := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
 	last := time.Date(year+n-1, time.December, 31, 0, 0, 0, 0, time.UTC)
 	return first, last
+}
+
+// IgnoreMonthMode makes a request for a Hebrew-month calendar one for a
+// Gregorian-month one. Counting in Hebrew months is a way of laying out a
+// printed page; a list of events -- CSV or iCalendar -- has no months to count,
+// and must never grow the extra Tishrei or the Gregorian "alternate date" events
+// that layout wants. A message that carries the setting anyway is read as if it
+// did not.
+func IgnoreMonthMode(msg *downloadpb.Download) {
+	msg.MonthMode = downloadpb.Download_GREGORIAN_ARABIC
 }
