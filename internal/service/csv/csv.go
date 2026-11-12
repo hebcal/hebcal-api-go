@@ -343,7 +343,7 @@ func ownMemo(ev event.CalEvent, flags event.HolidayFlags, p *download.Params) st
 	// Yom Kippur Katan's meaning (untranslated, as the website has it), the
 	// coming portion or festival reading for erev-Shabbat candle-lighting, a
 	// daily-learning reading's details.
-	return model.FixMonthSpelling(download.OwnMemo(ev, p.Locale))
+	return model.FixMonthSpelling(event.Memo(ev, p.Locale))
 }
 
 func isTimedEv(ev event.CalEvent) bool {

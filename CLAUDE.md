@@ -1053,9 +1053,6 @@ Things that are not obvious:
   PDF and CSV drop it, and so does this.
 - **There is no `Access-Control-Allow-Origin`**: nothing fetches an `.ics`
   cross-origin, and hebcal-web sends none.
-- **Yom Kippur Katan's memo keeps a straight apostrophe** ("Sh'vat"), as
-  hebcal-web writes it; hebcal-go 0.27.1 smartens it, so `download.OwnMemo`
-  undoes that for the feeds and the CSV.
 - **Yom Kippur Katan's emoji (✡️) is added here**: hebcal-go's event has none,
   @hebcal/core's does. Not on the fast times it is linked to. It belongs
   upstream.
@@ -1083,7 +1080,12 @@ identical):
    setting baked into its protobuf.
 5. `nh=on` is understood only in the classic `/hebcal/index.cgi/` form, and
    `v=now` is served here though hebcal-web answers it 404.
-6. In a pre-1900 year, a zone's local mean time is not a whole number of
+6. Yom Kippur Katan's memo names the month with a typographic apostrophe
+   ("Rosh Chodesh Sh’vat"), as hebcal-go 0.27.1 intends; hebcal-web writes a
+   straight one. It applies to the CSV and the static `/ical/` feeds too, whose
+   `yom-kippur-katan` goldens were edited by hand to match (the folded lines
+   re-wrapped by the renderer) rather than regenerated from hebcal-web.
+7. In a pre-1900 year, a zone's local mean time is not a whole number of
    minutes, so a Kiddush Levana time can be a minute off in Jerusalem.
 
 ## The readings-svc sidecar

@@ -303,7 +303,7 @@ func ownMemo(ev event.CalEvent, flags event.HolidayFlags, o *Options) string {
 		}
 		return shabbat.MevarchimMoladMemo(ev.GetDate(), strings.ToLower(o.Locale), cc, o.IL, o.Hour12)
 	}
-	return model.FixMonthSpelling(download.OwnMemo(ev, o.Locale))
+	return model.FixMonthSpelling(event.Memo(ev, o.Locale))
 }
 
 // noReading are the events that never have a Torah reading of their own.
