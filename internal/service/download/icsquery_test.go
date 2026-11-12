@@ -95,3 +95,27 @@ func TestEventLinkFrom(t *testing.T) {
 		t.Errorf("got %s, want %s", got, want)
 	}
 }
+
+// min=<anything but off> keeps the minor holidays of a calendar of major ones.
+func TestICSMinorHolidaysUnlessOff(t *testing.T) {
+	minor := func(qs string) bool {
+		u, _ := url.Parse("/hebcal/index.cgi/h.ics?v=1&year=2026&" + qs)
+		msg, _, err := DecodeICS(context.Background(), u)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return msg.GetMinor()
+	}
+	for qs, want := range map[string]bool{
+		"maj=on&min=on":  true,
+		"maj=on&min=off": false,
+		"maj=on&min=0":   false,
+		"maj=on":         false,
+		"maj=on&min=...": true,
+		"min=...":        false, // nothing brings them in
+	} {
+		if got := minor(qs); got != want {
+			t.Errorf("%s: minor = %v, want %v", qs, got, want)
+		}
+	}
+}

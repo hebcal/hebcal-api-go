@@ -64,6 +64,13 @@ func DecodeICS(ctx context.Context, u *url.URL) (*downloadpb.Download, *ICSQuery
 	if err != nil {
 		return nil, nil, err
 	}
+	// A feed counts minor holidays in whenever min is anything but off, where
+	// the PDF and CSV need it to say on: the major holidays already bring
+	// them, and only an explicit refusal takes them away. Subscriptions made
+	// from the form's own placeholder ("min=...") rely on it.
+	if q.on("maj") && !q.on("min") && !q.off("min") {
+		msg.Minor = true
+	}
 	return msg, newICSQuery(q), nil
 }
 

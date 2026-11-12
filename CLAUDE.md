@@ -1062,6 +1062,12 @@ Things that are not obvious:
   PDF and CSV drop it, and so does this.
 - **There is no `Access-Control-Allow-Origin`**: nothing fetches an `.ics`
   cross-origin, and hebcal-web sends none.
+- **`min` means "not off" on a legacy feed URL.** For a calendar of major
+  holidays the minor ones come along unless `min` says `off` or `0`, where the
+  PDF and CSV want it to say `on`: the website's own form placeholder
+  (`min=...`) is still in subscribers' URLs, and without this their calendars
+  lose Tu BiShvat and the other minor holidays. `download.DecodeICS` sets the
+  message's `minor` flag for it, on the legacy shapes only.
 - **Yom Kippur Katan's emoji (✡️) is added here**: hebcal-go's event has none,
   @hebcal/core's does. Not on the fast times it is linked to. It belongs
   upstream.
@@ -1094,7 +1100,14 @@ identical):
    straight one. It applies to the CSV and the static `/ical/` feeds too, whose
    `yom-kippur-katan` goldens were edited by hand to match (the folded lines
    re-wrapped by the renderer) rather than regenerated from hebcal-web.
-7. In a pre-1900 year, a zone's local mean time is not a whole number of
+7. `lg=ah` and `lg=sh` Mevarchim summaries: hebcal-web appends "מְבָרְכִים חוֹדֶשׁ
+   Teves" (the month left in English, a side effect of when the event
+   translates it); this service writes the month in Hebrew ("טֵבֵת"), as for the
+   CSV. Only the title differs; the UID does not.
+8. Family Day's emoji is the generic ✡️ here and 🇮🇱 in hebcal-web: hebcal-go
+   lacks it for that one holiday (an upstream gap; every other holiday's emoji
+   matches across three years and both schedules).
+9. In a pre-1900 year, a zone's local mean time is not a whole number of
    minutes, so a Kiddush Levana time can be a minute off in Jerusalem.
 
 ## The readings-svc sidecar
