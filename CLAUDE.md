@@ -1144,6 +1144,15 @@ identical):
 12. `v=now` is a 400 here, like any `v` other than `1` or a Yahrzeit `y...`;
    hebcal-web's router lets it through and then renders nothing, a 404.
    Deliberate -- no production URL carries it.
+13. Time-zone data. Go reads the system's tzdata (Debian's, built with
+   IANA's `backzone`); Node uses its ICU copy. So a zone's rules can differ
+   in two ways: a newer release here (tzdata 2026f keeps Cuba on -04 through
+   2027-11-07, which Node's 2026e does not have, an hour on every Havana
+   time), and pre-1970 history that ICU merges away (Saipan +09 in 1940
+   rather than Guam's +10, Accra +00:30 in 1942). Both sides are right for
+   their data; ours is the newer and fuller. The VTIMEZONE files are another
+   matter: vzic's default output keeps only a zone's recurring rules, so
+   `America/Havana.ics` built from 2026f still shows the old -05 winters.
 
 ## The readings-svc sidecar
 
