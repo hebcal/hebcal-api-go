@@ -276,8 +276,7 @@ description strings:
 - clock formats: `event.ClockFormat` (`ClockAuto`, `Clock12`, `Clock24`), from
   `download.Params.Clock()` or `/shabbat`'s `queryClock`;
 - flags: `event.Flags` with MixedCaps constants (`event.MinorHoliday`,
-  `event.ChanukahCandles`). `Flags.String()` still prints the old upper-case
-  names, which is what the test output and logs show;
+  `event.ChanukahCandles`), which `Flags.String()` prints too;
 - an event's place in its day: `hebcal.DayPartOf(ev)`, a `hebcal.DayPart`.
 
 `zmanim.New` and `zmanim.NewLocation` return an error for a location that

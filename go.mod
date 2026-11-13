@@ -11,8 +11,8 @@ require (
 	github.com/hebcal/gematriya v1.1.0
 	github.com/hebcal/greg v1.1.0
 	github.com/hebcal/hdate v1.4.0
-	github.com/hebcal/hebcal-go v0.27.4-0.20261113153602-108ac41a4b9e
-	github.com/hebcal/learning v0.6.2-0.20261113153718-2f954200e80c
+	github.com/hebcal/hebcal-go v0.27.4-0.20261113153951-f2aca9cca7df
+	github.com/hebcal/learning v0.6.2-0.20261113154007-4fdfa0c86cf3
 	github.com/hebcal/locales v1.1.5
 	github.com/klauspost/compress v1.20.3
 	github.com/mattn/go-sqlite3 v1.14.52
