@@ -98,6 +98,9 @@ func TestGolden(t *testing.T) {
 				re := regexp.MustCompile(`(UID:yahrzeit-\d{8}-)[0-9a-f]{32}(-dummy)`)
 				got, want = re.ReplaceAll(got, []byte("$1$2")), re.ReplaceAll(want, []byte("$1$2"))
 			}
+			// The PRODID names the build, which varies.
+			prodid := regexp.MustCompile(`(PRODID:-//hebcal\.com/NONSGML Hebcal Calendar )v[^/\r\n]*(//)`)
+			got, want = prodid.ReplaceAll(got, []byte("${1}v2$2")), prodid.ReplaceAll(want, []byte("${1}v2$2"))
 			if !bytes.Equal(got, want) {
 				t.Errorf("output differs from golden\n%s", firstDiff(got, want))
 			}
