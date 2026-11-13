@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 	_ "time/tzdata"
@@ -49,6 +50,7 @@ func main() {
 		os.Exit(1)
 	}
 	lg.Info(fmt.Sprintf("hebcal-api %s: starting up", config.APIVersion))
+	icalendar.Version = strings.TrimPrefix(config.APIVersion, "v")
 
 	app := handler.New(lg)
 	app.PingFile = cfg.PingFile

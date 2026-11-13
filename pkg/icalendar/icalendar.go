@@ -17,8 +17,10 @@ import (
 	"github.com/twmb/murmur3"
 )
 
-// Version is stamped into the default PRODID.
-const Version = "7.0.6"
+// Version is stamped into the default PRODID. It defaults to the version of
+// the library this package serializes for; a service sets it to its own
+// release at startup, before any calendar is written.
+var Version = "7.0.6"
 
 // Date is a calendar date with no time of day and no time zone.
 type Date struct {
