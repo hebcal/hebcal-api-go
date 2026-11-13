@@ -796,6 +796,9 @@ Things that are not obvious:
   run on one background worker behind a 256-deep queue, 3 s each; a full queue drops the write with a warning rather than
   delay a response, and the next poll writes it again. Note the first write
   bumps `updated`, so a calendar's first fetch changes its ETag once.
+  A URL whose extension is neither `.ics` nor `.csv` is a 404 before the
+  lookup, so it is neither read nor recorded -- unlike hebcal-web, which
+  looked the row up (and wrote both) before refusing the format.
 - **Failures:** unknown id → 404 with no caching headers; no `-ini` file, no
   `hebcal.mysql.user`/`dbname`, or a database that does not answer within
   7 s → 503 + `Retry-After: 30`, so Varnish's 24 h grace serves the stale

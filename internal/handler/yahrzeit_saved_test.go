@@ -99,8 +99,9 @@ func TestYahrzeitSaved(t *testing.T) {
 	if resp.StatusCode != http.StatusNotFound {
 		t.Errorf("pdf: status %d", resp.StatusCode)
 	}
-	if n := len(mem.Touched()); n != 6 {
-		t.Errorf("touched %d times, want 6", n)
+	// The .pdf is refused before the lookup, so it is not a download.
+	if n := len(mem.Touched()); n != 5 {
+		t.Errorf("touched %d times, want 5", n)
 	}
 }
 
