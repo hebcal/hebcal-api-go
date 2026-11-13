@@ -38,6 +38,19 @@ func (s *Server) staticICal(w http.ResponseWriter, r *http.Request) {
 	s.serveStatic(w, r, "ical/"+name, httpx.CacheControl7Days)
 }
 
+// faviconCacheControl is a year, immutable: the icon is replaced by a
+// deploy, and a browser should never ask again before then.
+const faviconCacheControl = httpx.CacheControl1Year + ", immutable"
+
+// favicon serves DocumentRoot/favicon.ico, installed there by make install.
+func (s *Server) favicon(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet && r.Method != http.MethodHead {
+		httpx.MethodNotAllowed(w, r.Method, "GET, HEAD")
+		return
+	}
+	s.serveStatic(w, r, "favicon.ico", faviconCacheControl)
+}
+
 // plainFileName reports whether name is a single path element that is safe
 // to join to a directory: not empty, not a dot file, no separators, and
 // unchanged by cleaning.

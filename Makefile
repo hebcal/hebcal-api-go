@@ -67,6 +67,8 @@ install: build
 	install -m 0644 etc/$(BIN).logrotate /etc/logrotate.d/$(BIN)
 	find fonts -type d -exec install -d -m 0775 /var/www/{} \;
 	find fonts -type f -exec install -m 0644 {} /var/www/{} \;
+	install -d -m 0755 /var/www/html
+	install -m 0644 static/favicon.ico /var/www/html/favicon.ico
 	systemctl daemon-reload
 	systemctl enable $(BIN).service
 	@echo ""

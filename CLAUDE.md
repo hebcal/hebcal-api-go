@@ -584,9 +584,7 @@ byte-identical):
 
 Every Yahrzeit + Anniversary feed is served here, the saved `/v3/` calendars
 included, and so is every holiday feed ("The holiday feeds" below). The static
-`/ical/` calendars are generated here too, though not yet in production (see
-"The static calendars"). [iCalendar-port.md](iCalendar-port.md) has what is
-left, and how to stand up the reference server.
+`/ical/` calendars are generated here too (see "The static calendars").
 
 `pkg/icalendar` is a port of `@hebcal/icalendar` (hebcal-icalendar 7.0.6), and
 `internal/service/yahrzeit` of hebcal-web's `yahrzeitDownload.js`,
@@ -706,7 +704,7 @@ optimizing.
 - **A Yahrzeit `.csv` is written like the holiday CSVs**, not like
   hebcal-web's -- see the next section.
 - **`/yahrzeit/yahrzeit.cgi/` with `v=1`** is a holiday feed on hebcal-web and
-  a 404 here; Varnish routes only `v=y...` to this service.
+  a 404 here.
 
 ### The Yahrzeit `.csv`
 
@@ -818,8 +816,7 @@ Things that are not obvious:
 
 `icalendar.ZoneInfo` reads `<dir>/<tzid>.ics` (`-zoneinfo`, default
 `/var/www/zoneinfo`), the tree vzic generates; hebcal-devops'
-`cloud-config/web-api.yaml` builds it on the api hosts the way
-`dl-nodejs.yaml` does on the Node ones. The cache is unbounded on purpose --
+`cloud-config/web-api.yaml` builds it on the api hosts. The cache is unbounded on purpose --
 there are ~344 files, only successful reads are stored, and the identifier is
 validated before it becomes a path, so a request cannot grow it. A missing
 directory or zone is not an error: the feed goes out with `X-WR-TIMEZONE` and
@@ -895,13 +892,14 @@ and `handler.staticICal` serves them from the `ical/` subdirectory of
 `DOCUMENT_ROOT`). `staticICal` only validates the file name; the serving --
 precompressed copies, `Last-Modified`, the 304 -- is `serveStatic(w, r, rel,
 cacheControl)`, which takes any path under the document root, so another
-static file (`/favicon.ico` with a year's immutable Cache-Control, as
-hebcal-web serves it) is a route that validates its path and calls it. `gen-static-ical.sh`
+static file is a route that validates its path and calls it: `/favicon.ico`
+(`handler.favicon`, a year's immutable Cache-Control, as hebcal-web serves it)
+is `static/favicon.ico` in this repository, which `make install` copies to
+`/var/www/html/favicon.ico`. `gen-static-ical.sh`
 (copied from hebcal-web) runs the command, then fetches the Chabad
 special-dates calendar from this service's own `/v3/` on port 8082.
-hebcal-devops' `etc/cron.d/hebcal-api-ical` is meant to run it weekly on the
-api hosts and rsync `ical/` into `/var/www/html/ical`; production has not cut
-over yet, and the Node dl hosts still build the feeds.
+hebcal-devops' `etc/cron.d/hebcal-api-ical` runs it weekly on the api hosts
+and rsyncs `ical/` into `/var/www/html/ical`.
 
 The pieces: `internal/service/ical` is the **event adapter** the holiday
 feeds share ("The holiday feeds"); `internal/service/staticcal`
@@ -1451,9 +1449,10 @@ than a regex over extracted text.
 
 ## Where things stand
 
-This service is live: the PDF, CSV, Yahrzeit (`/v3/` included), zmanim-feed,
-JSON and MCP routes are all served from here. The static `/ical/` generator
-is not yet in production; the Node dl hosts still build those feeds.
+This service is live, and Varnish routes 100% of the traffic to it: the PDF,
+CSV, iCalendar (holiday, Yahrzeit with `/v3/` included, zmanim and static),
+JSON and MCP routes are all served from here. There is no Node.js backend for
+download.hebcal.com any more.
 
 ### Runtime requirements
 
@@ -1470,11 +1469,10 @@ is not yet in production; the Node dl hosts still build those feeds.
   api host (installed by hebcal-devops' `cloud-config/web-api.yaml`, mode 0640
   root:www-data). Without it, `/v3/` answers 503 and Varnish serves stale
   copies; nothing else is affected.
-- **Varnish** sends the PDF and CSV download URLs to **port 8082**
-  (`download.hebcal.com/v4/`, `/v2/h/` and `/hebcal/index.cgi/`, and
-  `www.hebcal.com/holidays/hebcal-*.pdf`). Nothing else under `/holidays/`
-  is ours: the HTML pages there are hebcal-web's, and this service answers
-  them 404. A 503 from here carries `Retry-After`.
+- **Varnish** sends all of download.hebcal.com, and the API, MCP and
+  `/holidays/hebcal-*.pdf` URLs of www.hebcal.com, to **port 8082**. Nothing
+  else under `/holidays/` is ours, and this service answers it 404. A 503
+  from here carries `Retry-After`.
 
 ### Links and campaigns
 

@@ -312,7 +312,7 @@ func TestHolidayPDFErrors(t *testing.T) {
 		{"/holidays/hebcal-9999.pdf", http.StatusGone},
 		{"/holidays/hebcal-0.pdf", http.StatusBadRequest},
 		{"/holidays/hebcal-foo.pdf", http.StatusNotFound},
-		{"/holidays/2026", http.StatusNotFound}, // an HTML page, still served by Node
+		{"/holidays/2026", http.StatusNotFound}, // an HTML page, not ours
 		{"/holidays/", http.StatusNotFound},
 	}
 	_, srv := pdfServerNoFonts(t)

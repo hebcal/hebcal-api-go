@@ -327,8 +327,7 @@ header (which the access log records as `unsupported`):
   those series and retrying will not help (unreachable in the default
   configuration).
 - **503**, with `Retry-After`, when a configured readings-svc does not
-  answer — transient, and worth retrying or falling back to the Node.js
-  service.
+  answer — transient, and worth retrying.
 
 #### Fonts
 
@@ -539,8 +538,7 @@ variables. Small sample databases used by the tests live in `testdata/`.
 
 ## Caching and compression
 
-Responses include weak `ETag` validators (FNV-1a; the Node.js service uses
-murmurhash3 — weak ETags do not need to match across implementations),
+Responses include weak `ETag` validators (FNV-1a),
 appropriate `Cache-Control` or `Expires` headers, CORS headers, and
 dynamic brotli or gzip compression (brotli preferred) for bodies larger
 than 512 bytes — a threshold chosen empirically: multi-day batches and
@@ -732,15 +730,6 @@ its access log to `/var/log/hebcal/api.log` (same directory hebcal-web
 uses), rotated daily; logrotate signals the service with `SIGUSR1` to
 reopen the file after rotation.
 
-Varnish decides which URLs reach this service. The Yahrzeit feeds and their
-`.csv` exports (`/v3/**.ics|csv`, `/v2/y/**.ics|csv`, and `/yahrzeit/yahrzeit.cgi/*.ics|csv` and
-`/export/**.ics|csv` when the query says `v=yahrzeit`) and the zmanim feeds
-(`/zmanim`, `/zmanim2`, `/sunrs`) are routed here by hebcal-devops'
-`etc/varnish/download.vcl`; every holiday `.ics` stays with Node. `download.hebcal.com/v4/**.csv`
-(and its legacy `/v2/h/**.csv` and `/hebcal/index.cgi/*.csv` spellings)
-can be routed here too; until it is, hebcal-web keeps serving it. Alongside
-the JSON APIs, two PDF families now belong here rather than to the Node.js
-service:
-`download.hebcal.com/v4/**.pdf` (with its legacy `/v2/h/**.pdf` spelling)
-and `www.hebcal.com/holidays/hebcal-*.pdf` (and nothing else under
-`/holidays/`). Route them to 8082.
+Varnish routes all of download.hebcal.com, and the API, MCP and
+`www.hebcal.com/holidays/hebcal-*.pdf` URLs of www.hebcal.com, to port 8082.
+No Node.js backend remains.

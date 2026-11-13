@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
+	"github.com/hebcal/hebcal-api-go/internal/logger"
 )
 
 // staticDir makes a document root whose ical/ holds omer.ics with brotli and
@@ -199,4 +201,66 @@ func TestServeStaticAtRoot(t *testing.T) {
 	if got := rec.Header().Get("Cache-Control"); got != httpx.CacheControl1Day {
 		t.Errorf("Cache-Control %q, want the caller's", got)
 	}
+}
+
+// /favicon.ico is the file at the document root, cached for a year as
+// immutable, and conditional on If-Modified-Since. Without the file it is a
+// 404 that carries no Cache-Control.
+func TestFavicon(t *testing.T) {
+	mtime := time.Date(2026, time.November, 8, 23, 57, 0, 0, time.UTC)
+	root := t.TempDir()
+	icon, err := os.ReadFile(filepath.Join("..", "..", "static", "favicon.ico"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	p := filepath.Join(root, "favicon.ico")
+	if err := os.WriteFile(p, icon, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chtimes(p, mtime, mtime); err != nil {
+		t.Fatal(err)
+	}
+	srv := httptest.NewServer(faviconApp(root).Routes())
+	defer srv.Close()
+
+	resp, err := http.Get(srv.URL + "/favicon.ico")
+	if err != nil {
+		t.Fatal(err)
+	}
+	body, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode != 200 || string(body) != string(icon) {
+		t.Fatalf("status %d, %d bytes, want 200 and %d", resp.StatusCode, len(body), len(icon))
+	}
+	if ct := resp.Header.Get("Content-Type"); !strings.Contains(ct, "icon") {
+		t.Errorf("Content-Type %q", ct)
+	}
+	if cc := resp.Header.Get("Cache-Control"); cc != httpx.CacheControl1Year+", immutable" {
+		t.Errorf("Cache-Control %q", cc)
+	}
+
+	req, _ := http.NewRequest(http.MethodGet, srv.URL+"/favicon.ico", nil)
+	req.Header.Set("If-Modified-Since", mtime.Format(http.TimeFormat))
+	resp, err = http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusNotModified {
+		t.Errorf("conditional: status %d, want 304", resp.StatusCode)
+	}
+
+	empty := httptest.NewServer(faviconApp(t.TempDir()).Routes())
+	defer empty.Close()
+	resp, err = http.Get(empty.URL + "/favicon.ico")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != 404 || resp.Header.Get("Cache-Control") != "" {
+		t.Errorf("missing: status %d, Cache-Control %q", resp.StatusCode, resp.Header.Get("Cache-Control"))
+	}
+}
+
+func faviconApp(root string) *Server {
+	app := New(logger.NewWriter(io.Discard, "test"))
+	app.DocumentRoot = root
+	return app
 }

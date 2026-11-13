@@ -183,6 +183,7 @@ func (s *Server) Routes() http.Handler {
 	// DocumentRoot/ical, sent precompressed when a .br or .gz copy is on
 	// disk. Reading a file is cheap, so these hold no download slot.
 	mux.HandleFunc("/ical/", mw.Serve(s.staticICal))
+	mux.HandleFunc("/favicon.ico", mw.Serve(s.favicon))
 	mux.HandleFunc("/", mw.Serve(s.notFound))
 	return s.withBackend(mux)
 }
