@@ -355,7 +355,7 @@ func isKiddushLevana(ev event.CalEvent) bool {
 // summary an iCalendar feed carries, which would not fit a spreadsheet cell.
 func parshaMemo(hd hdate.HDate, p *download.Params) string {
 	var names []string
-	for _, h := range hebcal.GetHolidaysOnDate(hd, p.Opts.IL) {
+	for _, h := range hebcal.HolidaysOnDate(hd, p.Opts.IL) {
 		if h.Flags().HasAny(event.SpecialShabbat | event.RoshChodesh) {
 			names = append(names, download.RenderSubject(h, p.Locale, false))
 		}
