@@ -15,7 +15,8 @@ the order of the VEVENTs (which no calendar client depends on), and the
 documented differences in CLAUDE.md that recur in every sweep -- Yom Kippur
 Katan's emoji and apostrophe, the candle-lighting time inside a Kiddush Levana
 description, the Hebrew half of an lg=ah/sh Mevarchim title, and the escaping
-of commas and the nikud in the Hebrew half of any lg=ah/sh title.
+of commas and the nikud in the Hebrew half of any lg=ah/sh title, and the
+repeated English of an lg=ah/sh truncation notice.
 """
 import sys, re, itertools, threading, concurrent.futures as cf, urllib.request, urllib.error, difflib, json, os
 WEBS=os.environ.get('WEB','localhost:8081').split(','); API=os.environ.get('API','localhost:8082')
@@ -59,6 +60,8 @@ def blocks(lines):
                 l=re.sub(r'\(([^()]*?)\d{1,2}:\d{2}(am|pm)?',r'(\1T',l)
             if l.startswith('SUMMARY:') and re.search('Mev[oa]r[cg]him Chodesh',l):
                 l=l.split(' / ')[0]
+            if l=='SUMMARY:Hebcal calendar feed truncated / Hebcal calendar feed truncated':
+                l='SUMMARY:Hebcal calendar feed truncated'  # known difference 12
             if l.startswith('SUMMARY:') and ' / ' in l:
                 # lg=ah/sh: hebcal-web leaves the Hebrew half's commas bare
                 a,_,b=l.partition(' / ')

@@ -276,10 +276,10 @@ func TestSubscriptionLimit(t *testing.T) {
 	if s.Limit(feed) || feed.Events() != total {
 		t.Error("a file to save was cut")
 	}
-	// The notice has no Hebrew name; lg=ah repeats the English.
+	// The notice is in one language: lg=ah adds no " / " half.
 	body = strings.ReplaceAll(string(render(t, s, big+"&subscribe=1&lg=ah").Body), "\r\n ", "")
-	if !strings.Contains(body, "SUMMARY:Hebcal calendar feed truncated / Hebcal calendar feed truncated\r\n") {
-		t.Error("lg=ah: the truncation notice should repeat its title")
+	if !strings.Contains(body, "SUMMARY:Hebcal calendar feed truncated\r\n") {
+		t.Error("lg=ah: the truncation notice should have its title alone")
 	}
 }
 

@@ -1052,8 +1052,6 @@ Things that are not obvious:
   hebcal-go moved the event (`KiddushLevanaEvent.AdjustedTo`, hebcal-go 0.27.1+),
   so that line can differ from hebcal-web's when the two zmanim libraries put
   alot hashachar a few seconds apart.
-- **The truncation notice has no Hebrew name**, so with `lg=ah`/`sh` it
-  repeats its English one after the " / ".
 - **A calendar of only readings-svc rows names its campaign from their dates**
   (`ical-diaspora-2026-2027`), as its title does: `campaignName` spans the
   fetched rows as well as hebcal-go's events, of which there are none.
@@ -1136,6 +1134,9 @@ identical):
    without. Deliberate -- `ah`/`sh` never promised nikud, and hebcal.com's
    own pages show none for them; getting it would cost a second readings-svc
    request.
+12. The "Hebcal calendar feed truncated" notice has no Hebrew name, and with
+   `lg=ah`/`sh` hebcal-web repeats the English after a " / "; here the title
+   is written once. Deliberate.
 
 ## The readings-svc sidecar
 

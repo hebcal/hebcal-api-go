@@ -305,10 +305,6 @@ func (s *Service) Limit(f *Feed) bool {
 			Description: "Your Hebcal calendar subscription exceeded the maximum number of events and has been truncated. " +
 				"Visit https://www.hebcal.com/home/1398/number-of-years-in-calendar-feed-subscriptions to learn more about the feed length limit.",
 		}
-		if f.opts.AppendHebrew {
-			// The notice has no Hebrew name, so lg=ah/sh repeat the English one.
-			notice.SummarySuffix = " / " + desc
-		}
 		kept = append(kept, entry{last, 0, 0, notice})
 	}
 	f.entries = kept
