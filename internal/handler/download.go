@@ -43,12 +43,17 @@ func (s *Server) download(w http.ResponseWriter, r *http.Request) {
 	case strings.HasSuffix(r.URL.Path, ".pdf"):
 		s.pdfDownload(w, r)
 	default:
-		ext := path.Ext(r.URL.Path)
-		if ext == "" {
-			ext = "(none)"
-		}
-		http.Error(w, "unknown download extension "+ext, http.StatusNotFound)
+		writeUnknownExtension(w, path.Ext(r.URL.Path))
 	}
+}
+
+// writeUnknownExtension answers a download whose extension names no format
+// the route serves: a 404 that says which extension it was.
+func writeUnknownExtension(w http.ResponseWriter, ext string) {
+	if ext == "" {
+		ext = "(none)"
+	}
+	http.Error(w, "unknown download extension "+ext, http.StatusNotFound)
 }
 
 // downloadMethodAllowed rejects the methods a calendar has no answer for.

@@ -2,6 +2,7 @@ package yahrzeit
 
 import (
 	"encoding/base64"
+	"path"
 	"regexp"
 	"strings"
 )
@@ -97,12 +98,10 @@ func (r *Request) IsYahrzeit() bool {
 	return strings.HasPrefix(r.Query.Get("v"), "y")
 }
 
-// Ext returns the last four characters of the path: ".ics", ".csv".
+// Ext returns the path's extension, ".ics" or ".csv" for a calendar, or ""
+// when it has none.
 func (r *Request) Ext() string {
-	if len(r.Path) < 4 {
-		return r.Path
-	}
-	return r.Path[len(r.Path)-4:]
+	return path.Ext(r.Path)
 }
 
 // decodeBase64ASCII decodes as much of a base64 payload as is valid, in
