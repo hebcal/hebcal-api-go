@@ -131,6 +131,15 @@ func WriteNotFoundText(w http.ResponseWriter) {
 	w.Write([]byte("Not Found\n"))
 }
 
+// WriteForbiddenText emits the plain-text 403 for a path that tries to
+// climb out of the document root or names a dot file. Like the 404, it
+// carries no Cache-Control.
+func WriteForbiddenText(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", ContentTypeText)
+	w.WriteHeader(http.StatusForbidden)
+	w.Write([]byte("Forbidden\n"))
+}
+
 // ClientIP returns the client IP address, preferring X-Client-IP over
 // X-Forwarded-For when the service runs behind a reverse proxy.
 func ClientIP(r *http.Request) string {

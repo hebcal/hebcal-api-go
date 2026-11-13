@@ -60,10 +60,12 @@ func plainFileName(name string) bool {
 }
 
 // serveStatic sends the regular file at rel, a slash-separated path the
-// caller has already validated, under DocumentRoot. When the client accepts
-// it and a brotli (or failing that gzip) copy of the file is on disk, that
-// copy is sent as is, rather than the file compressed on the fly.
-// Last-Modified is the modification time of whichever file is sent, so
+// caller has already validated, under DocumentRoot. The file is opened
+// through an os.Root, so even a path that got past the caller's check, or a
+// symlink in the tree, cannot reach anything outside DocumentRoot. When the
+// client accepts it and a brotli (or failing that gzip) copy of the file is
+// on disk, that copy is sent as is, rather than the file compressed on the
+// fly. Last-Modified is the modification time of whichever file is sent, so
 // If-Modified-Since works for either; cacheControl is set on success only, so
 // a 404 is never cached.
 func (s *Server) serveStatic(w http.ResponseWriter, r *http.Request, rel, cacheControl string) {
@@ -71,16 +73,23 @@ func (s *Server) serveStatic(w http.ResponseWriter, r *http.Request, rel, cacheC
 		httpx.WriteNotFoundText(w)
 		return
 	}
-	file := filepath.Join(s.DocumentRoot, filepath.FromSlash(rel))
+	root, err := os.OpenRoot(s.DocumentRoot)
+	if err != nil {
+		httpx.RecordError(w, err)
+		httpx.WriteNotFoundText(w)
+		return
+	}
+	defer root.Close()
+	file := filepath.FromSlash(rel)
 	encoding := ""
 	for _, enc := range []struct{ name, ext string }{{"br", ".br"}, {"gzip", ".gz"}} {
-		if acceptsEncoding(r.Header.Get("Accept-Encoding"), enc.name) && isRegular(file+enc.ext) {
+		if acceptsEncoding(r.Header.Get("Accept-Encoding"), enc.name) && isRegular(root, file+enc.ext) {
 			file += enc.ext
 			encoding = enc.name
 			break
 		}
 	}
-	info, err := os.Stat(file)
+	info, err := root.Stat(file)
 	if err != nil || !info.Mode().IsRegular() {
 		if err != nil && !errors.Is(err, fs.ErrNotExist) {
 			httpx.RecordError(w, err)
@@ -96,7 +105,7 @@ func (s *Server) serveStatic(w http.ResponseWriter, r *http.Request, rel, cacheC
 		w.WriteHeader(http.StatusNotModified)
 		return
 	}
-	body, err := os.ReadFile(file)
+	body, err := root.ReadFile(file)
 	if err != nil {
 		httpx.WritePlainError(w, err)
 		return
@@ -119,8 +128,8 @@ func (s *Server) serveStatic(w http.ResponseWriter, r *http.Request, rel, cacheC
 	w.Write(body)
 }
 
-func isRegular(name string) bool {
-	info, err := os.Stat(name)
+func isRegular(root *os.Root, name string) bool {
+	info, err := root.Stat(name)
 	return err == nil && info.Mode().IsRegular()
 }
 

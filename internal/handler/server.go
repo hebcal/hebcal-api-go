@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -185,7 +186,40 @@ func (s *Server) Routes() http.Handler {
 	mux.HandleFunc("/ical/", mw.Serve(s.staticICal))
 	mux.HandleFunc("/favicon.ico", mw.Serve(s.favicon))
 	mux.HandleFunc("/", mw.Serve(s.notFound))
-	return s.withBackend(mux)
+	return s.withBackend(forbidDotSegments(mux, mw.Serve(s.forbidden)))
+}
+
+// forbidDotSegments answers any request whose path has a segment beginning
+// with a dot -- "..", climbing out of the document root, or a dot file such
+// as ".env" or ".git" -- with forbidden, before the mux sees it. It runs
+// ahead of the mux because ServeMux would answer a ".." path with a 301 to
+// the cleaned path. The path is checked decoded, so "%2e%2e" and "..%2f" are
+// caught, and a backslash counts as a separator too.
+func forbidDotSegments(next http.Handler, forbidden http.HandlerFunc) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if hasDotSegment(r.URL.Path) {
+			forbidden(w, r)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// hasDotSegment reports whether any segment of p, split on "/" or "\",
+// starts with a dot.
+func hasDotSegment(p string) bool {
+	for _, seg := range strings.FieldsFunc(p, func(c rune) bool { return c == '/' || c == '\\' }) {
+		if strings.HasPrefix(seg, ".") {
+			return true
+		}
+	}
+	return false
+}
+
+// forbidden is the plain-text 403 for a path that tries to leave the
+// document root or names a dot file.
+func (s *Server) forbidden(w http.ResponseWriter, r *http.Request) {
+	httpx.WriteForbiddenText(w)
 }
 
 // ping serves the contents of the ping file. The file is read on every request
