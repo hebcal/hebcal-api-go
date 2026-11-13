@@ -38,9 +38,9 @@ func (s *Server) staticICal(w http.ResponseWriter, r *http.Request) {
 	s.serveStatic(w, r, "ical/"+name, httpx.CacheControl7Days)
 }
 
-// faviconCacheControl is a year, immutable: the icon is replaced by a
-// deploy, and a browser should never ask again before then.
-const faviconCacheControl = httpx.CacheControl1Year + ", immutable"
+// faviconCacheControl is 30 days, and not immutable: the icon is replaced
+// by a deploy at an unchanged URL, so a browser should recheck eventually.
+const faviconCacheControl = httpx.CacheControl30Days
 
 // favicon serves DocumentRoot/favicon.ico, installed there by make install.
 func (s *Server) favicon(w http.ResponseWriter, r *http.Request) {

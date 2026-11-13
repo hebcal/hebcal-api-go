@@ -893,7 +893,7 @@ and `handler.staticICal` serves them from the `ical/` subdirectory of
 precompressed copies, `Last-Modified`, the 304 -- is `serveStatic(w, r, rel,
 cacheControl)`, which takes any path under the document root, so another
 static file is a route that validates its path and calls it: `/favicon.ico`
-(`handler.favicon`, a year's immutable Cache-Control, as hebcal-web serves it)
+(`handler.favicon`, a 30-day Cache-Control, not immutable)
 is `static/favicon.ico` in this repository, which `make install` copies to
 `/var/www/html/favicon.ico`. `gen-static-ical.sh`
 (copied from hebcal-web) runs the command, then fetches the Chabad

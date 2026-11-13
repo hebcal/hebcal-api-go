@@ -256,8 +256,8 @@ func TestServeStaticAtRoot(t *testing.T) {
 	}
 }
 
-// /favicon.ico is the file at the document root, cached for a year as
-// immutable, and conditional on If-Modified-Since. Without the file it is a
+// /favicon.ico is the file at the document root, cached for 30 days (not
+// immutable), and conditional on If-Modified-Since. Without the file it is a
 // 404 that carries no Cache-Control.
 func TestFavicon(t *testing.T) {
 	mtime := time.Date(2026, time.November, 8, 23, 57, 0, 0, time.UTC)
@@ -287,7 +287,7 @@ func TestFavicon(t *testing.T) {
 	if ct := resp.Header.Get("Content-Type"); !strings.Contains(ct, "icon") {
 		t.Errorf("Content-Type %q", ct)
 	}
-	if cc := resp.Header.Get("Cache-Control"); cc != httpx.CacheControl1Year+", immutable" {
+	if cc := resp.Header.Get("Cache-Control"); cc != httpx.CacheControl30Days {
 		t.Errorf("Cache-Control %q", cc)
 	}
 
