@@ -136,9 +136,7 @@ func TestStaticICalNotFound(t *testing.T) {
 	app, srv := testServer(t)
 	app.DocumentRoot = staticDir(t, time.Now())
 	for _, p := range []string{
-		"/ical/", "/ical/missing.ics", "/ical/.hidden.ics", "/ical/sub",
-		"/ical/sub/omer.ics", "/ical/..%2fomer.ics", "/ical/%2e%2e/etc/passwd",
-		"/ical/..%2fping", "/ical/%2e%2e%2fping",
+		"/ical/", "/ical/missing.ics", "/ical/sub", "/ical/sub/omer.ics",
 	} {
 		resp, _ := get(t, srv, p)
 		if resp.StatusCode != http.StatusNotFound {
@@ -162,6 +160,35 @@ func TestStaticICalNotFound(t *testing.T) {
 	app.DocumentRoot = ""
 	if resp, _ := get(t, srv, "/ical/omer.ics"); resp.StatusCode != http.StatusNotFound {
 		t.Errorf("no document root configured: status %d, want 404", resp.StatusCode)
+	}
+}
+
+// A path that climbs out of the document root or names a dot file is a 403
+// on every route, answered before the mux can redirect a ".." path to its
+// cleaned form, and never cached.
+func TestDotSegmentsForbidden(t *testing.T) {
+	app, srv := testServer(t)
+	app.DocumentRoot = staticDir(t, time.Now())
+	for _, p := range []string{
+		"/../../etc/passwd", "/..", "/%2e%2e/%2e%2e/etc/passwd", "/..%2f..%2fetc/passwd",
+		"/..\\..\\etc\\passwd", "/.env", "/.git/config", "/.well-known/security.txt",
+		"/ical/.hidden.ics", "/ical/..%2fomer.ics", "/ical/%2e%2e/etc/passwd",
+		"/ical/..%2fping", "/ical/%2e%2e%2fping", "/ical/../ping", "/v4/x/../../.env",
+		"/static/./favicon.ico",
+	} {
+		resp, body := get(t, srv, p)
+		if resp.StatusCode != http.StatusForbidden || body != "Forbidden\n" {
+			t.Errorf("%s: status %d body %q, want 403", p, resp.StatusCode, body)
+		}
+		if cc := resp.Header.Get("Cache-Control"); cc != "" {
+			t.Errorf("%s: 403 carries Cache-Control %q", p, cc)
+		}
+	}
+	// A dot inside a segment is fine.
+	for _, p := range []string{"/favicon.ico", "/ical/omer.ics"} {
+		if resp, _ := get(t, srv, p); resp.StatusCode == http.StatusForbidden {
+			t.Errorf("%s: 403", p)
+		}
 	}
 }
 

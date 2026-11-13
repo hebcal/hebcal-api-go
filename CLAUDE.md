@@ -951,6 +951,15 @@ Things that are not obvious:
   run began. The server's `Last-Modified` is that mtime -- of the `.br`/`.gz`
   copy when one is sent, which hebcal-web's koa-send also used, and which the
   generator stamps identically.
+- **A dot segment is a 403 on every route.** `forbidDotSegments` wraps the
+  mux and answers any path with a segment starting with `.` -- `..`
+  (`/../../etc/passwd`, `%2e%2e`, `..%2f`, backslashes too) or a dot file
+  (`/.env`, `/.git/config`, `/ical/.hidden.ics`) -- `403 Forbidden`, with no
+  Cache-Control. It has to run ahead of the mux, which would otherwise
+  answer a `..` path with a 301 to the cleaned path. `plainFileName` and
+  `serveStatic`'s callers still validate their own paths; this is the
+  outer layer, not a replacement. It also covers `/.well-known/`, which
+  nothing here serves.
 - **Precompressed copies win over on-the-fly encoding**, as with koa-send: a
   client offering `zstd, br` gets the `.br` file. A client offering neither
   `br` nor `gzip` gets the file through the middleware like any other body.
