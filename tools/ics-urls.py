@@ -10,7 +10,8 @@ localhost:8082), and writes the URLs that differ, with their diff lines, to
 result.json. J sets the concurrency (default 6), AGENT the User-Agent.
 
 What is normalized away before comparing: line folding, DTSTAMP, the minute of
-a sun-derived DTSTART/DTEND or absolute alarm, Rosh Hashana's year in Hebrew,
+a sun-derived DTSTART/DTEND or absolute alarm (and the date of an alarm a
+minute either side of 00:00Z), Rosh Hashana's year in Hebrew,
 the order of the VEVENTs (which no calendar client depends on), and the
 documented differences in CLAUDE.md that recur in every sweep -- Yom Kippur
 Katan's emoji and apostrophe, the candle-lighting time inside a Kiddush Levana
@@ -18,7 +19,7 @@ description, the Hebrew half of an lg=ah/sh Mevarchim title, and the escaping
 of commas and the nikud in the Hebrew half of any lg=ah/sh title, and the
 repeated English of an lg=ah/sh truncation notice.
 """
-import sys, re, itertools, threading, concurrent.futures as cf, urllib.request, urllib.error, difflib, json, os
+import sys, re, datetime, itertools, threading, concurrent.futures as cf, urllib.request, urllib.error, difflib, json, os
 WEBS=os.environ.get('WEB','localhost:8081').split(','); API=os.environ.get('API','localhost:8082')
 _web=itertools.cycle(WEBS); _lock=threading.Lock()
 def next_web():
@@ -38,7 +39,13 @@ def norm(lines):
     for l in lines:
         if l.startswith('DTSTAMP:'): l='DTSTAMP:X'
         l=re.sub(r'^(DT(START|END);TZID=[^:]*:\d{8}T)\d+$', r'\1XXXX', l)
-        l=re.sub(r'^(TRIGGER;VALUE=DATE-TIME:\d{8}T)\d+Z?$', r'\1XXXX', l)
+        m=re.match(r'^TRIGGER;VALUE=DATE-TIME:(\d{8}T\d{6})Z$', l)
+        if m:
+            # An Omer alarm is an evening's zman in UTC; a minute's difference
+            # can straddle 00:00Z and change the date. The date 12 hours on
+            # is the same either way, as no Omer evening is near 12:00Z.
+            t=datetime.datetime.strptime(m.group(1),'%Y%m%dT%H%M%S')+datetime.timedelta(hours=12)
+            l='TRIGGER;VALUE=DATE-TIME:'+t.strftime('%Y%m%d')+'+12h'
         l=hashana.sub(r'\1 YEAR', l)
         out.append(l)
     return out
