@@ -640,3 +640,22 @@ func pdfTitle(t *testing.T, doc string) string {
 	}
 	return b.String()
 }
+
+// A download whose extension is none of .pdf, .csv and .ics is a 404 that names
+// the extension, on every URL shape.
+func TestDownloadUnknownExtension(t *testing.T) {
+	v2 := strings.TrimRight(base64.StdEncoding.EncodeToString([]byte("v=1&year=2026&maj=on")), "=")
+	tests := []struct{ path, body string }{
+		{"/v4/CAEQAQ/hebcal.foo", "unknown download extension .foo\n"},
+		{"/v2/h/" + v2 + "/hebcal.txt", "unknown download extension .txt\n"},
+		{"/hebcal/index.cgi/hebcal.html?v=1&year=2026&maj=on", "unknown download extension .html\n"},
+		{"/v4/CAEQAQ/hebcal", "unknown download extension (none)\n"},
+	}
+	_, srv := pdfServerNoFonts(t)
+	for _, tt := range tests {
+		resp, body := get(t, srv, tt.path)
+		if resp.StatusCode != http.StatusNotFound || body != tt.body {
+			t.Errorf("%s: %d %q, want 404 %q", tt.path, resp.StatusCode, body, tt.body)
+		}
+	}
+}

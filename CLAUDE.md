@@ -495,9 +495,10 @@ it shares everything up to the event list with the PDF through
 `internal/service/download`: `Decode(ctx, u, ".csv")`, `ParamsFromMessage`,
 and `GenerateCalEvents` (the raw, category-filtered hebcal-go events that
 `pdf.Generate` flattens into cells). `handler.download`, mounted on all three
-download URL shapes, sends `.csv` to `csvDownload` and everything else to
-`pdfDownload`; both go through the one download concurrency limiter
-(`-download-max-concurrency`), and the CSV path needs no fonts.
+download URL shapes, sends `.csv` to `csvDownload`, `.ics` to `icsDownload`,
+`.pdf` to `pdfDownload`, and answers any other extension 404; all three go
+through the one download concurrency limiter (`-download-max-concurrency`), and
+the CSV path needs no fonts.
 
 The bar is the same bytes production serves, and it was measured that way: a scratch harness ran hebcal-web's own
 `deserializeDownload` → `makeHebcalOptions` → `makeHebrewCalendar` →

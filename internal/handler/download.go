@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"path"
 	"strings"
 
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
@@ -18,8 +19,9 @@ import (
 // maps to. pdf.go and csv.go hold what differs.
 
 // download serves a calendar download: csvDownload when the path ends in .csv,
-// icsDownload for .ics, pdfDownload for everything else. All three download URL shapes -- /v4/,
-// /v2/h/ and /hebcal/index.cgi/ -- serve both formats.
+// icsDownload for .ics, pdfDownload for .pdf, and 404 for any other extension.
+// All three download URL shapes -- /v4/, /v2/h/ and /hebcal/index.cgi/ -- serve
+// every format.
 //
 // A personal Yahrzeit + Anniversary calendar shares those URL shapes and is
 // told apart by its query (v=yahrzeit), so it is looked for first.
@@ -38,8 +40,14 @@ func (s *Server) download(w http.ResponseWriter, r *http.Request) {
 		s.csvDownload(w, r)
 	case strings.HasSuffix(r.URL.Path, ".ics"):
 		s.icsDownload(w, r)
-	default:
+	case strings.HasSuffix(r.URL.Path, ".pdf"):
 		s.pdfDownload(w, r)
+	default:
+		ext := path.Ext(r.URL.Path)
+		if ext == "" {
+			ext = "(none)"
+		}
+		http.Error(w, "unknown download extension "+ext, http.StatusNotFound)
 	}
 }
 
