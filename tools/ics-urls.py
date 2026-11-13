@@ -61,7 +61,7 @@ def blocks(lines):
             if l.startswith('SUMMARY:') and re.search('Mev[oa]r[cg]him Chodesh',l):
                 l=l.split(' / ')[0]
             if l=='SUMMARY:Hebcal calendar feed truncated / Hebcal calendar feed truncated':
-                l='SUMMARY:Hebcal calendar feed truncated'  # known difference 12
+                l='SUMMARY:Hebcal calendar feed truncated'  # known difference 11
             if l.startswith('SUMMARY:') and ' / ' in l:
                 # lg=ah/sh: hebcal-web leaves the Hebrew half's commas bare
                 a,_,b=l.partition(' / ')

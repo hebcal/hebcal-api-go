@@ -105,12 +105,6 @@ func applyLegacyParams(q v2Query) {
 		q["M"] = "on"
 		delete(q, "m")
 	}
-	// The router accepts v=now as a synonym for v=1 (both name version 1 of the
-	// download format); the "current year" meaning lives in year=now, which
-	// DecodeV2 reads separately.
-	if q["v"] == "now" {
-		q["v"] = "1"
-	}
 }
 
 // hasFold reports whether s begins with prefix, ignoring ASCII case in the

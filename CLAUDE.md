@@ -1112,32 +1112,34 @@ identical):
    each day when `d=on`/`D=on`; here the request is the same feed as one with
    `mm=0`, so those events cannot appear, even from a `/v4/` URL that has the
    setting baked into its protobuf.
-5. `v=now` is served here though hebcal-web answers it 404.
-6. Yom Kippur Katan's memo names the month with a typographic apostrophe
+5. Yom Kippur Katan's memo names the month with a typographic apostrophe
    ("Rosh Chodesh Sh’vat"), as hebcal-go 0.27.1 intends; hebcal-web writes a
    straight one. It applies to the CSV and the static `/ical/` feeds too, whose
    `yom-kippur-katan` goldens were edited by hand to match (the folded lines
    re-wrapped by the renderer) rather than regenerated from hebcal-web.
-7. `lg=ah` and `lg=sh` Mevarchim summaries: hebcal-web appends "מְבָרְכִים חוֹדֶשׁ
+6. `lg=ah` and `lg=sh` Mevarchim summaries: hebcal-web appends "מְבָרְכִים חוֹדֶשׁ
    Teves" (the month left in English, a side effect of when the event
    translates it); this service writes the month in Hebrew ("טֵבֵת"), as for the
    CSV. Only the title differs; the UID does not.
-8. Yom Kippur Katan has no emoji here (intentional); hebcal-web writes ✡️.
-9. In a pre-1900 year, a zone's local mean time is not a whole number of
+7. Yom Kippur Katan has no emoji here (intentional); hebcal-web writes ✡️.
+8. In a pre-1900 year, a zone's local mean time is not a whole number of
    minutes, so a Kiddush Levana time can be a minute off in Jerusalem.
-10. `lg=ah` and `lg=sh` titles containing a comma ("Hakdamah 28, 33, 34",
+9. `lg=ah` and `lg=sh` titles containing a comma ("Hakdamah 28, 33, 34",
    "Day 202: P107, P113"): hebcal-web escapes the transliteration but appends
    the Hebrew after escaping, so its commas go out bare; here the whole
    `SUMMARY` is escaped, as RFC 5545 requires. Deliberate.
-11. `lg=ah` and `lg=sh` titles of a readings-svc series (Chofetz Chaim, Daf
+10. `lg=ah` and `lg=sh` titles of a readings-svc series (Chofetz Chaim, Daf
    HaYomi B'Halacha, Tanya Yomi, ...): hebcal-web appends the Hebrew with
    nikud (`renderBrief('he')`); here it is readings-svc's `hebrew` field,
    without. Deliberate -- `ah`/`sh` never promised nikud, and hebcal.com's
    own pages show none for them; getting it would cost a second readings-svc
    request.
-12. The "Hebcal calendar feed truncated" notice has no Hebrew name, and with
+11. The "Hebcal calendar feed truncated" notice has no Hebrew name, and with
    `lg=ah`/`sh` hebcal-web repeats the English after a " / "; here the title
    is written once. Deliberate.
+12. `v=now` is a 400 here, like any `v` other than `1` or a Yahrzeit `y...`;
+   hebcal-web's router lets it through and then renders nothing, a 404.
+   Deliberate -- no production URL carries it.
 
 ## The readings-svc sidecar
 
@@ -1612,7 +1614,7 @@ equivalence `v2.go` was measured to hold), so `ParseCGIPath` builds the same
 `v2Query` and runs `DecodeV2`. `normalizeCGIQuery` ← the CGI half of
 `fixup2`'s querystring rewriting (`;` separator, double-encoded `%3B`,
 Latin-1 `unescape()`). `applyLegacyParams` (also run by `ParseV2Path`) ← `makeHebcalOptions`
-pre-read rewrites (`nh=on` expansion, lowercase `m=on`, `v=now`).
+pre-read rewrites (`nh=on` expansion, lowercase `m=on`).
 `unescapeLatin1` ← JavaScript `unescape()`.
 
 ### `internal/service/download/querylog.go`

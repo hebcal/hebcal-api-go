@@ -142,6 +142,7 @@ func TestDecodeV2RequiresV1(t *testing.T) {
 		{"no v at all", "geonameid=5128581&year=2026&maj=on", isNotFound},
 		{"a yahrzeit calendar", "v=yahrzeit&y1=1990&m1=5&d1=5", isBadRequest},
 		{"some other version", "v=2&year=2026&maj=on", isBadRequest},
+		{"v=now, like any other version", "v=now&year=2026&maj=on", isBadRequest},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
