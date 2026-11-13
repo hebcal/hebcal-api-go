@@ -225,7 +225,7 @@ func (c *Calendar) writePreamble(buf *bytes.Buffer) {
 		if len(c.Lang) == 2 {
 			lang = strings.ToUpper(c.Lang)
 		}
-		prodid = "-//hebcal.com/NONSGML Hebcal Calendar v1" + strings.TrimPrefix(config.APIVersion, "v") + "//" + lang
+		prodid = "-//hebcal.com/NONSGML Hebcal Calendar v2" + strings.TrimPrefix(config.APIVersion, "v") + "//" + lang
 	}
 	line(buf, "BEGIN:VCALENDAR")
 	line(buf, "VERSION:2.0")
