@@ -179,18 +179,18 @@ func TestGregRange(t *testing.T) {
 func TestEventColorPrecedence(t *testing.T) {
 	tests := []struct {
 		name  string
-		flags event.HolidayFlags
+		flags event.Flags
 		want  string
 	}{
-		{"daily learning", event.DAF_YOMI, "#666666"},
-		{"rosh chodesh", event.ROSH_CHODESH, "#660099"},
-		{"minor fast", event.MINOR_FAST, "#FF3300"},
-		{"parsha", event.PARSHA_HASHAVUA, "#009900"},
-		{"special shabbat", event.SPECIAL_SHABBAT, "#006699"},
-		{"chag", event.CHAG, "#990000"},
+		{"daily learning", event.DafYomi, "#666666"},
+		{"rosh chodesh", event.RoshChodesh, "#660099"},
+		{"minor fast", event.MinorFast, "#FF3300"},
+		{"parsha", event.ParshaHashavua, "#009900"},
+		{"special shabbat", event.SpecialShabbat, "#006699"},
+		{"chag", event.Chag, "#990000"},
 		{"plain", 0, "#000000"},
-		{"learning wins over rosh chodesh", event.DAF_YOMI | event.ROSH_CHODESH, "#666666"},
-		{"rosh chodesh wins over chag", event.ROSH_CHODESH | event.CHAG, "#660099"},
+		{"learning wins over rosh chodesh", event.DafYomi | event.RoshChodesh, "#666666"},
+		{"rosh chodesh wins over chag", event.RoshChodesh | event.Chag, "#660099"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -42,7 +42,7 @@ func LearningOrder(category string) int {
 // EventLearningOrder is LearningOrder for one of hebcal-go's events, and 0
 // for an event that is not daily learning.
 func EventLearningOrder(ev event.CalEvent) int {
-	if !ev.GetFlags().HasAny(LearningFlags) {
+	if !ev.Flags().HasAny(LearningFlags) {
 		return 0
 	}
 	return LearningOrder(EventCategories(ev)[0])

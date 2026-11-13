@@ -278,14 +278,14 @@ func TestZmanimMelacha(t *testing.T) {
 		"/zmanim?cfg=json&geonameid=281184&im=1&dt=2026-07-11T15:00:00")
 	var out struct {
 		Status struct {
-			LocalTime       string `json:"localTime"`
-			IsAssurBemlacha bool   `json:"isAssurBemlacha"`
+			LocalTime        string `json:"localTime"`
+			IsAssurBemelacha bool   `json:"isAssurBemlacha"`
 		} `json:"status"`
 	}
 	if err := json.Unmarshal([]byte(body), &out); err != nil {
 		t.Fatalf("unmarshal: %v\nbody: %s", err, body)
 	}
-	if !out.Status.IsAssurBemlacha {
+	if !out.Status.IsAssurBemelacha {
 		t.Errorf("Saturday afternoon should be assur bemlacha: %s", body)
 	}
 	if !strings.HasPrefix(out.Status.LocalTime, "2026-07-11T15:00:00") {

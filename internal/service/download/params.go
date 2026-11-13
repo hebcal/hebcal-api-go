@@ -46,7 +46,7 @@ const (
 // carries the user's calendar choices, and these fields are the resolved form
 // of them.
 type Params struct {
-	Opts hebcal.CalOptions
+	Opts hebcal.Options
 
 	// MonthMode selects Gregorian- or Hebrew-month pagination.
 	MonthMode MonthMode
@@ -91,8 +91,8 @@ type Params struct {
 	// LocationName is the full location name ("Palo Alto, CA 94303"), used in
 	// the document keywords. CityName carries the short form used in titles.
 	LocationName string
-	// NoMinorHolidays drops MINOR_HOLIDAY events after generation. hebcal-go's
-	// CalOptions has NoHolidays, NoMinorFast, NoModern, NoRoshChodesh and
+	// NoMinorHolidays drops MinorHoliday events after generation. hebcal-go's
+	// Options has NoHolidays, NoMinorFast, NoModern, NoRoshChodesh and
 	// NoSpecialShabbat but no equivalent for minor holidays, so this one is
 	// applied as a flag filter in Generate rather than as a calendar option.
 	NoMinorHolidays bool
@@ -133,6 +133,18 @@ func ParsePath(path, ext string) (string, error) {
 	return parts[1], nil
 }
 
+// Clock is the clock format the request asks for: 12-hour, 24-hour, or
+// whatever the location's country uses.
+func (p *Params) Clock() event.ClockFormat {
+	switch p.Hour12 {
+	case 1:
+		return event.Clock12
+	case 2:
+		return event.Clock24
+	}
+	return event.ClockAuto
+}
+
 // decodeBase64 accepts both the standard and URL-safe alphabets, with or
 // without padding.
 func decodeBase64(s string) ([]byte, error) {
@@ -167,7 +179,7 @@ func DecodeParams(payload string, db *geodb.DB) (*Params, error) {
 }
 
 // ParamsFromMessage resolves a decoded Download message into Params, writing
-// the user's calendar choices straight into hebcal.CalOptions.
+// the user's calendar choices straight into hebcal.Options.
 func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) {
 	p := &Params{
 		MonthMode:            MonthMode(msg.GetMonthMode()),
@@ -190,7 +202,7 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 	p.AppendHebrew = p.LG == "ah" || p.LG == "sh"
 
 	o := &p.Opts
-	// The protobuf carries positive "include this" booleans; CalOptions uses
+	// The protobuf carries positive "include this" booleans; Options uses
 	// negative "suppress this" flags. Invert as we copy.
 	o.NoRoshChodesh = !msg.GetRoshChodesh()
 	o.NoModern = !msg.GetModern()
@@ -305,7 +317,7 @@ func fastTimeFields(msg *downloadpb.Download) [][2]string {
 // setFastTimes copies the message's fast start/end fields into o through the
 // same validation as the query parameters, so a crafted token can ask for
 // nothing a query string could not.
-func setFastTimes(o *hebcal.CalOptions, msg *downloadpb.Download) {
+func setFastTimes(o *hebcal.Options, msg *downloadpb.Download) {
 	fields := map[string]string{}
 	for _, kv := range fastTimeFields(msg) {
 		fields[kv[0]] = kv[1]
@@ -336,7 +348,7 @@ func locationDefaultCandleMins(loc *geodb.Location) int {
 // candles exactly at sunset), which must not be overridden. `given` is the
 // requested offset, meaningful only when hasGiven is true; `offset` is the
 // location's default.
-func applyIsraelCandleMins(o *hebcal.CalOptions, hasGiven bool, given, offset int) {
+func applyIsraelCandleMins(o *hebcal.Options, hasGiven bool, given, offset int) {
 	if !hasGiven || (offset != defaultCandleMins && given == defaultCandleMins) {
 		o.CandleLightingMins = offset
 	}
@@ -383,12 +395,12 @@ func setLocation(p *Params, loc *geodb.Location, msg *downloadpb.Download) error
 }
 
 // majorHolidayMask is what "major holidays" selects. It includes
-// MINOR_HOLIDAY, so Purim and Chanukah come with it and NoMinorHolidays then
+// MinorHoliday, so Purim and Chanukah come with it and NoMinorHolidays then
 // drops the rest of the minor holidays by category.
-const majorHolidayMask = event.YOM_TOV_ENDS | event.MAJOR_FAST |
-	event.LIGHT_CANDLES | event.LIGHT_CANDLES_TZEIS |
-	event.MINOR_HOLIDAY | event.EREV | event.CHOL_HAMOED |
-	event.CHANUKAH_CANDLES
+const majorHolidayMask = event.YomTovEnds | event.MajorFast |
+	event.LightCandles | event.LightCandlesTzeis |
+	event.MinorHoliday | event.Erev | event.CholHamoed |
+	event.ChanukahCandles
 
 // holidayMask selects the holiday-table events a calendar draws, one bit
 // group per checkbox. The calendar is always built from an explicit mask
@@ -399,30 +411,30 @@ const majorHolidayMask = event.YOM_TOV_ENDS | event.MAJOR_FAST |
 // A mask of zero means "unset" to hebcal-go, which would then draw every
 // holiday. Nothing checked means nothing drawn -- not even the yom tov
 // candle-lighting times, which ride on the holiday's own flags -- so that
-// case gets USER_EVENT, a bit no holiday carries.
-func holidayMask(msg *downloadpb.Download, mevarchim bool) event.HolidayFlags {
-	var m event.HolidayFlags
+// case gets User, a bit no holiday carries.
+func holidayMask(msg *downloadpb.Download, mevarchim bool) event.Flags {
+	var m event.Flags
 	for _, b := range []struct {
 		on   bool
-		bits event.HolidayFlags
+		bits event.Flags
 	}{
 		{msg.GetMajor(), majorHolidayMask},
-		{msg.GetRoshChodesh(), event.ROSH_CHODESH},
-		{msg.GetModern(), event.MODERN_HOLIDAY},
-		{msg.GetMinorFast(), event.MINOR_FAST},
-		{msg.GetSpecialShabbat(), event.SPECIAL_SHABBAT},
-		{msg.GetOmer(), event.OMER_COUNT},
-		{msg.GetSedrot(), event.PARSHA_HASHAVUA},
-		{msg.GetYomKippurKatan(), event.YOM_KIPPUR_KATAN},
-		{msg.GetMinor(), event.MINOR_HOLIDAY},
-		{mevarchim, event.SHABBAT_MEVARCHIM},
+		{msg.GetRoshChodesh(), event.RoshChodesh},
+		{msg.GetModern(), event.ModernHoliday},
+		{msg.GetMinorFast(), event.MinorFast},
+		{msg.GetSpecialShabbat(), event.SpecialShabbat},
+		{msg.GetOmer(), event.OmerCount},
+		{msg.GetSedrot(), event.ParshaHashavua},
+		{msg.GetYomKippurKatan(), event.YomKippurKatan},
+		{msg.GetMinor(), event.MinorHoliday},
+		{mevarchim, event.ShabbatMevarchim},
 	} {
 		if b.on {
 			m |= b.bits
 		}
 	}
 	if m == 0 {
-		return event.USER_EVENT
+		return event.User
 	}
 	return m
 }
@@ -602,7 +614,7 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 			Name:        name,
 			Latitude:    lat,
 			Longitude:   long,
-			TimeZoneId:  tzid,
+			TimeZoneID:  tzid,
 			CountryCode: cc,
 			Elevation:   elevation,
 		}
@@ -660,7 +672,7 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 //
 // The registry is populated by importing github.com/hebcal/learning for its
 // side effects, which every schedule's init() uses to register itself. Four of
-// these also have dedicated CalOptions booleans; going through the registry
+// these also have dedicated Options booleans; going through the registry
 // for all of them keeps one list rather than two mechanisms.
 var learningSchedules = []struct {
 	name string
@@ -684,9 +696,9 @@ var learningSchedules = []struct {
 	{"pirkeiAvotSummer", func(m *downloadpb.Download) bool { return m.GetPirkeiAvotSummer() }},
 }
 
-// applyDailyLearning enables the requested schedules through CalOptions'
+// applyDailyLearning enables the requested schedules through Options'
 // generic DailyLearning list, which hebcal-go resolves against the registry.
-func applyDailyLearning(msg *downloadpb.Download, o *hebcal.CalOptions) {
+func applyDailyLearning(msg *downloadpb.Download, o *hebcal.Options) {
 	for _, s := range learningSchedules {
 		if s.on(msg) {
 			o.DailyLearning = append(o.DailyLearning, s.name)

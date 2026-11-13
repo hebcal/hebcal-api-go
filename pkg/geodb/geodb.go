@@ -354,7 +354,7 @@ func (db *DB) LookupLegacyCity(cityName string) *Location {
 			Latitude:   classic.Latitude,
 			Longitude:  classic.Longitude,
 			Elevation:  classic.Elevation,
-			TimeZoneID: classic.TimeZoneId,
+			TimeZoneID: classic.TimeZoneID,
 			Geo:        "geoname",
 		}
 	}

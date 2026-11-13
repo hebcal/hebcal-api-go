@@ -201,8 +201,8 @@ func (t *tools) torahPortion(ctx context.Context, _ *mcpsdk.CallToolRequest, in 
 		if reading.Summary != "" {
 			out = append(out, "Reading: "+reading.Summary)
 		}
-		for _, h := range hebcal.GetHolidaysOnDate(shabbat, il) {
-			if h.GetFlags().Has(event.SPECIAL_SHABBAT) {
+		for _, h := range hebcal.HolidaysOnDate(shabbat, il) {
+			if h.Flags().Has(event.SpecialShabbat) {
 				out = append(out, "Special Shabbat: "+renderEn(h))
 				break
 			}
@@ -219,7 +219,7 @@ type jewishHolidaysYearArgs struct {
 }
 
 func (t *tools) jewishHolidaysYear(_ context.Context, _ *mcpsdk.CallToolRequest, in jewishHolidaysYearArgs) (*mcpsdk.CallToolResult, any, error) {
-	events, err := hebcal.HebrewCalendar(&hebcal.CalOptions{Year: in.Year, IsHebrewYear: false})
+	events, err := hebcal.HebrewCalendar(&hebcal.Options{Year: in.Year, IsHebrewYear: false})
 	if err != nil {
 		return errorCard("Error: " + err.Error()), nil, nil
 	}
@@ -228,9 +228,9 @@ func (t *tools) jewishHolidaysYear(_ context.Context, _ *mcpsdk.CallToolRequest,
 		"| ---- | ---- | ---- | ---- |",
 	}
 	for _, ev := range events {
-		hd := ev.GetDate()
+		hd := ev.Date()
 		var cats []string
-		for _, c := range ev.GetCategories() {
+		for _, c := range ev.Categories() {
 			if c != "holiday" {
 				cats = append(cats, c)
 			}
@@ -263,7 +263,7 @@ func (t *tools) dafYomi(_ context.Context, _ *mcpsdk.CallToolRequest, in dafYomi
 		"Daf Yomi (English): "+ev.Render("en"),
 		"Daf Yomi (Hebrew): "+ev.Render("he"),
 		"Hebrew date: "+model.HDateString(hd),
-		"Read the text of the Daf at: "+event.URL(ev),
+		"Read the text of the Daf at: "+ev.URL(),
 	), nil, nil
 }
 
@@ -278,8 +278,8 @@ type shabbatTimesArgs struct {
 }
 
 func (t *tools) shabbatTimes(_ context.Context, _ *mcpsdk.CallToolRequest, in shabbatTimesArgs) (*mcpsdk.CallToolResult, any, error) {
-	// Validate before zmanim.NewLocation, which panics out of range.
-	if in.Latitude < -90 || in.Latitude > 90 || in.Longitude < -180 || in.Longitude > 180 {
+	loc, err := zmanim.NewLocation("", "", in.Latitude, in.Longitude, 0, in.Tzid)
+	if err != nil {
 		return errorCard(fmt.Sprintf("Latitude or longitude out of range: %v, %v", in.Latitude, in.Longitude)), nil, nil
 	}
 	start, ok1 := parseISODate(in.StartDate)
@@ -288,8 +288,7 @@ func (t *tools) shabbatTimes(_ context.Context, _ *mcpsdk.CallToolRequest, in sh
 		return errorCard("Error parsing dates: " + in.StartDate + " or " + in.EndDate), nil, nil
 	}
 	il := in.Tzid == "Asia/Jerusalem"
-	loc := zmanim.NewLocation("", "", in.Latitude, in.Longitude, 0, in.Tzid)
-	events, err := hebcal.HebrewCalendar(&hebcal.CalOptions{
+	events, err := hebcal.HebrewCalendar(&hebcal.Options{
 		CandleLighting: true,
 		Location:       &loc,
 		Start:          start,
@@ -305,16 +304,16 @@ func (t *tools) shabbatTimes(_ context.Context, _ *mcpsdk.CallToolRequest, in sh
 		"| ---- | ---- | ---- | ---- |",
 	}
 	for _, ev := range events {
-		te, ok := ev.(hebcal.TimedEvent)
-		if !ok || (te.Desc != "Candle lighting" && te.Desc != "Havdalah") {
+		te, ok := ev.(event.Timed)
+		if kind, _ := hebcal.TimedKindOf(ev); !ok || (kind != hebcal.CandleLighting && kind != hebcal.Havdalah) {
 			continue
 		}
 		associated := ""
-		if te.LinkedEvent != nil {
-			associated = te.LinkedEvent.Render("en")
+		if linked, ok := ev.(event.Linked); ok && linked.LinkedEvent() != nil {
+			associated = linked.LinkedEvent().Render("en")
 		}
 		out = append(out, fmt.Sprintf("| %s | %s | %s | %s |",
-			isoGreg(te.GetDate()), te.EventTime.Format("15:04"), te.Desc, associated))
+			isoGreg(te.Date()), te.Time().Format("15:04"), te.Desc(), associated))
 	}
 	return textResult(strings.Join(out, "\n")), nil, nil
 }

@@ -4,7 +4,7 @@
 // It is a much smaller request than a /v4/ download: there is no protobuf, no
 // location and no daily learning, only a year and an Israel flag. Everything
 // after those is the same generator and the same renderer as the /v4/
-// calendars, so this package is URL parsing plus a handful of CalOptions --
+// calendars, so this package is URL parsing plus a handful of Options --
 // Parse hands back a *download.Params and the service/pdf package does the rest.
 package holidaypdf
 

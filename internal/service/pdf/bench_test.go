@@ -27,7 +27,7 @@ func benchFonts(b *testing.B) *FontSet {
 // location.
 func benchParams() *download.Params {
 	p := &download.Params{Locale: "es", MonthMode: download.GregorianArabic}
-	p.Opts = hebcal.CalOptions{
+	p.Opts = hebcal.Options{
 		Year:           2026,
 		Sedrot:         true,
 		CandleLighting: true,

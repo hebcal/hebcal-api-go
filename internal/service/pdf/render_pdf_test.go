@@ -37,13 +37,13 @@ func renderCalendar(t *testing.T, p *download.Params) []byte {
 func paloAlto() *zmanim.Location {
 	return &zmanim.Location{
 		Name: "Palo Alto", Latitude: 37.44, Longitude: -122.14,
-		TimeZoneId: "America/Los_Angeles",
+		TimeZoneID: "America/Los_Angeles",
 	}
 }
 
 func gregorianParams() *download.Params {
 	p := &download.Params{Locale: "en", MonthMode: download.GregorianArabic}
-	p.Opts = hebcal.CalOptions{
+	p.Opts = hebcal.Options{
 		Year: 2026, Sedrot: true, CandleLighting: true, Location: paloAlto(),
 	}
 	return p
@@ -113,7 +113,7 @@ func TestNoEmptyToUnicodeDestinations(t *testing.T) {
 
 func hebrewParams() *download.Params {
 	p := &download.Params{Locale: "he", RTL: true, MonthMode: download.GregorianArabic}
-	p.Opts = hebcal.CalOptions{
+	p.Opts = hebcal.Options{
 		Year: 2026, Sedrot: true, CandleLighting: true, Location: paloAlto(),
 	}
 	return p

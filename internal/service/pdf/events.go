@@ -25,7 +25,7 @@ type Event struct {
 	// Subject is the rendered description in the requested locale.
 	Subject string
 	// Flags is the hebcal-go bitmask, used for colour and font weight.
-	Flags event.HolidayFlags
+	Flags event.Flags
 	// TimeStr is the formatted clock time for timed events (candle lighting,
 	// havdalah, fast start/end), or empty for all-day events.
 	TimeStr string
@@ -33,15 +33,15 @@ type Event struct {
 	// because no Go schedule generates it. hebcal-go has no flag for these, so
 	// colour and ordering key off this instead of Flags.
 	Learning bool
-	// AltDate marks a HEBREW_DATE alternate-date event (from d=on / D=on). It is
+	// AltDate marks a HebrewDate alternate-date event (from d=on / D=on). It is
 	// not drawn as an event row; the renderer prints its brief form on the
 	// day-number line via renderAltDateOnLine.
 	AltDate bool
-	// rank is the event's position within its day, hebcal.TimeOfDay for the
+	// rank is the event's position within its day, hebcal.DayPartOf for the
 	// events hebcal-go generates. sortDay orders a day by it alone, which keeps
 	// hebcal-go's order and puts the fetched learning rows in the learning
 	// slot.
-	rank int
+	rank hebcal.DayPart
 	// series orders the daily-learning rows within the learning slot
 	// (download.LearningOrder); zero for anything else.
 	series int
@@ -70,8 +70,8 @@ func Generate(p *download.Params) ([]Event, error) {
 	}
 	out := make([]Event, 0, len(events))
 	for _, ev := range events {
-		flags := ev.GetFlags()
-		hd := ev.GetDate()
+		flags := ev.Flags()
+		hd := ev.Date()
 		subject := model.FixMonthSpelling(jsutil.SmartApostrophe(renderSubject(ev, flags, p.Locale)))
 		if !p.Emoji {
 			subject = download.StripEmoji(subject)
@@ -91,9 +91,9 @@ func Generate(p *download.Params) ([]Event, error) {
 			Subject: subject,
 			Flags:   flags,
 			TimeStr: timeStr,
-			URL:     event.URL(ev),
-			AltDate: flags.Has(event.HEBREW_DATE),
-			rank:    hebcal.TimeOfDay(ev),
+			URL:     ev.URL(),
+			AltDate: flags.Has(event.HebrewDate),
+			rank:    hebcal.DayPartOf(ev),
 			series:  download.EventLearningOrder(ev),
 		}
 		if e.AltDate {
@@ -188,14 +188,14 @@ func use12Hour(p *download.Params) bool {
 
 // timeStringOf formats the clock time for a timed event in the compact form the
 // PDF uses: "8:51p" in 12-hour countries, "20:51" in 24-hour ones. The time
-// comes from TimedEvent.EventTime rather than from parsing hebcal-go's
+// comes from the event's Time rather than from parsing hebcal-go's
 // "Havdalah: 8:51" description back apart.
 func timeStringOf(ev event.CalEvent, p *download.Params) string {
-	te, ok := hebcal.AsTimedEvent(ev)
+	te, ok := ev.(event.Timed)
 	if !ok {
 		return ""
 	}
-	t := te.EventTime
+	t := te.Time()
 	if t.IsZero() {
 		return ""
 	}
@@ -217,9 +217,9 @@ func timeStringOf(ev event.CalEvent, p *download.Params) string {
 // renderSubject renders an event's subject for a calendar cell, which is narrow
 // enough that the shorter form is wanted. Timed events keep the full render,
 // from which Generate splits the clock time.
-func renderSubject(ev event.CalEvent, flags event.HolidayFlags, locale string) string {
+func renderSubject(ev event.CalEvent, flags event.Flags, locale string) string {
 	switch {
-	case flags.Has(event.SHABBAT_MEVARCHIM):
+	case flags.Has(event.ShabbatMevarchim):
 		return event.RenderBrief(ev, locale) // "Mevarchim Chodesh Sh’vat"
 	case flags.HasAny(download.LearningFlags):
 		// "Daf Yomi: Berakhot 2" => "Berakhot 2". Not RenderBrief, which

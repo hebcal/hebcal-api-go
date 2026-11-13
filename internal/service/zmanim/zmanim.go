@@ -163,11 +163,13 @@ func formatISOWithTimeZone(dt time.Time) *string {
 	return &s
 }
 
-// forDate constructs a Zmanim calculator for the given calendar date.
+// forDate constructs a Zmanim calculator for the given calendar date. The
+// location has been resolved from the request by then, with its coordinates
+// in range and its time zone loaded, so it cannot be refused here.
 func forDate(d model.GregDate, loc *geodb.Location, useElevation bool) zman.Zmanim {
 	zloc := loc.ZmanimLocation()
 	date := time.Date(d.Year, d.Month, d.Day, 12, 0, 0, 0, time.UTC)
-	z := zman.New(&zloc, date)
+	z := zman.MustNew(&zloc, date)
 	z.UseElevation = useElevation
 	return z
 }
@@ -282,9 +284,9 @@ func TimesForRange(start, end model.GregDate, loc *geodb.Location, roundMinute, 
 	return out
 }
 
-// IsAssurBemlacha reports whether melacha (work) is prohibited at the given
+// IsAssurBemelacha reports whether melacha (work) is prohibited at the given
 // moment for the location, backing the /zmanim im=1 branch.
-func IsAssurBemlacha(dt time.Time, loc *geodb.Location, useElevation bool) (bool, error) {
+func IsAssurBemelacha(dt time.Time, loc *geodb.Location, useElevation bool) (bool, error) {
 	zloc := loc.ZmanimLocation()
-	return hebcal.IsAssurBemlacha(dt, &zloc, loc.IsIsrael(), useElevation)
+	return hebcal.IsAssurBemelacha(dt, &zloc, loc.IsIsrael(), useElevation)
 }

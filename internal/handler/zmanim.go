@@ -137,7 +137,7 @@ func (s *Server) checkMelacha(w http.ResponseWriter, q url.Values,
 		w.Header().Set("Cache-Control", "public, max-age=60, s-maxage=60")
 	}
 	dt = dt.In(tz)
-	assur, err := zmanim.IsAssurBemlacha(dt, loc, useElevation)
+	assur, err := zmanim.IsAssurBemelacha(dt, loc, useElevation)
 	if err != nil {
 		httpx.WriteJSONError(w, model.BadRequest("%s", err.Error()))
 		return

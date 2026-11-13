@@ -97,7 +97,7 @@ func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
 // row is one rendered line, with the keys that put it in calendar order.
 type row struct {
 	abs  int64
-	rank int
+	rank hebcal.DayPart
 	// series orders the learning rows within the learning slot.
 	series int
 	line   []string
@@ -109,12 +109,12 @@ func Render(cal *Calendar) []byte {
 	p := cal.Params
 	rows := make([]row, 0, len(cal.Events)+len(cal.Learning))
 	for _, ev := range cal.Events {
-		rank := hebcal.TimeOfDay(ev)
-		if ev.GetFlags().Has(event.HEBREW_DATE) {
+		rank := hebcal.DayPartOf(ev)
+		if ev.Flags().Has(event.HebrewDate) {
 			rank = -1 // the date leads its day
 		}
 		rows = append(rows, row{
-			abs:    ev.GetDate().Abs(),
+			abs:    ev.Date().Abs(),
 			rank:   rank,
 			series: download.EventLearningOrder(ev),
 			line:   eventToCSV(ev, p),
@@ -124,7 +124,7 @@ func Render(cal *Calendar) []byte {
 		it := &cal.Learning[i]
 		if day, err := time.Parse("2006-01-02", it.Date); err == nil {
 			hd := hdate.FromTime(day)
-			rows = append(rows, row{abs: hd.Abs(), rank: hebcal.TimeOfDayLearning,
+			rows = append(rows, row{abs: hd.Abs(), rank: hebcal.DayPartLearning,
 				series: download.LearningOrder(it.Category), line: learningToCSV(it, hd, p)})
 		}
 	}
@@ -201,8 +201,8 @@ var category = map[string]string{
 
 // eventToCSV renders one event as the fields of a CSV row.
 func eventToCSV(ev event.CalEvent, p *download.Params) []string {
-	flags := ev.GetFlags()
-	timed, isTimed := hebcal.AsTimedEvent(ev)
+	flags := ev.Flags()
+	timed, isTimed := ev.(event.Timed)
 	subj := download.RenderSubject(ev, p.Locale, download.ShouldRenderBrief(ev, flags, isTimed))
 	hebrew := ""
 	if p.AppendHebrew {
@@ -212,7 +212,7 @@ func eventToCSV(ev event.CalEvent, p *download.Params) []string {
 	timeStr := ""
 	loc := "Jewish Holidays"
 	if isTimed {
-		timeStr = formatTime(timed.EventTime, p)
+		timeStr = formatTime(timed.Time(), p)
 		if p.LocationShortName != "" {
 			loc = p.LocationShortName
 		}
@@ -226,10 +226,10 @@ func eventToCSV(ev event.CalEvent, p *download.Params) []string {
 	}
 
 	showTimeAs := 3
-	if isTimed || flags.Has(event.CHAG) {
+	if isTimed || flags.Has(event.Chag) {
 		showTimeAs = 4
 	}
-	return formatRow(ev.GetDate(), subj, hebrew, timeStr, isTimed, memo(ev, flags, p), showTimeAs, loc, p)
+	return formatRow(ev.Date(), subj, hebrew, timeStr, isTimed, memo(ev, flags, p), showTimeAs, loc, p)
 }
 
 // learningToCSV renders a daily-learning row fetched from readings-svc. Its
@@ -272,10 +272,10 @@ func formatRow(hd hdate.HDate, subj, hebrew, timeStr string, timed bool, memo st
 }
 
 // formatTime renders a clock time with a " PM" / " AM" suffix in a 12-hour
-// country ("6:56 PM") and as-is elsewhere ("18:56"). The request's hour12
+// country ("6:56 PM") and as-is elsewhere ("18:56"). The request's clock
 // choice overrides the country.
 func formatTime(t time.Time, p *download.Params) string {
-	return event.ReformatTimeStr(t.Format("15:04"), " PM", countryCode(p), hour12(p))
+	return event.ReformatTimeStr(t.Format("15:04"), " PM", countryCode(p), p.Clock())
 }
 
 // countryCode is the location's country, or Israel or the United States by
@@ -290,21 +290,6 @@ func countryCode(p *download.Params) string {
 	return "US"
 }
 
-// hour12 turns the protobuf's 0/1/2 into the override ReformatTimeStr takes:
-// nil follows the country, true forces 12-hour, false 24-hour.
-func hour12(p *download.Params) *bool {
-	var b bool
-	switch p.Hour12 {
-	case 1:
-		b = true
-	case 2:
-		b = false
-	default:
-		return nil
-	}
-	return &b
-}
-
 // memo is the Description column.
 //
 // In priority order: the special Shabbat or Rosh Chodesh a weekly Torah
@@ -314,9 +299,9 @@ func hour12(p *download.Params) *bool {
 // holiday's description; and for a timed event, the event it belongs to
 // ("Fast begins" belongs to "Tzom Gedaliah", erev-Yom-Tov candle-lighting to
 // "Erev Sukkot").
-func memo(ev event.CalEvent, flags event.HolidayFlags, p *download.Params) string {
-	if flags.Has(event.PARSHA_HASHAVUA) {
-		if s := parshaMemo(ev.GetDate(), p); s != "" {
+func memo(ev event.CalEvent, flags event.Flags, p *download.Params) string {
+	if flags.Has(event.ParshaHashavua) {
+		if s := parshaMemo(ev.Date(), p); s != "" {
 			return s
 		}
 	}
@@ -336,14 +321,14 @@ func memo(ev event.CalEvent, flags event.HolidayFlags, p *download.Params) strin
 //
 // The Kiddush Levana times are deliberately left out: that event's memo is on
 // its way out of the website, so the CSV starts without it.
-func ownMemo(ev event.CalEvent, flags event.HolidayFlags, p *download.Params) string {
+func ownMemo(ev event.CalEvent, flags event.Flags, p *download.Params) string {
 	switch {
-	case flags.Has(event.SHABBAT_MEVARCHIM):
+	case flags.Has(event.ShabbatMevarchim):
 		cc := ""
 		if p.Opts.Location != nil {
 			cc = p.Opts.Location.CountryCode
 		}
-		return shabbat.MevarchimMoladMemo(ev.GetDate(), strings.ToLower(p.Locale), cc, p.Opts.IL, hour12(p))
+		return shabbat.MevarchimMoladMemo(ev.Date(), strings.ToLower(p.Locale), cc, p.Opts.IL, p.Clock())
 	case isKiddushLevana(ev):
 		return ""
 	}
@@ -354,13 +339,13 @@ func ownMemo(ev event.CalEvent, flags event.HolidayFlags, p *download.Params) st
 }
 
 func isTimedEv(ev event.CalEvent) bool {
-	_, ok := hebcal.AsTimedEvent(ev)
+	_, ok := ev.(event.Timed)
 	return ok
 }
 
 func isKiddushLevana(ev event.CalEvent) bool {
-	_, ok := ev.(hebcal.KiddushLevanaEvent)
-	return ok
+	kind, _ := hebcal.TimedKindOf(ev)
+	return kind == hebcal.KiddushLevana
 }
 
 // parshaMemo names what else is read on a Shabbat with a weekly portion: the
@@ -370,8 +355,8 @@ func isKiddushLevana(ev event.CalEvent) bool {
 // summary an iCalendar feed carries, which would not fit a spreadsheet cell.
 func parshaMemo(hd hdate.HDate, p *download.Params) string {
 	var names []string
-	for _, h := range hebcal.GetHolidaysOnDate(hd, p.Opts.IL) {
-		if h.Flags.HasAny(event.SPECIAL_SHABBAT | event.ROSH_CHODESH) {
+	for _, h := range hebcal.HolidaysOnDate(hd, p.Opts.IL) {
+		if h.Flags().HasAny(event.SpecialShabbat | event.RoshChodesh) {
 			names = append(names, download.RenderSubject(h, p.Locale, false))
 		}
 	}

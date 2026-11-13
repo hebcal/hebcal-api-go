@@ -297,7 +297,7 @@ func (f *Feed) allDayEvents(days []dayTimes) []icalendar.Event {
 			if tz != nil {
 				t = t.In(tz)
 			}
-			str := event.ReformatTimeStr(t.Format("15:04"), "pm", f.Loc.CC, nil)
+			str := event.ReformatTimeStr(t.Format("15:04"), "pm", f.Loc.CC, event.ClockAuto)
 			prefix := ""
 			if h, _, _ := strings.Cut(str, ":"); len(h) != 2 {
 				prefix = " "

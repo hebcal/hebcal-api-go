@@ -168,7 +168,7 @@ func (c *Calendar) ICS(userAgent string, zones *icalendar.ZoneInfo, now time.Tim
 	}
 	var geo *icalendar.Geo
 	if loc != nil {
-		cal.TZID = loc.TimeZoneId
+		cal.TZID = loc.TimeZoneID
 		geo = &icalendar.Geo{Latitude: loc.Latitude, Longitude: loc.Longitude}
 	}
 
@@ -339,5 +339,5 @@ func googleLocation(tzo string) *zmanim.Location {
 		}
 		tzid += strconv.FormatFloat(tz, 'f', -1, 64)
 	}
-	return &zmanim.Location{TimeZoneId: tzid}
+	return &zmanim.Location{TimeZoneID: tzid}
 }

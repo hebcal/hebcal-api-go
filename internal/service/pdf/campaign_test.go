@@ -48,7 +48,7 @@ func TestCampaignPrefersTheAsciiName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &download.Params{CityName: tt.city, CityNameAscii: tt.ascii, Opts: hebcal.CalOptions{Year: 2026}}
+			p := &download.Params{CityName: tt.city, CityNameAscii: tt.ascii, Opts: hebcal.Options{Year: 2026}}
 			if got := CalendarTitle(p, events); got != tt.wantTitle {
 				t.Errorf("CalendarTitle() = %q, want %q", got, tt.wantTitle)
 			}

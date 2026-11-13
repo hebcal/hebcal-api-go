@@ -22,10 +22,10 @@ func kiddushLevanaMemo(ev event.CalEvent, o *Options) string {
 	if !ok || o.Location == nil {
 		return ""
 	}
-	tz := kl.EventTime.Location()
+	tz := kl.Time().Location()
 	cc := o.Location.CountryCode
 	clock := func(t time.Time) string {
-		return event.ReformatTimeStr(t.Format("15:04"), "pm", cc, o.Hour12)
+		return event.ReformatTimeStr(t.Format("15:04"), "pm", cc, o.Clock)
 	}
 	maharil := kl.Molad.SofZmanKidushLevanaBetweenMoldos().Truncate(time.Minute)
 	rows := []struct {
@@ -43,7 +43,7 @@ func kiddushLevanaMemo(ev event.CalEvent, o *Options) string {
 		line := model.Gettext(r.label, o.Locale) + ": " + formatDate(t, o.Locale) + ", " + clock(t)
 		if i == 2 {
 			if zman := adjustedTo(kl); zman != "" {
-				line += " (" + model.Gettext("adjusted to", o.Locale) + " " + clock(kl.EventTime) + " " +
+				line += " (" + model.Gettext("adjusted to", o.Locale) + " " + clock(kl.Time()) + " " +
 					model.Gettext(zman, o.Locale) + ")"
 			}
 		}

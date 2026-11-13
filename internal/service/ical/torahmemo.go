@@ -29,7 +29,7 @@ func (s *Service) torahMemos(ctx context.Context, events []event.CalEvent, il bo
 	years := map[int]bool{}
 	for _, ev := range events {
 		if hasReading(ev) {
-			years[ev.GetDate().Year()] = true
+			years[ev.Date().Year()] = true
 		}
 	}
 	if len(years) == 0 {

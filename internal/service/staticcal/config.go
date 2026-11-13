@@ -29,7 +29,7 @@ type Feed struct {
 
 	// Opts chooses the events hebcal-go generates, for a feed that is not a
 	// readings-svc series. Start, End, IL and Locale are filled in.
-	Opts hebcal.CalOptions
+	Opts hebcal.Options
 	// NoMinorHolidays drops the minor holidays (Tu BiShvat, Lag BaOmer...)
 	// from a holiday feed, keeping Purim and Chanukah.
 	NoMinorHolidays bool
@@ -45,7 +45,7 @@ const holidayColor = "#800002"
 
 // The minor holidays, fasts, modern holidays, special Shabbatot and Rosh
 // Chodesh, which the "major holidays" feeds leave out.
-var majorOnly = hebcal.CalOptions{
+var majorOnly = hebcal.Options{
 	NoRoshChodesh:    true,
 	NoModern:         true,
 	NoMinorFast:      true,
@@ -83,49 +83,49 @@ var Feeds = []Feed{
 		Desc:   "Displays the Hebrew date every day of the week in English transliteration",
 		Color:  "#AC8E68",
 		Locale: "en", Years: 3,
-		Opts: hebcal.CalOptions{AddHebrewDates: true, NoHolidays: true},
+		Opts: hebcal.Options{AddHebrewDates: true, NoHolidays: true},
 	},
 	{
 		File: "hdate-he", Title: "תאריך עברי (עם ניקוד)",
 		Desc:   "מציג את התאריך העברי בכל יום מימות השבוע, עם ניקוד",
 		Color:  "#AC8E68",
 		Locale: "he", Years: 3,
-		Opts: hebcal.CalOptions{AddHebrewDates: true, NoHolidays: true},
+		Opts: hebcal.Options{AddHebrewDates: true, NoHolidays: true},
 	},
 	{
 		File: "hdate-he-v2", Title: "תאריך עברי",
 		Desc:   "מציג את התאריך העברי בכל יום מימות השבוע, ללא ניקוד",
 		Color:  "#AC8E68",
 		Locale: "he-x-NoNikud", Years: 3,
-		Opts: hebcal.CalOptions{AddHebrewDates: true, NoHolidays: true},
+		Opts: hebcal.Options{AddHebrewDates: true, NoHolidays: true},
 	},
 	{
 		File: "omer", Title: "Days of the Omer",
 		Desc:   "7 weeks from the second night of Pesach to the day before Shavuot",
 		Color:  "#FF9F0A",
 		Locale: "en", Years: 3,
-		Opts: hebcal.CalOptions{Omer: true, NoHolidays: true},
+		Opts: hebcal.Options{Omer: true, NoHolidays: true},
 	},
 	{
 		File: "torah-readings-diaspora", Title: "Torah Readings (Diaspora)",
 		Desc:   "Parashat ha-Shavua - Weekly Torah Portion from Hebcal.com",
 		Color:  "#257E4A",
 		Locale: "en", Years: 5,
-		Opts: hebcal.CalOptions{Sedrot: true, NoHolidays: true},
+		Opts: hebcal.Options{Sedrot: true, NoHolidays: true},
 	},
 	{
 		File: "torah-readings-israel", Title: "Torah Readings (Israel English)",
 		Desc:   "Parashat ha-Shavua - Weekly Torah Portion from Hebcal.com",
 		Color:  "#257E4A",
 		Locale: "en", IL: true, Years: 5,
-		Opts: hebcal.CalOptions{Sedrot: true, NoHolidays: true},
+		Opts: hebcal.Options{Sedrot: true, NoHolidays: true},
 	},
 	{
 		File: "torah-readings-israel-he", Title: "פרשת השבוע בישראל",
 		Desc:   "פרשת השבוע - קריאת התורה השבועית מאתר Hebcal.com",
 		Color:  "#257E4A",
 		Locale: "he", IL: true, Years: 5,
-		Opts: hebcal.CalOptions{Sedrot: true, NoHolidays: true},
+		Opts: hebcal.Options{Sedrot: true, NoHolidays: true},
 	},
 	{
 		File: "yom-kippur-katan", Title: "Yom Kippur Katan",
@@ -133,21 +133,21 @@ var Feeds = []Feed{
 		Color:    holidayColor,
 		RelCalID: "457ce561-311f-4eeb-9033-65561b7f7503",
 		Locale:   "en", Years: 10,
-		Opts: hebcal.CalOptions{YomKippurKatan: true, NoHolidays: true},
+		Opts: hebcal.Options{YomKippurKatan: true, NoHolidays: true},
 	},
 	{
 		File: "rosh-chodesh", Title: "Rosh Chodesh",
 		Desc:   "Rosh Chodesh is a minor holiday observed at the beginning of every month in the Hebrew calendar",
 		Color:  "#6F42C1",
 		Locale: "en", Years: 10,
-		Opts: hebcal.CalOptions{Mask: event.ROSH_CHODESH},
+		Opts: hebcal.Options{Mask: event.RoshChodesh},
 	},
 	{
 		File: "mevarchim", Title: "Shabbat Mevarchim",
 		Desc:   "Shabbat announcing new month,Prior to Rosh Chodesh",
 		Color:  holidayColor,
 		Locale: "en", Years: 10,
-		Opts: hebcal.CalOptions{ShabbatMevarchim: true, NoHolidays: true},
+		Opts: hebcal.Options{ShabbatMevarchim: true, NoHolidays: true},
 	},
 	{
 		File: "yizkor-diaspora", Title: "Yizkor (Diaspora)",
@@ -155,7 +155,7 @@ var Feeds = []Feed{
 		Color:    holidayColor,
 		RelCalID: "64acac8c-a02f-4433-b7ef-f3a5e02d26cc",
 		Locale:   "en", Years: 10,
-		Opts: hebcal.CalOptions{Yizkor: true, NoHolidays: true},
+		Opts: hebcal.Options{Yizkor: true, NoHolidays: true},
 	},
 	{
 		File: "yizkor-il", Title: "יזכור (ישראל)",
@@ -163,7 +163,7 @@ var Feeds = []Feed{
 		Color:    holidayColor,
 		RelCalID: "21eadc10-9fa6-402c-ac6f-c94d1ee7537e",
 		Locale:   "he-x-NoNikud", IL: true, Years: 10,
-		Opts: hebcal.CalOptions{Yizkor: true, NoHolidays: true},
+		Opts: hebcal.Options{Yizkor: true, NoHolidays: true},
 	},
 
 	// Daily learning, one series per feed, in the download form's order.
@@ -230,14 +230,14 @@ func learning(file, schedule, title, desc, color, relcalid string, years int) Fe
 	return Feed{
 		File: file, Title: title, Desc: desc, Color: color, RelCalID: relcalid,
 		Locale: "en", Years: years,
-		Opts: hebcal.CalOptions{NoHolidays: true, DailyLearning: []string{schedule}},
+		Opts: hebcal.Options{NoHolidays: true, DailyLearning: []string{schedule}},
 	}
 }
 
 // sidecar is a feed of one series readings-svc supplies.
 func sidecar(file, series, title, desc, color, relcalid string, years int) Feed {
 	f := learning(file, "", title, desc, color, relcalid, years)
-	f.Opts = hebcal.CalOptions{}
+	f.Opts = hebcal.Options{}
 	f.Series = series
 	return f
 }

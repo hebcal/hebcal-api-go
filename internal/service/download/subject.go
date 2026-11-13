@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/hebcal/hebcal-go/event"
-	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/locales"
 	"golang.org/x/text/unicode/norm"
 
@@ -13,21 +12,21 @@ import (
 )
 
 // LearningFlags are the daily-learning series flags.
-const LearningFlags = event.DAF_YOMI | event.MISHNA_YOMI |
-	event.NACH_YOMI | event.YERUSHALMI_YOMI | event.DAILY_LEARNING
+const LearningFlags = event.DafYomi | event.MishnaYomi |
+	event.NachYomi | event.YerushalmiYomi | event.DailyLearning
 
 // ShouldRenderBrief reports whether an event's title is its brief form:
 // timed events (the time is shown separately), Hebrew dates other than the
 // first of a month, daily learning, Shabbat Mevarchim and Yom Kippur Katan.
-func ShouldRenderBrief(ev event.CalEvent, flags event.HolidayFlags, timed bool) bool {
+func ShouldRenderBrief(ev event.CalEvent, flags event.Flags, timed bool) bool {
 	switch {
 	case timed:
 		return true
-	case flags.Has(event.HEBREW_DATE):
-		return ev.GetDate().Day() != 1
-	case flags.HasAny(LearningFlags | event.SHABBAT_MEVARCHIM):
+	case flags.Has(event.HebrewDate):
+		return ev.Date().Day() != 1
+	case flags.HasAny(LearningFlags | event.ShabbatMevarchim):
 		return true
-	case flags.Has(event.MINOR_FAST):
+	case flags.Has(event.MinorFast):
 		return strings.HasPrefix(UntranslatedDesc(ev), "Yom Kippur Katan")
 	}
 	return false
@@ -43,7 +42,7 @@ func RenderSubject(ev event.CalEvent, locale string, brief bool) string {
 	s = StripEmoji(s)
 	// Daily-learning readings keep their typewriter apostrophes ("Fourth
 	// Year's Fruit"); only the calendar's own names are typeset.
-	if IsHebrewLocale(locale) || ev.GetFlags().HasAny(LearningFlags) {
+	if IsHebrewLocale(locale) || ev.Flags().HasAny(LearningFlags) {
 		return model.FixMonthSpelling(s)
 	}
 	return model.FixMonthSpelling(jsutil.SmartApostrophe(s))
@@ -54,8 +53,8 @@ func RenderSubject(ev event.CalEvent, locale string, brief bool) string {
 // description and then by its basename. With firstSentence it stops at the
 // first full stop. A weekly Torah portion has none: its MEMO entry is the
 // portion's prose summary, which is a different thing (see ParshaSummary).
-func HolidayDescription(ev event.CalEvent, flags event.HolidayFlags, locale string, firstSentence bool) string {
-	if flags.Has(event.PARSHA_HASHAVUA) {
+func HolidayDescription(ev event.CalEvent, flags event.Flags, locale string, firstSentence bool) string {
+	if flags.Has(event.ParshaHashavua) {
 		return ""
 	}
 	localeName := "en"
@@ -63,7 +62,7 @@ func HolidayDescription(ev event.CalEvent, flags event.HolidayFlags, locale stri
 		localeName = "he"
 	}
 	key := UntranslatedDesc(ev)
-	if flags.Has(event.SHABBAT_MEVARCHIM) {
+	if flags.Has(event.ShabbatMevarchim) {
 		key = "Shabbat Mevarchim Chodesh"
 	}
 	s := lookupMemo("MEMO:"+key, localeName)
@@ -84,10 +83,10 @@ func HolidayDescription(ev event.CalEvent, flags event.HolidayFlags, locale stri
 // doubled portion joins its two halves' summaries, and has none unless both
 // have one. Any other event has none.
 func ParshaSummary(ev event.CalEvent, locale string) string {
-	if !ev.GetFlags().Has(event.PARSHA_HASHAVUA) {
+	if !ev.Flags().Has(event.ParshaHashavua) {
 		return ""
 	}
-	name := strings.TrimPrefix(event.Desc(ev), "Parashat ")
+	name := strings.TrimPrefix(ev.Desc(), "Parashat ")
 	if IsHebrewLocale(locale) {
 		if s := parshaSummary(name, "he"); s != "" {
 			return s
@@ -125,25 +124,13 @@ func Basename(ev event.CalEvent) string {
 // UntranslatedDesc returns the event's English description, with the
 // website's one-m spelling of Tamuz.
 func UntranslatedDesc(ev event.CalEvent) string {
-	if he, ok := ev.(event.HolidayEvent); ok {
-		return model.FixMonthSpelling(he.Desc)
-	}
-	if te, ok := hebcal.AsTimedEvent(ev); ok {
-		return te.Desc
-	}
-	if d, ok := ev.(event.Descer); ok {
-		return model.FixMonthSpelling(d.GetDesc())
-	}
-	return model.FixMonthSpelling(ev.Render("en"))
+	return model.FixMonthSpelling(ev.Desc())
 }
 
 // LinkedEvent returns the event a timed event or Yizkor belongs to, or nil.
 func LinkedEvent(ev event.CalEvent) event.CalEvent {
-	switch e := ev.(type) {
-	case hebcal.TimedEvent:
-		return e.LinkedEvent
-	case hebcal.YizkorEvent:
-		return e.LinkedEvent
+	if linked, ok := ev.(event.Linked); ok {
+		return linked.LinkedEvent()
 	}
 	return nil
 }

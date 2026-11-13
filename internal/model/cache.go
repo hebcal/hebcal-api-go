@@ -15,7 +15,7 @@ import (
 //
 // A single /converter range request converts up to ~399 days, and for each day
 // GetEvents() needs that day's holidays. Those come from a whole-Hebrew-year
-// computation: hebcal.HebrewCalendar / GetHolidaysForYear build and sort ~120
+// computation: hebcal.HebrewCalendar / HolidaysForYear build and sort ~120
 // events for the year. Recomputing that per day made a range request redo the
 // same year ~399 times. These caches compute each year's holidays only once, so
 // a range spanning one or two Hebrew years pays for each only once.
@@ -88,7 +88,7 @@ var (
 // produced. Cached per (year, il).
 func holidayEventsForYear(year int, il bool) map[int64][]event.CalEvent {
 	return holidayYearCache.get(yearKey{year, il}, func() map[int64][]event.CalEvent {
-		opts := hebcal.CalOptions{
+		opts := hebcal.Options{
 			Start:            hdate.New(year, hdate.Tishrei, 1),
 			End:              hdate.New(year, hdate.Elul, 29),
 			IL:               il,
@@ -101,7 +101,7 @@ func holidayEventsForYear(year int, il bool) map[int64][]event.CalEvent {
 		}
 		m := make(map[int64][]event.CalEvent, len(evs))
 		for _, ev := range evs {
-			d := ev.GetDate()
+			d := ev.Date()
 			abs := d.Abs()
 			m[abs] = append(m[abs], ev)
 		}
@@ -109,16 +109,16 @@ func holidayEventsForYear(year int, il bool) map[int64][]event.CalEvent {
 	})
 }
 
-// holidaysForYearByDate returns GetHolidaysForYear indexed by RD date. Unlike
+// holidaysForYearByDate returns HolidaysForYear indexed by RD date. Unlike
 // holidayEventsForYear this is the raw holiday list (including events such as
 // Yom Kippur Katan that HebrewCalendar filters out), matching what the original
 // holidaysOnDate() consumed. Cached per (year, il).
 func holidaysForYearByDate(year int, il bool) map[int64][]event.HolidayEvent {
 	return holidaysOnlyCache.get(yearKey{year, il}, func() map[int64][]event.HolidayEvent {
-		all := hebcal.GetHolidaysForYear(year, il)
+		all := hebcal.HolidaysForYear(year, il)
 		m := make(map[int64][]event.HolidayEvent, len(all))
 		for _, hev := range all {
-			d := hev.Date
+			d := hev.Date()
 			abs := d.Abs()
 			m[abs] = append(m[abs], hev)
 		}

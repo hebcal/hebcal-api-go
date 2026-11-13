@@ -45,7 +45,7 @@ func GenerateCalEvents(p *Params) ([]event.CalEvent, error) {
 	}
 	out := events[:0]
 	for _, ev := range events {
-		if keepEvent(ev, ev.GetFlags(), p) {
+		if keepEvent(ev, ev.Flags(), p) {
 			out = append(out, ev)
 		}
 	}
@@ -55,11 +55,11 @@ func GenerateCalEvents(p *Params) ([]event.CalEvent, error) {
 // keepEvent applies the two post-generation filters (yom-tov-only and
 // no-minor-holidays). Both work on categories rather than flags, which is what
 // makes the Purim and Chanukah special case above take effect.
-func keepEvent(ev event.CalEvent, flags event.HolidayFlags, p *Params) bool {
+func keepEvent(ev event.CalEvent, flags event.Flags, p *Params) bool {
 	switch {
 	case p.YomTovOnly:
 		cats := EventCategories(ev)
-		return len(cats) > 0 && cats[0] == "holiday" && flags.Has(event.CHAG)
+		return len(cats) > 0 && cats[0] == "holiday" && flags.Has(event.Chag)
 	case p.NoMinorHolidays:
 		cats := EventCategories(ev)
 		return len(cats) < 2 || cats[1] != "minor"
@@ -70,12 +70,12 @@ func keepEvent(ev event.CalEvent, flags event.HolidayFlags, p *Params) bool {
 // EventCategories returns an event's [category, subcategory].
 //
 // Purim and Chanukah are filed as major even though their flags say
-// MINOR_HOLIDAY, which is what keeps them in a calendar that asked only for
+// MinorHoliday, which is what keeps them in a calendar that asked only for
 // major holidays while Tu BiShvat and Rosh Hashana LaBehemot drop out.
 func EventCategories(ev event.CalEvent) []string {
 	d := UntranslatedDesc(ev)
 	if d == "Purim" || d == "Erev Purim" || strings.HasPrefix(d, "Chanukah: ") {
 		return []string{"holiday", "major"}
 	}
-	return ev.GetCategories()
+	return ev.Categories()
 }
