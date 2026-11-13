@@ -957,9 +957,13 @@ Things that are not obvious:
   (`/.env`, `/.git/config`, `/ical/.hidden.ics`) -- `403 Forbidden`, with no
   Cache-Control. It has to run ahead of the mux, which would otherwise
   answer a `..` path with a 301 to the cleaned path. `plainFileName` and
-  `serveStatic`'s callers still validate their own paths; this is the
-  outer layer, not a replacement. It also covers `/.well-known/`, which
-  nothing here serves.
+  `serveStatic`'s callers still validate their own paths, and
+  `serveStatic` itself opens files through an `os.Root` on the document
+  root, so neither a path that slips past a caller nor a symlink pointing
+  outside the tree is served (a file deployed as such a symlink would
+  404). It also covers `/.well-known/`, which nothing here serves. A `//`
+  needs no rule: `ServeMux` redirects it to the cleaned path before any
+  handler runs.
 - **Precompressed copies win over on-the-fly encoding**, as with koa-send: a
   client offering `zstd, br` gets the `.br` file. A client offering neither
   `br` nor `gzip` gets the file through the middleware like any other body.

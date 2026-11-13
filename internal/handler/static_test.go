@@ -192,6 +192,32 @@ func TestDotSegmentsForbidden(t *testing.T) {
 	}
 }
 
+// serveStatic opens files through an os.Root, so neither a path that climbs
+// out nor a symlink pointing outside DocumentRoot is served, even when a
+// caller passes it unchecked.
+func TestServeStaticContained(t *testing.T) {
+	app, _ := testServer(t)
+	outside := t.TempDir()
+	if err := os.WriteFile(filepath.Join(outside, "secret"), []byte("secret\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	app.DocumentRoot = staticDir(t, time.Now())
+	if err := os.Symlink(filepath.Join(outside, "secret"), filepath.Join(app.DocumentRoot, "link")); err != nil {
+		t.Fatal(err)
+	}
+	rel, err := filepath.Rel(app.DocumentRoot, filepath.Join(outside, "secret"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, p := range []string{"link", filepath.ToSlash(rel), "../secret", "/etc/passwd"} {
+		rec := httptest.NewRecorder()
+		app.serveStatic(rec, httptest.NewRequest(http.MethodGet, "/x", nil), p, httpx.CacheControl1Day)
+		if rec.Code != http.StatusNotFound || strings.Contains(rec.Body.String(), "secret") || strings.Contains(rec.Body.String(), "root:") {
+			t.Errorf("%s: status %d body %q, want 404", p, rec.Code, rec.Body.String())
+		}
+	}
+}
+
 func TestAcceptsEncoding(t *testing.T) {
 	tests := []struct {
 		header, coding string
