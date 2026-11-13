@@ -14,13 +14,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hebcal/hebcal-api-go/internal/config"
 	"github.com/twmb/murmur3"
 )
-
-// Version is stamped into the default PRODID. It defaults to the version of
-// the library this package serializes for; a service sets it to its own
-// release at startup, before any calendar is written.
-var Version = "7.0.6"
 
 // Date is a calendar date with no time of day and no time zone.
 type Date struct {
@@ -229,7 +225,7 @@ func (c *Calendar) writePreamble(buf *bytes.Buffer) {
 		if len(c.Lang) == 2 {
 			lang = strings.ToUpper(c.Lang)
 		}
-		prodid = "-//hebcal.com/NONSGML Hebcal Calendar v1" + Version + "//" + lang
+		prodid = "-//hebcal.com/NONSGML Hebcal Calendar v1" + strings.TrimPrefix(config.APIVersion, "v") + "//" + lang
 	}
 	line(buf, "BEGIN:VCALENDAR")
 	line(buf, "VERSION:2.0")

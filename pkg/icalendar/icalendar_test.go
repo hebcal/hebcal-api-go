@@ -3,6 +3,7 @@ package icalendar
 import (
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -26,8 +27,17 @@ func marshal(t *testing.T, c *Calendar, events ...Event) []string {
 	return strings.Split(strings.TrimSuffix(s, "\r\n"), "\r\n")
 }
 
+var prodidVersion = regexp.MustCompile(`Calendar v1[^/]*//`)
+
 func equal(t *testing.T, got, want []string) {
 	t.Helper()
+	// The PRODID names the build, which varies; compare it without the version.
+	got = append([]string(nil), got...)
+	for i, l := range got {
+		if strings.HasPrefix(l, "PRODID:") {
+			got[i] = prodidVersion.ReplaceAllString(l, "Calendar v1//")
+		}
+	}
 	if strings.Join(got, "\n") != strings.Join(want, "\n") {
 		t.Errorf("got:\n%s\n\nwant:\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
 	}
@@ -46,7 +56,7 @@ func TestAllDayEvent(t *testing.T) {
 	equal(t, got, []string{
 		"BEGIN:VCALENDAR",
 		"VERSION:2.0",
-		"PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN",
+		"PRODID:-//hebcal.com/NONSGML Hebcal Calendar v1//EN",
 		"CALSCALE:GREGORIAN",
 		"METHOD:PUBLISH",
 		"X-LOTUS-CHARSET:UTF-8",
@@ -192,7 +202,7 @@ func TestCalendarOptions(t *testing.T) {
 		return nil
 	}
 	equal(t, preamble(&Calendar{}), []string{
-		"PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN",
+		"PRODID:-//hebcal.com/NONSGML Hebcal Calendar v1//EN",
 		"CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-LOTUS-CHARSET:UTF-8",
 		"REFRESH-INTERVAL;VALUE=DURATION:P7D", "X-PUBLISHED-TTL:P7D",
 		"X-WR-CALNAME:Untitled",
@@ -201,7 +211,7 @@ func TestCalendarOptions(t *testing.T) {
 		Title: "Family, friends; others", Description: "Hebcal Yahrzeit: A, B", Lang: "he",
 		PublishedTTL: "P1D", RelCalID: "hebcal-01ABC", Color: "#FF0000",
 	}), []string{
-		"PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//HE",
+		"PRODID:-//hebcal.com/NONSGML Hebcal Calendar v1//HE",
 		"CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-LOTUS-CHARSET:UTF-8",
 		"REFRESH-INTERVAL;VALUE=DURATION:P1D", "X-PUBLISHED-TTL:P1D",
 		`X-WR-CALNAME:Family\, friends\; others`,

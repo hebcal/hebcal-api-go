@@ -1669,8 +1669,8 @@ DTSTART/DTEND half and `formatTimedStartEnd()`. `Calendar.writePreamble` ←
 `formatYYYYMMDD()`. `Alarm` and the three `Alarm…` defaults ← `getAlarm()`.
 `DefaultUID` ← `getUid()`; `Murmur32Hex` ← `murmur32HexSync`
 (`@hebcal/murmurhash3`). `ZoneInfo.VTimezone` ← `getVtimezone()` (which
-slices fixed line numbers; this finds the component). `Version` ← the
-package version in the PRODID. **Not ported, on purpose** (see "pkg/icalendar
+slices fixed line numbers; this finds the component). The PRODID's version is
+`config.APIVersion` (the one deliberate `pkg/` → `internal/` import); tests mask it. **Not ported, on purpose** (see "pkg/icalendar
 is a serializer"): the rest of the `IcalEvent` constructor -- render/brief,
 emoji, `CATEGORY`, `appendHebrewToSubject`, `locationName` -- and
 `appendTrackingToUrl`, `eventsToIcalendar`'s `getCalendarTitle` default.
