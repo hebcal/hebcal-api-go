@@ -130,3 +130,33 @@ func TestTimedLabels(t *testing.T) {
 		}
 	}
 }
+
+// The two chametz deadlines of Erev Pesach are zmanim, each with its own
+// subcategory.
+func TestChametzCategories(t *testing.T) {
+	events, err := hebcal.HebrewCalendar(&hebcal.CalOptions{
+		Year: 2026, Month: 4, CandleLighting: true,
+		Location: zmanim.LookupCity("Chicago"),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]string{
+		"Finish eating chametz": "achilasChametz",
+		"Biur Chametz":          "biurChametz",
+	}
+	seen := 0
+	for _, ev := range events {
+		sub, ok := want[ev.Desc()]
+		if !ok {
+			continue
+		}
+		seen++
+		if cat, subcat := categoriesOf(ev, descOf(ev), ev.GetFlags()); cat != "zmanim" || subcat != sub {
+			t.Errorf("%s: category %q/%q, want zmanim/%s", ev.Desc(), cat, subcat, sub)
+		}
+	}
+	if seen != 2 {
+		t.Errorf("found %d chametz events, want 2", seen)
+	}
+}

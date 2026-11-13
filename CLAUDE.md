@@ -282,11 +282,6 @@ once did** -- `fmt.Sprintf("%s", ev.Desc)` and `x.LinkedEvent != nil` are both
 legal Go and both wrong -- so after a hebcal-go upgrade, grep for these names
 without their parentheses rather than trusting the build.
 
-`/shabbat` files "Finish eating chametz" under `holiday`/`major`, not
-`zmanim`: `categoriesOf` has never had a case for it (the description it once
-tested for, "Sof Zman Achilat Chametz", is not one hebcal-go emits). That is
-kept as it was, deliberately untouched by the switch to kinds.
-
 ### The legacy /v2/ URL is a query string, not a protobuf
 
 `/v2/h/<base64>/<name>.pdf` is the download URL hebcal.com emitted before the

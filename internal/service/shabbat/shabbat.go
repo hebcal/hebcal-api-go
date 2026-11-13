@@ -624,8 +624,7 @@ func holidayShortURL(he event.HolidayEvent, il bool) string {
 // categoriesOf returns [category, subcat] for an event, applying the special
 // cases the classic API layers on top of the flag-to-category table.
 func categoriesOf(ev event.CalEvent, desc string, flags event.HolidayFlags) (string, string) {
-	// timed events are keyed by their kind. "Finish eating chametz" has no
-	// case of its own and is categorized below, as a holiday.
+	// timed events are keyed by their kind
 	if kind, ok := hebcal.TimedKindOf(ev); ok {
 		switch kind {
 		case hebcal.CandleLighting:
@@ -634,6 +633,8 @@ func categoriesOf(ev event.CalEvent, desc string, flags event.HolidayFlags) (str
 			return "havdalah", ""
 		case hebcal.FastBegins, hebcal.FastEnds:
 			return "zmanim", "fast"
+		case hebcal.FinishChametz:
+			return "zmanim", "achilasChametz"
 		case hebcal.BiurChametz:
 			return "zmanim", "biurChametz"
 		}
