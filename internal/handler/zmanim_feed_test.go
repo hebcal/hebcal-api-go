@@ -36,7 +36,7 @@ var prodidVersion = regexp.MustCompile(`Calendar v[^/\r]*//`)
 func requireLines(t *testing.T, body string, lines ...string) {
 	t.Helper()
 	// The PRODID names the build, which varies; compare it without the version.
-	body = prodidVersion.ReplaceAllString(unfold(body), "Calendar v//")
+	body = prodidVersion.ReplaceAllString(unfold(body), "Calendar v2//")
 	for _, l := range lines {
 		if !strings.Contains(body, "\r\n"+l+"\r\n") {
 			t.Errorf("missing line %q", l)
@@ -60,7 +60,7 @@ func TestZmanimFeed(t *testing.T) {
 		t.Errorf("headers %v", h)
 	}
 	requireLines(t, body,
-		"PRODID:-//hebcal.com/NONSGML Hebcal Calendar v//EN",
+		"PRODID:-//hebcal.com/NONSGML Hebcal Calendar v2//EN",
 		"X-WR-CALNAME:Hebcal Zmanim Beverly Hills",
 		"X-WR-TIMEZONE;VALUE=TEXT:America/Los_Angeles",
 		// The first event: Chatzot HaLailah on the eve of yesterday, a
@@ -100,7 +100,7 @@ func TestZmanimFeedKiddushLevanaMovedToNight(t *testing.T) {
 func TestZmanimFeedHebrew(t *testing.T) {
 	_, body := getFeed(t, "/zmanim?geonameid=281184&lg=he")
 	requireLines(t, body,
-		"PRODID:-//hebcal.com/NONSGML Hebcal Calendar v//HE",
+		"PRODID:-//hebcal.com/NONSGML Hebcal Calendar v2//HE",
 		// hebcal-web's spelling, which differs from @hebcal/core's
 		"SUMMARY:חֲצוֹת הַלַיְלָה",
 		"SUMMARY:מִשֶּׁיַּכִּיר מַחמִיר",

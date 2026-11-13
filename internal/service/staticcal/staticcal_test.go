@@ -144,9 +144,9 @@ func TestGolden(t *testing.T) {
 			}
 			want := readGzip(t, "testdata/golden/"+name+".ics.gz")
 			// The PRODID names the build, which varies.
-			prodid := regexp.MustCompile(`(PRODID:-//hebcal\.com/NONSGML Hebcal Calendar v)[^/\r\n]*(//)`)
-			got := prodid.ReplaceAll(files.ICS, []byte("$1$2"))
-			want = prodid.ReplaceAll(want, []byte("$1$2"))
+			prodid := regexp.MustCompile(`(PRODID:-//hebcal\.com/NONSGML Hebcal Calendar )v[^/\r\n]*(//)`)
+			got := prodid.ReplaceAll(files.ICS, []byte("${1}v2$2"))
+			want = prodid.ReplaceAll(want, []byte("${1}v2$2"))
 			if !bytes.Equal(got, want) {
 				t.Errorf(".ics differs from the golden:\n%s", firstDiff(string(want), string(got)))
 			}

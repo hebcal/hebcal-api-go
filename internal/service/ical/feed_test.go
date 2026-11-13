@@ -102,10 +102,10 @@ func render(t *testing.T, s *Service, rawURL string) *Result {
 var minutes = regexp.MustCompile(`(?m)^((?:DTSTART|DTEND);TZID=[^:]*:\d{8}T\d{2})\d{2}00\r$|^(TRIGGER;VALUE=DATE-TIME:\d{8}T\d{2})\d{2}\d{2}Z\r$`)
 
 // prodidVersion matches the build version in the PRODID, which varies.
-var prodidVersion = regexp.MustCompile(`(PRODID:-//hebcal\.com/NONSGML Hebcal Calendar v)[^/\r\n]*(//)`)
+var prodidVersion = regexp.MustCompile(`(PRODID:-//hebcal\.com/NONSGML Hebcal Calendar )v[^/\r\n]*(//)`)
 
 func maskMinutes(b []byte) []byte {
-	b = prodidVersion.ReplaceAll(b, []byte("$1$2"))
+	b = prodidVersion.ReplaceAll(b, []byte("${1}v2$2"))
 	return minutes.ReplaceAll(b, []byte("${1}${2}XX\r"))
 }
 
