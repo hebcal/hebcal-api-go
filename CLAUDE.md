@@ -336,10 +336,12 @@ serves a `.csv` as the Yahrzeit CSV export.
 `/v2/` base64 and the `/v4/` protobuf, and crawlers still ask for it. It
 carries the same query string a `/v2/` URL hides in base64, so `cgi.go` decodes
 a CGI request by building the same `v2Query` and running it through
-`DecodeV2`, after two preprocessing steps `/v2/` has no counterpart for
-(`applyCGILegacyParams`): the very old `nh=on` (which expands to `maj`/`min`/
-`mod`/`mf`/`ss`, every negative option but Rosh Chodesh, and overrides an
-explicit one beside it), and lowercase `m=on` as the old spelling of `M=on`.
+`DecodeV2`, after the rewrites every query-string form gets, `/v2/h/`
+included (`applyLegacyParams`, `makeHebcalOptions`' own): the very old
+`nh=on` (which expands to `maj`/`min`/`mod`/`mf`/`ss`, every negative option
+but Rosh Chodesh, and overrides an explicit one beside it), and lowercase
+`m=on` as the old spelling of `M=on`. `/export/` is the same form as
+`/hebcal/index.cgi/`.
 `tag` and `set` are ancient and ignored. From `download.Decode` onward a CGI
 request *is* a `/v4/` request, the same collapse `/v2/` makes.
 
@@ -1110,8 +1112,7 @@ identical):
    each day when `d=on`/`D=on`; here the request is the same feed as one with
    `mm=0`, so those events cannot appear, even from a `/v4/` URL that has the
    setting baked into its protobuf.
-5. `nh=on` is understood only in the classic `/hebcal/index.cgi/` form, and
-   `v=now` is served here though hebcal-web answers it 404.
+5. `v=now` is served here though hebcal-web answers it 404.
 6. Yom Kippur Katan's memo names the month with a typographic apostrophe
    ("Rosh Chodesh Sh’vat"), as hebcal-go 0.27.1 intends; hebcal-web writes a
    straight one. It applies to the CSV and the static `/ical/` feeds too, whose
@@ -1610,7 +1611,7 @@ fast keys in `geoKeysToRemove("none")` ← `fastTimeKeys` in `getGeoKeysToRemove
 equivalence `v2.go` was measured to hold), so `ParseCGIPath` builds the same
 `v2Query` and runs `DecodeV2`. `normalizeCGIQuery` ← the CGI half of
 `fixup2`'s querystring rewriting (`;` separator, double-encoded `%3B`,
-Latin-1 `unescape()`). `applyCGILegacyParams` ← `makeHebcalOptions`
+Latin-1 `unescape()`). `applyLegacyParams` (also run by `ParseV2Path`) ← `makeHebcalOptions`
 pre-read rewrites (`nh=on` expansion, lowercase `m=on`, `v=now`).
 `unescapeLatin1` ← JavaScript `unescape()`.
 

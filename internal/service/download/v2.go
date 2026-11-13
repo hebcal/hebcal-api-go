@@ -205,6 +205,7 @@ func ParseV2Path(path, ext string) (v2Query, error) {
 	for key, vals := range values {
 		q[key] = vals[len(vals)-1]
 	}
+	applyLegacyParams(q)
 	return q, nil
 }
 

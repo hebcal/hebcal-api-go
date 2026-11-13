@@ -77,9 +77,17 @@ func TestCGIMixedEncodingSpace(t *testing.T) {
 
 // nh=on is the very old "all holiday categories" switch: it expands to the five
 // negative options other than Rosh Chodesh, and does so unconditionally, so it
-// overrides an explicit maj/min/mod/mf/ss beside it.
+// overrides an explicit maj/min/mod/mf/ss beside it. The CGI and /export/ form
+// and the /v2/h/ base64 form all read it.
 func TestCGINhExpands(t *testing.T) {
-	msg := decodeCGI(t, "x.pdf", "v=1&year=2026&nh=on&maj=off")
+	const qs = "v=1&year=2026&nh=on&maj=off"
+	for form, msg := range map[string]*pb.Download{"cgi": decodeCGI(t, "x.pdf", qs), "v2": decodeV2(t, qs)} {
+		t.Run(form, func(t *testing.T) { testNhExpanded(t, msg) })
+	}
+}
+
+func testNhExpanded(t *testing.T, msg *pb.Download) {
+	t.Helper()
 	for _, c := range []struct {
 		name string
 		on   bool
