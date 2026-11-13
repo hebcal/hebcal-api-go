@@ -561,7 +561,7 @@ func TestXMLDiasporaIsrael(t *testing.T) {
 
 // TestXMLRoshChodeshLink guards the Rosh Chodesh slugs, which do not simply
 // fall out of the description: the website spells Tammuz "tamuz", and files
-// each Adar of a leap year under its own page. hebcal-go's event.URL() knows
+// each Adar of a leap year under its own page. hebcal-go's URL() knows
 // both, where building the slug from the description alone produced a 404.
 func TestXMLRoshChodeshLink(t *testing.T) {
 	_, srv := testServer(t)

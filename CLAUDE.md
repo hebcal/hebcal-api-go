@@ -247,11 +247,45 @@ move up into the learning slot, before the evening holiday, and into their
 places among the series hebcal-go generated (see "Daily-learning order").
 
 **Latest Kiddush Levana is a timed event too, but not a `hebcal.TimedEvent`.**
-`hebcal.KiddushLevanaEvent` embeds one, so a plain `ev.(hebcal.TimedEvent)`
-misses it; go through `hebcal.AsTimedEvent`. Without that, `timeStringOf` returns
-nothing for it, and the row draws hebcal-go's `Render()` text -- "Latest Kiddush
-Levana: 9:44", time baked into the subject with no a/p suffix -- where every
-other timed row draws a bold "9:44p".
+`hebcal.KiddushLevanaEvent` is a type of its own, so a plain
+`ev.(hebcal.TimedEvent)` misses it. Find timed events by asserting the
+interface, `ev.(event.Timed)`, and read the time with `Time()`; nothing in
+this repository should assert the concrete type. Without that, `timeStringOf`
+returns nothing for it, and the row draws hebcal-go's `Render()` text --
+"Latest Kiddush Levana: 9:44", time baked into the subject with no a/p suffix
+-- where every other timed row draws a bold "9:44p".
+
+### How this repository reads a hebcal-go event
+
+Every `event.CalEvent` has `Desc()` (the untranslated description, which the
+UIDs hash) and `URL()` (`""` for no page), so there is no adapter chain in
+front of them: `download.UntranslatedDesc` is `ev.Desc()` with the one-m
+Tamuz, and the Desc/URL of `model.CalEv`'s adapters are the wrapped event's.
+The rest is by interface or kind, never by concrete type or by comparing
+description strings:
+
+- a clock time: `ev.(event.Timed)`, then `Time()`;
+- the event another belongs to (the holiday of a candle-lighting, of a fast's
+  end, of Yizkor; the parsha of erev Shabbat): `ev.(event.Linked)`, then
+  `LinkedEvent()`, which can be nil -- `download.LinkedEvent` wraps both steps;
+- which timed event it is: `hebcal.TimedKindOf(ev)` and the `hebcal.TimedKind`
+  constants (`CandleLighting`, `Havdalah`, `ChanukahCandles`, `FastBegins`,
+  `FastEnds`, `FinishChametz`, `BiurChametz`, `KiddushLevana`). One wrinkle:
+  with holidays switched off, the candle-lighting on a Friday of Chanukah is a
+  `CandleLighting` whose flags carry `CHANUKAH_CANDLES`;
+- clock formats: `event.ClockFormat` (`ClockAuto`, `Clock12`, `Clock24`), from
+  `download.Params.Clock()` or `/shabbat`'s `queryClock`.
+
+A holiday's fields are methods too (`he.Desc()`, `he.GetFlags()`); one is
+built with `event.NewHolidayEvent`. **A method value compiles where a field
+once did** -- `fmt.Sprintf("%s", ev.Desc)` and `x.LinkedEvent != nil` are both
+legal Go and both wrong -- so after a hebcal-go upgrade, grep for these names
+without their parentheses rather than trusting the build.
+
+`/shabbat` files "Finish eating chametz" under `holiday`/`major`, not
+`zmanim`: `categoriesOf` has never had a case for it (the description it once
+tested for, "Sof Zman Achilat Chametz", is not one hebcal-go emits). That is
+kept as it was, deliberately untouched by the switch to kinds.
 
 ### The legacy /v2/ URL is a query string, not a protobuf
 
@@ -919,7 +953,7 @@ pins 14 of them (gzipped goldens and captured readings-svc answers in
 Things that are not obvious:
 
 - **UIDs hash `@hebcal/core`'s `getDesc()`**, which is hebcal-go's
-  `event.Desc` with one-m Tamuz ("Pesach II", "Omer 7", "Yizkor", "Parashat
+  `Desc()` with one-m Tamuz ("Pesach II", "Omer 7", "Yizkor", "Parashat
   Re'eh" -- never a rendered title, whose apostrophes are typographic), except
   as `ical.uidDesc` spells out: a Hebrew date as "30 Av 5786"
   (`model.HDateString`); a learning reading as
@@ -1250,8 +1284,8 @@ port is 1:1 — `McpServer`/`registerTool` → `mcp.NewServer` + generic
 **Almost everything is computed in-process** with the same libraries the JSON
 APIs use — `hdate` (conversions, `GetYahrzeit`, leap year), `internal/model`
 (`GematriyaDate`, `HDateString`, `HDMonthNameEn`), `hebcal-go` `sedra` /
-`event` / `hebcal` (parsha, holidays-for-year, candle-lighting + `TimedEvent`
-`LinkedEvent`), and `learning/dafyomi` (Daf Yomi via `dafyomi.New` +
+`event` / `hebcal` (parsha, holidays-for-year, candle-lighting via `event.Timed` and
+`event.Linked`), and `learning/dafyomi` (Daf Yomi via `dafyomi.New` +
 `NewDafYomiEvent`, whose `Render("en")` is already the brief form the Node
 `renderBrief` produced). hebcal-go's `dafYomiEvent.Render` has **no** "Daf
 Yomi:" prefix, unlike @hebcal/core's `render()`.
@@ -1515,9 +1549,9 @@ punctuation in it:
 runs and trims the ends (matters for "St. Louis", "Washington, D.C" and the
 `40°42′N 74°0′W` name).
 
-github.com/hebcal/learning gives each schedule event a `URL()` method, so it
-satisfies hebcal-go's `event.URLer` interface and the `event.URL(ev)`
-call in `events.go` picks it up. Two schedules carry links on only some rows,
+github.com/hebcal/learning gives each schedule event a `URL()` method, as
+hebcal-go's `event.CalEvent` requires, and the `ev.URL()` call in `events.go`
+picks it up. Two schedules carry links on only some rows,
 deliberately: **Schottenstein Yerushalmi** has no Sefaria mapping at all, and
 **Rambam 3-chapters** has no link on days whose three chapters do not collapse
 to a single reading (single-reading days keep it). `learning_test.go` asserts
@@ -1811,7 +1845,7 @@ whose `Content-Disposition` ← Koa's `ctx.attachment()`). `writeCalendarError` 
 | `shabbat.go` default New York | hebcal-web default when no location given |
 | `shabbat.go` locale validation | `makeHebcalOptions`'s `Locale.useLocale` throw; `/shabbat`-only |
 | `shabbat.go` yto-after-empty-check | **deliberate divergence** — production filters before its check and 400s |
-| `shabbat.go` `queryHour12` | `options.hour12 = !off(query.h12)` |
+| `shabbat.go` `queryClock` | `options.hour12 = !off(query.h12)` |
 | `shabbat.go` `writeShabbatBody` JSONP | `jsonpBody()` in `src/common.js` |
 | `zmanim.go` `checkMelacha` | `checkMelacha()` in `zmanim.js` |
 | `shorturl.go` (whole file) | `src/shortUrlRedir.js`; `utmSourceFromRef` ← `utmSourceFromRef()`/`isTrustedHostname()` (`src/common.js`); the query string is a plain `url.Values`, so the `Location` sorts its parameters (`URLSearchParams` keeps insertion order), escapes `*` rather than `~`, and repeats a duplicated key rather than comma-joining it -- **deliberate**: Varnish `std.querysort()`s and strips `utm_*` before the destination is fetched, so none of it is observable; `yyyymmdd` ← `dayjs(hd.greg()).format('YYYYMMDD')` (proleptic); `numParshiot` ← `@hebcal/core`'s 54-entry `parshiot`. The GET/HEAD-only 405 is a **deliberate divergence**: hebcal-web redirects any method |

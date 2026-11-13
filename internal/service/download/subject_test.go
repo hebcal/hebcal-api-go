@@ -10,7 +10,7 @@ import (
 // The Rosh Hashana year is whatever hebcal-go renders: a number, except in
 // Hebrew, which writes it in gematriya.
 func TestRenderSubjectRoshHashanaYear(t *testing.T) {
-	ev := event.HolidayEvent{Date: hdate.New(5787, hdate.Tishrei, 1), Desc: "Rosh Hashana 5787", Flags: event.CHAG}
+	ev := event.NewHolidayEvent(hdate.New(5787, hdate.Tishrei, 1), "Rosh Hashana 5787", event.CHAG, "")
 	for locale, want := range map[string]string{
 		"en": "Rosh Hashana 5787",
 		"he": "רֹאשׁ הַשָּׁנָה תשפ״ז",

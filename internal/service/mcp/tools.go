@@ -263,7 +263,7 @@ func (t *tools) dafYomi(_ context.Context, _ *mcpsdk.CallToolRequest, in dafYomi
 		"Daf Yomi (English): "+ev.Render("en"),
 		"Daf Yomi (Hebrew): "+ev.Render("he"),
 		"Hebrew date: "+model.HDateString(hd),
-		"Read the text of the Daf at: "+event.URL(ev),
+		"Read the text of the Daf at: "+ev.URL(),
 	), nil, nil
 }
 
@@ -305,16 +305,16 @@ func (t *tools) shabbatTimes(_ context.Context, _ *mcpsdk.CallToolRequest, in sh
 		"| ---- | ---- | ---- | ---- |",
 	}
 	for _, ev := range events {
-		te, ok := ev.(hebcal.TimedEvent)
-		if !ok || (te.Desc != "Candle lighting" && te.Desc != "Havdalah") {
+		te, ok := ev.(event.Timed)
+		if kind, _ := hebcal.TimedKindOf(ev); !ok || (kind != hebcal.CandleLighting && kind != hebcal.Havdalah) {
 			continue
 		}
 		associated := ""
-		if te.LinkedEvent != nil {
-			associated = te.LinkedEvent.Render("en")
+		if linked, ok := ev.(event.Linked); ok && linked.LinkedEvent() != nil {
+			associated = linked.LinkedEvent().Render("en")
 		}
 		out = append(out, fmt.Sprintf("| %s | %s | %s | %s |",
-			isoGreg(te.GetDate()), te.EventTime.Format("15:04"), te.Desc, associated))
+			isoGreg(te.GetDate()), te.Time().Format("15:04"), te.Desc(), associated))
 	}
 	return textResult(strings.Join(out, "\n")), nil, nil
 }

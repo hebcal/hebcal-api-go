@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/hebcal/hebcal-go/dailylearning"
-	"github.com/hebcal/hebcal-go/event"
 	"github.com/hebcal/hebcal-go/hebcal"
 	_ "github.com/hebcal/learning"
 
@@ -44,7 +43,7 @@ func TestEachLearningScheduleGeneratesEvents(t *testing.T) {
 				t.Errorf("%q produced no events in 2026", s.name)
 			}
 			// Since github.com/hebcal/learning v0.5.0 the schedule events
-			// implement event.URLer, so the in-process rows carry the same
+			// have a URL, so the in-process rows carry the same
 			// Sefaria (or dafyomi.org) links production draws over them. Before
 			// v0.5.0 none of these thirteen series had URLs.
 			//
@@ -55,7 +54,7 @@ func TestEachLearningScheduleGeneratesEvents(t *testing.T) {
 			// the invariant is "at least one URL", except for schottenstein.
 			var withURL int
 			for _, ev := range evs {
-				if event.URL(ev) != "" {
+				if ev.URL() != "" {
 					withURL++
 				}
 			}

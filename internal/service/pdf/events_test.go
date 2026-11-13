@@ -312,9 +312,10 @@ func TestGenerateNumYearsDoesNotDuplicateTishrei(t *testing.T) {
 
 // Latest Kiddush Levana is a timed event: its clock time is drawn separately,
 // with the a/p suffix in a 12-hour country and 24-hour elsewhere, and is not
-// left in the subject. KiddushLevanaEvent embeds TimedEvent rather than being
-// one, which once left "Latest Kiddush Levana: 9:44" in the subject with no
-// suffix and no separate time.
+// left in the subject. It is a type of its own, not a hebcal.TimedEvent, so
+// it is found by asserting event.Timed; asserting the concrete type once left
+// "Latest Kiddush Levana: 9:44" in the subject with no suffix and no separate
+// time.
 func TestKiddushLevanaIsTimed(t *testing.T) {
 	tests := []struct {
 		city, locale          string

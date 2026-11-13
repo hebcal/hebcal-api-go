@@ -64,9 +64,9 @@ type Options struct {
 	Place string
 	// ShortName is the location's display name, the LOCATION of a timed event.
 	ShortName string
-	// Hour12 forces 12-hour (true) or 24-hour (false) clock times in
-	// descriptions; nil follows the location's country.
-	Hour12 *bool
+	// Clock forces 12-hour or 24-hour clock times in descriptions;
+	// event.ClockAuto follows the location's country.
+	Clock event.ClockFormat
 	// UseElevation makes the Omer's evening alarm account for the location's
 	// elevation.
 	UseElevation bool
@@ -146,7 +146,7 @@ var seriesNames = map[string]string{
 func Event(ev event.CalEvent, o *Options) icalendar.Event {
 	flags := ev.GetFlags()
 	hd := ev.GetDate()
-	timed, isTimed := hebcal.AsTimedEvent(ev)
+	timed, isTimed := ev.(event.Timed)
 	isTimed = isTimed && o.Location != nil
 	subj := download.RenderSubject(ev, o.Locale, download.ShouldRenderBrief(ev, flags, isTimed))
 	if o.Emoji {
@@ -175,11 +175,11 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 	if isTimed {
 		place = o.Place
 		e.Timed = true
-		e.Hour, e.Minute, _ = timed.EventTime.Clock()
+		e.Hour, e.Minute, _ = timed.Time().Clock()
 		e.TZID = o.Location.TimeZoneId
 		e.Geo = &icalendar.Geo{Latitude: o.Latitude, Longitude: o.Longitude}
 		e.Location = o.ShortName
-		if strings.HasPrefix(event.Desc(ev), "Candle lighting") {
+		if kind, _ := hebcal.TimedKindOf(ev); kind == hebcal.CandleLighting {
 			e.Alarm = icalendar.AlarmCandleLighting
 		}
 	}
@@ -215,7 +215,7 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 // ordinary UID and no LOCATION; failing that too (a polar summer), the generic
 // reminder stays.
 func (o *Options) omerAlarm(e *icalendar.Event, oe omer.OmerEvent) {
-	eve := oe.Date.Prev()
+	eve := oe.GetDate().Prev()
 	y, m, d := eve.Greg()
 	day := time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
 	z := zmanim.New(o.Location, day)
@@ -254,7 +254,7 @@ func (o *Options) omerAlarm(e *icalendar.Event, oe omer.OmerEvent) {
 // tracked link.
 func Memo(ev event.CalEvent, o *Options) string {
 	flags := ev.GetFlags()
-	if d := event.Desc(ev); d == "Havdalah" || d == "Candle lighting" {
+	if kind, _ := hebcal.TimedKindOf(ev); kind == hebcal.Havdalah || kind == hebcal.CandleLighting {
 		// Candle lighting names the coming portion, and that is all it says.
 		return ownMemo(ev, flags, o)
 	}
@@ -289,7 +289,7 @@ func Memo(ev event.CalEvent, o *Options) string {
 		return memo
 	}
 	hd := ev.GetDate()
-	return appendParagraph(memo, o.link(event.URL(ev), hd.Year()))
+	return appendParagraph(memo, o.link(ev.URL(), hd.Year()))
 }
 
 // link tags an event's page the way every feed link is tagged. A page of
@@ -313,7 +313,7 @@ func ownMemo(ev event.CalEvent, flags event.HolidayFlags, o *Options) string {
 		if o.Location != nil {
 			cc = o.Location.CountryCode
 		}
-		return shabbat.MevarchimMoladMemo(ev.GetDate(), strings.ToLower(o.Locale), cc, o.IL, o.Hour12)
+		return shabbat.MevarchimMoladMemo(ev.GetDate(), strings.ToLower(o.Locale), cc, o.IL, o.Clock)
 	}
 	return model.FixMonthSpelling(event.Memo(ev, o.Locale))
 }
@@ -336,7 +336,7 @@ func hasReading(ev event.CalEvent) bool {
 	if ev.GetFlags().HasAny(noReading) {
 		return false
 	}
-	_, timed := hebcal.AsTimedEvent(ev)
+	_, timed := ev.(event.Timed)
 	return !timed
 }
 
@@ -358,7 +358,7 @@ func uidDesc(ev event.CalEvent) string {
 	}
 	// "Pesach II", "Omer 7", "Yizkor", "Parashat Re'eh" -- never the
 	// rendered title, whose apostrophes are typographic.
-	return model.FixMonthSpelling(event.Desc(ev))
+	return model.FixMonthSpelling(ev.Desc())
 }
 
 func appendParagraph(memo, s string) string {

@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/hebcal/hebcal-go/event"
-	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/locales"
 	"golang.org/x/text/unicode/norm"
 
@@ -87,7 +86,7 @@ func ParshaSummary(ev event.CalEvent, locale string) string {
 	if !ev.GetFlags().Has(event.PARSHA_HASHAVUA) {
 		return ""
 	}
-	name := strings.TrimPrefix(event.Desc(ev), "Parashat ")
+	name := strings.TrimPrefix(ev.Desc(), "Parashat ")
 	if IsHebrewLocale(locale) {
 		if s := parshaSummary(name, "he"); s != "" {
 			return s
@@ -125,25 +124,13 @@ func Basename(ev event.CalEvent) string {
 // UntranslatedDesc returns the event's English description, with the
 // website's one-m spelling of Tamuz.
 func UntranslatedDesc(ev event.CalEvent) string {
-	if he, ok := ev.(event.HolidayEvent); ok {
-		return model.FixMonthSpelling(he.Desc)
-	}
-	if te, ok := hebcal.AsTimedEvent(ev); ok {
-		return te.Desc
-	}
-	if d, ok := ev.(event.Descer); ok {
-		return model.FixMonthSpelling(d.GetDesc())
-	}
-	return model.FixMonthSpelling(ev.Render("en"))
+	return model.FixMonthSpelling(ev.Desc())
 }
 
 // LinkedEvent returns the event a timed event or Yizkor belongs to, or nil.
 func LinkedEvent(ev event.CalEvent) event.CalEvent {
-	switch e := ev.(type) {
-	case hebcal.TimedEvent:
-		return e.LinkedEvent
-	case hebcal.YizkorEvent:
-		return e.LinkedEvent
+	if linked, ok := ev.(event.Linked); ok {
+		return linked.LinkedEvent()
 	}
 	return nil
 }

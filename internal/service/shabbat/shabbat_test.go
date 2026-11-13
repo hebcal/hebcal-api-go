@@ -1,10 +1,16 @@
 package shabbat
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/hebcal/hdate"
+	"github.com/hebcal/hebcal-go/event"
+	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/hebcal-go/molad"
+	"github.com/hebcal/hebcal-go/zmanim"
+
+	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 )
 
 // TestMoladInstant checks the conjunction timestamp against captured reference
@@ -41,6 +47,86 @@ func TestNormMonth(t *testing.T) {
 	for in, want := range cases {
 		if got := normMonth(in); got != want {
 			t.Errorf("normMonth(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
+// Every event with a clock time is treated as timed, whatever its concrete
+// type: Latest Kiddush Levana is not a hebcal.TimedEvent, and a type
+// assertion on that would report it as an all-day event with the time left in
+// its title.
+func TestKiddushLevanaItemIsTimed(t *testing.T) {
+	events, err := hebcal.HebrewCalendar(&hebcal.CalOptions{
+		Year: 2026, Month: 10, CandleLighting: true, KiddushLevanaMaharil: true,
+		Location: zmanim.LookupCity("New York"),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	loc := &geodb.Location{CC: "US"}
+	found := false
+	for _, ev := range events {
+		if !ev.GetFlags().Has(event.KIDDUSH_LEVANA) {
+			continue
+		}
+		found = true
+		if got := renderBriefLike(ev, "en"); got != "Latest Kiddush Levana" {
+			t.Errorf("brief title = %q", got)
+		}
+		obj := item(ev, loc, false, "en", "", true, event.ClockAuto, nil)
+		got := map[string]interface{}{}
+		for _, kv := range obj {
+			got[kv.Key] = kv.Val
+		}
+		if got["title"] != "Latest Kiddush Levana" {
+			t.Errorf("title = %v", got["title"])
+		}
+		if got["date"] != "2026-10-25T21:44:00-04:00" {
+			t.Errorf("date = %v, want the event's time", got["date"])
+		}
+		for _, key := range []string{"hdate", "heDateParts", "leyning"} {
+			if _, ok := got[key]; ok {
+				t.Errorf("a timed item has no %q", key)
+			}
+		}
+	}
+	if !found {
+		t.Fatal("no Latest Kiddush Levana event in October 2026")
+	}
+}
+
+// A timed event's label is hebcal-go's brief rendering, which keeps the
+// "(50 min)" of a havdalah a fixed number of minutes after sunset.
+func TestTimedLabels(t *testing.T) {
+	events, err := hebcal.HebrewCalendar(&hebcal.CalOptions{
+		Year: 2026, Month: 12, CandleLighting: true, HavdalahMins: 50,
+		Location: zmanim.LookupCity("Chicago"),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]bool{"Candle lighting": false, "Havdalah (50 min)": false, "Chanukah: 3 Candles": false, "Fast begins": false}
+	for _, ev := range events {
+		if _, ok := ev.(event.Timed); !ok {
+			continue
+		}
+		label := renderBriefLike(ev, "en")
+		if _, ok := want[label]; ok {
+			want[label] = true
+		}
+		// the label is the full rendering without its time
+		full := ev.Render("en")
+		if i := strings.LastIndex(full, ": "); i < 0 || full[:i] != label {
+			t.Errorf("label %q is not %q without its time", label, full)
+		}
+		kind, _ := hebcal.TimedKindOf(ev)
+		if got, want := isCandleOrHavdalah(ev), kind == hebcal.CandleLighting || kind == hebcal.Havdalah; got != want {
+			t.Errorf("%s: isCandleOrHavdalah = %v", label, got)
+		}
+	}
+	for label, seen := range want {
+		if !seen {
+			t.Errorf("no timed event labelled %q", label)
 		}
 	}
 }

@@ -91,7 +91,7 @@ func Generate(p *download.Params) ([]Event, error) {
 			Subject: subject,
 			Flags:   flags,
 			TimeStr: timeStr,
-			URL:     event.URL(ev),
+			URL:     ev.URL(),
 			AltDate: flags.Has(event.HEBREW_DATE),
 			rank:    hebcal.TimeOfDay(ev),
 			series:  download.EventLearningOrder(ev),
@@ -188,14 +188,14 @@ func use12Hour(p *download.Params) bool {
 
 // timeStringOf formats the clock time for a timed event in the compact form the
 // PDF uses: "8:51p" in 12-hour countries, "20:51" in 24-hour ones. The time
-// comes from TimedEvent.EventTime rather than from parsing hebcal-go's
+// comes from the event's Time rather than from parsing hebcal-go's
 // "Havdalah: 8:51" description back apart.
 func timeStringOf(ev event.CalEvent, p *download.Params) string {
-	te, ok := hebcal.AsTimedEvent(ev)
+	te, ok := ev.(event.Timed)
 	if !ok {
 		return ""
 	}
-	t := te.EventTime
+	t := te.Time()
 	if t.IsZero() {
 		return ""
 	}

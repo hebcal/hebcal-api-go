@@ -202,7 +202,7 @@ var category = map[string]string{
 // eventToCSV renders one event as the fields of a CSV row.
 func eventToCSV(ev event.CalEvent, p *download.Params) []string {
 	flags := ev.GetFlags()
-	timed, isTimed := hebcal.AsTimedEvent(ev)
+	timed, isTimed := ev.(event.Timed)
 	subj := download.RenderSubject(ev, p.Locale, download.ShouldRenderBrief(ev, flags, isTimed))
 	hebrew := ""
 	if p.AppendHebrew {
@@ -212,7 +212,7 @@ func eventToCSV(ev event.CalEvent, p *download.Params) []string {
 	timeStr := ""
 	loc := "Jewish Holidays"
 	if isTimed {
-		timeStr = formatTime(timed.EventTime, p)
+		timeStr = formatTime(timed.Time(), p)
 		if p.LocationShortName != "" {
 			loc = p.LocationShortName
 		}
@@ -272,10 +272,10 @@ func formatRow(hd hdate.HDate, subj, hebrew, timeStr string, timed bool, memo st
 }
 
 // formatTime renders a clock time with a " PM" / " AM" suffix in a 12-hour
-// country ("6:56 PM") and as-is elsewhere ("18:56"). The request's hour12
+// country ("6:56 PM") and as-is elsewhere ("18:56"). The request's clock
 // choice overrides the country.
 func formatTime(t time.Time, p *download.Params) string {
-	return event.ReformatTimeStr(t.Format("15:04"), " PM", countryCode(p), hour12(p))
+	return event.ReformatTimeStr(t.Format("15:04"), " PM", countryCode(p), p.Clock())
 }
 
 // countryCode is the location's country, or Israel or the United States by
@@ -288,21 +288,6 @@ func countryCode(p *download.Params) string {
 		return "IL"
 	}
 	return "US"
-}
-
-// hour12 turns the protobuf's 0/1/2 into the override ReformatTimeStr takes:
-// nil follows the country, true forces 12-hour, false 24-hour.
-func hour12(p *download.Params) *bool {
-	var b bool
-	switch p.Hour12 {
-	case 1:
-		b = true
-	case 2:
-		b = false
-	default:
-		return nil
-	}
-	return &b
 }
 
 // memo is the Description column.
@@ -343,7 +328,7 @@ func ownMemo(ev event.CalEvent, flags event.HolidayFlags, p *download.Params) st
 		if p.Opts.Location != nil {
 			cc = p.Opts.Location.CountryCode
 		}
-		return shabbat.MevarchimMoladMemo(ev.GetDate(), strings.ToLower(p.Locale), cc, p.Opts.IL, hour12(p))
+		return shabbat.MevarchimMoladMemo(ev.GetDate(), strings.ToLower(p.Locale), cc, p.Opts.IL, p.Clock())
 	case isKiddushLevana(ev):
 		return ""
 	}
@@ -354,13 +339,13 @@ func ownMemo(ev event.CalEvent, flags event.HolidayFlags, p *download.Params) st
 }
 
 func isTimedEv(ev event.CalEvent) bool {
-	_, ok := hebcal.AsTimedEvent(ev)
+	_, ok := ev.(event.Timed)
 	return ok
 }
 
 func isKiddushLevana(ev event.CalEvent) bool {
-	_, ok := ev.(hebcal.KiddushLevanaEvent)
-	return ok
+	kind, _ := hebcal.TimedKindOf(ev)
+	return kind == hebcal.KiddushLevana
 }
 
 // parshaMemo names what else is read on a Shabbat with a weekly portion: the
@@ -371,7 +356,7 @@ func isKiddushLevana(ev event.CalEvent) bool {
 func parshaMemo(hd hdate.HDate, p *download.Params) string {
 	var names []string
 	for _, h := range hebcal.GetHolidaysOnDate(hd, p.Opts.IL) {
-		if h.Flags.HasAny(event.SPECIAL_SHABBAT | event.ROSH_CHODESH) {
+		if h.GetFlags().HasAny(event.SPECIAL_SHABBAT | event.ROSH_CHODESH) {
 			names = append(names, download.RenderSubject(h, p.Locale, false))
 		}
 	}

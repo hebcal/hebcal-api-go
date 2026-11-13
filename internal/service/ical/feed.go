@@ -232,14 +232,7 @@ func (s *Service) options(r *Request, events []event.CalEvent, items []readings.
 		UseElevation:   p.Opts.UseElevation,
 		CandleLighting: p.Opts.CandleLighting,
 	}
-	switch p.Hour12 {
-	case 1:
-		t := true
-		o.Hour12 = &t
-	case 2:
-		f := false
-		o.Hour12 = &f
-	}
+	o.Clock = p.Clock()
 	if loc := p.Opts.Location; loc != nil {
 		o.Location = loc
 		o.Latitude, o.Longitude = loc.Latitude, loc.Longitude

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hebcal/hebcal-go/event"
 	"github.com/hebcal/hebcal-go/hebcal"
 
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
@@ -157,19 +158,21 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 	}
 
 	hdp := q.Get("hdp") == "1"
-	body := shabbat.Response(events, loc, il, locale, lg, hdp, queryHour12(q), leyningByDate)
+	body := shabbat.Response(events, loc, il, locale, lg, hdp, queryClock(q), leyningByDate)
 	writeShabbatBody(w, q, body)
 }
 
-// queryHour12 reads the h12 override, or nil when the request does not ask.
-// h12=0 and h12=off both mean 24-hour; anything else present means 12-hour.
-func queryHour12(q url.Values) *bool {
-	v := q.Get("h12")
-	if v == "" {
-		return nil
+// queryClock reads the h12 override, or event.ClockAuto when the request does
+// not ask. h12=0 and h12=off both mean 24-hour; anything else present means
+// 12-hour.
+func queryClock(q url.Values) event.ClockFormat {
+	switch q.Get("h12") {
+	case "":
+		return event.ClockAuto
+	case "off", "0":
+		return event.Clock24
 	}
-	hour12 := !(v == "off" || v == "0")
-	return &hour12
+	return event.Clock12
 }
 
 const jsonpCallbackMaxLen = 128

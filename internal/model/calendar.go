@@ -23,7 +23,7 @@ func GetEvents(hd hdate.HDate, il bool) []CalEv {
 	events := make([]CalEv, 0, 4)
 	for _, ev := range evs {
 		if hev, ok := ev.(event.HolidayEvent); ok {
-			if hev.Desc == "Chanukah: 1 Candle" {
+			if hev.Desc() == "Chanukah: 1 Candle" {
 				continue
 			}
 			events = append(events, HolidayEv{hev})
@@ -49,17 +49,17 @@ func hasHolidayReading(hd hdate.HDate, il bool) bool {
 	const readingFlags = event.CHAG | event.CHOL_HAMOED | event.ROSH_CHODESH |
 		event.MINOR_FAST | event.MAJOR_FAST | event.CHANUKAH_CANDLES
 	for _, hev := range holidaysOnDate(hd, il) {
-		if hev.Desc == "Chanukah: 1 Candle" {
+		if hev.Desc() == "Chanukah: 1 Candle" {
 			continue // candle-lighting the previous evening; no Torah reading
 		}
-		if hev.Flags.Has(event.YOM_KIPPUR_KATAN) ||
-			hev.Desc == "Ta'anit BeHaB" || hev.Desc == "Ta'anit Bechorot" {
+		if hev.GetFlags().Has(event.YOM_KIPPUR_KATAN) ||
+			hev.Desc() == "Ta'anit BeHaB" || hev.Desc() == "Ta'anit Bechorot" {
 			continue // fast-day flag but no special Torah reading in leyning
 		}
-		if hev.Flags.HasAny(readingFlags) {
+		if hev.GetFlags().HasAny(readingFlags) {
 			return true
 		}
-		if hev.Desc == "Purim" || hev.Desc == "Shushan Purim" {
+		if hev.Desc() == "Purim" || hev.Desc() == "Shushan Purim" {
 			return true
 		}
 	}
@@ -73,7 +73,7 @@ func parshaEvents(hd hdate.HDate, il bool) []CalEv {
 	s := sedra.New(hy, il)
 	parsha := s.Lookup(saturday)
 	if !parsha.Chag {
-		return []CalEv{ParshaEv{Sat: saturday, Parsha: parsha, IL: il}}
+		return []CalEv{ParshaEv{event.NewParshaEvent(saturday, parsha, il)}}
 	}
 	if hasHolidayReading(hd, il) {
 		return nil
@@ -83,7 +83,7 @@ func parshaEvents(hd hdate.HDate, il bool) []CalEv {
 	if mm == hdate.Tishrei && dd > 2 && dd < 15 {
 		st := SimchatTorahDate(hy, il)
 		p := sedra.Parsha{Name: []string{"Vezot Haberakhah"}}
-		return []CalEv{ParshaEv{Sat: st, Parsha: p, IL: il}}
+		return []CalEv{ParshaEv{event.NewParshaEvent(st, p, il)}}
 	}
 	var events []CalEv
 	for _, hev := range holidaysOnDate(saturday, il) {

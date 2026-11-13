@@ -118,7 +118,7 @@ func holidaysForYearByDate(year int, il bool) map[int64][]event.HolidayEvent {
 		all := hebcal.GetHolidaysForYear(year, il)
 		m := make(map[int64][]event.HolidayEvent, len(all))
 		for _, hev := range all {
-			d := hev.Date
+			d := hev.GetDate()
 			abs := d.Abs()
 			m[abs] = append(m[abs], hev)
 		}

@@ -133,6 +133,18 @@ func ParsePath(path, ext string) (string, error) {
 	return parts[1], nil
 }
 
+// Clock is the clock format the request asks for: 12-hour, 24-hour, or
+// whatever the location's country uses.
+func (p *Params) Clock() event.ClockFormat {
+	switch p.Hour12 {
+	case 1:
+		return event.Clock12
+	case 2:
+		return event.Clock24
+	}
+	return event.ClockAuto
+}
+
 // decodeBase64 accepts both the standard and URL-safe alphabets, with or
 // without padding.
 func decodeBase64(s string) ([]byte, error) {
