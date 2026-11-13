@@ -284,7 +284,9 @@ description strings:
 cannot be used. Where the location was resolved from the request
 (`location.FromQuery` checks the coordinates and loads the zone) or has
 already produced a calendar, the code calls `zmanim.MustNew`; anything built
-from unchecked input must handle the error.
+from unchecked input must handle the error. The same goes for
+`omer.NewOmerEvent` and `omer.MustNewOmerEvent`: `Must` only where the day
+was just computed from the calendar.
 
 A holiday's fields are methods too (`he.Desc()`, `he.Flags()`); one is
 built with `event.NewHolidayEvent`. **A method value compiles where a field

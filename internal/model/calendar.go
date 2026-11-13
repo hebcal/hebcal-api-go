@@ -101,7 +101,8 @@ func omerEvents(hd hdate.HDate) []CalEv {
 		beginOmer := hdate.ToRD(hd.Year(), hdate.Nisan, 16)
 		abs := hd.Abs()
 		if abs >= beginOmer && abs < beginOmer+49 {
-			return []CalEv{OmerEv{omer.NewOmerEvent(hd, int(abs-beginOmer)+1)}}
+			// the day is between 1 and 49 by the bounds just tested
+			return []CalEv{OmerEv{omer.MustNewOmerEvent(hd, int(abs-beginOmer)+1)}}
 		}
 	}
 	return nil
