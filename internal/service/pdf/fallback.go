@@ -34,7 +34,7 @@ func fetchLearning(ctx context.Context, f *download.LearningFetcher, series []st
 			Subject:  jsutil.SmartApostrophe(title),
 			Learning: true,
 			URL:      download.CanonicalLearningURL(it.Link),
-			rank:     hebcal.TimeOfDayLearning,
+			rank:     hebcal.DayPartLearning,
 			series:   download.LearningOrder(it.Category),
 		})
 	}

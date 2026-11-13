@@ -99,7 +99,7 @@ func TestSuppressionFlagsAreInverted(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !p.Opts.Mask.Has(majorHolidayMask|event.ROSH_CHODESH|event.MINOR_FAST) ||
+	if !p.Opts.Mask.Has(majorHolidayMask|event.RoshChodesh|event.MinorFast) ||
 		p.Opts.NoRoshChodesh || p.Opts.NoModern ||
 		p.Opts.NoMinorFast || p.Opts.NoSpecialShabbat || p.NoMinorHolidays {
 		t.Errorf("everything requested, but something is suppressed: %+v", p.Opts)
@@ -110,7 +110,7 @@ func TestSuppressionFlagsAreInverted(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if p.Opts.Mask != event.USER_EVENT || !p.Opts.NoRoshChodesh || !p.NoMinorHolidays {
+	if p.Opts.Mask != event.User || !p.Opts.NoRoshChodesh || !p.NoMinorHolidays {
 		t.Errorf("nothing requested, but something is not suppressed: %+v", p.Opts)
 	}
 }
@@ -217,8 +217,8 @@ func TestGeoPosLocation(t *testing.T) {
 	if p.Opts.Location == nil {
 		t.Fatal("Location is nil")
 	}
-	if p.Opts.Location.TimeZoneId != "America/Los_Angeles" {
-		t.Errorf("tzid = %q", p.Opts.Location.TimeZoneId)
+	if p.Opts.Location.TimeZoneID != "America/Los_Angeles" {
+		t.Errorf("tzid = %q", p.Opts.Location.TimeZoneID)
 	}
 }
 
@@ -233,7 +233,7 @@ func TestGeoPosWithoutTzidLooksItUp(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := p.Opts.Location.TimeZoneId; got != "America/Los_Angeles" {
+	if got := p.Opts.Location.TimeZoneID; got != "America/Los_Angeles" {
 		t.Errorf("tzid = %q, want America/Los_Angeles", got)
 	}
 }
@@ -249,7 +249,7 @@ func TestGeoPosWithoutTzidInIsrael(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := p.Opts.Location.TimeZoneId; got != "Asia/Jerusalem" {
+	if got := p.Opts.Location.TimeZoneID; got != "Asia/Jerusalem" {
 		t.Errorf("tzid = %q, want Asia/Jerusalem", got)
 	}
 	if !p.Opts.IL {

@@ -37,7 +37,7 @@ func renderCalendar(t *testing.T, p *download.Params) []byte {
 func paloAlto() *zmanim.Location {
 	return &zmanim.Location{
 		Name: "Palo Alto", Latitude: 37.44, Longitude: -122.14,
-		TimeZoneId: "America/Los_Angeles",
+		TimeZoneID: "America/Los_Angeles",
 	}
 }
 

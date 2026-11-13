@@ -66,7 +66,7 @@ func TestKiddushLevanaItemIsTimed(t *testing.T) {
 	loc := &geodb.Location{CC: "US"}
 	found := false
 	for _, ev := range events {
-		if !ev.GetFlags().Has(event.KIDDUSH_LEVANA) {
+		if !ev.Flags().Has(event.KiddushLevana) {
 			continue
 		}
 		found = true
@@ -152,7 +152,7 @@ func TestChametzCategories(t *testing.T) {
 			continue
 		}
 		seen++
-		if cat, subcat := categoriesOf(ev, descOf(ev), ev.GetFlags()); cat != "zmanim" || subcat != sub {
+		if cat, subcat := categoriesOf(ev, descOf(ev), ev.Flags()); cat != "zmanim" || subcat != sub {
 			t.Errorf("%s: category %q/%q, want zmanim/%s", ev.Desc(), cat, subcat, sub)
 		}
 	}

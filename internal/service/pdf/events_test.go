@@ -13,7 +13,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/service/download"
 )
 
-func ev(desc string, flags event.HolidayFlags, timeStr string) Event {
+func ev(desc string, flags event.Flags, timeStr string) Event {
 	return Event{Subject: desc, Flags: flags, TimeStr: timeStr}
 }
 
@@ -28,7 +28,7 @@ func generateDay(t *testing.T, year int, month time.Month, day int, learning []E
 func generateDayWith(t *testing.T, year int, month time.Month, day int, series []string, learning []Event) string {
 	t.Helper()
 	d := hdate.FromGregorian(year, month, day)
-	toronto := zmanim.NewLocation("Toronto", "CA", 43.70011, -79.4163, 0, "America/Toronto")
+	toronto := zmanim.MustNewLocation("Toronto", "CA", 43.70011, -79.4163, 0, "America/Toronto")
 	p := &download.Params{Locale: "en", MonthMode: download.GregorianArabic}
 	p.Opts = hebcal.CalOptions{
 		Start: d, End: d, Location: &toronto, CandleLighting: true, HavdalahMins: 42,
@@ -79,7 +79,7 @@ func TestSortDayKeepsHebcalTimeOfDayOrder(t *testing.T) {
 // mergeLearning, and sortDay moves it up to the learning slot: after the
 // series hebcal-go generated, ahead of the evening's holiday and timed events.
 func TestSortDayPutsFetchedLearningInTheLearningSlot(t *testing.T) {
-	tanya := Event{Subject: "Likkutei Amarim 6", Learning: true, rank: hebcal.TimeOfDayLearning,
+	tanya := Event{Subject: "Likkutei Amarim 6", Learning: true, rank: hebcal.DayPartLearning,
 		series: download.LearningOrder("tanyaYomi")}
 	got := generateDay(t, 2027, time.October, 15, []Event{tanya})
 	want := "Latest Kiddush Levana | Berakhot 8:5-6 | Likkutei Amarim 6 | Erev Sukkot | Candle lighting"
@@ -92,7 +92,7 @@ func TestSortDayPutsFetchedLearningInTheLearningSlot(t *testing.T) {
 // interleaves the fetched ones with the generated: Sefer HaMitzvot comes after
 // Mishna Yomi and before Yerushalmi Yomi, not after both.
 func TestSortDayInterleavesFetchedLearning(t *testing.T) {
-	sm := Event{Subject: "Day 317: N294, N290", Learning: true, rank: hebcal.TimeOfDayLearning,
+	sm := Event{Subject: "Day 317: N294, N290", Learning: true, rank: hebcal.DayPartLearning,
 		series: download.LearningOrder("seferHaMitzvot")}
 	got := generateDayWith(t, 2027, time.October, 15, []string{"yerushalmi-vilna"}, []Event{sm})
 	want := "Latest Kiddush Levana | Berakhot 8:5-6 | Day 317: N294, N290 | Yerushalmi Terumot 19 | Erev Sukkot | Candle lighting"
@@ -105,10 +105,10 @@ func TestSortDayInterleavesFetchedLearning(t *testing.T) {
 // sort is required.
 func TestSortDayIsStable(t *testing.T) {
 	evs := []Event{
-		{Subject: "Tu BiShvat", rank: hebcal.TimeOfDayDay},
-		{Subject: "Shabbat Shirah", rank: hebcal.TimeOfDayDay},
-		{Subject: "Psalms 1-2", rank: hebcal.TimeOfDayLearning},
-		{Subject: "Daf Yomi", rank: hebcal.TimeOfDayLearning},
+		{Subject: "Tu BiShvat", rank: hebcal.DayPartDay},
+		{Subject: "Shabbat Shirah", rank: hebcal.DayPartDay},
+		{Subject: "Psalms 1-2", rank: hebcal.DayPartLearning},
+		{Subject: "Daf Yomi", rank: hebcal.DayPartLearning},
 	}
 	sortDay(evs)
 	if got, want := subjects(evs), "Tu BiShvat | Shabbat Shirah | Psalms 1-2 | Daf Yomi"; got != want {
@@ -140,8 +140,8 @@ func TestStripEmoji(t *testing.T) {
 }
 
 func TestTimedReportsAClockTime(t *testing.T) {
-	timed := ev("Candle lighting", event.LIGHT_CANDLES, "7:22p")
-	allDay := ev("Erev Pesach", event.EREV, "")
+	timed := ev("Candle lighting", event.LightCandles, "7:22p")
+	allDay := ev("Erev Pesach", event.Erev, "")
 	if !timed.Timed() || allDay.Timed() {
 		t.Error("Timed() should follow TimeStr")
 	}
@@ -340,7 +340,7 @@ func TestKiddushLevanaIsTimed(t *testing.T) {
 		}
 		found := false
 		for _, e := range events {
-			if !e.Flags.Has(event.KIDDUSH_LEVANA) {
+			if !e.Flags.Has(event.KiddushLevana) {
 				continue
 			}
 			found = true

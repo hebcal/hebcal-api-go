@@ -127,7 +127,7 @@ func (r *Request) Attachment() bool { return r.Query.Attachment() }
 // entry is one event with the keys that put it in calendar order.
 type entry struct {
 	abs  int64
-	rank int
+	rank hebcal.DayPart
 	// series orders the learning rows within the learning slot.
 	series int
 	e      icalendar.Event
@@ -183,16 +183,16 @@ func (s *Service) Generate(ctx context.Context, r *Request) (*Feed, error) {
 	f := &Feed{req: r, opts: opt}
 	f.entries = make([]entry, 0, len(events)+len(items))
 	for _, ev := range events {
-		rank := hebcal.TimeOfDay(ev)
-		if ev.GetFlags().Has(event.HEBREW_DATE) {
+		rank := hebcal.DayPartOf(ev)
+		if ev.Flags().Has(event.HebrewDate) {
 			rank = -1 // the date leads its day
 		}
-		f.entries = append(f.entries, entry{ev.GetDate().Abs(), rank, download.EventLearningOrder(ev), Event(ev, opt)})
+		f.entries = append(f.entries, entry{ev.Date().Abs(), rank, download.EventLearningOrder(ev), Event(ev, opt)})
 	}
 	for i := range items {
 		if e, ok := LearningItem(&items[i], opt); ok {
 			day, _ := time.Parse(time.DateOnly, items[i].Date)
-			f.entries = append(f.entries, entry{hdate.FromTime(day).Abs(), hebcal.TimeOfDayLearning,
+			f.entries = append(f.entries, entry{hdate.FromTime(day).Abs(), hebcal.DayPartLearning,
 				download.LearningOrder(items[i].Category), e})
 		}
 	}
@@ -332,7 +332,7 @@ func (s *Service) Marshal(f *Feed, zones *icalendar.ZoneInfo, rawURL string) (*R
 		Stamp:        now,
 	}
 	if loc := p.Opts.Location; loc != nil {
-		cal.TZID = loc.TimeZoneId
+		cal.TZID = loc.TimeZoneID
 	}
 	res := &Result{}
 	var out []icalendar.Event
@@ -425,8 +425,8 @@ func campaignName(p *download.Params, q *download.ICSQuery, events []event.CalEv
 		}
 	}
 	if len(events) > 0 {
-		add(events[0].GetDate().Gregorian())
-		add(events[len(events)-1].GetDate().Gregorian())
+		add(events[0].Date().Gregorian())
+		add(events[len(events)-1].Date().Gregorian())
 	}
 	for i := range items {
 		if day, err := time.Parse(time.DateOnly, items[i].Date); err == nil {

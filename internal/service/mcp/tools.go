@@ -202,7 +202,7 @@ func (t *tools) torahPortion(ctx context.Context, _ *mcpsdk.CallToolRequest, in 
 			out = append(out, "Reading: "+reading.Summary)
 		}
 		for _, h := range hebcal.GetHolidaysOnDate(shabbat, il) {
-			if h.GetFlags().Has(event.SPECIAL_SHABBAT) {
+			if h.Flags().Has(event.SpecialShabbat) {
 				out = append(out, "Special Shabbat: "+renderEn(h))
 				break
 			}
@@ -228,9 +228,9 @@ func (t *tools) jewishHolidaysYear(_ context.Context, _ *mcpsdk.CallToolRequest,
 		"| ---- | ---- | ---- | ---- |",
 	}
 	for _, ev := range events {
-		hd := ev.GetDate()
+		hd := ev.Date()
 		var cats []string
-		for _, c := range ev.GetCategories() {
+		for _, c := range ev.Categories() {
 			if c != "holiday" {
 				cats = append(cats, c)
 			}
@@ -278,8 +278,8 @@ type shabbatTimesArgs struct {
 }
 
 func (t *tools) shabbatTimes(_ context.Context, _ *mcpsdk.CallToolRequest, in shabbatTimesArgs) (*mcpsdk.CallToolResult, any, error) {
-	// Validate before zmanim.NewLocation, which panics out of range.
-	if in.Latitude < -90 || in.Latitude > 90 || in.Longitude < -180 || in.Longitude > 180 {
+	loc, err := zmanim.NewLocation("", "", in.Latitude, in.Longitude, 0, in.Tzid)
+	if err != nil {
 		return errorCard(fmt.Sprintf("Latitude or longitude out of range: %v, %v", in.Latitude, in.Longitude)), nil, nil
 	}
 	start, ok1 := parseISODate(in.StartDate)
@@ -288,7 +288,6 @@ func (t *tools) shabbatTimes(_ context.Context, _ *mcpsdk.CallToolRequest, in sh
 		return errorCard("Error parsing dates: " + in.StartDate + " or " + in.EndDate), nil, nil
 	}
 	il := in.Tzid == "Asia/Jerusalem"
-	loc := zmanim.NewLocation("", "", in.Latitude, in.Longitude, 0, in.Tzid)
 	events, err := hebcal.HebrewCalendar(&hebcal.CalOptions{
 		CandleLighting: true,
 		Location:       &loc,
@@ -314,7 +313,7 @@ func (t *tools) shabbatTimes(_ context.Context, _ *mcpsdk.CallToolRequest, in sh
 			associated = linked.LinkedEvent().Render("en")
 		}
 		out = append(out, fmt.Sprintf("| %s | %s | %s | %s |",
-			isoGreg(te.GetDate()), te.Time().Format("15:04"), te.Desc(), associated))
+			isoGreg(te.Date()), te.Time().Format("15:04"), te.Desc(), associated))
 	}
 	return textResult(strings.Join(out, "\n")), nil, nil
 }

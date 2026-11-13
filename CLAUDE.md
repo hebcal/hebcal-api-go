@@ -41,7 +41,7 @@ Keep that lineage **out of the `*.go` doc comments** and **in this file**:
   reads standalone. It does not say "port of `foo()` in `src/bar.js`", "matches
   `@hebcal/core`", or "the JS version does X differently".
 - Behavioural facts that look like bugs stay in the comment — "Purim carries
-  `MINOR_HOLIDAY` but a major-only calendar keeps it", "`euro=0` still sets
+  `MinorHoliday` but a major-only calendar keeps it", "`euro=0` still sets
   euro" — just phrased as domain rules, not as "because `@hebcal/rest-api`
   does X".
 - The Go↔JS mapping (function, variable, whole file, or a 1:1 concept) goes in
@@ -207,13 +207,13 @@ composite choice is a precaution rather than a confirmed fix.
 
 ### Holiday filtering goes by category, not by flag
 
-Purim, Erev Purim and Chanukah carry `MINOR_HOLIDAY`, exactly like Tu BiShvat
+Purim, Erev Purim and Chanukah carry `MinorHoliday`, exactly like Tu BiShvat
 and Rosh Hashana LaBehemot. A calendar asking only for major holidays keeps the
 first three and drops the last two, which no reading of the flags explains.
 
 The category scheme files those three as `["holiday", "major"]`, and the filter
 tests the category rather than the flag. `eventCategories()` and `keepEvent()`
-in `events.go` implement both halves; filtering on `MINOR_HOLIDAY` directly
+in `events.go` implement both halves; filtering on `MinorHoliday` directly
 loses Purim and Chanukah from a major-only calendar.
 
 ### A calendar with no events is a 400
@@ -228,7 +228,7 @@ are kept and drawn empty.
 
 ### Events within a day come from hebcal-go's order
 
-hebcal-go sorts each day's events by `hebcal.TimeOfDay()`: timed events
+hebcal-go sorts each day's events by `hebcal.DayPartOf()`: timed events
 before dawn ("Fast begins" for a minor fast, an early Latest Kiddush Levana),
 then the parsha, special Shabbatot and minor fasts, the Molad and Shabbat
 Mevarchim, other holidays and the Omer, the Erev Pesach chametz deadlines,
@@ -239,10 +239,10 @@ weekday reads "Fast begins", "Ta'anit Bechorot", the two chametz deadlines,
 the learning rows, "Erev Pesach", "Candle lighting".
 
 The PDF keeps that order rather than re-deriving it. `Event.rank` carries
-`TimeOfDay()` from `Generate`, and `sortDay` is a stable sort on it and then
+`DayPartOf()` from `Generate`, and `sortDay` is a stable sort on it and then
 on `Event.series`, so it changes nothing hebcal-go produced. What it is *for*
 is the learning rows `fallback.go` fetches from readings-svc: `mergeLearning`
-appends them at the end of the day, and with `rank` `TimeOfDayLearning` they
+appends them at the end of the day, and with `rank` `DayPartLearning` they
 move up into the learning slot, before the evening holiday, and into their
 places among the series hebcal-go generated (see "Daily-learning order").
 
@@ -272,11 +272,21 @@ description strings:
   constants (`CandleLighting`, `Havdalah`, `ChanukahCandles`, `FastBegins`,
   `FastEnds`, `FinishChametz`, `BiurChametz`, `KiddushLevana`). One wrinkle:
   with holidays switched off, the candle-lighting on a Friday of Chanukah is a
-  `CandleLighting` whose flags carry `CHANUKAH_CANDLES`;
+  `CandleLighting` whose flags carry `ChanukahCandles`;
 - clock formats: `event.ClockFormat` (`ClockAuto`, `Clock12`, `Clock24`), from
-  `download.Params.Clock()` or `/shabbat`'s `queryClock`.
+  `download.Params.Clock()` or `/shabbat`'s `queryClock`;
+- flags: `event.Flags` with MixedCaps constants (`event.MinorHoliday`,
+  `event.ChanukahCandles`). `Flags.String()` still prints the old upper-case
+  names, which is what the test output and logs show;
+- an event's place in its day: `hebcal.DayPartOf(ev)`, a `hebcal.DayPart`.
 
-A holiday's fields are methods too (`he.Desc()`, `he.GetFlags()`); one is
+`zmanim.New` and `zmanim.NewLocation` return an error for a location that
+cannot be used. Where the location was resolved from the request
+(`location.FromQuery` checks the coordinates and loads the zone) or has
+already produced a calendar, the code calls `zmanim.MustNew`; anything built
+from unchecked input must handle the error.
+
+A holiday's fields are methods too (`he.Desc()`, `he.Flags()`); one is
 built with `event.NewHolidayEvent`. **A method value compiles where a field
 once did** -- `fmt.Sprintf("%s", ev.Desc)` and `x.LinkedEvent != nil` are both
 legal Go and both wrong -- so after a hebcal-go upgrade, grep for these names
@@ -1333,8 +1343,9 @@ Wiring: `main.go` sets `app.MCP = mcp.Handler(app.Readings)`; `server.go`'s
 `convert-gregorian-to-hebrew`, `convert-hebrew-to-gregorian`, `yahrzeit`,
 `torah-portion`, `jewish-holidays-year`, `daf-yomi`, `shabbat-times`. Parse and
 range errors are returned as normal (non-`IsError`) text content, matching the
-Node `errorCard`, so the model sees them. `shabbat-times` validates
-lat/long range before `zmanim.NewLocation`, which **panics** out of range.
+Node `errorCard`, so the model sees them. `shabbat-times` takes its
+lat/long range error from `zmanim.NewLocation`, and an unknown time zone from
+`HebrewCalendar`; neither panics.
 
 **Accepted divergence — the "Date in Hebrew letters" gematriya prefix.**
 hebcal-mcp uses `@hebcal/hdate`'s `renderGematriya()`, which writes the month
@@ -1427,7 +1438,7 @@ reveals. Each has a regression test in `calendar_port_test.go`.
   `Event.HebrewBrief`, drawn by `appendHebrew` in render.go, which fits it
   inline or wraps it).
 - **Alternate dates go on the day-number line** for Gregorian-month calendars —
-  the HEBREW_DATE event's brief form (no year, via `altDateBrief`) is drawn by
+  the `HebrewDate` event's brief form (no year, via `altDateBrief`) is drawn by
   `renderAltDateOnLine` and the event is skipped as a row (`Event.AltDate`).
 - **The 12/24-hour clock default follows the country**, not a blanket 12-hour:
   only the dozen countries `event.Uses12HourClock` names (never Israel) default to
@@ -1557,15 +1568,15 @@ every supported schedule but Schottenstein produces at least one URL.
 The daily-learning **rows sort into one slot, in the download form's order
 with 929 first** (`dailyLearningConfig.json`, read through a JavaScript object
 whose integer-like key iterates first). Only four of the thirteen schedules
-have a flag of their own; the rest carry the generic `DAILY_LEARNING`, so
-hebcal-go's `TimeOfDay()` keys on `DAILY_LEARNING` as well as the four named
+have a flag of their own; the rest carry the generic `DailyLearning`, so
+hebcal-go's `DayPartOf()` keys on `DailyLearning` as well as the four named
 flags, and `internal/service/pdf/events_test.go` pins the resulting order.
 
 hebcal-go orders the series it generates by the `DailyLearning` list, which is
 already in that order. The readings-svc series do not come after them, though:
 Sefer HaMitzvot sits between Rambam and Yerushalmi, Daf Weekly and Pirkei Avot
 between Dirshu Amud HaYomi and Arukh HaShulchan. So every format sorts a day by
-`TimeOfDay` and then by `download.LearningOrder` of the event's category (an
+`DayPartOf` and then by `download.LearningOrder` of the event's category (an
 item's `Category`), the table in `learning.go`; appending the fetched rows
 after the generated ones was visible on any day carrying both kinds, and
 decided which rows a subscription cut at 2399 events kept on its last day.

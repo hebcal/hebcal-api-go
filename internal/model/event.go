@@ -56,7 +56,7 @@ func (h HolidayEv) ChanukahDay() int { return h.Ev.ChanukahDay }
 
 func (h HolidayEv) Render(lg string) string {
 	locale := strings.ToLower(AliasLocale(lg))
-	if h.Ev.GetFlags().Has(event.ROSH_CHODESH) {
+	if h.Ev.Flags().Has(event.RoshChodesh) {
 		// look up the month translation with the "Tamuz" spelling, which is
 		// what the locale catalogues use
 		month := strings.ReplaceAll(strings.TrimPrefix(h.Ev.Desc(), "Rosh Chodesh "), "Tammuz", "Tamuz")

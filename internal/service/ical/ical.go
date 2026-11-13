@@ -144,15 +144,15 @@ var seriesNames = map[string]string{
 // Event resolves one hebcal-go event: an all-day one, or -- when the event
 // carries a time -- one that starts at that time in the calendar's location.
 func Event(ev event.CalEvent, o *Options) icalendar.Event {
-	flags := ev.GetFlags()
-	hd := ev.GetDate()
+	flags := ev.Flags()
+	hd := ev.Date()
 	timed, isTimed := ev.(event.Timed)
 	isTimed = isTimed && o.Location != nil
 	subj := download.RenderSubject(ev, o.Locale, download.ShouldRenderBrief(ev, flags, isTimed))
 	if o.Emoji {
-		emoji := ev.GetEmoji()
+		emoji := ev.Emoji()
 		if emoji != "" {
-			if flags.Has(event.OMER_COUNT) {
+			if flags.Has(event.OmerCount) {
 				subj += " " + emoji
 			} else {
 				subj = emoji + " " + subj
@@ -162,8 +162,8 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 	e := icalendar.Event{
 		Summary:     subj,
 		Date:        icalendar.DateOf(hd.Gregorian()),
-		Busy:        flags.Has(event.CHAG),
-		Private:     flags.Has(event.USER_EVENT),
+		Busy:        flags.Has(event.Chag),
+		Private:     flags.Has(event.User),
 		Description: Memo(ev, o),
 	}
 	if o.AppendHebrew {
@@ -176,7 +176,7 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 		place = o.Place
 		e.Timed = true
 		e.Hour, e.Minute, _ = timed.Time().Clock()
-		e.TZID = o.Location.TimeZoneId
+		e.TZID = o.Location.TimeZoneID
 		e.Geo = &icalendar.Geo{Latitude: o.Latitude, Longitude: o.Longitude}
 		e.Location = o.ShortName
 		if kind, _ := hebcal.TimedKindOf(ev); kind == hebcal.CandleLighting {
@@ -192,12 +192,12 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 		e.Category = categories[cat]
 	}
 	switch {
-	case flags.Has(event.OMER_COUNT):
+	case flags.Has(event.OmerCount):
 		e.Alarm = icalendar.AlarmOmer
 		if oe, ok := ev.(omer.OmerEvent); ok && o.Location != nil {
 			o.omerAlarm(&e, oe)
 		}
-	case flags.Has(event.USER_EVENT):
+	case flags.Has(event.User):
 		e.Alarm = icalendar.AlarmUserEvent
 	}
 	return e
@@ -215,10 +215,12 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 // ordinary UID and no LOCATION; failing that too (a polar summer), the generic
 // reminder stays.
 func (o *Options) omerAlarm(e *icalendar.Event, oe omer.OmerEvent) {
-	eve := oe.GetDate().Prev()
+	eve := oe.Date().Prev()
 	y, m, d := eve.Greg()
 	day := time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
-	z := zmanim.New(o.Location, day)
+	// The calendar's events were generated for this location, so it is
+	// known to be usable.
+	z := zmanim.MustNew(o.Location, day)
 	z.UseElevation = o.UseElevation
 	var at time.Time
 	switch eve.Weekday() {
@@ -231,7 +233,7 @@ func (o *Options) omerAlarm(e *icalendar.Event, oe omer.OmerEvent) {
 	}
 	if at.IsZero() {
 		if o.CandleLighting {
-			z := zmanim.New(o.Location, day)
+			z := zmanim.MustNew(o.Location, day)
 			if tzeit := z.Tzeit(zmanim.Tzeit3MediumStars); !tzeit.IsZero() {
 				e.Alarm = icalendar.AbsoluteAlarm(tzeit)
 			}
@@ -253,12 +255,12 @@ func (o *Options) omerAlarm(e *icalendar.Event, oe omer.OmerEvent) {
 // Yizkor belongs to. Then, each after a blank line, the Torah reading and the
 // tracked link.
 func Memo(ev event.CalEvent, o *Options) string {
-	flags := ev.GetFlags()
+	flags := ev.Flags()
 	if kind, _ := hebcal.TimedKindOf(ev); kind == hebcal.Havdalah || kind == hebcal.CandleLighting {
 		// Candle lighting names the coming portion, and that is all it says.
 		return ownMemo(ev, flags, o)
 	}
-	if flags.Has(event.KIDDUSH_LEVANA) {
+	if flags.Has(event.KiddushLevana) {
 		return kiddushLevanaMemo(ev, o)
 	}
 	if oe, ok := ev.(omer.OmerEvent); ok {
@@ -284,11 +286,11 @@ func Memo(ev event.CalEvent, o *Options) string {
 	if torah := torahMemo(ev, flags, o); torah != "" {
 		memo = appendParagraph(memo, torah)
 	}
-	if flags.Has(event.HEBREW_DATE) {
+	if flags.Has(event.HebrewDate) {
 		// The date converter page is not linked from a feed.
 		return memo
 	}
-	hd := ev.GetDate()
+	hd := ev.Date()
 	return appendParagraph(memo, o.link(ev.URL(), hd.Year()))
 }
 
@@ -306,34 +308,34 @@ func (o *Options) link(rawURL string, hyear int) string {
 }
 
 // ownMemo is the memo an event carries by itself.
-func ownMemo(ev event.CalEvent, flags event.HolidayFlags, o *Options) string {
+func ownMemo(ev event.CalEvent, flags event.Flags, o *Options) string {
 	switch {
-	case flags.Has(event.SHABBAT_MEVARCHIM):
+	case flags.Has(event.ShabbatMevarchim):
 		cc := ""
 		if o.Location != nil {
 			cc = o.Location.CountryCode
 		}
-		return shabbat.MevarchimMoladMemo(ev.GetDate(), strings.ToLower(o.Locale), cc, o.IL, o.Clock)
+		return shabbat.MevarchimMoladMemo(ev.Date(), strings.ToLower(o.Locale), cc, o.IL, o.Clock)
 	}
 	return model.FixMonthSpelling(event.Memo(ev, o.Locale))
 }
 
 // noReading are the events that never have a Torah reading of their own.
-const noReading = event.OMER_COUNT | event.SHABBAT_MEVARCHIM | event.MOLAD |
-	event.USER_EVENT | event.HEBREW_DATE | download.LearningFlags
+const noReading = event.OmerCount | event.ShabbatMevarchim | event.Molad |
+	event.User | event.HebrewDate | download.LearningFlags
 
-func torahMemo(ev event.CalEvent, flags event.HolidayFlags, o *Options) string {
+func torahMemo(ev event.CalEvent, flags event.Flags, o *Options) string {
 	if !hasReading(ev) {
 		return ""
 	}
-	return o.TorahMemos.lookup(ev.GetDate(), uidDesc(ev))
+	return o.TorahMemos.lookup(ev.Date(), uidDesc(ev))
 }
 
 // hasReading reports whether an event can have a Torah reading to append:
 // the weekly portion and the holidays, but not the other events, nor anything
 // with a time.
 func hasReading(ev event.CalEvent) bool {
-	if ev.GetFlags().HasAny(noReading) {
+	if ev.Flags().HasAny(noReading) {
 		return false
 	}
 	_, timed := ev.(event.Timed)
@@ -344,7 +346,7 @@ func hasReading(ev event.CalEvent) bool {
 // must never change: a different UID duplicates the event for every
 // subscriber.
 func uidDesc(ev event.CalEvent) string {
-	if ev.GetFlags().HasAny(download.LearningFlags) {
+	if ev.Flags().HasAny(download.LearningFlags) {
 		// A reading without its series name, and for Tanakh Yomi without its
 		// verses: "Bava Batra 21", "Daniel Seder 1".
 		desc := ev.Basename()
@@ -353,8 +355,8 @@ func uidDesc(ev event.CalEvent) string {
 		}
 		return desc
 	}
-	if ev.GetFlags().Has(event.HEBREW_DATE) {
-		return model.HDateString(ev.GetDate()) // "30 Av 5786"
+	if ev.Flags().Has(event.HebrewDate) {
+		return model.HDateString(ev.Date()) // "30 Av 5786"
 	}
 	// "Pesach II", "Omer 7", "Yizkor", "Parashat Re'eh" -- never the
 	// rendered title, whose apostrophes are typographic.

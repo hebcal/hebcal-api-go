@@ -110,8 +110,8 @@ func TestLeapYearHasBothAdars(t *testing.T) {
 func TestHebrewPagesSortTheirDays(t *testing.T) {
 	d := hdate.New(5787, hdate.Tishrei, 15)
 	timed := Event{HD: d, Greg: d.Gregorian(), Subject: "Candle lighting",
-		TimeStr: "6:00p", Flags: event.LIGHT_CANDLES, rank: hebcal.TimeOfDayNight}
-	holiday := Event{HD: d, Greg: d.Gregorian(), Subject: "Sukkot I", Flags: event.CHAG, rank: hebcal.TimeOfDayDay}
+		TimeStr: "6:00p", Flags: event.LightCandles, rank: hebcal.DayPartNight}
+	holiday := Event{HD: d, Greg: d.Gregorian(), Subject: "Sukkot I", Flags: event.Chag, rank: hebcal.DayPartDay}
 	pages := SplitByHebrewMonth([]Event{timed, holiday})
 	got := pages[0].Days[15]
 	if len(got) != 2 {

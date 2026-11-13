@@ -210,9 +210,9 @@ func locationDefaultCandleMins(loc *geodb.Location) int {
 func FilterYomTovOnly(events []event.CalEvent) []event.CalEvent {
 	out := events[:0]
 	for _, ev := range events {
-		flags := ev.GetFlags()
+		flags := ev.Flags()
 		cat, _ := categoriesOf(ev, descOf(ev), flags)
-		if cat == "holiday" && flags.Has(event.CHAG) {
+		if cat == "holiday" && flags.Has(event.Chag) {
 			out = append(out, ev)
 		}
 	}
@@ -230,8 +230,8 @@ func Response(events []event.CalEvent, loc *geodb.Location, il bool, locale, lg 
 		{Key: "location", Val: location.ToPlainObj(loc, true)}, // /shabbat always includes elevation
 	}
 	if len(events) > 0 {
-		first := events[0].GetDate()
-		last := events[len(events)-1].GetDate()
+		first := events[0].Date()
+		last := events[len(events)-1].Date()
 		body = append(body, jsutil.KV{Key: "range", Val: jsutil.OrderedObj{
 			{Key: "start", Val: model.IsoGreg(first)},
 			{Key: "end", Val: model.IsoGreg(last)},
@@ -252,8 +252,8 @@ func title(events []event.CalEvent, loc *geodb.Location) string {
 	if len(events) == 0 {
 		return title
 	}
-	sy, sm, sd := events[0].GetDate().Greg()
-	ey, _, _ := events[len(events)-1].GetDate().Greg()
+	sy, sm, sd := events[0].Date().Greg()
+	ey, _, _ := events[len(events)-1].Date().Greg()
 	_ = sd
 	if sy != ey {
 		return fmt.Sprintf("%s %d-%d", title, sy, ey)
@@ -265,8 +265,8 @@ func title(events []event.CalEvent, loc *geodb.Location) string {
 // API's key order.
 func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hdp bool,
 	clock event.ClockFormat, leyning map[string][]readings.Item) jsutil.OrderedObj {
-	flags := ev.GetFlags()
-	hd := ev.GetDate()
+	flags := ev.Flags()
+	hd := ev.Date()
 	desc := descOf(ev)
 	cat, subcat := categoriesOf(ev, desc, flags)
 
@@ -276,7 +276,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 
 	// title (+ ": time" for candles/havdalah only); date
 	title := renderBriefLike(ev, locale)
-	if flags.Has(event.MOLAD) {
+	if flags.Has(event.Molad) {
 		// the announcement and the Shabbat Mevarchim memo are the same string
 		title = MevarchimMoladMemo(hd, locale, loc.CC, il, clock)
 	}
@@ -298,7 +298,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 	if subcat != "" {
 		item = append(item, jsutil.KV{Key: "subcat", Val: subcat})
 	}
-	if cat == "holiday" && flags.Has(event.CHAG) {
+	if cat == "holiday" && flags.Has(event.Chag) {
 		item = append(item, jsutil.KV{Key: "yomtov", Val: true})
 	}
 	if title != desc {
@@ -306,7 +306,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 	}
 
 	// a molad announcement carries no `hebrew` field
-	if !flags.Has(event.MOLAD) {
+	if !flags.Has(event.Molad) {
 		if hebrew := renderBriefLike(ev, "he-x-NoNikud"); hebrew != "" {
 			item = append(item, jsutil.KV{Key: "hebrew", Val: hebrew})
 		}
@@ -334,7 +334,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 		}
 	}
 
-	if flags.Has(event.MOLAD) {
+	if flags.Has(event.Molad) {
 		item = append(item, jsutil.KV{Key: "molad", Val: moladObj(hd)})
 	}
 
@@ -346,7 +346,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 	//   ev.memo (molad for Shabbat Mevarchim) || holiday description
 	//   || (for timed events) the linked event's rendering
 	memo := ""
-	if flags.Has(event.SHABBAT_MEVARCHIM) {
+	if flags.Has(event.ShabbatMevarchim) {
 		memo = MevarchimMoladMemo(hd, locale, loc.CC, il, clock)
 	}
 	if memo == "" {
@@ -478,7 +478,7 @@ func renderBriefLike(ev event.CalEvent, locale string) string {
 		return event.RenderBrief(ev, locale)
 	}
 	r := ev.Render(locale)
-	if ev.GetFlags().Has(event.SHABBAT_MEVARCHIM) {
+	if ev.Flags().Has(event.ShabbatMevarchim) {
 		r = event.RenderBrief(ev, locale) // "Mevarchim Chodesh Kislev"
 	}
 	return jsutil.SmartApostrophe(normMonth(r))
@@ -503,7 +503,7 @@ func isCandleOrHavdalah(ev event.CalEvent) bool {
 // event description, except for the parsha, which is the one item on the day
 // whose category is "parashat". Timed events are never passed here (anything
 // with an eventTime has no holiday reading).
-func itemLeyning(hd hdate.HDate, flags event.HolidayFlags, desc string,
+func itemLeyning(hd hdate.HDate, flags event.Flags, desc string,
 	leyning map[string][]readings.Item) json.RawMessage {
 	if leyning == nil {
 		return nil
@@ -513,8 +513,8 @@ func itemLeyning(hd hdate.HDate, flags event.HolidayFlags, desc string,
 		return nil
 	}
 	// the mask is tested for equality, so an event merely carrying
-	// PARSHA_HASHAVUA alongside other flags is not a parsha.
-	if flags == event.PARSHA_HASHAVUA {
+	// ParshaHashavua alongside other flags is not a parsha.
+	if flags == event.ParshaHashavua {
 		return readings.FindParsha(onDate)
 	}
 	return readings.FindHoliday(onDate, desc)
@@ -549,7 +549,7 @@ func linkedHoliday(ev event.CalEvent) (event.HolidayEvent, bool) {
 // trailing Roman numeral, which would turn "Rosh Chodesh Adar I" into "Rosh
 // Chodesh Adar" — a different month in a leap year, with a memo of its own.
 func eventBasename(ev event.CalEvent) string {
-	if ev.GetFlags().Has(event.ROSH_CHODESH) {
+	if ev.Flags().Has(event.RoshChodesh) {
 		return descOf(ev)
 	}
 	return normMonth(ev.Basename())
@@ -557,12 +557,12 @@ func eventBasename(ev event.CalEvent) string {
 
 // itemLink builds the shortened, tracked hebcal.com URL for an event.
 func itemLink(ev event.CalEvent, hd hdate.HDate, il bool) string {
-	flags := ev.GetFlags()
-	if flags.Has(event.SHABBAT_MEVARCHIM) {
+	flags := ev.Flags()
+	if flags.Has(event.ShabbatMevarchim) {
 		return "" // Shabbat Mevarchim events have no URL
 	}
 	switch {
-	case flags.Has(event.PARSHA_HASHAVUA):
+	case flags.Has(event.ParshaHashavua):
 		return sedrotShortURL(hd, il)
 	default:
 		if he, ok := ev.(event.HolidayEvent); ok {
@@ -623,7 +623,7 @@ func holidayShortURL(he event.HolidayEvent, il bool) string {
 
 // categoriesOf returns [category, subcat] for an event, applying the special
 // cases the classic API layers on top of the flag-to-category table.
-func categoriesOf(ev event.CalEvent, desc string, flags event.HolidayFlags) (string, string) {
+func categoriesOf(ev event.CalEvent, desc string, flags event.Flags) (string, string) {
 	// timed events are keyed by their kind
 	if kind, ok := hebcal.TimedKindOf(ev); ok {
 		switch kind {
@@ -664,25 +664,25 @@ func categoriesOf(ev event.CalEvent, desc string, flags event.HolidayFlags) (str
 // baseCategory maps an event's flags to [category, subcat] via the
 // flag-to-category table. ok is false when no flag matches (the caller then
 // applies the HolidayEvent fallback).
-func baseCategory(flags event.HolidayFlags) (string, string, bool) {
+func baseCategory(flags event.Flags) (string, string, bool) {
 	type entry struct {
-		flag     event.HolidayFlags
+		flag     event.Flags
 		cat, sub string
 	}
 	table := []entry{
-		{event.MAJOR_FAST, "holiday", "major"}, // + "fast", unused
-		{event.CHANUKAH_CANDLES, "holiday", "minor"},
-		{event.HEBREW_DATE, "hebdate", ""},
-		{event.MINOR_FAST, "holiday", "fast"},
-		{event.MINOR_HOLIDAY, "holiday", "minor"},
-		{event.MODERN_HOLIDAY, "holiday", "modern"},
-		{event.MOLAD, "molad", ""},
-		{event.OMER_COUNT, "omer", ""},
-		{event.PARSHA_HASHAVUA, "parashat", ""},
-		{event.ROSH_CHODESH, "roshchodesh", ""},
-		{event.SHABBAT_MEVARCHIM, "mevarchim", ""},
-		{event.SPECIAL_SHABBAT, "holiday", "shabbat"},
-		{event.USER_EVENT, "user", ""},
+		{event.MajorFast, "holiday", "major"}, // + "fast", unused
+		{event.ChanukahCandles, "holiday", "minor"},
+		{event.HebrewDate, "hebdate", ""},
+		{event.MinorFast, "holiday", "fast"},
+		{event.MinorHoliday, "holiday", "minor"},
+		{event.ModernHoliday, "holiday", "modern"},
+		{event.Molad, "molad", ""},
+		{event.OmerCount, "omer", ""},
+		{event.ParshaHashavua, "parashat", ""},
+		{event.RoshChodesh, "roshchodesh", ""},
+		{event.ShabbatMevarchim, "mevarchim", ""},
+		{event.SpecialShabbat, "holiday", "shabbat"},
+		{event.User, "user", ""},
 	}
 	for _, e := range table {
 		if flags.Has(e.flag) {

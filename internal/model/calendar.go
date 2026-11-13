@@ -46,17 +46,17 @@ func holidaysOnDate(hd hdate.HDate, il bool) []event.HolidayEvent {
 // Torah reading: major holidays, chol hamoed, Rosh Chodesh, fast days,
 // Chanukah, and Purim all have full kriyah readings.
 func hasHolidayReading(hd hdate.HDate, il bool) bool {
-	const readingFlags = event.CHAG | event.CHOL_HAMOED | event.ROSH_CHODESH |
-		event.MINOR_FAST | event.MAJOR_FAST | event.CHANUKAH_CANDLES
+	const readingFlags = event.Chag | event.CholHamoed | event.RoshChodesh |
+		event.MinorFast | event.MajorFast | event.ChanukahCandles
 	for _, hev := range holidaysOnDate(hd, il) {
 		if hev.Desc() == "Chanukah: 1 Candle" {
 			continue // candle-lighting the previous evening; no Torah reading
 		}
-		if hev.GetFlags().Has(event.YOM_KIPPUR_KATAN) ||
+		if hev.Flags().Has(event.YomKippurKatan) ||
 			hev.Desc() == "Ta'anit BeHaB" || hev.Desc() == "Ta'anit Bechorot" {
 			continue // fast-day flag but no special Torah reading in leyning
 		}
-		if hev.GetFlags().HasAny(readingFlags) {
+		if hev.Flags().HasAny(readingFlags) {
 			return true
 		}
 		if hev.Desc() == "Purim" || hev.Desc() == "Shushan Purim" {

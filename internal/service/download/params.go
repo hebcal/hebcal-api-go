@@ -91,7 +91,7 @@ type Params struct {
 	// LocationName is the full location name ("Palo Alto, CA 94303"), used in
 	// the document keywords. CityName carries the short form used in titles.
 	LocationName string
-	// NoMinorHolidays drops MINOR_HOLIDAY events after generation. hebcal-go's
+	// NoMinorHolidays drops MinorHoliday events after generation. hebcal-go's
 	// CalOptions has NoHolidays, NoMinorFast, NoModern, NoRoshChodesh and
 	// NoSpecialShabbat but no equivalent for minor holidays, so this one is
 	// applied as a flag filter in Generate rather than as a calendar option.
@@ -395,12 +395,12 @@ func setLocation(p *Params, loc *geodb.Location, msg *downloadpb.Download) error
 }
 
 // majorHolidayMask is what "major holidays" selects. It includes
-// MINOR_HOLIDAY, so Purim and Chanukah come with it and NoMinorHolidays then
+// MinorHoliday, so Purim and Chanukah come with it and NoMinorHolidays then
 // drops the rest of the minor holidays by category.
-const majorHolidayMask = event.YOM_TOV_ENDS | event.MAJOR_FAST |
-	event.LIGHT_CANDLES | event.LIGHT_CANDLES_TZEIS |
-	event.MINOR_HOLIDAY | event.EREV | event.CHOL_HAMOED |
-	event.CHANUKAH_CANDLES
+const majorHolidayMask = event.YomTovEnds | event.MajorFast |
+	event.LightCandles | event.LightCandlesTzeis |
+	event.MinorHoliday | event.Erev | event.CholHamoed |
+	event.ChanukahCandles
 
 // holidayMask selects the holiday-table events a calendar draws, one bit
 // group per checkbox. The calendar is always built from an explicit mask
@@ -411,30 +411,30 @@ const majorHolidayMask = event.YOM_TOV_ENDS | event.MAJOR_FAST |
 // A mask of zero means "unset" to hebcal-go, which would then draw every
 // holiday. Nothing checked means nothing drawn -- not even the yom tov
 // candle-lighting times, which ride on the holiday's own flags -- so that
-// case gets USER_EVENT, a bit no holiday carries.
-func holidayMask(msg *downloadpb.Download, mevarchim bool) event.HolidayFlags {
-	var m event.HolidayFlags
+// case gets User, a bit no holiday carries.
+func holidayMask(msg *downloadpb.Download, mevarchim bool) event.Flags {
+	var m event.Flags
 	for _, b := range []struct {
 		on   bool
-		bits event.HolidayFlags
+		bits event.Flags
 	}{
 		{msg.GetMajor(), majorHolidayMask},
-		{msg.GetRoshChodesh(), event.ROSH_CHODESH},
-		{msg.GetModern(), event.MODERN_HOLIDAY},
-		{msg.GetMinorFast(), event.MINOR_FAST},
-		{msg.GetSpecialShabbat(), event.SPECIAL_SHABBAT},
-		{msg.GetOmer(), event.OMER_COUNT},
-		{msg.GetSedrot(), event.PARSHA_HASHAVUA},
-		{msg.GetYomKippurKatan(), event.YOM_KIPPUR_KATAN},
-		{msg.GetMinor(), event.MINOR_HOLIDAY},
-		{mevarchim, event.SHABBAT_MEVARCHIM},
+		{msg.GetRoshChodesh(), event.RoshChodesh},
+		{msg.GetModern(), event.ModernHoliday},
+		{msg.GetMinorFast(), event.MinorFast},
+		{msg.GetSpecialShabbat(), event.SpecialShabbat},
+		{msg.GetOmer(), event.OmerCount},
+		{msg.GetSedrot(), event.ParshaHashavua},
+		{msg.GetYomKippurKatan(), event.YomKippurKatan},
+		{msg.GetMinor(), event.MinorHoliday},
+		{mevarchim, event.ShabbatMevarchim},
 	} {
 		if b.on {
 			m |= b.bits
 		}
 	}
 	if m == 0 {
-		return event.USER_EVENT
+		return event.User
 	}
 	return m
 }
@@ -614,7 +614,7 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 			Name:        name,
 			Latitude:    lat,
 			Longitude:   long,
-			TimeZoneId:  tzid,
+			TimeZoneID:  tzid,
 			CountryCode: cc,
 			Elevation:   elevation,
 		}

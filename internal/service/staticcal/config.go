@@ -140,7 +140,7 @@ var Feeds = []Feed{
 		Desc:   "Rosh Chodesh is a minor holiday observed at the beginning of every month in the Hebrew calendar",
 		Color:  "#6F42C1",
 		Locale: "en", Years: 10,
-		Opts: hebcal.CalOptions{Mask: event.ROSH_CHODESH},
+		Opts: hebcal.CalOptions{Mask: event.RoshChodesh},
 	},
 	{
 		File: "mevarchim", Title: "Shabbat Mevarchim",

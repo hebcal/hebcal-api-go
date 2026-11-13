@@ -18,7 +18,7 @@ func TestLearningScheduleNamesAreRegistered(t *testing.T) {
 	for _, s := range learningSchedules {
 		if !dailylearning.Has(s.name) {
 			t.Errorf("%q is not registered; registered names are %v",
-				s.name, dailylearning.GetCalendars())
+				s.name, dailylearning.Calendars())
 		}
 	}
 }
