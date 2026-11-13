@@ -113,7 +113,7 @@ func Render(ctx context.Context, f *Feed, today time.Time, rs Readings) (*Files,
 
 // hasReadings reports whether a feed can carry events with a Torah reading:
 // weekly portions, or any of the holidays.
-func hasReadings(o *hebcal.CalOptions) bool {
+func hasReadings(o *hebcal.Options) bool {
 	return o.Sedrot || !o.NoHolidays
 }
 

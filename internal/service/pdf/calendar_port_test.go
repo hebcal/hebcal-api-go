@@ -326,7 +326,7 @@ func TestDiasporaLocationDefaults(t *testing.T) {
 	if p.Opts.CandleLightingMins != 0 {
 		t.Errorf("CandleLightingMins = %d, want 0 (default 18)", p.Opts.CandleLightingMins)
 	}
-	var _ hebcal.CalOptions = p.Opts
+	var _ hebcal.Options = p.Opts
 }
 
 // Rosh Chodesh, the special Shabbatot and the minor holidays are drawn without

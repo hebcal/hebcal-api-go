@@ -30,7 +30,7 @@ func generateDayWith(t *testing.T, year int, month time.Month, day int, series [
 	d := hdate.FromGregorian(year, month, day)
 	toronto := zmanim.MustNewLocation("Toronto", "CA", 43.70011, -79.4163, 0, "America/Toronto")
 	p := &download.Params{Locale: "en", MonthMode: download.GregorianArabic}
-	p.Opts = hebcal.CalOptions{
+	p.Opts = hebcal.Options{
 		Start: d, End: d, Location: &toronto, CandleLighting: true, HavdalahMins: 42,
 		Sedrot: true, KiddushLevanaMaharil: true, MishnaYomi: true,
 		DailyLearning: series,
@@ -227,7 +227,7 @@ func TestSplitByGregorianMonthEmptyInput(t *testing.T) {
 func TestGenerateIncludesNextYearTishrei(t *testing.T) {
 	p := &download.Params{
 		MonthMode: download.HebrewArabic,
-		Opts:      hebcal.CalOptions{Year: 5787, IsHebrewYear: true},
+		Opts:      hebcal.Options{Year: 5787, IsHebrewYear: true},
 	}
 	evs, err := Generate(p)
 	if err != nil {
@@ -271,7 +271,7 @@ func TestGenerateIncludesNextYearTishrei(t *testing.T) {
 func TestGenerateNumYearsDoesNotDuplicateTishrei(t *testing.T) {
 	p := &download.Params{
 		MonthMode: download.HebrewArabic,
-		Opts:      hebcal.CalOptions{Year: 5787, IsHebrewYear: true, NumYears: 2},
+		Opts:      hebcal.Options{Year: 5787, IsHebrewYear: true, NumYears: 2},
 	}
 	evs, err := Generate(p)
 	if err != nil {
@@ -330,7 +330,7 @@ func TestKiddushLevanaIsTimed(t *testing.T) {
 	}
 	for _, tt := range tests {
 		p := &download.Params{Locale: tt.locale, MonthMode: download.GregorianArabic, Hour12: tt.hour12}
-		p.Opts = hebcal.CalOptions{
+		p.Opts = hebcal.Options{
 			Year: 2026, Month: 10, CandleLighting: true, KiddushLevanaMaharil: true,
 			Location: zmanim.LookupCity(tt.city),
 		}

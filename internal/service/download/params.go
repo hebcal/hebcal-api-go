@@ -46,7 +46,7 @@ const (
 // carries the user's calendar choices, and these fields are the resolved form
 // of them.
 type Params struct {
-	Opts hebcal.CalOptions
+	Opts hebcal.Options
 
 	// MonthMode selects Gregorian- or Hebrew-month pagination.
 	MonthMode MonthMode
@@ -92,7 +92,7 @@ type Params struct {
 	// the document keywords. CityName carries the short form used in titles.
 	LocationName string
 	// NoMinorHolidays drops MinorHoliday events after generation. hebcal-go's
-	// CalOptions has NoHolidays, NoMinorFast, NoModern, NoRoshChodesh and
+	// Options has NoHolidays, NoMinorFast, NoModern, NoRoshChodesh and
 	// NoSpecialShabbat but no equivalent for minor holidays, so this one is
 	// applied as a flag filter in Generate rather than as a calendar option.
 	NoMinorHolidays bool
@@ -179,7 +179,7 @@ func DecodeParams(payload string, db *geodb.DB) (*Params, error) {
 }
 
 // ParamsFromMessage resolves a decoded Download message into Params, writing
-// the user's calendar choices straight into hebcal.CalOptions.
+// the user's calendar choices straight into hebcal.Options.
 func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) {
 	p := &Params{
 		MonthMode:            MonthMode(msg.GetMonthMode()),
@@ -202,7 +202,7 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 	p.AppendHebrew = p.LG == "ah" || p.LG == "sh"
 
 	o := &p.Opts
-	// The protobuf carries positive "include this" booleans; CalOptions uses
+	// The protobuf carries positive "include this" booleans; Options uses
 	// negative "suppress this" flags. Invert as we copy.
 	o.NoRoshChodesh = !msg.GetRoshChodesh()
 	o.NoModern = !msg.GetModern()
@@ -317,7 +317,7 @@ func fastTimeFields(msg *downloadpb.Download) [][2]string {
 // setFastTimes copies the message's fast start/end fields into o through the
 // same validation as the query parameters, so a crafted token can ask for
 // nothing a query string could not.
-func setFastTimes(o *hebcal.CalOptions, msg *downloadpb.Download) {
+func setFastTimes(o *hebcal.Options, msg *downloadpb.Download) {
 	fields := map[string]string{}
 	for _, kv := range fastTimeFields(msg) {
 		fields[kv[0]] = kv[1]
@@ -348,7 +348,7 @@ func locationDefaultCandleMins(loc *geodb.Location) int {
 // candles exactly at sunset), which must not be overridden. `given` is the
 // requested offset, meaningful only when hasGiven is true; `offset` is the
 // location's default.
-func applyIsraelCandleMins(o *hebcal.CalOptions, hasGiven bool, given, offset int) {
+func applyIsraelCandleMins(o *hebcal.Options, hasGiven bool, given, offset int) {
 	if !hasGiven || (offset != defaultCandleMins && given == defaultCandleMins) {
 		o.CandleLightingMins = offset
 	}
@@ -672,7 +672,7 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 //
 // The registry is populated by importing github.com/hebcal/learning for its
 // side effects, which every schedule's init() uses to register itself. Four of
-// these also have dedicated CalOptions booleans; going through the registry
+// these also have dedicated Options booleans; going through the registry
 // for all of them keeps one list rather than two mechanisms.
 var learningSchedules = []struct {
 	name string
@@ -696,9 +696,9 @@ var learningSchedules = []struct {
 	{"pirkeiAvotSummer", func(m *downloadpb.Download) bool { return m.GetPirkeiAvotSummer() }},
 }
 
-// applyDailyLearning enables the requested schedules through CalOptions'
+// applyDailyLearning enables the requested schedules through Options'
 // generic DailyLearning list, which hebcal-go resolves against the registry.
-func applyDailyLearning(msg *downloadpb.Download, o *hebcal.CalOptions) {
+func applyDailyLearning(msg *downloadpb.Download, o *hebcal.Options) {
 	for _, s := range learningSchedules {
 		if s.on(msg) {
 			o.DailyLearning = append(o.DailyLearning, s.name)

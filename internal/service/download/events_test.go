@@ -13,7 +13,7 @@ import (
 // keeps them in a calendar asking only for major holidays, while Tu BiShvat and
 // Rosh Hashana LaBehemot drop out -- all four carry the same flag.
 func TestMinorHolidayFilterUsesCategories(t *testing.T) {
-	opts := hebcal.CalOptions{Year: 2026}
+	opts := hebcal.Options{Year: 2026}
 	evs, err := hebcal.HebrewCalendar(&opts)
 	if err != nil {
 		t.Fatal(err)
@@ -48,7 +48,7 @@ func TestMinorHolidayFilterUsesCategories(t *testing.T) {
 
 // Asking for minor holidays keeps all of them.
 func TestMinorHolidaysKeptWhenRequested(t *testing.T) {
-	opts := hebcal.CalOptions{Year: 2026}
+	opts := hebcal.Options{Year: 2026}
 	evs, _ := hebcal.HebrewCalendar(&opts)
 	all := &Params{}
 	for _, ev := range evs {
@@ -59,7 +59,7 @@ func TestMinorHolidaysKeptWhenRequested(t *testing.T) {
 }
 
 func TestYomTovOnlyKeepsOnlyChagim(t *testing.T) {
-	opts := hebcal.CalOptions{Year: 2026}
+	opts := hebcal.Options{Year: 2026}
 	evs, _ := hebcal.HebrewCalendar(&opts)
 	p := &Params{YomTovOnly: true}
 	for _, ev := range evs {

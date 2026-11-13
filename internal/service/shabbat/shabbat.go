@@ -104,13 +104,13 @@ func WeekRange(dt model.GregDate, isToday bool, tzid string, now time.Time) (mod
 	return start, endD, nil
 }
 
-// CalOptions builds the hebcal.CalOptions for the Shabbat week from the
+// Options builds the hebcal.Options for the Shabbat week from the
 // request: location, date range, candle-lighting and Havdalah, and the fast
 // start and end times.
-func CalOptions(loc *geodb.Location, il bool, start, end model.GregDate,
-	q url.Values) hebcal.CalOptions {
+func Options(loc *geodb.Location, il bool, start, end model.GregDate,
+	q url.Values) hebcal.Options {
 	zloc := loc.ZmanimLocation()
-	opts := hebcal.CalOptions{
+	opts := hebcal.Options{
 		Location:         &zloc,
 		IL:               il,
 		CandleLighting:   true,
@@ -133,7 +133,7 @@ func CalOptions(loc *geodb.Location, il bool, start, end model.GregDate,
 // HavdalahMins means "use the default tzeit"; likewise b=0 -- candle-lighting
 // at sunset itself -- sets CandleLightingAtSunset, since a zero
 // CandleLightingMins means "use the default offset".
-func setCandleOptions(o *hebcal.CalOptions, q url.Values, loc *geodb.Location) {
+func setCandleOptions(o *hebcal.Options, q url.Values, loc *geodb.Location) {
 	mStr, tdStr := q.Get("m"), q.Get("td")
 	mIsOn := mStr == "on" // the lowercase spelling of M=on
 	if mIsOn {

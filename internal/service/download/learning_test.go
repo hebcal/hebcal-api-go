@@ -31,7 +31,7 @@ func TestLearningScheduleNamesAreRegistered(t *testing.T) {
 func TestEachLearningScheduleGeneratesEvents(t *testing.T) {
 	for _, s := range learningSchedules {
 		t.Run(s.name, func(t *testing.T) {
-			opts := hebcal.CalOptions{
+			opts := hebcal.Options{
 				Year: 2026, NoHolidays: true,
 				DailyLearning: []string{s.name},
 			}

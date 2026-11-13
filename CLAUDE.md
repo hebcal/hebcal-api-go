@@ -66,7 +66,7 @@ The service follows the repository's usual direction — `handler` → `service`
 | `internal/handler/download.go` | transport shared with the CSV route: the `/v4/` dispatch by extension, methods, ETag/304, the status each error maps to |
 | `internal/handler/pdf.go` | both PDF routes' headers and the holiday route's error mapping |
 | `internal/service/download/request.go` | `Decode`: any of the three download URL shapes → the `Download` protobuf; the 501/503 learning error |
-| `internal/service/download/params.go` | protobuf → `hebcal.CalOptions`; port of `deserializeDownload.js` |
+| `internal/service/download/params.go` | protobuf → `hebcal.Options`; port of `deserializeDownload.js` |
 | `internal/service/download/v2.go` | the legacy `/v2/h/` URL: query string → protobuf; port of `downloadHref2()` |
 | `internal/service/download/cgi.go` | the classic `/hebcal/index.cgi/…pdf?query` URL: its two query encodings → `v2Query`, then `DecodeV2` |
 | `internal/service/download/events.go` | `GenerateCalEvents`: event generation via hebcal-go and the category filters |
@@ -492,14 +492,14 @@ hebcal-web accepts six parameters that move the start and end of fast days --
 `/v4/` token carries them as `fastStartDeg` … `tishaBavEndMins` (fields
 70-75). The options and their defaults -- Tish'a B'Av ends at 6.45°
 (Tucazinsky), and in Israel a minor fast ends 15 minutes after sunset (Rabbi
-Deblitzky's practice) -- live in hebcal-go (`CalOptions.FastStartDeg` …
+Deblitzky's practice) -- live in hebcal-go (`Options.FastStartDeg` …
 `TishaBavEndMins`, `makeFastStartEnd`).
 
-This side only parses, straight into `hebcal.CalOptions`: `model.SetFastTimes`
+This side only parses, straight into `hebcal.Options`: `model.SetFastTimes`
 is `getFastTimeOpts()` -- degrees in (0, 90), minutes 1..240, `Math.abs` on
 both, and degrees win over minutes within a pair, so hebcal-go's
 mutual-exclusion error cannot be reached from a URL. `/shabbat` calls it from
-`shabbat.CalOptions`, the PDF path from `setFastTimes`. The `/v4/` token
+`shabbat.Options`, the PDF path from `setFastTimes`. The `/v4/` token
 goes through the same function after rendering each field back to its
 query-string form, which is `deserializeDownload`'s path: a `float` field is
 32-bit, and `toPrecision(6)` there (`'g', 6, 32` here) is what turns
@@ -1360,7 +1360,7 @@ reproduced with `jsutil.SmartApostrophe` in the yahrzeit day-and-month column).
 
 ## Daily learning
 
-Schedules are not selected through the four dedicated `CalOptions` booleans but
+Schedules are not selected through the four dedicated `Options` booleans but
 through its generic `DailyLearning []string`, resolved against hebcal-go's
 `dailylearning` registry. The registry is populated by importing
 `github.com/hebcal/learning` **for its side effects** — each schedule registers
@@ -1410,11 +1410,11 @@ still useful to know:
 - **github.com/hebcal/learning** gives each schedule event `URL()`,
   `RenderBrief` and `Memo`. The empty URLs for Schottenstein Yerushalmi and
   multi-reading Rambam 3-chapter days are deliberate and match @hebcal/core.
-- **`CalOptions.SuppressHavdalah`** exists because hebcal-go reads
+- **`Options.SuppressHavdalah`** exists because hebcal-go reads
   `HavdalahMins == 0` as "unset, use the default tzeit", where @hebcal/core's
   nullable `havdalahMins === 0` means "no Havdalah". `params.go` sets it
   whenever `M=off` and `m=0`.
-- **`CalOptions.CandleLightingAtSunset`** is `b=0`, for the same reason: a
+- **`Options.CandleLightingAtSunset`** is `b=0`, for the same reason: a
   zero `CandleLightingMins` means "use the default".
 - `tools/dump-urls.mjs` dumps @hebcal/core's event URLs for a range of years,
   the reference half of a URL comparison against hebcal-go. A single year
@@ -1423,7 +1423,7 @@ still useful to know:
 
 ## Option derivations in `params.go`
 
-`params.go` turns the protobuf into `hebcal.CalOptions`, and a dozen
+`params.go` turns the protobuf into `hebcal.Options`, and a dozen
 derivations happen on the way that no field-by-field reading of the message
 reveals. Each has a regression test in `calendar_port_test.go`.
 
@@ -1455,14 +1455,14 @@ reveals. Each has a regression test in `calendar_port_test.go`.
 - **Explicit `numYears` is capped at 10** (`maxNumYears`).
 - **A month in a Hebrew-year calendar is a Hebrew month** (Nisan is 1, 1-12
   only, so Adar II cannot be named), set as an explicit `Start`/`End` because
-  hebcal-go's `CalOptions.Month` is Gregorian. The range runs from the 1st
+  hebcal-go's `Options.Month` is Gregorian. The range runs from the 1st
   through the 1st of the following month, inclusive -- one day more than the
   month, as `@hebcal/core` has it. A feed's title then names the year alone
   (`calendarTitle` checks `Start` as well as `Month`).
 - **Havdalah is suppressed when `M=off` and `m=0`** — the default for a download
   that did not set a Havdalah time. A zero `m` means "no Havdalah", but
   hebcal-go reads a zero `HavdalahMins` as "use the default tzeit" and would
-  draw one, so `params.go` sets `CalOptions.SuppressHavdalah`. A
+  draw one, so `params.go` sets `Options.SuppressHavdalah`. A
   non-default offset (`m>0`) or tzeit (`M=on`) keeps it.
 
 Also derived: the Shabbat Mevarchim implication, `hebrewMonths` /
@@ -1634,7 +1634,7 @@ JavaScript sources.
 
 | Go | JS source |
 |---|---|
-| `ParamsFromMessage`, `Params` struct | `deserializeDownload()` → the calendar-relevant parts of `makeDownloadProps.js`; writes straight to `hebcal.CalOptions` instead of a query map |
+| `ParamsFromMessage`, `Params` struct | `deserializeDownload()` → the calendar-relevant parts of `makeDownloadProps.js`; writes straight to `hebcal.Options` instead of a query map |
 | `maxNumYears` (10) | `getNumYears()` in `src/calendar.js` |
 | Hebrew-year month → `Start`/`End` | `startEndHebrew()` (`@hebcal/core` `getStartAndEnd.js`), with `makeHebcalOptions`' 1-12 month check |
 | `decodeBase64` | Node `Buffer.from(s,'base64')` permissiveness |
@@ -1889,7 +1889,7 @@ this is an addition rather than a parity target. `ceilMinute` /
 | `QueryDate` | `getTodayDate()`; `date`/`start` are added here |
 | `QueryLang` | `makeHebcalOptions()`'s `a=on` → `lg=a` rewrite; `/shabbat`-only |
 | `WeekRange` | `shabbatWeekRange` + `getStartAndEnd` (`src/dateUtil.js`) |
-| `CalOptions` / `setCandleOptions` | `makeHebcalOptions()` precedence + `shabbatApp()` default |
+| `Options` / `setCandleOptions` | `makeHebcalOptions()` precedence + `shabbatApp()` default |
 | `locationDefaultCandleMins` | `locationDefaultCandleMins()` (`src/urlArgs.js`) |
 | `FilterYomTovOnly` | `makeHebrewCalendar()`'s `yto` filter |
 | `title` | `getCalendarTitle` |

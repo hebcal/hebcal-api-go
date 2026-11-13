@@ -88,7 +88,7 @@ var (
 // produced. Cached per (year, il).
 func holidayEventsForYear(year int, il bool) map[int64][]event.CalEvent {
 	return holidayYearCache.get(yearKey{year, il}, func() map[int64][]event.CalEvent {
-		opts := hebcal.CalOptions{
+		opts := hebcal.Options{
 			Start:            hdate.New(year, hdate.Tishrei, 1),
 			End:              hdate.New(year, hdate.Elul, 29),
 			IL:               il,

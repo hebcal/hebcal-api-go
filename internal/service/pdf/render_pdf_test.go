@@ -43,7 +43,7 @@ func paloAlto() *zmanim.Location {
 
 func gregorianParams() *download.Params {
 	p := &download.Params{Locale: "en", MonthMode: download.GregorianArabic}
-	p.Opts = hebcal.CalOptions{
+	p.Opts = hebcal.Options{
 		Year: 2026, Sedrot: true, CandleLighting: true, Location: paloAlto(),
 	}
 	return p
@@ -113,7 +113,7 @@ func TestNoEmptyToUnicodeDestinations(t *testing.T) {
 
 func hebrewParams() *download.Params {
 	p := &download.Params{Locale: "he", RTL: true, MonthMode: download.GregorianArabic}
-	p.Opts = hebcal.CalOptions{
+	p.Opts = hebcal.Options{
 		Year: 2026, Sedrot: true, CandleLighting: true, Location: paloAlto(),
 	}
 	return p

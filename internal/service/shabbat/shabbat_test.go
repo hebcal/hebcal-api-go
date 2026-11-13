@@ -56,7 +56,7 @@ func TestNormMonth(t *testing.T) {
 // assertion on that would report it as an all-day event with the time left in
 // its title.
 func TestKiddushLevanaItemIsTimed(t *testing.T) {
-	events, err := hebcal.HebrewCalendar(&hebcal.CalOptions{
+	events, err := hebcal.HebrewCalendar(&hebcal.Options{
 		Year: 2026, Month: 10, CandleLighting: true, KiddushLevanaMaharil: true,
 		Location: zmanim.LookupCity("New York"),
 	})
@@ -98,7 +98,7 @@ func TestKiddushLevanaItemIsTimed(t *testing.T) {
 // A timed event's label is hebcal-go's brief rendering, which keeps the
 // "(50 min)" of a havdalah a fixed number of minutes after sunset.
 func TestTimedLabels(t *testing.T) {
-	events, err := hebcal.HebrewCalendar(&hebcal.CalOptions{
+	events, err := hebcal.HebrewCalendar(&hebcal.Options{
 		Year: 2026, Month: 12, CandleLighting: true, HavdalahMins: 50,
 		Location: zmanim.LookupCity("Chicago"),
 	})
@@ -134,7 +134,7 @@ func TestTimedLabels(t *testing.T) {
 // The two chametz deadlines of Erev Pesach are zmanim, each with its own
 // subcategory.
 func TestChametzCategories(t *testing.T) {
-	events, err := hebcal.HebrewCalendar(&hebcal.CalOptions{
+	events, err := hebcal.HebrewCalendar(&hebcal.Options{
 		Year: 2026, Month: 4, CandleLighting: true,
 		Location: zmanim.LookupCity("Chicago"),
 	})

@@ -21,9 +21,9 @@ func TestFastTimesFromHebcalWebToken(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var got hebcal.CalOptions
+	var got hebcal.Options
 	setFastTimes(&got, msg)
-	want := hebcal.CalOptions{FastStartDeg: 19.8, FastEndMins: 45, TishaBavEndDeg: 8.5}
+	want := hebcal.Options{FastStartDeg: 19.8, FastEndMins: 45, TishaBavEndDeg: 8.5}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("setFastTimes = %+v, want %+v", got, want)
 	}
@@ -40,9 +40,9 @@ func TestFastTimesFromCraftedToken(t *testing.T) {
 		FastEndMins:    300, // over 240
 		TishaBavEndDeg: 95,  // over 90
 	}
-	var got hebcal.CalOptions
+	var got hebcal.Options
 	setFastTimes(&got, msg)
-	want := hebcal.CalOptions{FastStartDeg: 16.1}
+	want := hebcal.Options{FastStartDeg: 16.1}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("setFastTimes = %+v, want %+v", got, want)
 	}

@@ -6,7 +6,7 @@
 // so the two must be changed together. The message is the wire format of a
 // calendar request -- year or month range, location, event categories, locale,
 // candle-lighting and Havdalah preferences, daily-learning series -- and
-// internal/service/pdf turns it into hebcal.CalOptions.
+// internal/service/pdf turns it into hebcal.Options.
 //
 // Regenerate download.pb.go after editing download.proto:
 //

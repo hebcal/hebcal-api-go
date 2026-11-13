@@ -219,7 +219,7 @@ type jewishHolidaysYearArgs struct {
 }
 
 func (t *tools) jewishHolidaysYear(_ context.Context, _ *mcpsdk.CallToolRequest, in jewishHolidaysYearArgs) (*mcpsdk.CallToolResult, any, error) {
-	events, err := hebcal.HebrewCalendar(&hebcal.CalOptions{Year: in.Year, IsHebrewYear: false})
+	events, err := hebcal.HebrewCalendar(&hebcal.Options{Year: in.Year, IsHebrewYear: false})
 	if err != nil {
 		return errorCard("Error: " + err.Error()), nil, nil
 	}
@@ -288,7 +288,7 @@ func (t *tools) shabbatTimes(_ context.Context, _ *mcpsdk.CallToolRequest, in sh
 		return errorCard("Error parsing dates: " + in.StartDate + " or " + in.EndDate), nil, nil
 	}
 	il := in.Tzid == "Asia/Jerusalem"
-	events, err := hebcal.HebrewCalendar(&hebcal.CalOptions{
+	events, err := hebcal.HebrewCalendar(&hebcal.Options{
 		CandleLighting: true,
 		Location:       &loc,
 		Start:          start,

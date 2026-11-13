@@ -298,7 +298,7 @@ func DecodeV2(q v2Query) (*downloadpb.Download, error) {
 	} else if ok {
 		msg.CandleLightingMins = &b
 	}
-	var fast hebcal.CalOptions
+	var fast hebcal.Options
 	model.SetFastTimes(&fast, func(key string) string { return q[key] })
 	msg.FastStartDeg = float32(fast.FastStartDeg)
 	msg.FastStartMins = uint32(fast.FastStartMins)

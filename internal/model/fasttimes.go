@@ -25,7 +25,7 @@ const (
 // as positive, and anything unparsable or out of range is ignored. When both
 // halves of a pair are given, degrees wins, so the pair is never the
 // mutually-exclusive combination HebrewCalendar rejects.
-func SetFastTimes(o *hebcal.CalOptions, get func(string) string) {
+func SetFastTimes(o *hebcal.Options, get func(string) string) {
 	dst := [3]struct {
 		deg  *float64
 		mins *int

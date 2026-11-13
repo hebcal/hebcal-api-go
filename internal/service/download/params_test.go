@@ -88,7 +88,7 @@ func TestRTLDetection(t *testing.T) {
 	}
 }
 
-// The protobuf carries "show this" booleans; CalOptions carries "suppress
+// The protobuf carries "show this" booleans; Options carries "suppress
 // this" ones. Getting the inversion wrong silently empties a calendar.
 func TestSuppressionFlagsAreInverted(t *testing.T) {
 	all := &pb.Download{
@@ -304,7 +304,7 @@ func TestGeoPosBadCoordsAreRejected(t *testing.T) {
 	}
 }
 
-// Requested series are enabled through CalOptions' generic DailyLearning
+// Requested series are enabled through Options' generic DailyLearning
 // list, which hebcal-go resolves against the registry, and the ones with no
 // schedule are reported so the handler can hand the request back to Node.
 func TestDailyLearning(t *testing.T) {
@@ -389,7 +389,7 @@ func TestShabbatMevarchimIsImplied(t *testing.T) {
 	}
 }
 
-// The protobuf's shabbatMevarchim field was previously wired to CalOptions.Molad,
+// The protobuf's shabbatMevarchim field was previously wired to Options.Molad,
 // which generates a different event entirely.
 func TestShabbatMevarchimDoesNotEnableMolad(t *testing.T) {
 	msg := &pb.Download{Year: 2029, ShabbatMevarchim: true}
