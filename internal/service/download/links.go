@@ -64,6 +64,15 @@ var doubledSlugs = func() map[string]bool {
 // "icalendar" in a feed). Returns "" when the event has no page, so callers
 // can skip the annotation.
 func EventLink(rawURL string, hyear int, campaign, medium string, il bool) string {
+	return EventLinkFrom(rawURL, hyear, campaign, "", medium, il)
+}
+
+// EventLinkFrom is EventLink for a feed whose subscription URL named its own
+// utm_source. A page of hebcal.com's records the source and medium (us=, um=)
+// only when the campaign is not one of the generated ical-/pdf- ones that
+// already say where the link was found; an external page always takes
+// utm_source, "hebcal.com" unless one was given.
+func EventLinkFrom(rawURL string, hyear int, campaign, source, medium string, il bool) string {
 	if rawURL == "" {
 		return ""
 	}
@@ -87,8 +96,11 @@ func EventLink(rawURL string, hyear int, campaign, medium string, il bool) strin
 		// links that reach here are the external Sefaria and dafyomi.org pages
 		// the daily-learning series produce, which take full utm_* parameters
 		// and no i.
+		if source == "" {
+			source = utmSource
+		}
 		u.RawQuery = appendParams(u.RawQuery,
-			[2]string{"utm_source", utmSource},
+			[2]string{"utm_source", source},
 			[2]string{"utm_medium", medium},
 			[2]string{"utm_campaign", campaign})
 		return u.String()
@@ -119,7 +131,11 @@ func EventLink(rawURL string, hyear int, campaign, medium string, il bool) strin
 		u.Path = "/o/" + strings.TrimPrefix(u.Path, "/omer/")
 	}
 
-	u.RawQuery = appendParams(q.Encode(), [2]string{"uc", campaign})
+	var us, um string
+	if campaign != "" && !strings.HasPrefix(campaign, "ical-") && !strings.HasPrefix(campaign, "pdf-") {
+		us, um = source, medium
+	}
+	u.RawQuery = appendParams(q.Encode(), [2]string{"us", us}, [2]string{"um", um}, [2]string{"uc", campaign})
 	return u.String()
 }
 

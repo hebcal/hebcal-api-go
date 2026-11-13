@@ -99,8 +99,9 @@ func TestYahrzeitSaved(t *testing.T) {
 	if resp.StatusCode != http.StatusNotFound {
 		t.Errorf("pdf: status %d", resp.StatusCode)
 	}
-	if n := len(mem.Touched()); n != 6 {
-		t.Errorf("touched %d times, want 6", n)
+	// The .pdf is refused before the lookup, so it is not a download.
+	if n := len(mem.Touched()); n != 5 {
+		t.Errorf("touched %d times, want 5", n)
 	}
 }
 
@@ -211,5 +212,26 @@ func TestYahrzeitSavedETag(t *testing.T) {
 	resp, _ = get(t, srv, path, "If-None-Match", etag)
 	if resp.StatusCode != http.StatusOK || resp.Header.Get("ETag") == etag {
 		t.Errorf("after an edit: %d, same tag %v", resp.StatusCode, resp.Header.Get("ETag") == etag)
+	}
+}
+
+// A saved calendar asked for in a format it has none of is a 404 naming the
+// extension, answered before the row is looked up: nothing is read from the
+// database or recorded as a download.
+func TestYahrzeitSavedUnknownExtension(t *testing.T) {
+	_, srv, mem := savedServer(t)
+	mem.Err = errors.New("the database must not be asked")
+	for path, body := range map[string]string{
+		"/v3/" + goldaID + "/golda_meir.foo": "unknown download extension .foo\n",
+		"/v3/" + goldaID + "/golda_meir":     "unknown download extension (none)\n",
+		"/v3/" + goldaID:                     "unknown download extension (none)\n",
+	} {
+		resp, got := get(t, srv, path)
+		if resp.StatusCode != http.StatusNotFound || got != body {
+			t.Errorf("%s: %d %q, want 404 %q", path, resp.StatusCode, got, body)
+		}
+	}
+	if n := len(mem.Touched()); n != 0 {
+		t.Errorf("%d downloads recorded", n)
 	}
 }

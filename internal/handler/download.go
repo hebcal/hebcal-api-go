@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"path"
 	"strings"
 
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
@@ -18,8 +19,9 @@ import (
 // maps to. pdf.go and csv.go hold what differs.
 
 // download serves a calendar download: csvDownload when the path ends in .csv,
-// pdfDownload for everything else. All three download URL shapes -- /v4/,
-// /v2/h/ and /hebcal/index.cgi/ -- serve both formats.
+// icsDownload for .ics, pdfDownload for .pdf, and 404 for any other extension.
+// All three download URL shapes -- /v4/, /v2/h/ and /hebcal/index.cgi/ -- serve
+// every format.
 //
 // A personal Yahrzeit + Anniversary calendar shares those URL shapes and is
 // told apart by its query (v=yahrzeit), so it is looked for first.
@@ -33,11 +35,25 @@ func (s *Server) download(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid download URL: v=undefined", http.StatusNotFound)
 		return
 	}
-	if strings.HasSuffix(r.URL.Path, ".csv") {
+	switch {
+	case strings.HasSuffix(r.URL.Path, ".csv"):
 		s.csvDownload(w, r)
-		return
+	case strings.HasSuffix(r.URL.Path, ".ics"):
+		s.icsDownload(w, r)
+	case strings.HasSuffix(r.URL.Path, ".pdf"):
+		s.pdfDownload(w, r)
+	default:
+		writeUnknownExtension(w, path.Ext(r.URL.Path))
 	}
-	s.pdfDownload(w, r)
+}
+
+// writeUnknownExtension answers a download whose extension names no format
+// the route serves: a 404 that says which extension it was.
+func writeUnknownExtension(w http.ResponseWriter, ext string) {
+	if ext == "" {
+		ext = "(none)"
+	}
+	http.Error(w, "unknown download extension "+ext, http.StatusNotFound)
 }
 
 // downloadMethodAllowed rejects the methods a calendar has no answer for.
@@ -77,6 +93,9 @@ func writeDownloadError(w http.ResponseWriter, err error) {
 	httpx.RecordError(w, err)
 	var oor *download.OutOfRangeError
 	var unsup *download.UnsupportedSeriesError
+	if writeReadingsError(w, err) {
+		return
+	}
 	switch {
 	case errors.As(err, &oor):
 		w.Header().Set("Cache-Control", httpx.CacheControl14Days)

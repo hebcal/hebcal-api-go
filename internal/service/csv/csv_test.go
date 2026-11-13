@@ -3,10 +3,14 @@ package csv
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"errors"
 	"net/url"
+	"regexp"
 	"strings"
 	"testing"
+
+	"google.golang.org/protobuf/proto"
 
 	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	"github.com/hebcal/hebcal-api-go/pkg/downloadpb"
@@ -189,7 +193,7 @@ func TestNumYears(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if got := numYears(tc.msg, p, tc.unsup); got != tc.want {
+			if got := download.NumYears(tc.msg, p, tc.unsup); got != tc.want {
 				t.Errorf("got %d, want %d", got, tc.want)
 			}
 		})
@@ -207,9 +211,6 @@ func TestLearningRange(t *testing.T) {
 		{"Gregorian years", &downloadpb.Download{Year: 2026, NumYears: 2}, "2026-01-01..2027-12-31"},
 		// from Erev Rosh Hashana, as hebcal-go generates
 		{"Hebrew year", &downloadpb.Download{Year: 5787, IsHebrewYear: true}, "2026-09-11..2027-10-01"},
-		// a Hebrew-month calendar carries the next Tishrei too
-		{"Hebrew months", &downloadpb.Download{Year: 5787, IsHebrewYear: true, MonthMode: downloadpb.Download_HEBREW_ARABIC},
-			"2026-09-11..2027-10-31"},
 		{"start and end", &downloadpb.Download{StartOneof: &downloadpb.Download_StartStr{StartStr: "2026-03-05"},
 			EndOneof: &downloadpb.Download_EndStr{EndStr: "2026-04-10"}}, "2026-03-05..2026-04-10"},
 	}
@@ -219,10 +220,36 @@ func TestLearningRange(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			first, last := learningRange(p)
+			first, last := download.LearningRange(p)
 			if got := first.Format("2006-01-02") + ".." + last.Format("2006-01-02"); got != tc.want {
 				t.Errorf("got %s, want %s", got, tc.want)
 			}
 		})
+	}
+}
+
+// A CSV has no months to count in Hebrew; the setting is ignored, and a
+// Gregorian date never becomes a row.
+func TestPrepareIgnoresMonthMode(t *testing.T) {
+	s := testService(t)
+	render := func(mm downloadpb.Download_MonthMode) string {
+		msg := &downloadpb.Download{Year: 5787, IsHebrewYear: true, Major: true, NumYears: 1,
+			AddAltDates: true, MonthMode: mm}
+		raw, _ := proto.Marshal(msg)
+		u, _ := url.Parse("/v4/" + base64.RawURLEncoding.EncodeToString(raw) + "/hebcal.csv")
+		cal, err := s.Prepare(context.Background(), u)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return string(Render(cal))
+	}
+	want := render(downloadpb.Download_GREGORIAN_ARABIC)
+	for _, mm := range []downloadpb.Download_MonthMode{downloadpb.Download_HEBREW_ARABIC, downloadpb.Download_HEBREW_HEBREW} {
+		if got := render(mm); got != want {
+			t.Errorf("month mode %v renders differently", mm)
+		}
+	}
+	if regexp.MustCompile(`(?m)^[A-Z][a-z]{2} \d+,`).MatchString(want) {
+		t.Error("a Gregorian date became a row")
 	}
 }

@@ -2,21 +2,24 @@
 // feed -- its title, emoji, category, description, alarm and UID -- and
 // resolves it into the icalendar.Event that pkg/icalendar writes.
 //
-// It covers the all-day events a feed with no location carries: holidays,
-// Rosh Chodesh, weekly Torah portions, Hebrew dates, the Omer, Shabbat
-// Mevarchim, Yom Kippur Katan, Yizkor and daily learning, including the rows
-// readings-svc supplies for the series hebcal-go has no schedule for. Timed
-// events (candle lighting, fast times, Kiddush Levana) need a location and
-// are not handled yet.
+// It covers the all-day events -- holidays, Rosh Chodesh, weekly Torah
+// portions, Hebrew dates, the Omer, Shabbat Mevarchim, Yom Kippur Katan,
+// Yizkor and daily learning, including the rows readings-svc supplies for the
+// series hebcal-go has no schedule for -- and, for a calendar with a
+// location, the timed events: candle lighting, Havdalah, fast times, Chanukah
+// candles and Kiddush Levana.
 package ical
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
+	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/hebcal-go/omer"
+	"github.com/hebcal/hebcal-go/zmanim"
 
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
@@ -42,6 +45,34 @@ type Options struct {
 	// Campaign tags every link: uc= on hebcal.com links, utm_campaign= on
 	// external ones.
 	Campaign string
+	// UTMSource and UTMMedium override the source and medium of a link's
+	// tracking; the defaults are "ical" and "icalendar".
+	UTMSource, UTMMedium string
+	// Location is the calendar's location, nil when it has none. Its zone,
+	// position and name go on every timed event.
+	Location *zmanim.Location
+	// Latitude and Longitude are the position GEO reports. They are the
+	// location's own unless the request gave coordinates, which are reported
+	// as it spelled them rather than rounded to the single precision a /v4/
+	// URL stores them in.
+	Latitude, Longitude float64
+	// GeoID is the location's geonameid or ZIP code, empty for a latitude and
+	// longitude.
+	GeoID string
+	// Place is what tells the location apart in a timed event's UID: GeoID,
+	// or failing that an anchor made of its name.
+	Place string
+	// ShortName is the location's display name, the LOCATION of a timed event.
+	ShortName string
+	// Hour12 forces 12-hour (true) or 24-hour (false) clock times in
+	// descriptions; nil follows the location's country.
+	Hour12 *bool
+	// UseElevation makes the Omer's evening alarm account for the location's
+	// elevation.
+	UseElevation bool
+	// CandleLighting is the calendar's candle-lighting option. With it, an
+	// Omer day whose evening has no time of its own is reminded at tzeit.
+	CandleLighting bool
 	// TorahMemos holds the Torah and Haftarah readings to append to the
 	// description of each event that has one.
 	TorahMemos TorahMemos
@@ -110,13 +141,17 @@ var seriesNames = map[string]string{
 	"yerushalmi":          "Yerushalmi Yomi",
 }
 
-// Event resolves one all-day hebcal-go event.
+// Event resolves one hebcal-go event: an all-day one, or -- when the event
+// carries a time -- one that starts at that time in the calendar's location.
 func Event(ev event.CalEvent, o *Options) icalendar.Event {
 	flags := ev.GetFlags()
 	hd := ev.GetDate()
-	subj := download.RenderSubject(ev, o.Locale, download.ShouldRenderBrief(ev, flags, false))
+	timed, isTimed := hebcal.AsTimedEvent(ev)
+	isTimed = isTimed && o.Location != nil
+	subj := download.RenderSubject(ev, o.Locale, download.ShouldRenderBrief(ev, flags, isTimed))
 	if o.Emoji {
-		if emoji := ev.GetEmoji(); emoji != "" {
+		emoji := ev.GetEmoji()
+		if emoji != "" {
 			if flags.Has(event.OMER_COUNT) {
 				subj += " " + emoji
 			} else {
@@ -124,19 +159,31 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 			}
 		}
 	}
-	if o.AppendHebrew {
-		if he := download.RenderSubject(ev, "he", true); he != "" {
-			subj += " / " + he
-		}
-	}
 	e := icalendar.Event{
-		UID:         icalendar.DefaultUID(icalendar.DateOf(hd.Gregorian()), uidDesc(ev), ""),
 		Summary:     subj,
 		Date:        icalendar.DateOf(hd.Gregorian()),
 		Busy:        flags.Has(event.CHAG),
 		Private:     flags.Has(event.USER_EVENT),
 		Description: Memo(ev, o),
 	}
+	if o.AppendHebrew {
+		if he := download.RenderSubject(ev, "he", true); he != "" {
+			e.SummarySuffix = " / " + he
+		}
+	}
+	place := ""
+	if isTimed {
+		place = o.Place
+		e.Timed = true
+		e.Hour, e.Minute, _ = timed.EventTime.Clock()
+		e.TZID = o.Location.TimeZoneId
+		e.Geo = &icalendar.Geo{Latitude: o.Latitude, Longitude: o.Longitude}
+		e.Location = o.ShortName
+		if strings.HasPrefix(event.Desc(ev), "Candle lighting") {
+			e.Alarm = icalendar.AlarmCandleLighting
+		}
+	}
+	e.UID = icalendar.DefaultUID(e.Date, uidDesc(ev), place)
 	cat := download.EventCategories(ev)[0]
 	if name, ok := seriesNames[cat]; ok && flags.HasAny(download.LearningFlags) {
 		e.Category = name
@@ -147,10 +194,56 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 	switch {
 	case flags.Has(event.OMER_COUNT):
 		e.Alarm = icalendar.AlarmOmer
+		if oe, ok := ev.(omer.OmerEvent); ok && o.Location != nil {
+			o.omerAlarm(&e, oe)
+		}
 	case flags.Has(event.USER_EVENT):
 		e.Alarm = icalendar.AlarmUserEvent
 	}
 	return e
+}
+
+// omerAlarm moves an Omer day's reminder to the evening it begins, for a
+// calendar with a location: half an hour before sunset on a Friday, nightfall
+// on a Saturday and dusk on any other day. The evening's own date and the
+// location's geonameid or ZIP name the event, so a subscriber's reminder is
+// kept apart from the same day's in another city.
+//
+// Where the evening has no such time (a summer night when the sun stays
+// above 8.5° or the civil-dusk angle), a calendar with candle-lighting falls
+// back to tzeit at 7.083°, ignoring elevation, and the event keeps its
+// ordinary UID and no LOCATION; failing that too (a polar summer), the generic
+// reminder stays.
+func (o *Options) omerAlarm(e *icalendar.Event, oe omer.OmerEvent) {
+	eve := oe.Date.Prev()
+	y, m, d := eve.Greg()
+	day := time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
+	z := zmanim.New(o.Location, day)
+	z.UseElevation = o.UseElevation
+	var at time.Time
+	switch eve.Weekday() {
+	case time.Friday:
+		at = z.SunsetOffset(-30, true)
+	case time.Saturday:
+		at = z.Tzeit(zmanim.Tzeit3SmallStars)
+	default:
+		at = z.Dusk()
+	}
+	if at.IsZero() {
+		if o.CandleLighting {
+			z := zmanim.New(o.Location, day)
+			if tzeit := z.Tzeit(zmanim.Tzeit3MediumStars); !tzeit.IsZero() {
+				e.Alarm = icalendar.AbsoluteAlarm(tzeit)
+			}
+		}
+		return
+	}
+	e.Alarm = icalendar.AbsoluteAlarm(at)
+	e.Location = o.ShortName
+	if o.GeoID != "" {
+		// The Hebrew year of the evening, whatever the name suggests.
+		e.UID = "hebcal-omer-" + strconv.Itoa(eve.Year()) + "-day" + strconv.Itoa(oe.OmerDay) + "-" + o.GeoID
+	}
 }
 
 // Memo is an event's description. In order of precedence: the Omer's count
@@ -161,6 +254,13 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 // tracked link.
 func Memo(ev event.CalEvent, o *Options) string {
 	flags := ev.GetFlags()
+	if d := event.Desc(ev); d == "Havdalah" || d == "Candle lighting" {
+		// Candle lighting names the coming portion, and that is all it says.
+		return ownMemo(ev, flags, o)
+	}
+	if flags.Has(event.KIDDUSH_LEVANA) {
+		return kiddushLevanaMemo(ev, o)
+	}
 	if oe, ok := ev.(omer.OmerEvent); ok {
 		return oe.TodayIs("en") + "\n\n" + oe.TodayIs("he") + "\n\n" +
 			oe.Sefira("en") + "\n" + oe.Sefira("he") + "\n" + oe.Sefira("translit")
@@ -171,7 +271,8 @@ func Memo(ev event.CalEvent, o *Options) string {
 	}
 	if memo == "" {
 		memo = download.HolidayDescription(ev, flags, o.Locale, false)
-		if memo == "" && !download.IsHebrewLocale(o.Locale) {
+		if memo == "" {
+			// A holiday without a Hebrew description has its English one.
 			memo = download.HolidayDescription(ev, flags, "en", false)
 		}
 	}
@@ -188,14 +289,31 @@ func Memo(ev event.CalEvent, o *Options) string {
 		return memo
 	}
 	hd := ev.GetDate()
-	return appendParagraph(memo, download.EventLink(event.URL(ev), hd.Year(), o.Campaign, utmMedium, o.IL))
+	return appendParagraph(memo, o.link(event.URL(ev), hd.Year()))
+}
+
+// link tags an event's page the way every feed link is tagged. A page of
+// hebcal.com is credited to "ical" unless the subscription says otherwise.
+func (o *Options) link(rawURL string, hyear int) string {
+	source, medium := o.UTMSource, o.UTMMedium
+	if source == "" && strings.HasPrefix(rawURL, "https://www.hebcal.com/") {
+		source = "ical"
+	}
+	if medium == "" {
+		medium = utmMedium
+	}
+	return download.EventLinkFrom(rawURL, hyear, o.Campaign, source, medium, o.IL)
 }
 
 // ownMemo is the memo an event carries by itself.
 func ownMemo(ev event.CalEvent, flags event.HolidayFlags, o *Options) string {
 	switch {
 	case flags.Has(event.SHABBAT_MEVARCHIM):
-		return shabbat.MevarchimMoladMemo(ev.GetDate(), strings.ToLower(o.Locale), "", o.IL, nil)
+		cc := ""
+		if o.Location != nil {
+			cc = o.Location.CountryCode
+		}
+		return shabbat.MevarchimMoladMemo(ev.GetDate(), strings.ToLower(o.Locale), cc, o.IL, o.Hour12)
 	}
 	return model.FixMonthSpelling(event.Memo(ev, o.Locale))
 }
@@ -205,10 +323,21 @@ const noReading = event.OMER_COUNT | event.SHABBAT_MEVARCHIM | event.MOLAD |
 	event.USER_EVENT | event.HEBREW_DATE | download.LearningFlags
 
 func torahMemo(ev event.CalEvent, flags event.HolidayFlags, o *Options) string {
-	if flags.HasAny(noReading) {
+	if !hasReading(ev) {
 		return ""
 	}
 	return o.TorahMemos.lookup(ev.GetDate(), uidDesc(ev))
+}
+
+// hasReading reports whether an event can have a Torah reading to append:
+// the weekly portion and the holidays, but not the other events, nor anything
+// with a time.
+func hasReading(ev event.CalEvent) bool {
+	if ev.GetFlags().HasAny(noReading) {
+		return false
+	}
+	_, timed := hebcal.AsTimedEvent(ev)
+	return !timed
 }
 
 // uidDesc is the untranslated description an event's UID is a hash of. It

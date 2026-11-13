@@ -1,0 +1,103 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-LOTUS-CHARSET:UTF-8
+REFRESH-INTERVAL;VALUE=DURATION:P7D
+X-PUBLISHED-TTL:P7D
+X-WR-CALNAME:Hebcal Diaspora - Modern Holidays\, Minor Fasts\, Torah Readi
+ ngs
+X-WR-CALDESC:Modern Holidays\, Minor Fasts\, Parashat ha-Shavua - Weekly T
+ orah Portion
+X-APPLE-CALENDAR-COLOR:#800002
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Parsha
+SUMMARY:Parashat Chayei Sara
+DTSTART;VALUE=DATE:20261107
+DTEND;VALUE=DATE:20261108
+UID:hebcal-20261107-6fdad451
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Chayyei Sarah (“The Life of Sarah”) opens as Sarah dies an
+ d Abraham buys the Cave of Machpelah to bury her. Abraham sends his servan
+ t to find a wife for Isaac. The servant meets Rebecca at a well\, and Rebe
+ cca returns with the servant to marry Isaac. Abraham remarries\, has more 
+ children\, and dies at age 175.\n\nTorah: Genesis 23:1-25:18\nHaftarah: I 
+ Kings 1:1-31\n\nhttps://hebcal.com/s/5787/5?uc=ical-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Holiday
+SUMMARY:Sigd
+DTSTART;VALUE=DATE:20261109
+DTEND;VALUE=DATE:20261110
+UID:hebcal-20261109-3079e054
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Ethiopian Jewish holiday occurring 50 days after Yom Kippur\n\
+ nhttps://hebcal.com/h/sigd-2026?uc=ical-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Parsha
+SUMMARY:Parashat Toldot
+DTSTART;VALUE=DATE:20261114
+DTEND;VALUE=DATE:20261115
+UID:hebcal-20261114-7a5866da
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Toldot (“Generations”) opens with the births of Isaac and 
+ Rebecca’s twins\, Jacob and Esau. Esau sells his birthright to Jacob in 
+ exchange for soup. Isaac and Rebecca travel to Gerar\, where Isaac makes a
+  peace treaty with King Abimelech. Isaac gives Jacob the blessing meant fo
+ r Esau\, and Jacob runs away to his uncle Laban.\n\nTorah: Genesis 25:19-2
+ 8:9\nHaftarah: Malachi 1:1-2:7\n\nhttps://hebcal.com/s/5787/6?uc=ical-dias
+ pora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Parsha
+SUMMARY:Parashat Vayetzei
+DTSTART;VALUE=DATE:20261121
+DTEND;VALUE=DATE:20261122
+UID:hebcal-20261121-b5f27b2a
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Vayeitzei (“He Went Out”) opens as Jacob dreams about ange
+ ls going up and down a ladder\, and then continues on his journey toward t
+ he home of his uncle Laban. During years of indentured servitude\, Jacob m
+ arries Laban’s daughters Leah and Rachel\, bearing children with them an
+ d with their maidservants\, Bilhah and Zilpah.\n\nTorah: Genesis 28:10-32:
+ 3\nHaftarah: Hosea 12:13-14:10\nHaftarah for Sephardim: Hosea 11:7-12:12\n
+ \nhttps://hebcal.com/s/5787/7?uc=ical-diaspora
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20261111T000000Z
+CATEGORIES:Parsha
+SUMMARY:Parashat Vayishlach
+DTSTART;VALUE=DATE:20261128
+DTEND;VALUE=DATE:20261129
+UID:hebcal-20261128-2bda4adf
+TRANSP:TRANSPARENT
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+CLASS:PUBLIC
+DESCRIPTION:Vayishlach (“He Sent”) follows Jacob and his family as Jac
+ ob wrestles with a man (commonly understood as an angel)\, is renamed Isra
+ el\, and reconciles with his brother\, Esau. Jacob’s daughter\, Dina\, i
+ s raped by a Hivite prince\, and her brothers sack a city in response. Rac
+ hel dies as she gives birth to Jacob’s youngest child\, Benjamin.\n\nTor
+ ah: Genesis 32:4-36:43\nHaftarah: Obadiah 1:1-21\n\nhttps://hebcal.com/s/5
+ 787/8?uc=ical-diaspora
+END:VEVENT
+END:VCALENDAR

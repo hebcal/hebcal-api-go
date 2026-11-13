@@ -19,6 +19,7 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
 	"github.com/hebcal/hebcal-api-go/internal/repository/yahrzeitdb"
 	csvsvc "github.com/hebcal/hebcal-api-go/internal/service/csv"
+	"github.com/hebcal/hebcal-api-go/internal/service/ical"
 	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 	"github.com/hebcal/hebcal-api-go/pkg/geoip"
@@ -55,6 +56,9 @@ type Server struct {
 	PDF *pdf.Service
 	// CSV renders the Outlook CSV calendars served from the same /v4/ URLs.
 	CSV *csvsvc.Service
+	// ICS renders the holiday calendars as iCalendar feeds, from the same
+	// /v4/ URLs.
+	ICS *ical.Service
 	// DocumentRoot is the directory static files are served from; /ical/
 	// maps to its ical/ subdirectory. Empty answers every static path 404.
 	DocumentRoot string
@@ -84,6 +88,7 @@ func New(lg *logger.AccessLogger) *Server {
 		Readings: readings.New(readings.DefaultSocket),
 		PDF:      &pdf.Service{},
 		CSV:      &csvsvc.Service{},
+		ICS:      &ical.Service{},
 	}
 }
 

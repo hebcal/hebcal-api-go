@@ -35,6 +35,7 @@ func fetchLearning(ctx context.Context, f *download.LearningFetcher, series []st
 			Learning: true,
 			URL:      download.CanonicalLearningURL(it.Link),
 			rank:     hebcal.TimeOfDayLearning,
+			series:   download.LearningOrder(it.Category),
 		})
 	}
 	return out, nil

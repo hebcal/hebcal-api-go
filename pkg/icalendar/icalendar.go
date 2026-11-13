@@ -98,6 +98,9 @@ type Event struct {
 	UID string
 	// Summary is the event's title, as plain text.
 	Summary string
+	// SummarySuffix is written after the escaped Summary as it is, unescaped:
+	// the " / " and Hebrew name an English-and-Hebrew calendar appends.
+	SummarySuffix string
 	// Date is the day the event falls on.
 	Date Date
 	// Timed marks an event that starts at Hour:Minute on Date rather than
@@ -266,7 +269,7 @@ func (e *Event) write(buf *bytes.Buffer, dtstamp string) {
 	if e.Category != "" {
 		line(buf, "CATEGORIES:", e.Category)
 	}
-	line(buf, "SUMMARY:", Escape(e.Summary))
+	line(buf, "SUMMARY:", Escape(e.Summary), e.SummarySuffix)
 
 	start, end, args := e.startEnd()
 	line(buf, "DTSTART", args, ":", start)

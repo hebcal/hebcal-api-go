@@ -464,7 +464,7 @@ func TestPDFLegacyV2Errors(t *testing.T) {
 		path string
 		want int
 	}{
-		{"an ics feed", "/v2/h/" + enc("v=1&year=2026&maj=on") + "/hebcal.ics", http.StatusNotFound},
+		{"an unknown format", "/v2/h/" + enc("v=1&year=2026&maj=on") + "/hebcal.txt", http.StatusNotFound},
 		{"a yahrzeit calendar", "/v2/y/" + enc("v=yahrzeit") + "/yahrzeit.pdf", http.StatusNotFound},
 		{"no v at all", "/v2/h/" + enc("year=2026&maj=on") + "/x.pdf", http.StatusNotFound},
 		{"not base64", "/v2/h/!!!!/x.pdf", http.StatusNotFound},
@@ -608,7 +608,7 @@ func TestPDFLegacyCGIErrors(t *testing.T) {
 	}{
 		{"no query at all", "/hebcal/index.cgi/hebcal_2028_may.pdf", http.StatusNotFound},
 		{"no v", "/hebcal/index.cgi/x.pdf?year=2026&maj=on", http.StatusNotFound},
-		{"an ics feed", "/hebcal/index.cgi/hebcal.ics?v=1&year=2026&maj=on", http.StatusNotFound},
+		{"an unknown format", "/hebcal/index.cgi/hebcal.txt?v=1&year=2026&maj=on", http.StatusNotFound},
 		{"a yahrzeit v=", "/hebcal/index.cgi/x.pdf?v=yahrzeit&y1=1990", http.StatusNotFound},
 		{"an out-of-range year", "/hebcal/index.cgi/x.pdf?v=1&year=9999&maj=on", http.StatusGone},
 	}
@@ -639,4 +639,23 @@ func pdfTitle(t *testing.T, doc string) string {
 		b.WriteRune(rune(raw[i])<<8 | rune(raw[i+1]))
 	}
 	return b.String()
+}
+
+// A download whose extension is none of .pdf, .csv and .ics is a 404 that names
+// the extension, on every URL shape.
+func TestDownloadUnknownExtension(t *testing.T) {
+	v2 := strings.TrimRight(base64.StdEncoding.EncodeToString([]byte("v=1&year=2026&maj=on")), "=")
+	tests := []struct{ path, body string }{
+		{"/v4/CAEQAQ/hebcal.foo", "unknown download extension .foo\n"},
+		{"/v2/h/" + v2 + "/hebcal.txt", "unknown download extension .txt\n"},
+		{"/hebcal/index.cgi/hebcal.html?v=1&year=2026&maj=on", "unknown download extension .html\n"},
+		{"/v4/CAEQAQ/hebcal", "unknown download extension (none)\n"},
+	}
+	_, srv := pdfServerNoFonts(t)
+	for _, tt := range tests {
+		resp, body := get(t, srv, tt.path)
+		if resp.StatusCode != http.StatusNotFound || body != tt.body {
+			t.Errorf("%s: %d %q, want 404 %q", tt.path, resp.StatusCode, body, tt.body)
+		}
+	}
 }

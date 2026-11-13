@@ -39,9 +39,7 @@ func (s *Server) yahrzeitDownload(w http.ResponseWriter, r *http.Request, req *y
 	h.Set("X-Content-Type-Options", "nosniff")
 	ext := req.Ext()
 	if ext != ".ics" && ext != ".csv" {
-		h.Set("Content-Type", httpx.ContentTypeText)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Invalid download format: " + ext + "\n"))
+		writeUnknownExtension(w, ext)
 		return
 	}
 	cal, err := yahrzeit.New(req, s.Now())
@@ -118,6 +116,12 @@ func (s *Server) yahrzeitCSV(w http.ResponseWriter, r *http.Request, cal *yahrze
 // as abandoned.
 func (s *Server) yahrzeitSaved(w http.ResponseWriter, r *http.Request) {
 	if !downloadMethodAllowed(w, r) {
+		return
+	}
+	// Refused before the lookup, which also records the calendar as
+	// downloaded: a format it has no answer for is no download.
+	if ext := path.Ext(r.URL.Path); ext != ".ics" && ext != ".csv" {
+		writeUnknownExtension(w, ext)
 		return
 	}
 	path, rawQuery, _ := strings.Cut(r.RequestURI, "?")

@@ -42,6 +42,9 @@ type Event struct {
 	// hebcal-go's order and puts the fetched learning rows in the learning
 	// slot.
 	rank int
+	// series orders the daily-learning rows within the learning slot
+	// (download.LearningOrder); zero for anything else.
+	series int
 	// URL is the canonical hebcal.com page for this event, or empty. The
 	// renderer turns it into the short, tracked form and attaches a link
 	// annotation over the drawn text.
@@ -91,6 +94,7 @@ func Generate(p *download.Params) ([]Event, error) {
 			URL:     event.URL(ev),
 			AltDate: flags.Has(event.HEBREW_DATE),
 			rank:    hebcal.TimeOfDay(ev),
+			series:  download.EventLearningOrder(ev),
 		}
 		if e.AltDate {
 			e.rank = altDateRank
@@ -235,15 +239,18 @@ func renderSubject(ev event.CalEvent, flags event.HolidayFlags, locale string) s
 // so only consistency depends on it.
 const altDateRank = -1
 
-// sortDay orders one day's events by rank. hebcal-go already orders each day
-// by time of day, so this changes nothing but the daily-learning rows
-// mergeLearning appended at the end of the day, which move up to the learning
-// slot, after any learning series hebcal-go generated itself. The sort is
-// stable so that events of equal rank keep the order hebcal-go produced them
-// in.
+// sortDay orders one day's events by rank, and the learning rows by series.
+// hebcal-go already orders each day by time of day, so this changes nothing
+// but the daily-learning rows mergeLearning appended at the end of the day,
+// which move up into their places among the learning series hebcal-go
+// generated itself. The sort is stable so that events of equal rank keep the
+// order hebcal-go produced them in.
 func sortDay(evs []Event) {
 	sort.SliceStable(evs, func(i, j int) bool {
-		return evs[i].rank < evs[j].rank
+		if evs[i].rank != evs[j].rank {
+			return evs[i].rank < evs[j].rank
+		}
+		return evs[i].series < evs[j].series
 	})
 }
 

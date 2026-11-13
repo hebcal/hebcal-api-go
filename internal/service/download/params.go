@@ -22,6 +22,7 @@ import (
 	_ "github.com/hebcal/learning"
 	"google.golang.org/protobuf/proto"
 
+	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/service/location"
 	"github.com/hebcal/hebcal-api-go/pkg/downloadpb"
@@ -74,6 +75,11 @@ type Params struct {
 	// empty for the locations that have none -- lat/long and ZIP -- and CityName
 	// stands in. See CampaignName.
 	CityNameAscii string
+	// GeoID is a resolved geonames or ZIP location's geonameid or ZIP code,
+	// empty for a latitude and longitude. Place is what a timed event's UID
+	// ends with: GeoID, or an anchor made of the location's name.
+	GeoID string
+	Place string
 	// LocationShortName is the location's short display name ("Palo Alto",
 	// "Washington, DC"), or empty when the calendar has no location. The CSV
 	// export puts it in the Location column of every timed event.
@@ -352,6 +358,16 @@ func setLocation(p *Params, loc *geodb.Location, msg *downloadpb.Download) error
 	p.Opts.Location = &zl
 	p.LocationName = zl.Name
 	p.LocationShortName = loc.ShortName()
+	switch {
+	case loc.GeonameID != 0:
+		p.GeoID = strconv.Itoa(loc.GeonameID)
+	case loc.Zip != "":
+		p.GeoID = loc.Zip
+	}
+	p.Place = p.GeoID
+	if p.Place == "" {
+		p.Place = jsutil.MakeAnchor(zl.Name)
+	}
 	if p.CityName == "" {
 		p.CityName = loc.ShortName()
 	}
@@ -457,7 +473,14 @@ func applyDateRange(msg *downloadpb.Download, p *Params) error {
 		o.Year = time.Now().Year()
 	}
 
-	if m := msg.GetMonth(); m >= 1 && m <= 12 {
+	if m := int(msg.GetMonth()); o.IsHebrewYear && m >= 1 && m <= 12 {
+		// A Hebrew month (Nisan is 1) runs from its 1st to the 1st of the
+		// month after, inclusive: one day longer than the month. Every year
+		// has months 1-12; Adar II, 13, cannot be asked for.
+		start := hdate.New(o.Year, hdate.HMonth(m), 1)
+		o.Start = start
+		o.End = hdate.FromRD(start.Abs() + int64(start.DaysInMonth()))
+	} else if m >= 1 && m <= 12 {
 		o.Month = time.Month(m)
 	}
 	if n := msg.GetNumYears(); n > 1 {
@@ -574,6 +597,7 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 			shortName = location.MakeGeoCityName(lat, long, tzid)
 		}
 		p.LocationShortName = (&geodb.Location{Name: shortName, CC: cc}).ShortName()
+		p.Place = jsutil.MakeAnchor(shortName)
 		p.Opts.Location = &zmanim.Location{
 			Name:        name,
 			Latitude:    lat,

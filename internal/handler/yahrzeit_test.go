@@ -217,7 +217,9 @@ func TestYahrzeitErrors(t *testing.T) {
 		body       string
 	}{
 		{"invalid date", "/export/x.ics?v=yahrzeit&d1=31&m1=2&y1=2003", 400, "Gregorian day 31 out of valid range for 2/2003\n"},
-		{"other format", "/export/x.txt?v=yahrzeit&d1=3&m1=2&y1=2003", 404, "Invalid download format: .txt\n"},
+		{"other format", "/export/x.txt?v=yahrzeit&d1=3&m1=2&y1=2003", 404, "unknown download extension .txt\n"},
+		{"other format, /v2/y/", "/v2/y/dj15YWhyemVpdCZkMT0zJm0xPTImeTE9MjAwMw/x.foo", 404, "unknown download extension .foo\n"},
+		{"a four-letter extension", "/export/x.json?v=yahrzeit&d1=3&m1=2&y1=2003", 404, "unknown download extension .json\n"},
 		{"invalid date, csv", "/yahrzeit/yahrzeit.cgi/x.csv?v=yahrzeit&d1=31&m1=2&y1=2003", 400, "Gregorian day 31 out of valid range for 2/2003\n"},
 		{"cgi path without a calendar", "/yahrzeit/yahrzeit.cgi/x.ics?d1=3&m1=2&y1=2003", 404, "Invalid download URL: v=undefined\n"},
 		{"cgi path, holiday calendar", "/yahrzeit/yahrzeit.cgi/x.ics?v=1&year=2026", 404, "Invalid download URL: v=undefined\n"},

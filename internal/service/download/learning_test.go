@@ -62,6 +62,10 @@ func TestEachLearningScheduleGeneratesEvents(t *testing.T) {
 			if withURL == 0 && s.name != "yerushalmi-schottenstein" {
 				t.Errorf("%q produced %d events but none carry a URL", s.name, len(evs))
 			}
+			if o := EventLearningOrder(evs[0]); o >= len(learningOrder) {
+				t.Errorf("%q: category %q has no place in learningOrder",
+					s.name, EventCategories(evs[0])[0])
+			}
 		})
 	}
 }
@@ -134,5 +138,28 @@ func TestEveryUnsupportedSeriesHasAQueryParameter(t *testing.T) {
 	if len(fallbackSeries) != len(UnsupportedSeries(msg)) {
 		t.Errorf("fallbackSeries has %d entries but %d series are unsupported; "+
 			"the two lists have drifted", len(fallbackSeries), len(UnsupportedSeries(msg)))
+	}
+}
+
+// The rows readings-svc supplies interleave with the ones hebcal-go generates:
+// Sefer HaMitzvot sits between Rambam and Yerushalmi, Daf Weekly and Pirkei
+// Avot between Dirshu Amud HaYomi and Arukh HaShulchan. Every fetched series
+// has a place, keyed by the category readings-svc reports, which is the
+// series name.
+func TestLearningOrderInterleavesFetchedSeries(t *testing.T) {
+	for series := range fallbackSeries {
+		if LearningOrder(series) >= len(learningOrder) {
+			t.Errorf("%q has no place in learningOrder", series)
+		}
+	}
+	in := []string{"929", "rambam3", "seferHaMitzvot", "yerushalmi",
+		"dirshuAmudYomi", "dafWeekly", "pirkeiAvotSummer", "arukhHaShulchanYomi"}
+	for i := 1; i < len(in); i++ {
+		if LearningOrder(in[i-1]) >= LearningOrder(in[i]) {
+			t.Errorf("%q should come before %q", in[i-1], in[i])
+		}
+	}
+	if LearningOrder("unknown") != len(learningOrder) {
+		t.Error("an unknown series should go last")
 	}
 }

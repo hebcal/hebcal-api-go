@@ -68,7 +68,7 @@ func Render(ctx context.Context, f *Feed, today time.Time, rs Readings) (*Files,
 	cal := &icalendar.Calendar{
 		Title:        f.Title,
 		Description:  f.Desc,
-		Lang:         prodidLang(f.Locale),
+		Lang:         ical.ProdidLang(f.Locale),
 		PublishedTTL: publishedTTL,
 		RelCalID:     f.RelCalID,
 		Color:        strings.ToUpper(f.Color),
@@ -170,18 +170,4 @@ func fetchLearning(ctx context.Context, rs Readings, series []string, lg string,
 		return nil, fmt.Errorf("readings-svc returned no rows for %v", series)
 	}
 	return out, nil
-}
-
-// prodidLang is the language in the calendar's PRODID.
-func prodidLang(locale string) string {
-	if len(locale) == 2 {
-		return locale
-	}
-	switch strings.ToLower(locale) {
-	case "he-x-nonikud", "h":
-		return "he"
-	case "ashkenazi_romanian":
-		return "ro"
-	}
-	return "en"
 }

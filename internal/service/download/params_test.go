@@ -429,3 +429,31 @@ func TestLocationImpliesCandleLighting(t *testing.T) {
 		t.Errorf("CityName = %q, want Prestea", p.CityName)
 	}
 }
+
+// A month in a Hebrew-year calendar is a Hebrew month (Nisan is 1), from its
+// 1st through the 1st of the next. Month 13, Adar II, is out of range like any
+// other, which leaves the whole year.
+func TestHebrewYearMonth(t *testing.T) {
+	tests := []struct {
+		year, month int32
+		start, end  string
+	}{
+		{5776, 9, "1 Kislev 5776", "1 Tevet 5776"},
+		{5787, 12, "1 Adar I 5787", "1 Adar II 5787"},
+		{5787, 13, "", ""},
+	}
+	for _, tt := range tests {
+		p, err := DecodeParams(encode(t, &pb.Download{Year: tt.year, IsHebrewYear: true, Month: tt.month}), nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var start, end string
+		if o := p.Opts; o.Start.Abs() != 0 {
+			start, end = o.Start.String(), o.End.String()
+		}
+		if start != tt.start || end != tt.end || p.Opts.Month != 0 {
+			t.Errorf("%d/%d: %q..%q (Month %d), want %q..%q",
+				tt.year, tt.month, start, end, p.Opts.Month, tt.start, tt.end)
+		}
+	}
+}

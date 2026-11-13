@@ -13,8 +13,9 @@ Guidance for Claude Code (claude.ai/code) working in this repository.
   two older spellings, and the saved `/v3/<ulid>/…ics` calendars read from
   MySQL — ported from `@hebcal/icalendar` (as `pkg/icalendar`) and
   `src/yahrzeitDownload.js`; and the **zmanim feeds** -- `/zmanim`,
-  `/zmanim2` and `/sunrs` -- ported from `src/zmanimDownload.js`. The holiday
-  feeds are planned in [iCalendar-port.md](iCalendar-port.md);
+  `/zmanim2` and `/sunrs` -- ported from `src/zmanimDownload.js`; and the
+  **holiday feeds** -- `download.hebcal.com/v4/…ics` and its two legacy
+  spellings -- ported from `src/hebcal-download.js` and `src/icalCommon.js`;
 - the **PDF calendars** — `download.hebcal.com/v4/…pdf` (and its legacy
   `/v2/h/…pdf` spelling) and `www.hebcal.com/holidays/hebcal-<year>.pdf`. Much of this
   file is that service's engineering notes.
@@ -238,11 +239,12 @@ weekday reads "Fast begins", "Ta'anit Bechorot", the two chametz deadlines,
 the learning rows, "Erev Pesach", "Candle lighting".
 
 The PDF keeps that order rather than re-deriving it. `Event.rank` carries
-`TimeOfDay()` from `Generate`, and `sortDay` is a stable sort on it alone, so
-it changes nothing hebcal-go produced. What it is *for* is the learning rows
-`fallback.go` fetches from readings-svc: `mergeLearning` appends them at the end
-of the day, and with `rank` `TimeOfDayLearning` they move up to sit after the
-series hebcal-go generated and before the evening holiday.
+`TimeOfDay()` from `Generate`, and `sortDay` is a stable sort on it and then
+on `Event.series`, so it changes nothing hebcal-go produced. What it is *for*
+is the learning rows `fallback.go` fetches from readings-svc: `mergeLearning`
+appends them at the end of the day, and with `rank` `TimeOfDayLearning` they
+move up into the learning slot, before the evening holiday, and into their
+places among the series hebcal-go generated (see "Daily-learning order").
 
 **Latest Kiddush Levana is a timed event too, but not a `hebcal.TimedEvent`.**
 `hebcal.KiddushLevanaEvent` embeds one, so a plain `ev.(hebcal.TimedEvent)`
@@ -283,6 +285,17 @@ coordinates in the rendered name are one arc-minute below the input
 truncation -- `60 * (31.766666666666666 - 31)` is `45.99999999999994` in any
 IEEE-754 double.
 
+**Two very old parameters are read the way the feeds read them.** A
+`city-typeahead` that is a ZIP code -- five digits, or a label ending in a
+space and five digits when `zip` is empty -- is the location unless a
+geonameid is given, whatever `geo` says: the form submitted such URLs with
+`geo=none` or `geo=geoname&geonameid=`, and `typeaheadZip` turns them into
+`geo=zip` before `normalize` so the ZIP and its `b`/`m` survive. And `a=on`
+(or `a=1`) with no `lg` is `lg=a`, Ashkenazi transliterations. Both are
+`getLocationFromQuery` / `makeHebcalOptions` behaviour that `downloadHref2`
+never needed, since the website's form never produced them; about 200 of the
+legacy feed URLs crawled from production carry one or the other.
+
 Three things about the rest of the conversion look wrong and are not:
 
 - **`euro` and `subscribe` are bare truthiness tests, `h12` an off-test.**
@@ -296,17 +309,26 @@ Three things about the rest of the conversion look wrong and are not:
   mapping, whose last entry maps the `s` parameter to the protobuf's `sedrot`.
   That mapping is one more copy of the one named under "Daily learning" below.
 
+**Location precedence is spelled out twice.** `location.FromQuery` (the JSON
+routes) and `applyV2Location` (every download URL, which produces a protobuf
+rather than a `geodb.Location`) both pick geonameid, ZIP, `city`, decimal
+lat/long, then degrees/minutes, in that order; they must agree. In particular
+`geo=pos` says nothing by itself -- an old form's degrees/minutes URL carries
+it too -- so the decimal branch needs `latitude` *and* `longitude`, as
+`FromQuery` does. The degrees/minutes arithmetic and the name it gives live
+once, in `location.FromLegacyLatLong`.
+
 Two encodings deliberately differ from what hebcal.com itself writes, neither
 observable in the rendered calendar: protobuf field order (Go writes `oneof`
 fields last), and `start`/`end`, which travel as the ISO string the message can
 also carry rather than as epoch seconds — the same date, without a trip through
 the server's local timezone.
 
-Only `/v2/h/` and only `.pdf` and `.csv` are ours on this path. The holiday
-`.ics` feeds are still hebcal-web's, so those are 404, as is a URL with no
-`v=`. A URL whose `v=` names a Yahrzeit calendar never reaches this code: it
-is served by `yahrzeitDownload` (see "The iCalendar feeds"), which answers a
-`.pdf` 404 and serves a `.csv` as the Yahrzeit CSV export.
+Only `/v2/h/` and only `.pdf`, `.csv` and `.ics` are ours on this path (an
+`.ics` is "The holiday feeds"), and a URL with no `v=` is 404. A URL whose
+`v=` names a Yahrzeit calendar never reaches this code: it is served by
+`yahrzeitDownload` (see "The iCalendar feeds"), which answers a `.pdf` 404 and
+serves a `.csv` as the Yahrzeit CSV export.
 
 ### The classic /hebcal/index.cgi/ URL is a query string in two encodings
 
@@ -314,10 +336,12 @@ is served by `yahrzeitDownload` (see "The iCalendar feeds"), which answers a
 `/v2/` base64 and the `/v4/` protobuf, and crawlers still ask for it. It
 carries the same query string a `/v2/` URL hides in base64, so `cgi.go` decodes
 a CGI request by building the same `v2Query` and running it through
-`DecodeV2`, after two preprocessing steps `/v2/` has no counterpart for
-(`applyCGILegacyParams`): the very old `nh=on` (which expands to `maj`/`min`/
-`mod`/`mf`/`ss`, every negative option but Rosh Chodesh, and overrides an
-explicit one beside it), and lowercase `m=on` as the old spelling of `M=on`.
+`DecodeV2`, after the rewrites every query-string form gets, `/v2/h/`
+included (`applyLegacyParams`, `makeHebcalOptions`' own): the very old
+`nh=on` (which expands to `maj`/`min`/`mod`/`mf`/`ss`, every negative option
+but Rosh Chodesh, and overrides an explicit one beside it), and lowercase
+`m=on` as the old spelling of `M=on`. `/export/` is the same form as
+`/hebcal/index.cgi/`.
 `tag` and `set` are ancient and ignored. From `download.Decode` onward a CGI
 request *is* a `/v4/` request, the same collapse `/v2/` makes.
 
@@ -329,7 +353,7 @@ query can be percent-encoded a second time, its `;` as `%3B` and usually its
 `unescape`d -- a **Latin-1** decode that leaves `+` alone, not
 `decodeURIComponent` -- before splitting (`unescapeLatin1`).
 
-The status codes: only `.pdf` and `.csv` are ours (a holiday `.ics` is 404), a
+The status codes: only `.pdf`, `.csv` and `.ics` are ours, a
 URL naming no `v=` is 404 (which is why `hebcal_2028_may.pdf` with no query
 string is 404, not a calendar), and a `v=` naming a Yahrzeit calendar goes to
 `yahrzeitDownload`. The finite `redirectDownload.json` map of specific no-query
@@ -471,9 +495,10 @@ it shares everything up to the event list with the PDF through
 `internal/service/download`: `Decode(ctx, u, ".csv")`, `ParamsFromMessage`,
 and `GenerateCalEvents` (the raw, category-filtered hebcal-go events that
 `pdf.Generate` flattens into cells). `handler.download`, mounted on all three
-download URL shapes, sends `.csv` to `csvDownload` and everything else to
-`pdfDownload`; both go through the one download concurrency limiter
-(`-download-max-concurrency`), and the CSV path needs no fonts.
+download URL shapes, sends `.csv` to `csvDownload`, `.ics` to `icsDownload`,
+`.pdf` to `pdfDownload`, and answers any other extension 404; all three go
+through the one download concurrency limiter (`-download-max-concurrency`), and
+the CSV path needs no fonts.
 
 The bar is the same bytes production serves, and it was measured that way: a scratch harness ran hebcal-web's own
 `deserializeDownload` → `makeHebcalOptions` → `makeHebrewCalendar` →
@@ -531,11 +556,11 @@ Things that are not obvious:
 - **Daily-learning subjects keep typewriter apostrophes** ("Fourth Year's
   Fruit"); every other subject is smartened.
 - **A Hebrew date leads its day**, and the readings-svc learning rows sit in
-  the learning slot after the series hebcal-go generated. The order within the
-  slot is `learningSchedules`': the download form's, with **929 first** --
-  hebcal-web keeps the selected series in a JavaScript object, whose
-  integer-like key `929` iterates before every other. That order fixed the
-  same cells in the PDF.
+  the learning slot, interleaved with the series hebcal-go generated in
+  `download.learningOrder` (see "Daily-learning order"): the download form's,
+  with **929 first** -- hebcal-web keeps the selected series in a JavaScript
+  object, whose integer-like key `929` iterates before every other. That order
+  fixed the same cells in the PDF.
 
 Known differences from production (every other row of the sweep is
 byte-identical):
@@ -550,17 +575,18 @@ byte-identical):
 3. `lg=ah` Shabbat Mevarchim: production appends "מְבָרְכִים חוֹדֶשׁ Teves",
    because `MevarchimChodeshEvent` translates the month into the calendar's
    locale in its constructor; this service writes "טֵבֵת". Not reproduced.
-4. Hebrew-month (`mm=1`/`mm=2`) multi-year calendars: production appends the
-   next Tishrei from `year+1` rather than `year+numYears`, duplicating that
-   month's rows; this service inherits the PDF's corrected anchoring.
+4. Hebrew-month (`mm=1`/`mm=2`) is ignored, as in the iCalendar feeds (see
+   "The holiday feeds"): production appends the next Tishrei from `year+1`
+   and adds Gregorian-date rows; here the request is read as a Gregorian-month
+   one.
 
 ## The iCalendar feeds (`pkg/icalendar`, Yahrzeit first)
 
 Every Yahrzeit + Anniversary feed is served here, the saved `/v3/` calendars
-included. The static `/ical/` calendars are generated here too, though not
-yet in production (see "The static calendars"). No `/v4/` holiday `.ics`
-feed is; [iCalendar-port.md](iCalendar-port.md) is the plan, written to be
-picked up cold.
+included, and so is every holiday feed ("The holiday feeds" below). The static
+`/ical/` calendars are generated here too, though not yet in production (see
+"The static calendars"). [iCalendar-port.md](iCalendar-port.md) has what is
+left, and how to stand up the reference server.
 
 `pkg/icalendar` is a port of `@hebcal/icalendar` (hebcal-icalendar 7.0.6), and
 `internal/service/yahrzeit` of hebcal-web's `yahrzeitDownload.js`,
@@ -770,6 +796,9 @@ Things that are not obvious:
   run on one background worker behind a 256-deep queue, 3 s each; a full queue drops the write with a warning rather than
   delay a response, and the next poll writes it again. Note the first write
   bumps `updated`, so a calendar's first fetch changes its ETag once.
+  A URL whose extension is neither `.ics` nor `.csv` is a 404 before the
+  lookup, so it is neither read nor recorded -- unlike hebcal-web, which
+  looked the row up (and wrote both) before refusing the format.
 - **Failures:** unknown id → 404 with no caching headers; no `-ini` file, no
   `hebcal.mysql.user`/`dbname`, or a database that does not answer within
   7 s → 503 + `Retry-After: 30`, so Varnish's 24 h grace serves the stale
@@ -874,9 +903,8 @@ hebcal-devops' `etc/cron.d/hebcal-api-ical` is meant to run it weekly on the
 api hosts and rsync `ical/` into `/var/www/html/ical`; production has not cut
 over yet, and the Node dl hosts still build the feeds.
 
-The pieces: `internal/service/ical` is the **event adapter** phase 3 of
-[iCalendar-port.md](iCalendar-port.md) calls for (item A, plus the memo, B,
-and the Torah memo, C, for all-day events); `internal/service/staticcal`
+The pieces: `internal/service/ical` is the **event adapter** the holiday
+feeds share ("The holiday feeds"); `internal/service/staticcal`
 holds the feed table (`Feeds`, from both JSON configs), `Window`, `Render` and
 Kindness; `readings.Client.TorahMemos` is readings-svc's `/torahMemo`. The
 `.csv` side goes through `csv.Render`, so the static CSVs share the `/v4/`
@@ -950,6 +978,181 @@ Deliberate divergences:
   `pkg/icalendar`: its preamble gains `X-LOTUS-CHARSET` and
   `REFRESH-INTERVAL`, and `CLASS:PUBLIC` precedes `DESCRIPTION` rather than
   following it.
+
+## The holiday feeds (`/v4/…ics`)
+
+`internal/service/ical` and `internal/handler/ics.go` serve
+`download.hebcal.com/v4/<data>/<name>.ics` and its two legacy spellings, `/v2/h/`
+and the classic `/hebcal/index.cgi/` and `/export/` query strings -- the
+holiday calendar subscribed to or saved from the website. It is a port of
+`hebcalDownload()` (`src/hebcal-download.js`), `createMemo()` and
+`makeIcalEvents()` (`src/icalCommon.js`), `makeKiddushLevanaMemo()` and
+`makeIcalOpts()`, and it shares everything up to the event list with the PDF and
+CSV: `download.Decode`, `ParamsFromMessage`, `NumYears` and
+`GenerateCalEvents`. Like them it goes through the download concurrency
+limiter, holds a 14-day `Cache-Control`, and answers `304` from its ETag before
+generating anything.
+
+**Measured, not assumed.** `tools/ics-sweep.sh tools/ics-cases.txt` renders
+about 50 URLs -- every locale family, Israel, lat/long locations (Sydney, and
+Tromsø inside the Arctic Circle), Hebrew years and months,
+daily learning, Omer with a location, titles and colours, tracking parameters --
+in all three URL shapes against a local hebcal-web, and a second sweep over
+nineteen years from 1760 to 2450 on both schedules diffed every UID. Everything
+is byte-identical except the cases below. `internal/service/ical`'s `TestGolden`
+pins twelve of them (`tools/ics-goldens.sh` regenerates the goldens); run the
+sweep again before changing anything in the package. The Torah text comes from
+`tools/readings-stub.mjs`, which runs hebcal-web's own `makeTorahMemoText()`
+behind a unix socket, so the comparison needs no readings-svc.
+
+Things that are not obvious:
+
+- **A /v4/ URL's own query string is laid over what its payload says**, and a
+  legacy URL's query string *is* the request. The options the `Download`
+  message has no room for -- `title`, `caldesc`, `color`, `relcalid`,
+  `publishedTTL`, `emoji`, `utm_*` -- come from that effective query
+  (`download.DecodeICS` returns it as `ICSQuery`). Whether the feed is a file to
+  save is the same query's `subscribe`: any value makes it inline, but only `1`
+  lets it name itself.
+- **Titles follow `getCalendarTitle()`, which is not the PDF's.** A multi-year
+  feed is "Hebcal Diaspora 2026-2032" (the year and `ny`), a Hebrew year or an
+  empty calendar the year alone, anything else the span of its events; a
+  subscription has no dates. The location is named by its *short* name, taken
+  from the location rather than from the typeahead text (`Sydney, Australia` is
+  "Sydney"). A subscription with no location and no `title=` names itself from
+  what it subscribes to -- "Hebcal Israel - Torah Readings" -- and describes
+  itself in `X-WR-CALDESC` when it leaves out the major holidays; the list
+  order, and an empty entry for Shemirat HaLashon, are the website's
+  (`download.ICSQuery.OptionNames`).
+- **The tracking campaign is `ical-` and the title's slug**, built from the
+  plain-ASCII geonames name as the PDF's is. A `utm_campaign` that does not start
+  with `ical-` or `pdf-` makes hebcal.com links carry `us=ical&um=icalendar` as
+  well as `uc=` (`download.EventLinkFrom`).
+- **Timed events** (candle lighting, Havdalah, fast start and end, Chanukah
+  candles, Kiddush Levana) start in the location's zone (`DTSTART;TZID=`), carry
+  its short name as `LOCATION` and its position as `GEO`, and take the location
+  into their UID: `hebcal-<date>-<murmur32 of the untranslated description>-` plus
+  the geonameid, the ZIP code, or the anchor of the *full* location name
+  (`Params.Place`; the short name would give another UID). `GEO` is the
+  coordinates as the request spelled them -- a /v4/ URL stores them as a 32-bit
+  float, so `40.7` reads back as `40.70000076293945` there and nowhere else.
+  Candle lighting alone has an alarm, ten minutes before.
+- **The Omer's alarm is at nightfall of the evening it begins** when the
+  calendar has a location: half an hour before sunset on a Friday, 8.5° on a
+  Saturday, dusk otherwise, as an absolute `TRIGGER;VALUE=DATE-TIME`. The event
+  is then named for the location -- `hebcal-omer-<Hebrew year>-day<n>-<geoid>`,
+  the Hebrew year despite what the Gregorian date of the evening says, and only
+  for a geonames or ZIP location -- and gains its `LOCATION`. **On a night
+  with no such time** (a high-latitude summer, where the sun never sinks
+  8.5° or to civil dusk: Stockholm and Tallinn in June) a calendar with
+  candle-lighting falls back to tzeit at 7.083° without elevation, still
+  absolute, but the event keeps its plain UID and has no `LOCATION`; only
+  where that fails too (a polar summer) is the alarm the generic
+  `-P0DT3H30M0S`. `TestOmerAlarmFallsBackToTzeit`.
+- **A candle-lighting or Havdalah memo is the event's own and nothing else**,
+  with no link. **Kiddush Levana's** is four labelled lines in the calendar's
+  language -- the dates by the Intl rules of each locale, which Go has no CLDR
+  for, so `tools/dump-kl-dates.mjs` writes them out (`kldates.go`; it uses the
+  plain space `format()` writes where `formatToParts()` has a narrow no-break
+  one) -- and, on the Maharil line, "(adjusted to 4:22pm Candle lighting)" when
+  hebcal-go moved the event (`KiddushLevanaEvent.AdjustedTo`, hebcal-go 0.27.1+),
+  so that line can differ from hebcal-web's when the two zmanim libraries put
+  alot hashachar a few seconds apart.
+- **A calendar of only readings-svc rows names its campaign from their dates**
+  (`ical-diaspora-2026-2027`), as its title does: `campaignName` spans the
+  fetched rows as well as hebcal-go's events, of which there are none.
+- **A holiday with no Hebrew description gets its English one** in a Hebrew
+  feed, as in the website's `localizedHolidayDescription()`; the static feeds'
+  guard against it was wrong, and removing it changed nothing they publish.
+- **The Torah text is fetched per (Hebrew year, schedule)**, once however many
+  feeds ask: `Service.torahMemos` finds the years that hold an event that can
+  have a reading (not a timed one, not the Omer, Mevarchim, Hebrew dates, or
+  learning), asks `/torahMemo` for each through an LRU with `singleflight`, and
+  fetches nothing for a feed with no such event. A readings-svc that does not
+  answer is a 503 with `Retry-After` and none configured a 501, never a feed
+  with its readings missing (`ical.ReadingsError`). **Deploy readings-svc first**:
+  it answers an unknown route 404, which the client rightly takes for an error.
+- **A subscription is cut at 2399 events.** Past that, what is older than twelve
+  weeks goes; if that is not enough it is truncated and ends with a "Hebcal
+  calendar feed truncated" event the day after the last. Only a cut feed depends
+  on the week, so only then does the ETag gain the Sunday (a second check
+  after generating, like the original's); a file to save is never cut.
+  `Service.Limit` counts every event, the readings-svc rows included.
+- **An empty calendar is a placeholder, not an error** (a 400 for the PDF, a
+  header row for the CSV): one private "Calendar contains no events" event
+  dated today, a UID hashing the request's own URL (x64 128-bit murmur, where
+  production uses the x86 variant -- it changes daily anyway), no
+  `REFRESH-INTERVAL`, `max-age=86400` and no ETag.
+- **Errors carry no `Cache-Control`**, except the 410 for a year outside the
+  narrow range. hebcal-web's dispatcher sets the 14 days before the handler has
+  decided whether the request is any good, and some of its errors keep it; the
+  PDF and CSV drop it, and so does this.
+- **There is no `Access-Control-Allow-Origin`**: nothing fetches an `.ics`
+  cross-origin, and hebcal-web sends none.
+- **`min` means "not off" on a legacy feed URL.** For a calendar of major
+  holidays the minor ones come along unless `min` says `off` or `0`, where the
+  PDF and CSV want it to say `on`: the website's own form placeholder
+  (`min=...`) is still in subscribers' URLs, and without this their calendars
+  lose Tu BiShvat and the other minor holidays. `download.DecodeICS` sets the
+  message's `minor` flag for it, on the legacy shapes only.
+- **Yom Kippur Katan has no emoji**, deliberately: hebcal-go's event carries
+  none and this service adds none.
+
+Known differences from production (every other line of the sweeps is
+identical):
+
+1. Minutes of zmanim, as everywhere (noaa-go against `@hebcal/core`): a
+   `DTSTART`, the Omer alarm, a candle lighting inside a Kiddush Levana
+   description. The UID does not change, so the event moves a minute.
+2. Rosh Hashana's year is gematriya in Hebrew ("תשפ״ז"), a number in
+   hebcal-web -- deliberate, as in the CSV and the PDF.
+3. A legacy URL that names both a `year` and a `start`/`end` renders the year
+   (the form its `/v4/` equivalent takes); hebcal-web renders the range. The
+   website sends one or the other.
+4. Hebrew-month mode (`mm=1`/`mm=2`) is ignored on purpose
+   (`download.IgnoreMonthMode`, also applied to the CSV): it lays out a printed
+   page, and a list of events has no months to count. hebcal-web honours it,
+   appending the next Tishrei and a "Nov 10"-style Gregorian-date event on
+   each day when `d=on`/`D=on`; here the request is the same feed as one with
+   `mm=0`, so those events cannot appear, even from a `/v4/` URL that has the
+   setting baked into its protobuf.
+5. Yom Kippur Katan's memo names the month with a typographic apostrophe
+   ("Rosh Chodesh Sh’vat"), as hebcal-go 0.27.1 intends; hebcal-web writes a
+   straight one. It applies to the CSV and the static `/ical/` feeds too, whose
+   `yom-kippur-katan` goldens were edited by hand to match (the folded lines
+   re-wrapped by the renderer) rather than regenerated from hebcal-web.
+6. `lg=ah` and `lg=sh` Mevarchim summaries: hebcal-web appends "מְבָרְכִים חוֹדֶשׁ
+   Teves" (the month left in English, a side effect of when the event
+   translates it); this service writes the month in Hebrew ("טֵבֵת"), as for the
+   CSV. Only the title differs; the UID does not.
+7. Yom Kippur Katan has no emoji here (intentional); hebcal-web writes ✡️.
+8. In a pre-1900 year, a zone's local mean time is not a whole number of
+   minutes, so a Kiddush Levana time can be a minute off in Jerusalem.
+9. `lg=ah` and `lg=sh` titles containing a comma ("Hakdamah 28, 33, 34",
+   "Day 202: P107, P113"): hebcal-web escapes the transliteration but appends
+   the Hebrew after escaping, so its commas go out bare; here the whole
+   `SUMMARY` is escaped, as RFC 5545 requires. Deliberate.
+10. `lg=ah` and `lg=sh` titles of a readings-svc series (Chofetz Chaim, Daf
+   HaYomi B'Halacha, Tanya Yomi, ...): hebcal-web appends the Hebrew with
+   nikud (`renderBrief('he')`); here it is readings-svc's `hebrew` field,
+   without. Deliberate -- `ah`/`sh` never promised nikud, and hebcal.com's
+   own pages show none for them; getting it would cost a second readings-svc
+   request.
+11. The "Hebcal calendar feed truncated" notice has no Hebrew name, and with
+   `lg=ah`/`sh` hebcal-web repeats the English after a " / "; here the title
+   is written once. Deliberate.
+12. `v=now` is a 400 here, like any `v` other than `1` or a Yahrzeit `y...`;
+   hebcal-web's router lets it through and then renders nothing, a 404.
+   Deliberate -- no production URL carries it.
+13. Time-zone data. Go reads the system's tzdata (Debian's, built with
+   IANA's `backzone`); Node uses its ICU copy. So a zone's rules can differ
+   in two ways: a newer release here (tzdata 2026f keeps Cuba on -04 through
+   2027-11-07, which Node's 2026e does not have, an hour on every Havana
+   time), and pre-1970 history that ICU merges away (Saipan +09 in 1940
+   rather than Guam's +10, Accra +00:30 in 1942). Both sides are right for
+   their data; ours is the newer and fuller. The VTIMEZONE files are another
+   matter: vzic's default output keeps only a zone's recurring rules, so
+   `America/Havana.ics` built from 2026f still shows the old -05 winters.
 
 ## The readings-svc sidecar
 
@@ -1198,6 +1401,12 @@ reveals. Each has a regression test in `calendar_port_test.go`.
   is Hebrew 5513-6260 / Gregorian 1752-2499, and applies to both dates of a
   start/end range and to the `/holidays/` calendars as well.
 - **Explicit `numYears` is capped at 10** (`maxNumYears`).
+- **A month in a Hebrew-year calendar is a Hebrew month** (Nisan is 1, 1-12
+  only, so Adar II cannot be named), set as an explicit `Start`/`End` because
+  hebcal-go's `CalOptions.Month` is Gregorian. The range runs from the 1st
+  through the 1st of the following month, inclusive -- one day more than the
+  month, as `@hebcal/core` has it. A feed's title then names the year alone
+  (`calendarTitle` checks `Start` as well as `Month`).
 - **Havdalah is suppressed when `M=off` and `m=0`** — the default for a download
   that did not set a Havdalah time. A zero `m` means "no Havdalah", but
   hebcal-go reads a zero `HavdalahMins` as "use the default tzeit" and would
@@ -1305,11 +1514,21 @@ every supported schedule but Schottenstein produces at least one URL.
 
 ### Daily-learning order
 
-The daily-learning **rows sort into one slot in the order the request listed
-them**. Only four of the thirteen schedules have a flag of their own; the rest
-carry the generic `DAILY_LEARNING`, so hebcal-go's `TimeOfDay()` keys on
-`DAILY_LEARNING` as well as the four named flags, and
-`internal/service/pdf/events_test.go` pins the resulting order.
+The daily-learning **rows sort into one slot, in the download form's order
+with 929 first** (`dailyLearningConfig.json`, read through a JavaScript object
+whose integer-like key iterates first). Only four of the thirteen schedules
+have a flag of their own; the rest carry the generic `DAILY_LEARNING`, so
+hebcal-go's `TimeOfDay()` keys on `DAILY_LEARNING` as well as the four named
+flags, and `internal/service/pdf/events_test.go` pins the resulting order.
+
+hebcal-go orders the series it generates by the `DailyLearning` list, which is
+already in that order. The readings-svc series do not come after them, though:
+Sefer HaMitzvot sits between Rambam and Yerushalmi, Daf Weekly and Pirkei Avot
+between Dirshu Amud HaYomi and Arukh HaShulchan. So every format sorts a day by
+`TimeOfDay` and then by `download.LearningOrder` of the event's category (an
+item's `Category`), the table in `learning.go`; appending the fetched rows
+after the generated ones was visible on any day carrying both kinds, and
+decided which rows a subscription cut at 2399 events kept on its last day.
 
 On a crowded day the last row overflows its cell, so a different order loses a
 different link: a link-set difference between two calendars is not evidence
@@ -1365,6 +1584,7 @@ JavaScript sources.
 |---|---|
 | `ParamsFromMessage`, `Params` struct | `deserializeDownload()` → the calendar-relevant parts of `makeDownloadProps.js`; writes straight to `hebcal.CalOptions` instead of a query map |
 | `maxNumYears` (10) | `getNumYears()` in `src/calendar.js` |
+| Hebrew-year month → `Start`/`End` | `startEndHebrew()` (`@hebcal/core` `getStartAndEnd.js`), with `makeHebcalOptions`' 1-12 month check |
 | `decodeBase64` | Node `Buffer.from(s,'base64')` permissiveness |
 | Shabbat Mevarchim implication (RC + specialShabbat + sedrot) | `src/calendar.js` sets the `SHABBAT_MEVARCHIM` query-mask bit |
 | Gregorian vs Hebrew alt-date branch | `src/calendar.js` sets `addHebrewDates` only when `!hebrewMonths` |
@@ -1396,6 +1616,9 @@ branch ← `getLocationFromQuery` legacy branch, and is a **deliberate divergenc
 from the 301**. `applyV2DailyLearning` ← `downloadHref2`'s `dailyLearningConfig`
 loop. The fast fields ← `downloadHref2`'s `getFastTimeOpts(q)` block; the
 fast keys in `geoKeysToRemove("none")` ← `fastTimeKeys` in `getGeoKeysToRemove()`. `checkISODate` ← `isoDateStringToDate()` 400 guard.
+`typeaheadZip` ← the `city-typeahead` → `zip` lines at the top of
+`getLocationFromQuery` (`src/location.js`); the `a=on` → `lg=a` rewrite ←
+`makeHebcalOptions`' `options.ashkenazi && empty(query.lg)` (`src/calendar.js`).
 
 ### `internal/service/download/cgi.go` — `makeHebcalOptions(query)` path
 
@@ -1403,8 +1626,8 @@ fast keys in `geoKeysToRemove("none")` ← `fastTimeKeys` in `getGeoKeysToRemove
 equivalence `v2.go` was measured to hold), so `ParseCGIPath` builds the same
 `v2Query` and runs `DecodeV2`. `normalizeCGIQuery` ← the CGI half of
 `fixup2`'s querystring rewriting (`;` separator, double-encoded `%3B`,
-Latin-1 `unescape()`). `applyCGILegacyParams` ← `makeHebcalOptions`
-pre-read rewrites (`nh=on` expansion, lowercase `m=on`, `v=now`).
+Latin-1 `unescape()`). `applyLegacyParams` (also run by `ParseV2Path`) ← `makeHebcalOptions`
+pre-read rewrites (`nh=on` expansion, lowercase `m=on`).
 `unescapeLatin1` ← JavaScript `unescape()`.
 
 ### `internal/service/download/querylog.go`
@@ -1416,6 +1639,9 @@ as `%20`, not `+`).
 
 ### `internal/service/download/learning.go`, `links.go`
 
+`learningOrder` / `LearningOrder` ← the order of `dailyLearningConfig.json`
+as hebcal-web's `options.dailyLearning` object iterates it (`929` first, an
+integer-like key).
 `fallbackSeries` codes ← readings-svc's documented codes (also hebcal-web's
 `/hebcal` query params). `canonicalLearningURL` ← strips `@hebcal/rest-api`'s
 `utm_*` tracking. `links.go` UTM defaults ← `appendIsraelAndTracking`.
@@ -1432,7 +1658,6 @@ locale)`. `memo` ← `options.memo || ev.memo || getHolidayDescription() ||
 linkedEvent.render()`. `ownMemo` ← `ev.memo`, which hebcal-go carries as `event.Memo`. `parshaMemo` ← `getCsvParshaMemo()`. `Render` ←
 `eventsWithParshaToCsv()` + `byteOrderMark()` (now unconditional).
 `numYears` ← `getNumYears()` + `maxNumYear` (`src/calendar.js`).
-`addGregorianDates` ← `makeHebrewCalendar()`'s `GregorianDateEvent` loop.
 `learningToCSV` renders readings-svc's classic-API items.
 
 ### `pkg/icalendar/` — `@hebcal/icalendar` (hebcal-icalendar 7.0.6)
@@ -1522,6 +1747,25 @@ prefix/suffix, `appendHebrewToSubject`), `CATEGORY` table (`categories`),
 `normalize()` included) and, with `firstSentence` false and the English
 fallback, `localizedHolidayDescription()`. `download.EventLink` ←
 `appendIsraelAndTracking()` + `shortenSedrotUrl()` (moved from `pdf/links.go`).
+
+### `internal/service/ical/feed.go`, `kiddushlevana.go`, `torahmemo.go` -- `src/hebcal-download.js`, `src/icalCommon.js`
+
+`Service.Parse` / `Generate` ← `hebcalDownload()` and `makeHebrewCalendar()`
+(`download.NumYears` ← `getNumYears()`); `Service.Marshal` ← the rest of
+`hebcalDownload()` and `icalEventsToString()`. `calendarTitle` ←
+`getCalendarTitle()` (`@hebcal/rest-api`); `campaignName` ← its `campaignName()`;
+`subscriptionTitle` ← `makeIcalOpts()` with `makeCalendarSubtitleFromOpts()` and
+`queryDescription()` (`download.ICSQuery.OptionNames`, from `queryToName` and
+`queryLongDescr` in `src/urlArgs.js`). `Service.Limit` ←
+`limitIcsFeedLength()` and `makeTruncationNoticeEvent()`; `placeholder` ←
+`makeDummyEvent()`. `Event`'s timed half and `Options.omerAlarm` ← the
+`IcalEvent` constructor and `addLocationOmerAlarms()`, its 7.083° fallback ←
+`makeOmerEvent()` (`@hebcal/core`); `kiddushLevanaMemo` ←
+`makeKiddushLevanaMemo()` (`src/kiddushLevanaMemo.js`, dates by
+`klDateFormats`); `Service.torahMemos` ← `makeTorahMemoText()`, run by
+readings-svc. `handler.icsDownload` ← the headers `hebcalDownload()` sets and
+the dispatcher's 14-day `Cache-Control`. `tools/readings-stub.mjs` runs the
+last of those for comparing without a sidecar.
 
 ### `internal/service/staticcal/`, `cmd/hebcal-static-ical/` — `src/staticCalendars.js`, `src/makeStaticCalendars.js`, `src/kindness.js`
 

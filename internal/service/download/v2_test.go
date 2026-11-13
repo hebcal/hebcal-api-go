@@ -111,7 +111,7 @@ func TestParseV2Path(t *testing.T) {
 		wantErr bool
 	}{
 		{"well formed", v2Prefix + data + "/hebcal_2026.pdf", false},
-		{"an ics feed, not ours", v2Prefix + data + "/hebcal.ics", true},
+		{"an ics feed, when a pdf is asked for", v2Prefix + data + "/hebcal.ics", true},
 		// parseV2Path() defaults a filename-less path to hebcal.ics.
 		{"no filename", v2Prefix + data, true},
 		{"empty payload", v2Prefix + "/hebcal_2026.pdf", true},
@@ -142,6 +142,7 @@ func TestDecodeV2RequiresV1(t *testing.T) {
 		{"no v at all", "geonameid=5128581&year=2026&maj=on", isNotFound},
 		{"a yahrzeit calendar", "v=yahrzeit&y1=1990&m1=5&d1=5", isBadRequest},
 		{"some other version", "v=2&year=2026&maj=on", isBadRequest},
+		{"v=now, like any other version", "v=now&year=2026&maj=on", isBadRequest},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -301,6 +302,46 @@ func TestDecodeV2GeoNoneDropsTimes(t *testing.T) {
 	msg := decodeV2(t, "v=1&geo=none&b=40&m=50&ue=on&c=on")
 	if msg.GetCandleLightingMins() != 0 || msg.GetHavdalahMins() != 0 || msg.GetUseElevation() {
 		t.Errorf("geo=none kept a time parameter: %v", msg)
+	}
+}
+
+// The very old a=on asks for Ashkenazi transliterations, unless lg names a
+// locale.
+func TestDecodeV2AshkenaziFlag(t *testing.T) {
+	for qs, want := range map[string]string{
+		"v=1&a=on":      "a",
+		"v=1&a=1":       "a",
+		"v=1&a=on&lg=h": "h",
+		"v=1&a=off":     "",
+	} {
+		if got := decodeV2(t, qs).GetLocale(); got != want {
+			t.Errorf("%s: locale %q, want %q", qs, got, want)
+		}
+	}
+}
+
+// A ZIP code typed into the location box is the location, even under the
+// geo=none or geo=geoname the form submitted with it, and it keeps the
+// candle-lighting and Havdalah offsets geo=none would otherwise drop. A
+// geonameid still wins.
+func TestDecodeV2TypeaheadZip(t *testing.T) {
+	for _, tt := range []struct {
+		qs, zip string
+		geoid   int32
+		mins    int32
+	}{
+		{"v=1&geo=none&geonameid=&city-typeahead=10977&b=18&m=50", "10977", 0, 50},
+		{"v=1&geo=geoname&geonameid=&city-typeahead=84124-1234&m=50", "84124", 0, 50},
+		{"v=1&geo=none&city-typeahead=Spring+Valley,+NY+10977&m=50", "10977", 0, 50},
+		{"v=1&geo=zip&zip=02021&city-typeahead=Spring+Valley,+NY+10977", "02021", 0, 0},
+		{"v=1&geo=geoname&geonameid=5128581&city-typeahead=10977", "", 5128581, 0},
+		{"v=1&geo=none&city-typeahead=Spring+Valley", "", 0, 0},
+	} {
+		msg := decodeV2(t, tt.qs)
+		if msg.GetZip() != tt.zip || msg.GetGeonameid() != tt.geoid || msg.GetHavdalahMins() != tt.mins {
+			t.Errorf("%s: zip %q geonameid %d m %d, want %q %d %d", tt.qs,
+				msg.GetZip(), msg.GetGeonameid(), msg.GetHavdalahMins(), tt.zip, tt.geoid, tt.mins)
+		}
 	}
 }
 
@@ -517,5 +558,24 @@ func TestParseV2PathLastValueWins(t *testing.T) {
 	}
 	if q["year"] != "2026" {
 		t.Errorf("year = %q, want the last value 2026", q["year"])
+	}
+}
+
+// A degrees-and-minutes location that also says geo=pos (the old form's own
+// hidden field does) is that location, not a decimal one with no coordinates.
+func TestDecodeV2LegacyLatLongWithGeoPos(t *testing.T) {
+	msg := decodeV2(t, "v=1&c=on&geo=pos&ladeg=53&lamin=59&ladir=n&lodeg=1&lomin=33&lodir=w&tzid=Europe%2FLondon")
+	if !msg.GetGeoPos() {
+		t.Fatal("no position")
+	}
+	if lat, long := msg.GetLatitude(), msg.GetLongitude(); lat < 53.98 || lat > 53.99 || long > -1.54 || long < -1.56 {
+		t.Errorf("position = %v, %v, want 53.983, -1.55", lat, long)
+	}
+	if got, want := msg.GetCityName(), "53°59′N 1°33′W Europe/London"; got != want {
+		t.Errorf("cityName = %q, want %q", got, want)
+	}
+	// geo=pos with no coordinates at all names no location.
+	if msg := decodeV2(t, "v=1&c=on&geo=pos"); msg.GetGeoPos() {
+		t.Error("geo=pos alone made a position")
 	}
 }

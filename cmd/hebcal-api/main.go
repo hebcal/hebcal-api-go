@@ -94,6 +94,7 @@ func main() {
 		app.DB = db
 		app.PDF.Geo = db
 		app.CSV.Geo = db
+		app.ICS.Geo = db
 		defer db.Close()
 	}
 
@@ -142,6 +143,10 @@ func main() {
 	if cfg.ReadingsSocket != "" {
 		app.PDF.Learning = download.NewLearningFetcher(app.Readings)
 		app.CSV.Learning = app.PDF.Learning
+		app.ICS.Learning = app.PDF.Learning
+		// The Torah readings in a feed's descriptions come from the same
+		// sidecar.
+		app.ICS.Readings = app.Readings
 	}
 
 	// The saved Yahrzeit calendars (/v3/) live in the site's MySQL database,
