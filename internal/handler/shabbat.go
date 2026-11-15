@@ -35,10 +35,9 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", httpx.ContentTypeJSON)
 
-	// Scope gate: only cfg=json is implemented.
+	// Scope gate: only cfg=json is implemented (421 on download.hebcal.com).
 	if q.Get("cfg") != "json" {
-		w.WriteHeader(http.StatusNotImplemented)
-		w.Write(httpx.JSONErrorBody("Only cfg=json is supported by this endpoint"))
+		writeUnsupportedCfg(w, r, "Only cfg=json is supported by this endpoint")
 		return
 	}
 	leyningParam := q.Get("leyning")

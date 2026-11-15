@@ -46,9 +46,7 @@ func (s *Server) converter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if cfg != "json" && cfg != "xml" {
-		w.Header().Set("Content-Type", httpx.ContentTypeJSON)
-		w.WriteHeader(http.StatusNotImplemented)
-		w.Write(httpx.JSONErrorBody("Only cfg={json,xml} is supported by this endpoint"))
+		writeUnsupportedCfg(w, r, "Only cfg={json,xml} is supported by this endpoint")
 		return
 	}
 	now := s.Now()

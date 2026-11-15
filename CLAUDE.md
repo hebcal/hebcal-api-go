@@ -1526,7 +1526,10 @@ download.hebcal.com any more.
 - **Varnish** sends all of download.hebcal.com, and the API, MCP and
   `/holidays/hebcal-*.pdf` URLs of www.hebcal.com, to **port 8082**. Nothing
   else under `/holidays/` is ours, and this service answers it 404. A 503
-  from here carries `Retry-After`.
+  from here carries `Retry-After`. Since all of download.hebcal.com arrives
+  here, crawlers reach `/shabbat` and `/converter` on it too; a request there
+  without a supported `cfg` -- 501 on www.hebcal.com -- is answered `421
+  Misdirected Request` (`writeUnsupportedCfg`, by `Host`).
 
 ### Links and campaigns
 
