@@ -767,8 +767,8 @@ things that differ from the `.ics` and are what hebcal-web does too:
   (and the per-entry edit link) is never written, `dl=1` or not -- `/v3/`,
   `/v2/y/`, `/export/` alike. `makeEvents` takes a `feed` flag for it.
 - **Headers:** no Cache-Control and `Content-Disposition` only on `dl=1`, like
-  the feed; but no `Vary: User-Agent`, and the ETag variant drops the week and
-  the Google distinction, since neither changes the file. Content-Type is
+  the feed; but no `Vary: User-Agent`, and no ETag: a CSV is a one-time
+  download, so there is no conditional request to answer. Content-Type is
   `text/x-csv; charset=utf-8`.
 
 Measured against hebcal-web's own `makeYahrzeitEvents` + `eventsToCsv` over
@@ -1822,7 +1822,7 @@ columns (`Personal`, show-time-as 3) written by `csv.Document`.
 
 `internal/handler/yahrzeit.go` ← the headers `yahrzeitDownload()` sets and
 does not set (`Vary: User-Agent`, attachment on `dl=1`, no Cache-Control);
-`yahrzeitCSV` ← its `.csv` branch (`text/x-csv`, ETag attrs without `sunday`).
+`yahrzeitCSV` ← its `.csv` branch (`text/x-csv`, no ETag).
 
 ### `internal/service/zmanim/feed.go` — `src/zmanimDownload.js` + `src/zmanimCommon.js`
 

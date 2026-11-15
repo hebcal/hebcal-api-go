@@ -412,12 +412,3 @@ func TestCSVHasNoEditMemo(t *testing.T) {
 		}
 	}
 }
-
-func TestCSVVariantIgnoresWeekAndClient(t *testing.T) {
-	req, _ := ParseRequest("/export/x.csv?v=yahrzeit&n1=A&y1=2001&m1=5&d1=5")
-	a, _ := New(req, today2026)
-	b, _ := New(req, model.GregDate{Year: 2026, Month: time.November, Day: 15})
-	if a.Variant("") != b.Variant(GoogleImporter) {
-		t.Error("a CSV does not depend on the week or the client")
-	}
-}

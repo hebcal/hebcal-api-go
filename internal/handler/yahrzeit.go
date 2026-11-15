@@ -79,16 +79,10 @@ func (s *Server) yahrzeitDownload(w http.ResponseWriter, r *http.Request, req *y
 // yahrzeitCSV serves the .csv export of a personal calendar. Like the feed it
 // carries no Cache-Control and saves as an attachment only on dl=1; unlike it,
 // nothing in it depends on the client or the current week, so it does not
-// vary by User-Agent and a calendar with no events is a header row with an
-// ETag like any other.
+// vary by User-Agent. It has no ETag: a CSV is a one-time download, so there
+// is no conditional request to answer.
 func (s *Server) yahrzeitCSV(w http.ResponseWriter, r *http.Request, cal *yahrzeit.Calendar) {
 	h := w.Header()
-	etag := httpx.MakeETag(r, cal.Variant(""))
-	h.Set("ETag", etag)
-	if httpx.CheckFresh(r, etag) {
-		w.WriteHeader(http.StatusNotModified)
-		return
-	}
 	body, err := cal.CSV()
 	if err != nil {
 		httpx.WritePlainError(w, err)

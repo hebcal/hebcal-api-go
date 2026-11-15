@@ -290,13 +290,8 @@ func TestYahrzeitCSV(t *testing.T) {
 		if v := resp.Header.Values("Vary"); strings.Contains(strings.Join(v, ","), "User-Agent") {
 			t.Errorf("%s: a CSV does not vary by client: %v", p, v)
 		}
-		etag := resp.Header.Get("ETag")
-		if etag == "" {
-			t.Errorf("%s: no ETag", p)
-		}
-		resp, _ = get(t, srv, p, "If-None-Match", etag)
-		if resp.StatusCode != http.StatusNotModified {
-			t.Errorf("%s: conditional request got %d", p, resp.StatusCode)
+		if v := resp.Header.Get("ETag"); v != "" {
+			t.Errorf("%s: unexpected ETag %s", p, v)
 		}
 	}
 	resp, _ := get(t, srv, "/export/yahrzeit.csv?dl=1&"+qs)

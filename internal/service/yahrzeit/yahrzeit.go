@@ -64,17 +64,11 @@ func (c *Calendar) sunday() int64 {
 // Variant names everything outside the URL that a rendering depends on: the
 // saved calendar's version, the years it spans, the week it was made in (a subscription drops events as
 // they recede into the past), and whether it is Google's copy. A cache
-// validator has to include it.
-//
-// A .csv is a one-time export whatever its URL says: it holds every event and
-// no reminders, so neither the week nor the client changes it.
+// validator has to include it. Only the .ics feed carries a validator.
 func (c *Calendar) Variant(userAgent string) string {
 	v := strconv.Itoa(c.rng.startYear) + "-" + strconv.Itoa(c.rng.endYear) + "/" + c.req.RawQuery
 	if c.req.Version != "" {
 		v += "/" + c.req.Version
-	}
-	if c.req.Ext() == ".csv" {
-		return v
 	}
 	if !c.Attachment() {
 		v += "/" + strconv.FormatInt(c.sunday(), 10)
