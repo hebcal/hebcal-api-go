@@ -15,8 +15,7 @@ import (
 // this makes the request readable and reproducible under the log's "qs" key.
 //
 // The output round-trips through DecodeV2 and can be pasted onto a hebcal.com
-// URL. Keep it in step with the daily-learning list in learningQueryParams
-// below.
+// URL. The daily-learning flags follow dailyLearningConfig.json's order.
 func MessageToQuery(msg *downloadpb.Download) string {
 	var q queryBuilder
 	q.set("v", "1")
@@ -81,8 +80,8 @@ func MessageToQuery(msg *downloadpb.Download) string {
 	q.onIf("d", msg.GetAddAltDates())
 	q.onIf("D", msg.GetAddAltDatesForEvents())
 	q.onIf("ykk", msg.GetYomKippurKatan())
-	for _, lp := range learningQueryParams {
-		q.onIf(lp.param, lp.on(msg))
+	for i := range allSeries {
+		q.onIf(allSeries[i].QueryParam, allSeries[i].on(msg))
 	}
 	q.onIf("ue", msg.GetUseElevation())
 	q.onIf("yzkr", msg.GetYizkor())
@@ -125,37 +124,6 @@ func MessageToQuery(msg *downloadpb.Download) string {
 		q.set("end", time.Unix(secs, 0).UTC().Format("2006-01-02"))
 	}
 	return q.String()
-}
-
-// learningQueryParams maps each daily-learning protobuf field to its query
-// parameter, in a fixed order so the "qs" field lists them consistently. The
-// last entry is sedrot, which carries the plain `s` Torah-readings parameter.
-var learningQueryParams = []struct {
-	param string
-	on    func(*downloadpb.Download) bool
-}{
-	{"F", func(m *downloadpb.Download) bool { return m.GetDafyomi() }},
-	{"myomi", func(m *downloadpb.Download) bool { return m.GetMishnaYomi() }},
-	{"dpy", func(m *downloadpb.Download) bool { return m.GetPerekYomi() }},
-	{"nyomi", func(m *downloadpb.Download) bool { return m.GetNachYomi() }},
-	{"dty", func(m *downloadpb.Download) bool { return m.GetTanakhYomi() }},
-	{"dps", func(m *downloadpb.Download) bool { return m.GetPsalms() }},
-	{"d929", func(m *downloadpb.Download) bool { return m.GetNine29() }},
-	{"dr1", func(m *downloadpb.Download) bool { return m.GetRambam1() }},
-	{"dr3", func(m *downloadpb.Download) bool { return m.GetRambam3() }},
-	{"dsm", func(m *downloadpb.Download) bool { return m.GetSeferHaMitzvot() }},
-	{"yyomi", func(m *downloadpb.Download) bool { return m.GetYerushalmiYomi() }},
-	{"yys", func(m *downloadpb.Download) bool { return m.GetYySchottenstein() }},
-	{"dcc", func(m *downloadpb.Download) bool { return m.GetChofetzChaim() }},
-	{"dshl", func(m *downloadpb.Download) bool { return m.GetShemiratHaLashon() }},
-	{"ayd", func(m *downloadpb.Download) bool { return m.GetDirshuAmudYomi() }},
-	{"dw", func(m *downloadpb.Download) bool { return m.GetDafWeekly() }},
-	{"dpa", func(m *downloadpb.Download) bool { return m.GetPirkeiAvotSummer() }},
-	{"ahsy", func(m *downloadpb.Download) bool { return m.GetArukhHaShulchanYomi() }},
-	{"dksa", func(m *downloadpb.Download) bool { return m.GetKitzurShulchanAruch() }},
-	{"ddh", func(m *downloadpb.Download) bool { return m.GetDirshuDafHalacha() }},
-	{"dtn", func(m *downloadpb.Download) bool { return m.GetTanyaYomi() }},
-	{"s", func(m *downloadpb.Download) bool { return m.GetSedrot() }},
 }
 
 // queryBuilder accumulates key=value pairs in insertion order, so the rendered

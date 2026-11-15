@@ -253,3 +253,34 @@ func TestKindness(t *testing.T) {
 		t.Errorf(".csv has %d rows, row 366 %q; want this year and next", len(rows), rows[366])
 	}
 }
+
+// Feeds is derived from hebcal-web's two configuration files; these pin the
+// derivations that are not a field copied across.
+func TestFeedsFromConfig(t *testing.T) {
+	if len(Feeds) != 36 {
+		t.Errorf("len(Feeds) = %d, want 36", len(Feeds))
+	}
+	seen := map[string]bool{}
+	for _, f := range Feeds {
+		if seen[f.File] {
+			t.Errorf("feed %q appears twice", f.File)
+		}
+		seen[f.File] = true
+	}
+	cc := feedByName(t, "chofetz-chaim")
+	if !cc.ChofetzChaim || !strings.HasPrefix(cc.Desc, "Daily study of the Sefer Chofetz Chaim") {
+		t.Errorf("chofetz-chaim = %+v", cc)
+	}
+	if f := feedByName(t, "sefer-hamitzvot"); f.Series != "seferHaMitzvot" || len(f.Opts.DailyLearning) != 0 {
+		t.Errorf("sefer-hamitzvot should come from readings-svc: %+v", f)
+	}
+	if f := feedByName(t, "daf-weekly"); len(f.Opts.DailyLearning) != 1 || f.Opts.DailyLearning[0] != "dafWeeklySunday" {
+		t.Errorf("daf-weekly DailyLearning = %v", f.Opts.DailyLearning)
+	}
+	if f := feedByName(t, "yizkor-il"); !f.IL || !f.Opts.Yizkor || !f.Opts.NoHolidays || f.Locale != "he-x-NoNikud" {
+		t.Errorf("yizkor-il = %+v", f)
+	}
+	if seen["torah-readings-diaspora"] && feedByName(t, "torah-readings-diaspora").Opts.DailyLearning != nil {
+		t.Error("the Torah-readings entry of dailyLearningConfig.json must not make a learning feed")
+	}
+}

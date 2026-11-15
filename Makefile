@@ -7,7 +7,7 @@ PREFIX := /usr/local
 SVCUSER := www-data
 SVCGROUP := hebcal
 
-.PHONY: all build run test vet fmt fmtcheck clean install uninstall
+.PHONY: all build run test vet fmt fmtcheck clean install uninstall sync-webconfig check-webconfig
 
 all: build
 
@@ -23,6 +23,13 @@ GOTAGS := sqlite_fts5,sqlite_math_functions
 # elsewhere: make run GEO_DIR=/path/to/hebcal-web
 GEO_DIR := ../hebcal-web
 
+# hebcal-web's calendar configuration, embedded by internal/webconfig. The
+# copies there are never edited by hand: change hebcal-web's, then
+#   make sync-webconfig && make test
+# and commit the copied files. Override WEB_DIR if hebcal-web lives elsewhere.
+WEB_DIR := ../hebcal-web
+WEBCONFIG_FILES := dailyLearningConfig.json staticCalendars.json
+
 build:
 	CGO_ENABLED=1 go build -tags $(GOTAGS) -trimpath -ldflags="-s -w" -o $(BIN) $(CMD)
 	go build -trimpath -ldflags="-s -w" -o $(STATIC_BIN) $(STATIC_CMD)
@@ -36,6 +43,20 @@ run: build
 		-zips-db $(GEO_DIR)/zips.sqlite3 \
 		-geonames-db $(GEO_DIR)/geonames.sqlite3 \
 		-fonts fonts
+
+# Copies hebcal-web's calendar configuration into internal/webconfig.
+sync-webconfig:
+	@for f in $(WEBCONFIG_FILES); do \
+		cp $(WEB_DIR)/src/$$f internal/webconfig/$$f || exit 1; \
+	done
+	@git status --short internal/webconfig
+
+# Fails if the embedded copies differ from hebcal-web's.
+check-webconfig:
+	@for f in $(WEBCONFIG_FILES); do \
+		cmp -s $(WEB_DIR)/src/$$f internal/webconfig/$$f || \
+			{ echo "internal/webconfig/$$f differs from $(WEB_DIR)/src/$$f (run make sync-webconfig)"; exit 1; }; \
+	done
 
 # Fails, listing the offending files, if anything needs gofmt -- the same
 # check CI runs -- so a forgotten `make fmt` breaks `make test` locally too.
