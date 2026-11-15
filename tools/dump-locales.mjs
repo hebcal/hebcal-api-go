@@ -63,7 +63,7 @@ const lines = [
   '\t// Months are the full Gregorian month names used in a page title.',
   '\tMonths [12]string',
   '\t// MonthsShort are the abbreviated names used in the Gregorian date range',
-  '\t// beneath a Hebrew-month title.',
+  '\t// beneath a Hebrew-month title, and the fridge page's date column.',
   '\tMonthsShort [12]string',
   '\t// Weekdays are the column headings, Sunday first.',
   '\tWeekdays [7]string',

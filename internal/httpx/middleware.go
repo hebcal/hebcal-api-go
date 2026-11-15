@@ -62,6 +62,7 @@ var routeGroups = []struct{ label, prefix string }{
 	{"converter", "/converter"},
 	{"converter-csv", "/converter/csv"},
 	{"shabbat-json", "/shabbat"},
+	{"shabbat-fridge", "/shabbat/fridge.cgi"},
 	{"zmanim", "/zmanim"},
 	{"zmanim", "/zmanim2"},
 	{"zmanim", "/sunrs"},

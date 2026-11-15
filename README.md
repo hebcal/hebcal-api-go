@@ -195,6 +195,25 @@ When readings-svc cannot be reached, `/shabbat` returns `503` rather than
 a response that silently omits the readings; `leyning=off` skips the call
 altogether.
 
+#### Candle-lighting times for a year
+
+- `GET|HEAD /shabbat/fridge.cgi?geonameid=…&year=…` — www.hebcal.com's
+  printable page of a year's candle-lighting times ("for the fridge"), ported
+  from `src/fridge.js` and `views/fridge.ejs`. One row for every Shabbat and
+  Yom Tov, named for the Torah portion or the holiday, with Havdalah times in
+  a column a checkbox reveals.
+- `year` is a Hebrew year unless `yt=G`; with no `year` it is the Hebrew year
+  in progress, or the next one after 15 Av. Years more than 4 before or 20
+  after the current one are `410 Gone`.
+- A location is required (`geonameid`, `zip`, `city`, or
+  `latitude`/`longitude`/`tzid`); `b`, `m`, `M`, `td`, `ue`, `i`, `h12` and
+  `lg` are read as `/shabbat` reads them. Month abbreviations follow `lg`.
+- `cfg=csv` returns the same rows as a CSV download
+  (`Date,Parsha,Candles,Havdalah`).
+- The page is HTML rendered with `html/template`, and carries the strict
+  `Content-Security-Policy` www.hebcal.com sends, with a fresh nonce for its
+  one inline script. Errors are plain text.
+
 ### Geolocation
 
 - `GET|HEAD /geo?…` — resolve a location from query parameters and
@@ -551,6 +570,11 @@ local midnight; an explicit date or range is cached for 30 days with an
 
 ## Known differences from the Node.js implementation
 
+- `/shabbat/fridge.cgi` names every Erev Pesach and Erev Sukkot row for the
+  holiday; hebcal-web names some of them "Latest Kiddush Levana". Its errors
+  are plain text rather than an HTML error page, the page has no analytics
+  script, and its markup differs byte for byte (it is a new template), though
+  not in what it draws.
 - Same-day events may appear in a slightly different order within the
   `events` array.
 - Molad announcements are rendered in hebcal-go's format rather than
@@ -616,6 +640,8 @@ internal/
     zmanim/                /zmanim halachic times and date resolution, and
                            the /zmanim, /zmanim2 and /sunrs iCalendar feeds
     shabbat/               /shabbat calendar, candle options, item rendering
+    fridge/                /shabbat/fridge.cgi: a year of candle-lighting
+                           times as an HTML page (html/template) or CSV
     complete/              /complete result serialization
     location/              query -> location, and the two location JSON shapes
     download/              download URLs (/v4/, /v2/h/, CGI) -> protobuf ->

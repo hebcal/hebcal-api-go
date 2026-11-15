@@ -14,7 +14,7 @@ type CalendarNames struct {
 	// Months are the full Gregorian month names used in a page title.
 	Months [12]string
 	// MonthsShort are the abbreviated names used in the Gregorian date range
-	// beneath a Hebrew-month title.
+	// beneath a Hebrew-month title, and the fridge page's date column.
 	MonthsShort [12]string
 	// Weekdays are the column headings, Sunday first.
 	Weekdays [7]string

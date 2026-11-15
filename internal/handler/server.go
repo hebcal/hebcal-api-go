@@ -128,6 +128,9 @@ func (s *Server) Routes() http.Handler {
 	mux.HandleFunc("/sunrs.ics", mw.Serve(s.DownloadLimiter.Wrap(s.zmanimFeed)))
 	mux.HandleFunc("/shabbat", mw.Serve(s.shabbat))
 	mux.HandleFunc("/shabbat/", mw.Serve(s.shabbat))
+	// The printable year of candle-lighting times, an HTML page (or cfg=csv)
+	// rather than part of the JSON API.
+	mux.HandleFunc("/shabbat/fridge.cgi", mw.Serve(s.fridgeShabbat))
 	mux.HandleFunc("/geo", mw.Serve(s.geo))
 	mux.HandleFunc("/complete", mw.Serve(s.complete))
 	mux.HandleFunc("/complete.php", mw.Serve(s.complete))

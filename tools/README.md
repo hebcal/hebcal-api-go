@@ -93,6 +93,25 @@ is the bottleneck, so on a machine with cores to spare start several
 `zips.sqlite3`, `geonames.sqlite3` and `zoneinfo/` in its working directory
 (symlinks to `/var/www/` will do) and an empty `hebcal-dot-com.ini`.
 
+## fridge-compare.py
+
+Compares `/shabbat/fridge.cgi`, page and `cfg=csv`, with hebcal-web's:
+
+```sh
+python3 tools/fridge-compare.py tools/fridge-cases.txt
+```
+
+It expects this service on port 8082 and `node src/app-www.js` on 8080 (`GO`
+and `NODE` override the hosts), both over the same `geonames.sqlite3` and
+`zips.sqlite3` -- copying `internal/handler/testdata/*.sqlite3` into the
+hebcal-web checkout does it. The html/template output is not byte-identical
+to the EJS page's and is not meant to be, so the script compares what is
+rendered: each cell's text and classes, the heading, the footnotes, the links.
+Its header lists the known differences it masks. `fridge-cases.txt` is the set
+the port was measured with: every year of the window in both calendars, every
+language, the candle-lighting and Havdalah options, ZIP, legacy-city and
+lat/long locations.
+
 ## ics-goldens.sh, dump-kl-dates.mjs
 
 `ics-goldens.sh` regenerates `internal/service/ical/testdata` -- the golden feeds
