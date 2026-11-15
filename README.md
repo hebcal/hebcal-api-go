@@ -643,6 +643,9 @@ internal/
   jsutil/                JavaScript-compatibility helpers (parseInt,
                          JSON.stringify, ordered objects, query conventions)
   logger/                pino-compatible JSON access log
+  webconfig/             hebcal-web's dailyLearningConfig.json and
+                         staticCalendars.json, embedded verbatim: the source
+                         of every daily-learning series and static feed
 pkg/
   geodb/                 SQLite geonames/zips reader and geographic typeahead;
                          a Go port of @hebcal/geo-sqlite
@@ -679,7 +682,15 @@ make build     # builds ./hebcal-api (CGO_ENABLED=1) and ./hebcal-static-ical
 make test      # checks gofmt, then runs the unit tests
 make vet       # go vet
 make fmt       # gofmt -w .
+make sync-webconfig   # copy hebcal-web's calendar JSON into internal/webconfig
+make check-webconfig  # fail if those copies differ from ../hebcal-web
 ```
+
+The daily-learning series and the static `/ical/` feeds are configured by
+hebcal-web's `src/dailyLearningConfig.json` and `src/staticCalendars.json`,
+which this binary embeds. To change them, edit hebcal-web's files, run
+`make sync-webconfig` (`WEB_DIR=` if hebcal-web is not at `../hebcal-web`),
+`make test`, and commit the copies; no Go code lists the series.
 
 If you invoke `go` directly rather than through the `Makefile`, add the
 tag yourself, e.g. `go test -tags sqlite_fts5 ./...`.

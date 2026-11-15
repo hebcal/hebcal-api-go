@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/hebcal/hebcal-go/hebcal"
+	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
@@ -441,42 +442,14 @@ func applyV2Location(q v2Query, msg *downloadpb.Download) error {
 }
 
 // applyV2DailyLearning maps the legacy daily-learning query codes onto the
-// protobuf fields. The last entry maps `s` to sedrot, which is why there is no
-// separate line setting it.
-//
-// This is one copy of the daily-learning mapping described in CLAUDE.md's
-// daily-learning section (alongside learningSchedules, unsupportedSeries and
-// readings-svc's queryToDailyLearningName); they move together.
+// protobuf fields: each dailyLearningConfig.json entry's queryParam sets its
+// protocName. The file's last entry maps `s` to sedrot, which is why there is
+// no separate line setting it.
 func applyV2DailyLearning(q v2Query, msg *downloadpb.Download) {
-	for _, s := range []struct {
-		param string
-		set   func(*downloadpb.Download)
-	}{
-		{"F", func(m *downloadpb.Download) { m.Dafyomi = true }},
-		{"myomi", func(m *downloadpb.Download) { m.MishnaYomi = true }},
-		{"dpy", func(m *downloadpb.Download) { m.PerekYomi = true }},
-		{"nyomi", func(m *downloadpb.Download) { m.NachYomi = true }},
-		{"dty", func(m *downloadpb.Download) { m.TanakhYomi = true }},
-		{"dps", func(m *downloadpb.Download) { m.Psalms = true }},
-		{"d929", func(m *downloadpb.Download) { m.Nine29 = true }},
-		{"dr1", func(m *downloadpb.Download) { m.Rambam1 = true }},
-		{"dr3", func(m *downloadpb.Download) { m.Rambam3 = true }},
-		{"dsm", func(m *downloadpb.Download) { m.SeferHaMitzvot = true }},
-		{"yyomi", func(m *downloadpb.Download) { m.YerushalmiYomi = true }},
-		{"yys", func(m *downloadpb.Download) { m.YySchottenstein = true }},
-		{"dcc", func(m *downloadpb.Download) { m.ChofetzChaim = true }},
-		{"dshl", func(m *downloadpb.Download) { m.ShemiratHaLashon = true }},
-		{"ayd", func(m *downloadpb.Download) { m.DirshuAmudYomi = true }},
-		{"dw", func(m *downloadpb.Download) { m.DafWeekly = true }},
-		{"dpa", func(m *downloadpb.Download) { m.PirkeiAvotSummer = true }},
-		{"ahsy", func(m *downloadpb.Download) { m.ArukhHaShulchanYomi = true }},
-		{"dksa", func(m *downloadpb.Download) { m.KitzurShulchanAruch = true }},
-		{"ddh", func(m *downloadpb.Download) { m.DirshuDafHalacha = true }},
-		{"dtn", func(m *downloadpb.Download) { m.TanyaYomi = true }},
-		{"s", func(m *downloadpb.Download) { m.Sedrot = true }},
-	} {
-		if q.on(s.param) {
-			s.set(msg)
+	m := msg.ProtoReflect()
+	for i := range allSeries {
+		if s := &allSeries[i]; q.on(s.QueryParam) {
+			m.Set(s.field, protoreflect.ValueOfBool(true))
 		}
 	}
 }

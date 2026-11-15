@@ -1,24 +1,71 @@
 package download
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/hebcal/hebcal-go/dailylearning"
 	"github.com/hebcal/hebcal-go/hebcal"
 	_ "github.com/hebcal/learning"
 
+	"github.com/hebcal/hebcal-api-go/internal/webconfig"
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 )
 
-// Every name in learningSchedules has to exist in the registry, or the option
-// is silently ignored and the calendar comes out missing rows the user asked
-// for. The registry is populated by importing github.com/hebcal/learning for
-// its side effects.
-func TestLearningScheduleNamesAreRegistered(t *testing.T) {
+// Every schedule the learning package registers should be one the config
+// names, or a series it gained is invisible to downloads. (The reverse --
+// every config name is registered -- is what decides learningSchedules versus
+// fallbackSeries, so it cannot fail.) dafWeekly is the seven-day variant the
+// website's /learning page uses; downloads take dafWeeklySunday.
+func TestEveryRegisteredScheduleIsConfigured(t *testing.T) {
+	configured := map[string]bool{"dafweekly": true}
 	for _, s := range learningSchedules {
-		if !dailylearning.Has(s.name) {
-			t.Errorf("%q is not registered; registered names are %v",
-				s.name, dailylearning.Calendars())
+		configured[strings.ToLower(s.DailyLearningOptName)] = true
+	}
+	for _, name := range dailylearning.Calendars() {
+		if !configured[name] {
+			t.Errorf("schedule %q is registered but no dailyLearningConfig.json entry names it", name)
+		}
+	}
+}
+
+// The config's keys must each name one series, or a query code, protobuf
+// field, category or feed file would silently pick the first of two.
+func TestLearningConfigKeysAreUnique(t *testing.T) {
+	for _, key := range []struct {
+		name string
+		get  func(*series) string
+	}{
+		{"eventCategory", func(s *series) string { return s.EventCategory }},
+		{"queryParam", func(s *series) string { return s.QueryParam }},
+		{"protocName", func(s *series) string { return s.ProtocName }},
+		{"dailyLearningOptName", func(s *series) string { return s.DailyLearningOptName }},
+		{"downloadSlug", func(s *series) string { return s.DownloadSlug }},
+	} {
+		seen := map[string]bool{}
+		for i := range allSeries {
+			v := key.get(&allSeries[i])
+			if v != "" && seen[v] {
+				t.Errorf("%s %q appears twice in dailyLearningConfig.json", key.name, v)
+			}
+			seen[v] = true
+		}
+	}
+}
+
+// 929's schedule name is integer-like, so it leads a day's rows.
+func TestLearningOrderPutsIntegerLikeFirst(t *testing.T) {
+	if learningOrder[0] != "929" || learningSchedules[0].DailyLearningOptName != "929" {
+		t.Errorf("learningOrder = %v, want 929 first", learningOrder)
+	}
+	for _, s := range []string{"929", "0", "12"} {
+		if !integerLike(s) {
+			t.Errorf("integerLike(%q) = false", s)
+		}
+	}
+	for _, s := range []string{"", "01", "9a", "dafYomi", "-1"} {
+		if integerLike(s) {
+			t.Errorf("integerLike(%q) = true", s)
 		}
 	}
 }
@@ -30,17 +77,17 @@ func TestLearningScheduleNamesAreRegistered(t *testing.T) {
 // Pesach and Rosh Hashana, so a winter month would find nothing for it.
 func TestEachLearningScheduleGeneratesEvents(t *testing.T) {
 	for _, s := range learningSchedules {
-		t.Run(s.name, func(t *testing.T) {
+		t.Run(s.DailyLearningOptName, func(t *testing.T) {
 			opts := hebcal.Options{
 				Year: 2026, NoHolidays: true,
-				DailyLearning: []string{s.name},
+				DailyLearning: []string{s.DailyLearningOptName},
 			}
 			evs, err := hebcal.HebrewCalendar(&opts)
 			if err != nil {
 				t.Fatal(err)
 			}
 			if len(evs) == 0 {
-				t.Errorf("%q produced no events in 2026", s.name)
+				t.Fatalf("%q produced no events in 2026", s.DailyLearningOptName)
 			}
 			// Since github.com/hebcal/learning v0.5.0 the schedule events
 			// have a URL, so the in-process rows carry the same
@@ -58,12 +105,14 @@ func TestEachLearningScheduleGeneratesEvents(t *testing.T) {
 					withURL++
 				}
 			}
-			if withURL == 0 && s.name != "yerushalmi-schottenstein" {
-				t.Errorf("%q produced %d events but none carry a URL", s.name, len(evs))
+			if withURL == 0 && s.DailyLearningOptName != "yerushalmi-schottenstein" {
+				t.Errorf("%q produced %d events but none carry a URL", s.DailyLearningOptName, len(evs))
 			}
-			if o := EventLearningOrder(evs[0]); o >= len(learningOrder) {
-				t.Errorf("%q: category %q has no place in learningOrder",
-					s.name, EventCategories(evs[0])[0])
+			// The events must carry the config's eventCategory, which is what
+			// places them among a day's rows.
+			if got := webconfig.SeriesKey(EventCategories(evs[0])); got != s.EventCategory {
+				t.Errorf("%q: events' categories %v name series %q, but dailyLearningConfig.json says %q",
+					s.DailyLearningOptName, EventCategories(evs[0]), got, s.EventCategory)
 			}
 		})
 	}
@@ -130,13 +179,12 @@ func TestEveryUnsupportedSeriesHasAQueryParameter(t *testing.T) {
 		DirshuDafHalacha: true, TanyaYomi: true,
 	}
 	for _, s := range UnsupportedSeries(msg) {
-		if _, ok := fallbackSeries[s]; !ok {
+		if code, ok := LearningQueryCode(s); !ok || code == "" {
 			t.Errorf("series %q has no query parameter, so it could never be fetched", s)
 		}
 	}
-	if len(fallbackSeries) != len(UnsupportedSeries(msg)) {
-		t.Errorf("fallbackSeries has %d entries but %d series are unsupported; "+
-			"the two lists have drifted", len(fallbackSeries), len(UnsupportedSeries(msg)))
+	if len(fallbackSeries) != 8 {
+		t.Errorf("fallbackSeries = %v, want the eight readings-svc series", categories(fallbackSeries))
 	}
 }
 
@@ -146,12 +194,12 @@ func TestEveryUnsupportedSeriesHasAQueryParameter(t *testing.T) {
 // has a place, keyed by the category readings-svc reports, which is the
 // series name.
 func TestLearningOrderInterleavesFetchedSeries(t *testing.T) {
-	for series := range fallbackSeries {
-		if LearningOrder(series) >= len(learningOrder) {
-			t.Errorf("%q has no place in learningOrder", series)
+	for _, s := range fallbackSeries {
+		if LearningOrder(s.EventCategory) >= len(learningOrder) {
+			t.Errorf("%q has no place in learningOrder", s.EventCategory)
 		}
 	}
-	in := []string{"929", "rambam3", "seferHaMitzvot", "yerushalmi",
+	in := []string{"929", "dailyRambam3", "seferHaMitzvot", "yerushalmi-vilna",
 		"dirshuAmudYomi", "dafWeekly", "pirkeiAvotSummer", "arukhHaShulchanYomi"}
 	for i := 1; i < len(in); i++ {
 		if LearningOrder(in[i-1]) >= LearningOrder(in[i]) {

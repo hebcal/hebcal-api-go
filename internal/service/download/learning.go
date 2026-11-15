@@ -9,27 +9,18 @@ import (
 	"github.com/hebcal/hebcal-go/event"
 
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
+	"github.com/hebcal/hebcal-api-go/internal/webconfig"
 )
 
-// learningOrder is the order of a day's daily-learning rows, by event
-// category: the download form's, except that 929 comes first. It interleaves
-// the series hebcal-go generates with those readings-svc supplies (Sefer
-// HaMitzvot falls between Rambam and Yerushalmi, Daf Weekly and Pirkei Avot
-// between Dirshu Amud HaYomi and Arukh HaShulchan), so the fetched rows cannot
-// simply follow the generated ones. It decides which rows survive when a
-// subscription is cut at its event limit, and which row overflows a crowded
-// PDF cell.
-var learningOrder = []string{
-	"929", "dafyomi", "mishnayomi", "perekYomi", "nachyomi", "tanakhYomi",
-	"dailyPsalms", "rambam1", "rambam3", "seferHaMitzvot", "yerushalmi",
-	"chofetzChaim", "shemiratHaLashon", "dirshuAmudYomi", "dafWeekly",
-	"pirkeiAvotSummer", "arukhHaShulchanYomi", "kitzurShulchanAruch",
-	"dirshuDafHalacha", "tanyaYomi",
-}
-
-// LearningOrder places a daily-learning series, named by its event category
-// (a readings-svc item's Category), among a day's learning rows. Sort a day by
-// time of day first and by this second; an unknown series goes last.
+// LearningOrder places a daily-learning series, named by its EventCategory
+// (a readings-svc item's Category), among a day's learning rows: the order of
+// dailyLearningConfig.json, except that 929 comes first (see inDayOrder). It
+// interleaves the series hebcal-go generates with those readings-svc supplies
+// (Sefer HaMitzvot falls between Rambam and Yerushalmi), so the fetched rows
+// cannot simply follow the generated ones. It decides which rows survive when
+// a subscription is cut at its event limit, and which row overflows a crowded
+// PDF cell. Sort a day by time of day first and by this second; an unknown
+// series goes last.
 func LearningOrder(category string) int {
 	for i, c := range learningOrder {
 		if c == category {
@@ -45,27 +36,7 @@ func EventLearningOrder(ev event.CalEvent) int {
 	if !ev.Flags().HasAny(LearningFlags) {
 		return 0
 	}
-	return LearningOrder(EventCategories(ev)[0])
-}
-
-// fallbackSeries maps a daily-learning series with no schedule in
-// github.com/hebcal/learning to the readings-svc /learning query code that
-// selects it.
-//
-// Eight series have no Go implementation. Rather than refuse those calendars,
-// their rows are fetched from the readings-svc sidecar and merged into the
-// locally generated events. Keep this in step with unsupportedSeries in
-// params.go: a series gaining a Go schedule moves to learningSchedules and
-// leaves both lists. The codes are the ones readings-svc documents.
-var fallbackSeries = map[string]string{
-	"chofetzChaim":        "dcc",
-	"shemiratHaLashon":    "dshl",
-	"seferHaMitzvot":      "dsm",
-	"kitzurShulchanAruch": "dksa",
-	"dirshuAmudYomi":      "ayd",
-	"dirshuDafHalacha":    "ddh",
-	"arukhHaShulchanYomi": "ahsy",
-	"tanyaYomi":           "dtn",
+	return LearningOrder(webconfig.SeriesKey(EventCategories(ev)))
 }
 
 // LearningFetcher retrieves daily-learning rows this service cannot generate,
@@ -89,7 +60,7 @@ func (f *LearningFetcher) FetchItems(ctx context.Context, series []string, lg st
 	codes := make([]string, 0, len(series))
 	wanted := make(map[string]bool, len(series))
 	for _, s := range series {
-		code, ok := fallbackSeries[s]
+		code, ok := LearningQueryCode(s)
 		if !ok {
 			return nil, fmt.Errorf("no query parameter known for series %q", s)
 		}
@@ -133,9 +104,13 @@ func CanonicalLearningURL(link string) string {
 }
 
 // LearningQueryCode is the readings-svc /learning query code that selects a
-// daily-learning series hebcal-go has no schedule for ("dcc" for
-// chofetzChaim), and false for any other series.
-func LearningQueryCode(series string) (string, bool) {
-	code, ok := fallbackSeries[series]
-	return code, ok
+// daily-learning series hebcal-go has no schedule for, named by its
+// EventCategory ("dcc" for chofetzChaim), and false for any other series.
+func LearningQueryCode(category string) (string, bool) {
+	for i := range fallbackSeries {
+		if fallbackSeries[i].EventCategory == category {
+			return fallbackSeries[i].QueryParam, true
+		}
+	}
+	return "", false
 }

@@ -32,6 +32,8 @@ github.com/hebcal/hebcal-go v0.50.0 h1:pj/ozNWsOSS3JEIlf7ESHKazeI/ekhAp+DiTrnfCB
 github.com/hebcal/hebcal-go v0.50.0/go.mod h1:tJbi7+8rehLjjD83IHaVJeF9cVtLxO8hP6ci0zum+FQ=
 github.com/hebcal/learning v0.7.0 h1:3t8SifpvUwkqXz9zusCRQqSmlQsqbkSTE7FKJufNNVo=
 github.com/hebcal/learning v0.7.0/go.mod h1:qWIcy7HOaTtdMxgoBrLrXTl/xC//3/q5ZZYaFcSL5Vc=
+github.com/hebcal/learning v0.7.1-0.20261115064311-acf8f2ed02c4 h1:ds5BmoxolkyA4sRklOl0ejR9kwAxr9LXE0f4s8H47jo=
+github.com/hebcal/learning v0.7.1-0.20261115064311-acf8f2ed02c4/go.mod h1:qWIcy7HOaTtdMxgoBrLrXTl/xC//3/q5ZZYaFcSL5Vc=
 github.com/hebcal/locales v1.1.5 h1:wHlD/y0QBNye9g5dUgdP6wLroet8sVNZGHVVM/am63s=
 github.com/hebcal/locales v1.1.5/go.mod h1:KzagA5BjUI9Eh8BxLMmt0J91ByjeeswM54abysBdxXI=
 github.com/hebcal/noaa-go v1.0.0 h1:cBWBBUtYkHiPptKjZTJ9LooUxmhn/++35j+HWd7TQv4=

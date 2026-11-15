@@ -16,7 +16,7 @@ import (
 
 	// Registers every daily-learning schedule with hebcal-go's dailylearning
 	// registry through their init functions. Imported for the side effect only;
-	// learningSchedules below then resolves them by name. It belongs here, in
+	// applyDailyLearning below then resolves them by name. It belongs here, in
 	// the package that does the resolving, rather than in main: dropping it
 	// silently reduces a calendar to the four schedules hebcal-go hard-wires.
 	_ "github.com/hebcal/learning"
@@ -662,75 +662,32 @@ func applyLocation(msg *downloadpb.Download, p *Params, db *geodb.DB) error {
 	return errors.New("location could not be resolved")
 }
 
-// learningSchedules maps each protobuf field to the name it is registered
-// under in hebcal-go's dailylearning registry.
-//
-// The order is the order the series appear in within a day: the download
-// form's, so keep it in step with the form when adding a series -- except that
-// 929 comes first. The website keeps the selected series in a JavaScript
-// object, whose integer-like keys iterate before all others.
-//
-// The registry is populated by importing github.com/hebcal/learning for its
-// side effects, which every schedule's init() uses to register itself. Four of
-// these also have dedicated Options booleans; going through the registry
-// for all of them keeps one list rather than two mechanisms.
-var learningSchedules = []struct {
-	name string
-	on   func(*downloadpb.Download) bool
-}{
-	{"929", func(m *downloadpb.Download) bool { return m.GetNine29() }},
-	{"dafYomi", func(m *downloadpb.Download) bool { return m.GetDafyomi() }},
-	{"mishnaYomi", func(m *downloadpb.Download) bool { return m.GetMishnaYomi() }},
-	{"perekYomi", func(m *downloadpb.Download) bool { return m.GetPerekYomi() }},
-	{"nachYomi", func(m *downloadpb.Download) bool { return m.GetNachYomi() }},
-	{"tanakhYomi", func(m *downloadpb.Download) bool { return m.GetTanakhYomi() }},
-	{"psalms", func(m *downloadpb.Download) bool { return m.GetPsalms() }},
-	{"rambam1", func(m *downloadpb.Download) bool { return m.GetRambam1() }},
-	{"rambam3", func(m *downloadpb.Download) bool { return m.GetRambam3() }},
-	{"yerushalmi-vilna", func(m *downloadpb.Download) bool { return m.GetYerushalmiYomi() }},
-	{"yerushalmi-schottenstein", func(m *downloadpb.Download) bool { return m.GetYySchottenstein() }},
-	// The dw checkbox resolves to dafWeeklySunday (one row each Sunday), not
-	// dafWeekly (the same daf drawn all seven days). The protobuf field keeps
-	// its dw-derived name.
-	{"dafWeeklySunday", func(m *downloadpb.Download) bool { return m.GetDafWeekly() }},
-	{"pirkeiAvotSummer", func(m *downloadpb.Download) bool { return m.GetPirkeiAvotSummer() }},
-}
-
 // applyDailyLearning enables the requested schedules through Options'
-// generic DailyLearning list, which hebcal-go resolves against the registry.
+// generic DailyLearning list, which hebcal-go resolves against the registry,
+// in the order a day's rows appear in (learningSchedules, from
+// dailyLearningConfig.json). Four of them also have dedicated Options
+// booleans; going through the registry for all of them keeps one mechanism.
 func applyDailyLearning(msg *downloadpb.Download, o *hebcal.Options) {
-	for _, s := range learningSchedules {
-		if s.on(msg) {
-			o.DailyLearning = append(o.DailyLearning, s.name)
+	for i := range learningSchedules {
+		if s := &learningSchedules[i]; s.on(msg) {
+			o.DailyLearning = append(o.DailyLearning, s.DailyLearningOptName)
 		}
 	}
 }
 
-// UnsupportedSeries reports the daily-learning series a request asked for that
-// hebcal-go cannot generate. Rendering anyway would silently drop rows the user
-// explicitly selected, so their rows are fetched from the readings-svc sidecar
-// and merged instead (see fallback.go).
+// UnsupportedSeries reports, by EventCategory, the daily-learning series a
+// request asked for that hebcal-go cannot generate. Rendering anyway would
+// silently drop rows the user explicitly selected, so their rows are fetched
+// from the readings-svc sidecar and merged instead (see fallback.go).
 //
-// These eight have no schedule in github.com/hebcal/learning. Keep this list and
-// learningSchedules together: anything the learning package gains should move
-// from here to there.
+// A series is unsupported when dailyLearningConfig.json lists it and
+// github.com/hebcal/learning registers no schedule of that name, so one that
+// gains a Go schedule moves over with a module upgrade and no edit here.
 func UnsupportedSeries(msg *downloadpb.Download) []string {
 	var out []string
-	for _, s := range []struct {
-		name string
-		on   bool
-	}{
-		{"chofetzChaim", msg.GetChofetzChaim()},
-		{"shemiratHaLashon", msg.GetShemiratHaLashon()},
-		{"arukhHaShulchanYomi", msg.GetArukhHaShulchanYomi()},
-		{"seferHaMitzvot", msg.GetSeferHaMitzvot()},
-		{"kitzurShulchanAruch", msg.GetKitzurShulchanAruch()},
-		{"dirshuAmudYomi", msg.GetDirshuAmudYomi()},
-		{"dirshuDafHalacha", msg.GetDirshuDafHalacha()},
-		{"tanyaYomi", msg.GetTanyaYomi()},
-	} {
-		if s.on {
-			out = append(out, s.name)
+	for i := range fallbackSeries {
+		if s := &fallbackSeries[i]; s.on(msg) {
+			out = append(out, s.EventCategory)
 		}
 	}
 	return out

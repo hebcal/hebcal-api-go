@@ -71,6 +71,8 @@ The service follows the repository's usual direction — `handler` → `service`
 | `internal/service/download/cgi.go` | the classic `/hebcal/index.cgi/…pdf?query` URL: its two query encodings → `v2Query`, then `DecodeV2` |
 | `internal/service/download/events.go` | `GenerateCalEvents`: event generation via hebcal-go and the category filters |
 | `internal/service/download/learning.go` | the readings-svc `/learning` fetch for unsupported learning series |
+| `internal/service/download/series.go` | every daily-learning table, derived from `dailyLearningConfig.json` |
+| `internal/webconfig/` | hebcal-web's `dailyLearningConfig.json` and `staticCalendars.json`, embedded verbatim |
 | `internal/service/pdf/pdf.go` | `Service.Prepare`/`Render`, the document title |
 | `internal/service/pdf/events.go` | flattening events into cells, ordering within a day |
 | `internal/service/pdf/hebmonth.go` | Hebrew-month pagination (`mm=1`, `mm=2`) |
@@ -597,7 +599,7 @@ Things that are not obvious:
   Fruit"); every other subject is smartened.
 - **A Hebrew date leads its day**, and the readings-svc learning rows sit in
   the learning slot, interleaved with the series hebcal-go generated in
-  `download.learningOrder` (see "Daily-learning order"): the download form's,
+  `download.LearningOrder` (see "Daily-learning order"): the download form's,
   with **929 first** -- hebcal-web keeps the selected series in a JavaScript
   object, whose integer-like key `929` iterates before every other. That order
   fixed the same cells in the PDF.
@@ -943,8 +945,8 @@ and rsyncs `ical/` into `/var/www/html/ical`.
 
 The pieces: `internal/service/ical` is the **event adapter** the holiday
 feeds share ("The holiday feeds"); `internal/service/staticcal`
-holds the feed table (`Feeds`, from both JSON configs), `Window`, `Render` and
-Kindness; `readings.Client.TorahMemos` is readings-svc's `/torahMemo`. The
+holds the feed table (`Feeds`, built at startup from hebcal-web's two JSON
+configs as embedded by `internal/webconfig`), `Window`, `Render` and Kindness; `readings.Client.TorahMemos` is readings-svc's `/torahMemo`. The
 `.csv` side goes through `csv.Render`, so the static CSVs share the `/v4/`
 CSVs' deliberate format (BOM, minimal quoting, commas kept).
 
@@ -986,6 +988,15 @@ Things that are not obvious:
   used), and the description of every other event ends with its tracked link
   -- `uc=ical-<file>` on hebcal.com pages, `utm_*` on Sefaria
   (`download.EventLink` with medium `icalendar`, shared with the PDF).
+- **`staticCalendars.json` is decoded strictly.** hebcal-web passes each
+  entry to `calendar()` as its options, so a key is either an option
+  (`webconfig.StaticCalendar` has a field for it, and `staticFeed` maps it
+  onto `hebcal.Options`) or website-only (`staticWebsiteOnly`, hebcal-web's
+  `ignoreOpts`); anything else panics at startup rather than publish a feed
+  without the events it asks for. `mask` is an `@hebcal/core` flag mask, whose
+  bits hebcal-go's `event.Flags` shares, so it passes through as is. The
+  Chofetz Chaim feed's description is the entry's optional `caldesc`, which
+  any learning feed may set to override `descMedium`.
 - **Window and stamps:** 90 days back to `round(365.25 * years) - 60` days
   ahead of the local date; every file's `DTSTAMP` and mtime is the minute the
   run began. The server's `Last-Modified` is that mtime -- of the `.br`/`.gz`
@@ -1364,18 +1375,54 @@ Schedules are not selected through the four dedicated `Options` booleans but
 through its generic `DailyLearning []string`, resolved against hebcal-go's
 `dailylearning` registry. The registry is populated by importing
 `github.com/hebcal/learning` **for its side effects** — each schedule registers
-itself in an `init()`. `internal/service/download/params.go` carries that blank import, next to the list it
+itself in an `init()`. `internal/service/download/params.go` carries that blank import, next to the code it
 feeds; dropping it silently reduces the service to the four hard-wired series.
 
-`learningSchedules` in `params.go` maps each protobuf field to a registry name.
-`unsupportedSeries` lists the eight with no schedule at all, and `fallback.go`
-fetches those from readings-svc's `/learning` and merges them.
-`applyV2DailyLearning` in `v2.go` maps the legacy URLs' query codes onto the
-same protobuf fields, mirroring hebcal-web's `dailyLearningConfig.json`. Those
-four lists move together, and a fifth is in a different repository:
-`queryToDailyLearningName` in readings-svc's `learning.js`, which resolves the
-same query codes (`dcc`, `dshl`, `dsm`, `dksa`, `ayd`, `ddh`, `ahsy`, `dtn`) to
-@hebcal/learning schedule names.
+### The series come from hebcal-web's `dailyLearningConfig.json`
+
+`internal/webconfig` embeds a verbatim copy of hebcal-web's
+`src/dailyLearningConfig.json` (and of `src/staticCalendars.json`, see "The
+static calendars"). Nothing in Go lists the series: `internal/service/download/series.go`
+resolves each entry once, at package initialization, into
+
+- its **protobuf field**, looked up by `protocName` through `protoreflect`
+  (an entry naming no bool field of `Download` panics at startup, so any
+  test that loads the package catches it);
+- **generated or fetched**: an entry whose `dailyLearningOptName` is in the
+  `dailylearning` registry is generated by hebcal-go (`learningSchedules`);
+  any other daily-learning entry comes from readings-svc (`fallbackSeries`,
+  reported by `UnsupportedSeries` and fetched by its `queryParam`). A series
+  that gains a Go schedule therefore moves over with the
+  github.com/hebcal/learning upgrade alone.
+
+and from those, `applyV2DailyLearning` (`queryParam` → field, the Torah
+readings' `s` → `sedrot` included), `MessageToQuery` (field → `queryParam`,
+in the file's order), `LearningOrder` and the static learning feeds. An entry
+with no `dailyLearningOptName` (the Torah readings) only maps its query
+parameter. Keys this service does not read (`descLong`, `group`,
+`dailyLearningOptOverride`, which only the website's `/learning` page uses)
+are ignored, so the website can add its own without a change here.
+
+**`eventCategory` must be what the Go events report** -- the first category,
+or the first two joined with `-` for Yerushalmi (`webconfig.SeriesKey`:
+`["yerushalmi", "vilna"]` is `yerushalmi-vilna`) -- because it places a row
+among the day's learning rows. github.com/hebcal/learning matches
+@hebcal/learning's categories (`dailyRambam1`, not `rambam1`) for that reason,
+and `TestEachLearningScheduleGeneratesEvents` checks every generated series.
+
+To change the series: edit hebcal-web's file (its CLAUDE.md, "Adding a daily
+learning calendar", has the steps), then `make sync-webconfig` here, `make
+test`, and commit the copies; `make check-webconfig` reports drift. A new
+series also needs its `download.proto` field in `pkg/downloadpb` (regenerate
+from hebcal-web's proto) and a schedule, in github.com/hebcal/learning or in
+readings-svc.
+
+One copy remains in another repository: `queryToDailyLearningName` in
+readings-svc's `learning.js`, which resolves the readings-svc query codes
+(`dcc`, `dshl`, `dsm`, `dksa`, `ayd`, `ddh`, `ahsy`, `dtn`) to @hebcal/learning
+schedule names. And `seriesNames` in `internal/service/ical` (a feed's
+`CATEGORIES`/`LOCATION` per series) is @hebcal/learning event data rather than
+configuration, so it is keyed by first category and kept by hand.
 
 **readings-svc silently ignores a query code it does not know**, so a series
 added here must be deployed there first; against an older sidecar the series
@@ -1391,7 +1438,9 @@ service as one `UnsupportedSeriesError` and split by `writeDownloadError`:
 **503** with `Retry-After` when a configured readings-svc does not answer. In the
 default configuration 501 is unreachable. Keep the two
 together: anything the learning package gains moves from the second to the
-first. `learning_test.go` asserts every name is registered and produces events.
+first. `learning_test.go` asserts every generated series produces events with
+the configured category, that every registered schedule is configured, and
+that the file's keys are unique.
 
 Note that Pirkei Avot is read only between Pesach and Rosh Hashana, so a test
 sampling a winter month finds nothing for it.
@@ -1580,8 +1629,8 @@ hebcal-go orders the series it generates by the `DailyLearning` list, which is
 already in that order. The readings-svc series do not come after them, though:
 Sefer HaMitzvot sits between Rambam and Yerushalmi, Daf Weekly and Pirkei Avot
 between Dirshu Amud HaYomi and Arukh HaShulchan. So every format sorts a day by
-`DayPartOf` and then by `download.LearningOrder` of the event's category (an
-item's `Category`), the table in `learning.go`; appending the fetched rows
+`DayPartOf` and then by `download.LearningOrder` of the event's series key (an
+item's `Category`), derived from `dailyLearningConfig.json`; appending the fetched rows
 after the generated ones was visible on any day carrying both kinds, and
 decided which rows a subscription cut at 2399 events kept on its last day.
 
@@ -1655,9 +1704,7 @@ JavaScript sources.
 | `applyLocation` | `getLocationFromQuery` + `@hebcal/geo-sqlite` |
 | legacy `cityName` branch | `downloadHref2` sets `cityName` only alongside `geoPos` |
 | `holidayMask`, `majorHolidayMask` | `optsToMask` / `getMaskFromQuery()` in `src/calendar.js`; hebcal-web never sets `noHolidays` (`maj=off` becomes `noMajor`, which `@hebcal/core` ignores), so `NoHolidays` must not be derived from `major` |
-| `learningSchedules`, `dw`→`dafWeeklySunday` | `dailyLearningConfig.json` |
 | `fastTimeFields` / `setFastTimes` | `deserializeDownload.js`'s fast fields + `floatToString()` (`toPrecision(6)`), then `getFastTimeOpts()` |
-| `unsupportedSeries` | the eight series with no `github.com/hebcal/learning` schedule |
 
 ### `internal/service/download/v2.go` — `downloadHref2()` (`src/makeDownloadProps.js`)
 
@@ -1687,18 +1734,24 @@ pre-read rewrites (`nh=on` expansion, lowercase `m=on`).
 
 ### `internal/service/download/querylog.go`
 
-`MessageToQuery`, `learningQueryParams`, `queryBuilder` ← `deserializeDownload.js`
-field-for-field, in `dailyLearningConfig.json` order. `formatFloat` ← JS
+`MessageToQuery`, `queryBuilder` ← `deserializeDownload.js`
+field-for-field, the learning flags in `dailyLearningConfig.json` order. `formatFloat` ← JS
 `String(number)`. `queryBuilder.set()` encoding ← `encodeURIComponent` (spaces
 as `%20`, not `+`).
 
-### `internal/service/download/learning.go`, `links.go`
+### `internal/webconfig/`, `internal/service/download/series.go`, `learning.go`, `links.go`
 
-`learningOrder` / `LearningOrder` ← the order of `dailyLearningConfig.json`
-as hebcal-web's `options.dailyLearning` object iterates it (`929` first, an
-integer-like key).
-`fallbackSeries` codes ← readings-svc's documented codes (also hebcal-web's
-`/hebcal` query params). `canonicalLearningURL` ← strips `@hebcal/rest-api`'s
+`internal/webconfig` embeds `src/dailyLearningConfig.json` and
+`src/staticCalendars.json` verbatim; `staticWebsiteOnly` ← `ignoreOpts` in
+`src/staticCalendars.js`. `series.go` derives from the first what
+hebcal-web reads from it: `learningSchedules` ← `makeHebcalOptions`'
+`dailyLearning` options (`dailyLearningOptName`, so `dw` is
+`dafWeeklySunday`), `inDayOrder` / `LearningOrder` ← the order
+`options.dailyLearning` iterates (`929` first, an integer-like key), and
+`fallbackSeries` the entries with no `github.com/hebcal/learning` schedule,
+fetched by `queryParam` (readings-svc's codes, also hebcal-web's `/hebcal`
+query params). `webconfig.SeriesKey` ← `dailyLearning.js`'s
+`cat0 === 'yerushalmi' ? cats.join('-') : cat0`. `canonicalLearningURL` ← strips `@hebcal/rest-api`'s
 `utm_*` tracking. `links.go` UTM defaults ← `appendIsraelAndTracking`.
 `shortenSedrot`'s trim-to-`/s/` fallthrough ← `@hebcal/rest-api`. `appendParams`
 ordering ← `URLSearchParams` emission order.
@@ -1824,9 +1877,11 @@ last of those for comparing without a sidecar.
 
 ### `internal/service/staticcal/`, `cmd/hebcal-static-ical/` — `src/staticCalendars.js`, `src/makeStaticCalendars.js`, `src/kindness.js`
 
-`Feeds` ← `src/staticCalendars.json` + the `downloadSlug` entries of
-`src/dailyLearningConfig.json` (`learning`/`sidecar` ← `buildLearningCalendar`
-+ `makeIcalOpts()`). `Window` ← `getStartAndEnd()`. `Render` ←
+`Feeds` / `buildFeeds` ← `buildAllCalendars()` over `src/staticCalendars.json`
+and the `downloadSlug` entries of `src/dailyLearningConfig.json`
+(`staticFeed` ← `buildRegularCalendar()`'s options, `learningFeed` ←
+`buildLearningCalendar()` + `makeIcalOpts()`, the `chofetz-chaim` slug test
+included). `Window` ← `getStartAndEnd()`. `Render` ←
 `buildRegularCalendar()` / `buildLearningCalendar()` + `renderCalendar()`
 (`publishedTTL` P7D, `utmCampaign` `ical-<file>`). `renderChofetzChaim` ←
 `ChofetzChaimShemiratHaLashonEvent` + `buildChofetzChaimCalendar()`.
