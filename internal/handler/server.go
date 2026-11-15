@@ -129,9 +129,7 @@ func (s *Server) Routes() http.Handler {
 	mux.HandleFunc("/shabbat", mw.Serve(s.shabbat))
 	mux.HandleFunc("/shabbat/", mw.Serve(s.shabbat))
 	mux.HandleFunc("/geo", mw.Serve(s.geo))
-	mux.HandleFunc("/geo/", mw.Serve(s.geo))
 	mux.HandleFunc("/complete", mw.Serve(s.complete))
-	mux.HandleFunc("/complete/", mw.Serve(s.complete))
 	mux.HandleFunc("/complete.php", mw.Serve(s.complete))
 	// The Model Context Protocol server. Stateless streamable-HTTP: the SDK
 	// answers non-POST with 405 itself.
