@@ -1242,13 +1242,16 @@ Things that are not obvious:
   Havdalah) and the template writes the `<td>`s, so nothing a request or a
   catalog supplies is written unescaped. No `template.HTML` anywhere; keep it
   that way. html/template drops HTML comments, so the page has none.
-- **The Content-Security-Policy is www's, with a nonce per response.**
-  `htmlCSP` in `handler/fridge.go` is a copy of `strictContentSecurityPolicy`
-  in hebcal-web's `src/app-www.js` -- change the two together -- and the one
-  inline `<script>` carries the same nonce (`fridge.NewNonce`, nine random
-  bytes). The ETag is the URL's, so a cached copy keeps the nonce it was
-  rendered with, header and body together, as on www. Only the 200 HTML has
-  the policy; errors are plain text and need none.
+- **The Content-Security-Policy is minimal, with a nonce per response.**
+  `htmlCSP` in `handler/fridge.go` allows only what the page uses:
+  `default-src 'none'`, the one inline `<script>` by nonce
+  (`fridge.NewNonce`, nine random bytes), inline `<style>`s plus the Google
+  Fonts stylesheet, fonts from `'self'` (the Hebrew woff2) and
+  fonts.gstatic.com, and `base-uri 'none'`. There are no images, frames or
+  reporting endpoints, so none are allowed; add a source here when the
+  template gains a resource that needs it. The ETag is the URL's, so a cached
+  copy keeps the nonce it was rendered with, header and body together. Only
+  the 200 HTML has the policy; errors are plain text and need none.
 - **`data-base`, not `data-base-url`.** html/template decides an attribute's
   escaping from its name, and anything containing "url" is filtered as a URL.
   The value is one, but the plainer name keeps the escaping to HTML's.
@@ -2064,7 +2067,7 @@ this is an addition rather than a parity target. `ceilMinute` /
 | `Calendar.BaseURL` | `makeGeoUrlArgs()` (`src/urlArgs.js`) |
 | `Calendar.CSV`, `CSVFilename` | the `cfg=csv` branch of `fridgeShabbat()` |
 | `dateLang` | `localeMap` (`src/lang.js`) |
-| `htmlCSP`, `setHTMLSecurityHeaders` | `strictContentSecurityPolicy` (`src/app-www.js`) |
+| `htmlCSP`, `setHTMLSecurityHeaders` | `strictContentSecurityPolicy` (`src/app-www.js`), cut down to what the page loads |
 | `handler.fridgeShabbat` | `fridgeShabbat()`'s headers (`cacheControl(3)`, `checkFreshETag`) |
 
 ### `internal/service/mcp/` — `@hebcal/mcp` (`../hebcal-mcp`)

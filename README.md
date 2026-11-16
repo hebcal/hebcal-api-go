@@ -210,9 +210,8 @@ altogether.
   `lg` are read as `/shabbat` reads them. Month abbreviations follow `lg`.
 - `cfg=csv` returns the same rows as a CSV download
   (`Date,Parsha,Candles,Havdalah`).
-- The page is HTML rendered with `html/template`, and carries the strict
-  `Content-Security-Policy` www.hebcal.com sends, with a fresh nonce for its
-  one inline script. Errors are plain text.
+- The page is HTML rendered with `html/template`, and carries a minimal
+  `Content-Security-Policy` with a fresh nonce for its one inline script. Errors are plain text.
 
 ### Geolocation
 

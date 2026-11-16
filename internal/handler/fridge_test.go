@@ -72,16 +72,11 @@ func TestFridgeCSPNonce(t *testing.T) {
 		}
 		nonce := m[0][1]
 		csp := resp.Header.Get("Content-Security-Policy")
-		want := "script-src 'nonce-" + nonce + "' 'strict-dynamic' 'report-sample' https: 'unsafe-inline';" +
-			" style-src 'self' https: data: 'unsafe-inline';" +
-			" frame-ancestors https: data:;" +
-			" frame-src https: data: blob:;" +
-			" img-src 'self' https: data: blob:;" +
-			" font-src 'self' data: https://fonts.gstatic.com/;" +
-			" object-src 'none';" +
-			" base-uri 'none';" +
-			" report-uri https://y61ectdg.uriports.com/reports/report;" +
-			" report-to default"
+		want := "default-src 'none';" +
+			" script-src 'nonce-" + nonce + "';" +
+			" style-src 'unsafe-inline' https://fonts.googleapis.com;" +
+			" font-src 'self' https://fonts.gstatic.com;" +
+			" base-uri 'none'"
 		if csp != want {
 			t.Errorf("Content-Security-Policy = %q", csp)
 		}
@@ -90,9 +85,6 @@ func TestFridgeCSPNonce(t *testing.T) {
 		}
 		if got := resp.Header.Get("X-XSS-Protection"); got != "0" {
 			t.Errorf("X-XSS-Protection = %q", got)
-		}
-		if got := resp.Header.Get("Reporting-Endpoints"); got != `default="https://y61ectdg.uriports.com/reports"` {
-			t.Errorf("Reporting-Endpoints = %q", got)
 		}
 		if got := resp.Header.Get("X-Content-Type-Options"); got != "nosniff" {
 			t.Errorf("X-Content-Type-Options = %q", got)

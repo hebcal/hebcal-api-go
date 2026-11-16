@@ -15,28 +15,25 @@ import (
 // cacheControl3Days is the lifetime of a fridge page that names its year.
 const cacheControl3Days = "public, max-age=259200, s-maxage=259200"
 
-// htmlCSP builds the strict Content-Security-Policy www.hebcal.com sends
-// with its HTML pages: scripts run only when they carry the response's nonce.
+// htmlCSP builds the Content-Security-Policy for the fridge page, which has
+// nothing but inline styles, one inline script, the Google Fonts stylesheet
+// and its font files, and the Hebrew faces served from this origin. Everything
+// else is denied by default-src. The script runs only when it carries the
+// response's nonce.
 func htmlCSP(nonce string) string {
-	return "script-src 'nonce-" + nonce + "' 'strict-dynamic' 'report-sample' https: 'unsafe-inline';" +
-		" style-src 'self' https: data: 'unsafe-inline';" +
-		" frame-ancestors https: data:;" +
-		" frame-src https: data: blob:;" +
-		" img-src 'self' https: data: blob:;" +
-		" font-src 'self' data: https://fonts.gstatic.com/;" +
-		" object-src 'none';" +
-		" base-uri 'none';" +
-		" report-uri https://y61ectdg.uriports.com/reports/report;" +
-		" report-to default"
+	return "default-src 'none';" +
+		" script-src 'nonce-" + nonce + "';" +
+		" style-src 'unsafe-inline' https://fonts.googleapis.com;" +
+		" font-src 'self' https://fonts.gstatic.com;" +
+		" base-uri 'none'"
 }
 
 // setHTMLSecurityHeaders sets the Content-Security-Policy for an HTML page
-// whose inline scripts carry nonce, and the reporting headers that go with it.
+// whose inline script carries nonce.
 func setHTMLSecurityHeaders(w http.ResponseWriter, nonce string) {
 	h := w.Header()
 	h.Set("Content-Security-Policy", htmlCSP(nonce))
 	h.Set("X-XSS-Protection", "0")
-	h.Set("Reporting-Endpoints", `default="https://y61ectdg.uriports.com/reports"`)
 }
 
 // fridgeShabbat implements GET /shabbat/fridge.cgi: a location's
