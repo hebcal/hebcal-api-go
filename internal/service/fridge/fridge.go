@@ -172,7 +172,7 @@ func dateLang(locale string) string {
 
 // New generates the year's candle-lighting times for a location. lg must be
 // a supported language code. The query supplies the candle-lighting and
-// Havdalah preferences (b, m, M, td), ue, i and h12.
+// Havdalah preferences (b, m, M, td), ue and i.
 func New(loc *geodb.Location, year Year, lg string, q url.Values) (*Calendar, error) {
 	il := loc.IsIsrael() || jsutil.IsOn(q.Get("i"))
 	// One day past the end, so the last evening's Shabbat or holiday is there
@@ -192,23 +192,11 @@ func New(loc *geodb.Location, year Year, lg string, q url.Values) (*Calendar, er
 		Locale:   strings.ToLower(model.AliasLocale(lg)),
 		Options:  opts,
 	}
-	c.Items = makeItems(events, year.End, c.Locale, loc.CC, il, clockOf(q))
+	c.Items = makeItems(events, year.End, c.Locale, loc.CC, il, event.ClockAuto)
 	if len(c.Items) == 0 {
 		return nil, model.BadRequest("No candle-lighting times for this location")
 	}
 	return c, nil
-}
-
-// clockOf reads the h12 override: absent follows the country, 0 or off is
-// the 24-hour clock, anything else the 12-hour one.
-func clockOf(q url.Values) event.ClockFormat {
-	switch q.Get("h12") {
-	case "":
-		return event.ClockAuto
-	case "off", "0":
-		return event.Clock24
-	}
-	return event.Clock12
 }
 
 // makeItems picks the candle-lightings through the day `end` out of a
@@ -370,13 +358,6 @@ func (c *Calendar) BaseURL(q url.Values) string {
 		add("M", "on")
 	default:
 		add("td", h.Degrees)
-	}
-	if h12 := q.Get("h12"); h12 != "" {
-		if clockOf(q) == event.Clock24 {
-			add("h12", "0")
-		} else {
-			add("h12", "1")
-		}
 	}
 	lg := c.Lg
 	if lg == "" {

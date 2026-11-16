@@ -206,7 +206,7 @@ altogether.
   in progress, or the next one after 15 Av. Years more than 4 before or 20
   after the current one are `410 Gone`.
 - A location is required (`geonameid`, `zip`, `city`, or
-  `latitude`/`longitude`/`tzid`); `b`, `m`, `M`, `td`, `ue`, `i`, `h12` and
+  `latitude`/`longitude`/`tzid`); `b`, `m`, `M`, `td`, `ue`, `i` and
   `lg` are read as `/shabbat` reads them. Month abbreviations follow `lg`.
 - `cfg=csv` returns the same rows as a CSV download
   (`Date,Parsha,Candles,Havdalah`).

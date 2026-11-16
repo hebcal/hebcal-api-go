@@ -1298,13 +1298,15 @@ Known differences from hebcal-web:
 2. Times a minute apart, under 1% of them, as everywhere (noaa-go against
    `@hebcal/core`).
 3. The base URL always carries `b=`, spells the default Havdalah `M=on`
-   where hebcal-web writes `td=8.5`, and keeps `i=on` and `h12`, which
-   hebcal-web drops (so its next-year link lost them).
+   where hebcal-web writes `td=8.5`, and keeps `i=on`, which
+   hebcal-web drops (so its next-year link lost it).
 4. `b=0` reads "at sunset" rather than "0 min before sunset"; `m=0`, no
    Havdalah, drops the checkbox and footnote rather than promising times "0
    min after sunset" in an empty column.
 5. Errors are plain text, not www's HTML error page.
-6. No analytics script, on purpose, and no trailing hostname comment
+6. `h12` is not read: the clock is always `ClockAuto`, following the
+   location's country. hebcal-web honours `h12=0`/`1`.
+7. No analytics script, on purpose, and no trailing hostname comment
    (`X-Backend` has the hostname).
 
 ## The readings-svc sidecar
