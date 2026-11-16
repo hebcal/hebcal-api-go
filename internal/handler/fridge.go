@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
@@ -87,7 +88,7 @@ func (s *Server) fridgeShabbat(w http.ResponseWriter, r *http.Request) {
 
 	etagExtra := ""
 	if year.Default {
-		etagExtra = "year=" + model.GregFromRD(year.Start).String()
+		etagExtra = "year=" + strconv.FormatInt(year.Start, 10)
 	} else {
 		h.Set("Cache-Control", cacheControl3Days)
 	}
