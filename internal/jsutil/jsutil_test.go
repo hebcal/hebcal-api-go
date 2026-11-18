@@ -134,3 +134,36 @@ func TestTrimTrailingWhitespace(t *testing.T) {
 		t.Errorf("spacey = %q", got)
 	}
 }
+
+func TestUnescape(t *testing.T) {
+	for in, want := range map[string]string{
+		"":                 "",
+		"a+b":              "a+b",
+		"dl=1%3Bv%3D1":     "dl=1;v=1",
+		"Ren%E9e":          "Renée",
+		"%2":               "%2",
+		"100%":             "100%",
+		"%zz%41":           "%zzA",
+		"%25C3%25BC":       "%C3%BC",
+		"already ü inside": "already ü inside",
+	} {
+		if got := Unescape(in); got != want {
+			t.Errorf("Unescape(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
+func TestQueryUnescape(t *testing.T) {
+	for in, want := range map[string]string{
+		"":         "",
+		"a+b":      "a b",
+		"%C3%BC":   "ü",
+		"Ren%E9e":  "Ren\uFFFDe",
+		"%2":       "%2",
+		"%zz%41+x": "%zzA x",
+	} {
+		if got := QueryUnescape(in); got != want {
+			t.Errorf("QueryUnescape(%q) = %q, want %q", in, got, want)
+		}
+	}
+}

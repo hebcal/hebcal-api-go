@@ -1,7 +1,5 @@
 package model
 
-import "strings"
-
 // Month and weekday names for every locale the PDF calendars can render.
 //
 // Generated data. The short `lg` codes are mapped onto these resolved locale
@@ -90,18 +88,4 @@ var namesByLocale = map[string]CalendarNames{
 		MonthsShort: [12]string{"січ", "лют", "бер", "квіт", "трав", "черв", "лип", "серп", "вер", "жовт", "лист", "груд"},
 		Weekdays:    [7]string{"неділя", "понеділок", "вівторок", "середа", "четвер", "п’ятниця", "субота"},
 	},
-}
-
-// NamesFor returns the calendar vocabulary for a resolved locale, falling back
-// to English. The lookup is case-insensitive, and he-x-nonikud shares he's
-// month and weekday names -- the no-nikud variant only affects event subjects.
-func NamesFor(locale string) CalendarNames {
-	key := strings.ToLower(locale)
-	if key == "he-x-nonikud" {
-		key = "he"
-	}
-	if n, ok := namesByLocale[key]; ok {
-		return n
-	}
-	return namesByLocale["en"]
 }

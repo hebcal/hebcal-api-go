@@ -19,6 +19,7 @@ import (
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/hebcal"
 
+	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
 	csvsvc "github.com/hebcal/hebcal-api-go/internal/service/csv"
 	"github.com/hebcal/hebcal-api-go/internal/service/download"
@@ -68,7 +69,7 @@ func Render(ctx context.Context, f *Feed, today time.Time, rs Readings) (*Files,
 	cal := &icalendar.Calendar{
 		Title:        f.Title,
 		Description:  f.Desc,
-		Lang:         ical.ProdidLang(f.Locale),
+		Lang:         model.LocaleLanguage(f.Locale),
 		PublishedTTL: publishedTTL,
 		RelCalID:     f.RelCalID,
 		Color:        strings.ToUpper(f.Color),

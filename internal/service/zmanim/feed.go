@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
 	zman "github.com/hebcal/hebcal-go/zmanim"
 	"github.com/hebcal/locales"
@@ -75,39 +74,14 @@ func NewFeed(kind FeedKind, q url.Values, loc *geodb.Location, now time.Time) *F
 	if tz, err := zman.LoadLocation(loc.TimeZoneID); err == nil {
 		now = now.In(tz)
 	}
-	y, m, d := now.Date()
 	lg := q.Get("lg")
 	return &Feed{
 		Kind:   kind,
 		Loc:    loc,
-		Today:  model.GregDate{Year: y, Month: m, Day: d},
+		Today:  model.GregDateOf(now),
 		locale: model.AliasLocale(lg),
-		lang:   prodidLang(lg),
+		lang:   model.LocaleLanguage(model.AliasLocale(lg)),
 	}
-}
-
-// prodidLang is the two-letter language the calendar's PRODID names: the
-// locale itself when it is two letters, the base language of the few longer
-// locale names, and English otherwise -- so "a" (Ashkenazi) and the default
-// Sephardic transliteration are EN, and any unknown two-letter lg is named
-// as given.
-func prodidLang(lg string) string {
-	switch lg {
-	case "h":
-		return "he"
-	case "", "a", "ah", "s", "sh":
-		return "en"
-	}
-	if len(lg) == 2 {
-		return lg
-	}
-	switch lg {
-	case "he-x-NoNikud", "he-x-nonikud":
-		return "he"
-	case "ashkenazi_romanian":
-		return "ro"
-	}
-	return "en"
 }
 
 // zmanTitle is a zman's English event title, untranslated: the key its
@@ -305,7 +279,7 @@ func (f *Feed) allDayEvents(days []dayTimes) []icalendar.Event {
 			lines[j] = prefix + str + " " + model.Gettext(zmanTitle(nt.name), f.locale)
 		}
 		date := icalendar.Date{Year: day.date.Year, Month: day.date.Month, Day: day.date.Day}
-		hd := hdate.FromGregorian(day.date.Year, day.date.Month, day.date.Day)
+		hd := day.date.HDate()
 		ev := event.NewHebrewDateEvent(hd)
 		var summary string
 		if hd.Day() == 1 {

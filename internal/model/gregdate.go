@@ -34,6 +34,28 @@ func (g GregDate) String() string {
 	return jsutil.IsoDateString(g.Year, g.Month, g.Day)
 }
 
+// HDate returns the Hebrew date of the same day.
+func (g GregDate) HDate() hdate.HDate {
+	return hdate.FromGregorian(g.Year, g.Month, g.Day)
+}
+
+// Midnight returns the start of the date in loc.
+func (g GregDate) Midnight(loc *time.Location) time.Time {
+	return time.Date(g.Year, g.Month, g.Day, 0, 0, 0, 0, loc)
+}
+
+// Noon returns midday of the date in loc, an instant that stays on the same
+// date whatever a DST transition does to the hours around it.
+func (g GregDate) Noon(loc *time.Location) time.Time {
+	return time.Date(g.Year, g.Month, g.Day, 12, 0, 0, 0, loc)
+}
+
+// GregDateOf returns the calendar date of t in t's own location.
+func GregDateOf(t time.Time) GregDate {
+	y, m, d := t.Date()
+	return GregDate{Year: y, Month: m, Day: d}
+}
+
 // GregFromRD converts an R.D. day number back to a Gregorian date.
 func GregFromRD(rd int64) GregDate {
 	y, m, d := greg.ProlepticFromRD(rd)
@@ -70,6 +92,5 @@ func TodayNewYork() GregDate {
 	if nyLoc != nil {
 		t = t.In(nyLoc)
 	}
-	y, m, d := t.Date()
-	return GregDate{Year: y, Month: m, Day: d}
+	return GregDateOf(t)
 }

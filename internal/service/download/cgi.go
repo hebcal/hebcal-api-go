@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+
+	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 )
 
 // The classic CGI download URL, /hebcal/index.cgi/<name>.pdf?<query>, older
@@ -70,13 +72,13 @@ func ParseCGIPath(path, rawQuery, ext string) (v2Query, error) {
 // '&'. And a whole query can arrive percent-encoded a second time, with its ';'
 // as %3B (and usually its '=' as %3D): that is spotted by the dl=1%3B /
 // subscribe=1%3B prefix and unescaped before splitting -- a Latin-1 decode that
-// leaves '+' alone (unescapeLatin1), because of the ancient encoding these URLs
+// leaves '+' alone (jsutil.Unescape), because of the ancient encoding these URLs
 // were written in. Production answers that second form with a 301 to the '&'
 // spelling and renders the redirected request; this service does the unescape
 // inline and renders in one hop.
 func normalizeCGIQuery(qs string) string {
 	if hasFold(qs, "dl=1%3B") || hasFold(qs, "subscribe=1%3B") {
-		qs = unescapeLatin1(qs)
+		qs = jsutil.Unescape(qs)
 	}
 	if strings.Contains(qs, ";") {
 		qs = strings.ReplaceAll(qs, ";", "&")
@@ -108,41 +110,8 @@ func applyLegacyParams(q v2Query) {
 }
 
 // hasFold reports whether s begins with prefix, ignoring ASCII case in the
-// percent escapes -- a crawler may lowercase %3B to %3b, and unescapeLatin1
+// percent escapes -- a crawler may lowercase %3B to %3b, and jsutil.Unescape
 // accepts either.
 func hasFold(s, prefix string) bool {
 	return len(s) >= len(prefix) && strings.EqualFold(s[:len(prefix)], prefix)
-}
-
-// unescapeLatin1 decodes %XX escapes and leaves everything else -- '+'
-// included, and a malformed '%' -- untouched. It is not url.PathUnescape,
-// which rejects a bad escape, nor url.QueryUnescape, which also turns '+' into
-// a space.
-func unescapeLatin1(s string) string {
-	var b strings.Builder
-	b.Grow(len(s))
-	for i := 0; i < len(s); i++ {
-		if s[i] == '%' && i+2 < len(s) && isHex(s[i+1]) && isHex(s[i+2]) {
-			b.WriteByte(unhex(s[i+1])<<4 | unhex(s[i+2]))
-			i += 2
-			continue
-		}
-		b.WriteByte(s[i])
-	}
-	return b.String()
-}
-
-func isHex(c byte) bool {
-	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')
-}
-
-func unhex(c byte) byte {
-	switch {
-	case c >= '0' && c <= '9':
-		return c - '0'
-	case c >= 'a' && c <= 'f':
-		return c - 'a' + 10
-	default:
-		return c - 'A' + 10
-	}
 }

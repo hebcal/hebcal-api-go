@@ -17,6 +17,8 @@ func TestAliasLocale(t *testing.T) {
 		{"", "en"},
 		{"de", "de"},
 		{"pt", "pt"},
+		{"he-x-NoNikud", "he-x-nonikud"},
+		{"FR", "fr"},
 	}
 	for _, tt := range tests {
 		if got := AliasLocale(tt.lg); got != tt.want {

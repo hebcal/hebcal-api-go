@@ -106,11 +106,6 @@ type Params struct {
 	PerEventCampaign bool
 }
 
-// hebrewLocales are the resolved locale names that render right-to-left.
-var hebrewLocales = map[string]bool{
-	"he": true, "he-x-nonikud": true,
-}
-
 // maxNumYears bounds a multi-year calendar. An explicitly requested span is
 // capped at 10, which also bounds the work a scanner can ask for.
 const maxNumYears = 10
@@ -196,7 +191,7 @@ func ParamsFromMessage(msg *downloadpb.Download, db *geodb.DB) (*Params, error) 
 
 	p.LG = msg.GetLocale()
 	p.Locale = model.AliasLocale(p.LG)
-	p.RTL = hebrewLocales[strings.ToLower(p.Locale)]
+	p.RTL = model.IsHebrewLocale(p.Locale)
 	// lg=ah and lg=sh render the transliteration and then the Hebrew name of
 	// each event.
 	p.AppendHebrew = p.LG == "ah" || p.LG == "sh"
@@ -325,21 +320,6 @@ func setFastTimes(o *hebcal.Options, msg *downloadpb.Download) {
 	model.SetFastTimes(o, func(key string) string { return fields[key] })
 }
 
-// defaultCandleMins is the default number of minutes before sunset that candles
-// are lit.
-const defaultCandleMins = 18
-
-// locationDefaultCandleMins reports the default candle-lighting offset for a
-// location: an Israeli location lights candles earlier than the diaspora
-// default, by a city-specific amount or by the 20-minute fallback.
-func locationDefaultCandleMins(loc *geodb.Location) int {
-	if loc.IsIsrael() {
-		zl := loc.ZmanimLocation()
-		return hebcal.IsraelCandleLightingMins(&zl)
-	}
-	return defaultCandleMins
-}
-
 // applyIsraelCandleMins applies the Israel candle-lighting rule: an Israeli
 // location uses its own default candle-lighting offset unless the request set a
 // non-default offset of its own. `hasGiven` reports whether the request
@@ -349,7 +329,7 @@ func locationDefaultCandleMins(loc *geodb.Location) int {
 // requested offset, meaningful only when hasGiven is true; `offset` is the
 // location's default.
 func applyIsraelCandleMins(o *hebcal.Options, hasGiven bool, given, offset int) {
-	if !hasGiven || (offset != defaultCandleMins && given == defaultCandleMins) {
+	if !hasGiven || (offset != location.DefaultCandleMins && given == location.DefaultCandleMins) {
 		o.CandleLightingMins = offset
 	}
 }
@@ -389,7 +369,7 @@ func setLocation(p *Params, loc *geodb.Location, msg *downloadpb.Download) error
 	p.Opts.CandleLighting = true
 	if loc.IsIsrael() {
 		p.Opts.IL = true
-		applyIsraelCandleMins(&p.Opts, msg.CandleLightingMins != nil, int(msg.GetCandleLightingMins()), locationDefaultCandleMins(loc))
+		applyIsraelCandleMins(&p.Opts, msg.CandleLightingMins != nil, int(msg.GetCandleLightingMins()), location.DefaultCandleMinsFor(loc))
 	}
 	return nil
 }

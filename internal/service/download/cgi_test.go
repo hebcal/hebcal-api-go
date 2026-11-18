@@ -75,6 +75,16 @@ func TestCGIMixedEncodingSpace(t *testing.T) {
 	}
 }
 
+// The second layer of encoding is Latin-1, as JavaScript's unescape() reads
+// it: %FC is "ü", which reaches the message as UTF-8, not as a lone 0xFC byte.
+func TestCGIDoubleEncodedLatin1(t *testing.T) {
+	const q = "dl=1%3Bv=1%3Bgeo=city%3Bcity=CH-Z%FCrich%3Bmonth=10%3Byear=2013%3Bmaj=on"
+	msg := decodeCGI(t, "hebcal_2013_oct.pdf", q)
+	if got := msg.GetCityName(); got != "CH-Zürich" {
+		t.Errorf("cityName = %q, want %q", got, "CH-Zürich")
+	}
+}
+
 // nh=on is the very old "all holiday categories" switch: it expands to the five
 // negative options other than Rosh Chodesh, and does so unconditionally, so it
 // overrides an explicit maj/min/mod/mf/ss beside it. The CGI and /export/ form

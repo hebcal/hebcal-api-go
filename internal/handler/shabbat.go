@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
-	"strings"
 	"time"
 
 	"github.com/hebcal/hebcal-go/event"
@@ -95,7 +94,7 @@ func (s *Server) shabbat(w http.ResponseWriter, r *http.Request) {
 		httpx.WriteJSONError(w, model.BadRequest("Locale '%s' not found", lg))
 		return
 	}
-	locale := strings.ToLower(model.AliasLocale(lg))
+	locale := model.AliasLocale(lg)
 	opts := shabbat.Options(loc, il, start, end, q)
 	events, err := hebcal.HebrewCalendar(&opts)
 	if err != nil {

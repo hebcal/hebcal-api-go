@@ -21,7 +21,6 @@ import (
 	"github.com/hebcal/hebcal-go/molad"
 	"github.com/hebcal/hebcal-go/sedra"
 	"github.com/hebcal/hebcal-go/zmanim"
-	"github.com/hebcal/locales"
 
 	"github.com/hebcal/hebcal-api-go/internal/config"
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
@@ -85,10 +84,9 @@ func WeekRange(dt model.GregDate, isToday bool, tzid string, now time.Time) (mod
 	if isToday {
 		day = now.In(loc)
 	} else {
-		day = time.Date(dt.Year, dt.Month, dt.Day, 12, 0, 0, 0, loc)
+		day = dt.Noon(loc)
 	}
-	y, m, d := day.Date()
-	base := time.Date(y, m, d, 0, 0, 0, 0, loc)
+	base := model.GregDateOf(day).Midnight(loc)
 	// if the day is Saturday, back up to Friday so last night's candles show
 	if base.Weekday() == time.Saturday {
 		base = base.AddDate(0, 0, -1)
@@ -99,8 +97,8 @@ func WeekRange(dt model.GregDate, isToday bool, tzid string, now time.Time) (mod
 	if fiveDaysAhead.After(saturday) {
 		end = fiveDaysAhead
 	}
-	start := model.GregDate{Year: base.Year(), Month: base.Month(), Day: base.Day()}
-	endD := model.GregDate{Year: end.Year(), Month: end.Month(), Day: end.Day()}
+	start := model.GregDateOf(base)
+	endD := model.GregDateOf(end)
 	return start, endD, nil
 }
 
@@ -181,28 +179,13 @@ func setCandleOptions(o *hebcal.Options, q url.Values, loc *geodb.Location) {
 
 	// candle-lighting minutes before sunset. In Israel an absent b -- or the
 	// b=18 that the web form submits by default -- yields the local custom.
-	o.CandleLightingMins = locationDefaultCandleMins(loc)
+	o.CandleLightingMins = location.DefaultCandleMinsFor(loc)
 	if b, ok := jsutil.ParseInt(q.Get("b")); ok {
-		if !(loc.IsIsrael() && b == DefaultCandleMins && o.CandleLightingMins != DefaultCandleMins) {
+		if !(loc.IsIsrael() && b == location.DefaultCandleMins && o.CandleLightingMins != location.DefaultCandleMins) {
 			o.CandleLightingMins = b
 		}
 	}
 	o.CandleLightingAtSunset = o.CandleLightingMins == 0
-}
-
-// DefaultCandleMins is the customary number of minutes before sunset outside
-// Israel, and the value hebcal.com's form submits when the reader has
-// expressed no preference.
-const DefaultCandleMins = 18
-
-// locationDefaultCandleMins returns the customary candle-lighting offset for a
-// location: 18 minutes, or in Israel the city's own custom.
-func locationDefaultCandleMins(loc *geodb.Location) int {
-	if !loc.IsIsrael() {
-		return DefaultCandleMins
-	}
-	zl := loc.ZmanimLocation()
-	return hebcal.IsraelCandleLightingMins(&zl)
 }
 
 // FilterYomTovOnly keeps only the Yom Tov days, for yto=on. The filter is
@@ -366,8 +349,7 @@ func item(ev event.CalEvent, loc *geodb.Location, il bool, locale, lg string, hd
 // memoLocaleName collapses a locale to the two catalogs that carry MEMO/molad
 // strings: Hebrew locales use "he", everything else "en".
 func memoLocaleName(locale string) string {
-	switch strings.ToLower(locale) {
-	case "he", "he-x-nonikud", "h":
+	if model.IsHebrewLocale(locale) {
 		return "he"
 	}
 	return "en"
@@ -375,23 +357,13 @@ func memoLocaleName(locale string) string {
 
 // holidayMemo looks up the holiday's memo: MEMO:<desc>, then MEMO:<basename>.
 func holidayMemo(desc, basename, localeName string) string {
-	if s := lookupMemo("MEMO:"+desc, localeName); s != "" {
+	if s := model.LookupMemo("MEMO:"+desc, localeName); s != "" {
 		return s
 	}
 	if basename != desc {
-		if s := lookupMemo("MEMO:"+basename, localeName); s != "" {
+		if s := model.LookupMemo("MEMO:"+basename, localeName); s != "" {
 			return s
 		}
-	}
-	return ""
-}
-
-// lookupMemo looks up a MEMO catalog key, treating a result equal to the key
-// as "not found" (the Go locales package echoes the key with ok=true for
-// unknown English keys).
-func lookupMemo(key, localeName string) string {
-	if s, ok := locales.LookupTranslation(key, localeName); ok && s != key {
-		return s
 	}
 	return ""
 }

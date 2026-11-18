@@ -22,9 +22,7 @@ func IsoDateStringToDate(s string) (GregDate, error) {
 	mm, _ := jsutil.ParseInt(s[5:7])
 	dd, _ := jsutil.ParseInt(s[8:10])
 	// normalize out-of-range month/day the same way new Date(y, m, d) does
-	t := time.Date(yy, time.Month(mm), dd, 12, 0, 0, 0, time.UTC)
-	y2, m2, d2 := t.Date()
-	return GregDate{Year: y2, Month: m2, Day: d2}, nil
+	return GregDateOf(time.Date(yy, time.Month(mm), dd, 12, 0, 0, 0, time.UTC)), nil
 }
 
 // MakeGregDate validates a Gregorian yy/mm/dd from query-string values and

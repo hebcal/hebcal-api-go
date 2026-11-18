@@ -295,17 +295,6 @@ func TestWeek(t *testing.T) {
 	}
 }
 
-func TestProdidLang(t *testing.T) {
-	for locale, want := range map[string]string{
-		"en": "en", "he": "he", "fr": "fr", "he-x-NoNikud": "he", "ashkenazi": "en",
-		"ashkenazi_romanian": "ro", "s": "en",
-	} {
-		if got := ProdidLang(locale); got != want {
-			t.Errorf("ProdidLang(%q) = %q, want %q", locale, got, want)
-		}
-	}
-}
-
 // Counting in Hebrew months lays out a printed page; a feed has no months, so
 // a request that asks for it is the same feed as one that does not -- with
 // Hebrew dates, never Gregorian ones, and no extra Tishrei.

@@ -159,13 +159,8 @@ func (c *Calendar) Lang() string {
 }
 
 func dateLang(locale string) string {
-	switch locale {
-	case "he", "he-x-nonikud":
-		return "he"
-	case "ashkenazi_romanian":
-		return "ro"
-	case "de", "es", "fi", "fr", "hu", "nl", "pl", "pt", "ru", "ro", "uk":
-		return locale
+	if lang := model.LocaleLanguage(locale); model.HasCalendarNames(lang) {
+		return lang
 	}
 	return "en"
 }
@@ -189,7 +184,7 @@ func New(loc *geodb.Location, year Year, lg string, q url.Values) (*Calendar, er
 		Location: loc,
 		IL:       il,
 		Lg:       lg,
-		Locale:   strings.ToLower(model.AliasLocale(lg)),
+		Locale:   model.AliasLocale(lg),
 		Options:  opts,
 	}
 	c.Items = makeItems(events, year.End, c.Locale, loc.CC, il, event.ClockAuto)
