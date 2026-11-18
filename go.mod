@@ -3,28 +3,28 @@ module github.com/hebcal/hebcal-api-go
 go 1.26.0
 
 require (
-	github.com/andybalholm/brotli v1.2.8
+	github.com/andybalholm/brotli v1.3.0
 	github.com/dustin/go-humanize v1.1.0
-	github.com/go-sql-driver/mysql v1.10.1
+	github.com/go-sql-driver/mysql v1.10.2
 	github.com/go-text/typesetting v0.3.5
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/hebcal/gematriya v1.1.0
 	github.com/hebcal/greg v1.1.0
 	github.com/hebcal/hdate v1.4.0
-	github.com/hebcal/hebcal-go v0.50.0
+	github.com/hebcal/hebcal-go v0.50.1
 	github.com/hebcal/learning v0.7.1
 	github.com/hebcal/locales v1.1.5
-	github.com/klauspost/compress v1.20.3
-	github.com/mattn/go-sqlite3 v1.14.52
+	github.com/klauspost/compress v1.20.4
+	github.com/mattn/go-sqlite3 v1.14.53
 	github.com/modelcontextprotocol/go-sdk v1.8.0
 	github.com/prometheus/client_golang v1.25.0
 	github.com/prometheus/client_model v0.6.3
 	github.com/ringsaturn/tzf/v2 v2.3.0
 	github.com/rivo/uniseg v0.4.7
 	github.com/twmb/murmur3 v1.2.2
-	golang.org/x/image v0.47.0
-	golang.org/x/sync v0.24.0
-	golang.org/x/text v0.43.0
+	golang.org/x/image v0.48.0
+	golang.org/x/sync v0.25.0
+	golang.org/x/text v0.44.0
 	google.golang.org/protobuf v1.36.12
 	seehuhn.de/go/pdf v0.7.4
 	seehuhn.de/go/postscript v0.7.4
@@ -39,15 +39,15 @@ require (
 	github.com/hebcal/noaa-go v1.0.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/pandatix/go-abnf v0.5.5 // indirect
-	github.com/prometheus/common v0.73.1 // indirect
+	github.com/prometheus/common v0.74.0 // indirect
 	github.com/prometheus/procfs v0.23.0 // indirect
 	github.com/ringsaturn/tzf-dist v0.0.2026-f // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
 	github.com/segmentio/encoding v0.5.4 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
-	golang.org/x/oauth2 v0.37.0 // indirect
-	golang.org/x/sys v0.49.0 // indirect
+	golang.org/x/oauth2 v0.38.0 // indirect
+	golang.org/x/sys v0.50.0 // indirect
 	golang.org/x/time v0.16.0 // indirect
 	seehuhn.de/go/dag v1.0.0 // indirect
 	seehuhn.de/go/geom v0.7.4 // indirect
