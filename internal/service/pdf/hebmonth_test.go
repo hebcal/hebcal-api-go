@@ -6,11 +6,13 @@ import (
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
 	"github.com/hebcal/hebcal-go/hebcal"
+
+	"github.com/hebcal/hebcal-api-go/internal/model"
 )
 
 func hebEvent(hy int, hm hdate.HMonth, hd int, subject string) Event {
 	d := hdate.New(hy, hm, hd)
-	return Event{HD: d, Greg: d.Gregorian(), Subject: subject}
+	return Event{HD: d, Greg: model.GregorianOf(d), Subject: subject}
 }
 
 // One page per Hebrew month, in chronological order across a year boundary.
@@ -109,9 +111,9 @@ func TestLeapYearHasBothAdars(t *testing.T) {
 // Each page's events are ordered the same way the Gregorian pages order theirs.
 func TestHebrewPagesSortTheirDays(t *testing.T) {
 	d := hdate.New(5787, hdate.Tishrei, 15)
-	timed := Event{HD: d, Greg: d.Gregorian(), Subject: "Candle lighting",
+	timed := Event{HD: d, Greg: model.GregorianOf(d), Subject: "Candle lighting",
 		TimeStr: "6:00p", Flags: event.LightCandles, rank: hebcal.DayPartNight}
-	holiday := Event{HD: d, Greg: d.Gregorian(), Subject: "Sukkot I", Flags: event.Chag, rank: hebcal.DayPartDay}
+	holiday := Event{HD: d, Greg: model.GregorianOf(d), Subject: "Sukkot I", Flags: event.Chag, rank: hebcal.DayPartDay}
 	pages := SplitByHebrewMonth([]Event{timed, holiday})
 	got := pages[0].Days[15]
 	if len(got) != 2 {

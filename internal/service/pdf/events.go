@@ -87,7 +87,7 @@ func Generate(p *download.Params) ([]Event, error) {
 		}
 		e := Event{
 			HD:      hd,
-			Greg:    hd.Gregorian(),
+			Greg:    model.GregorianOf(hd),
 			Subject: subject,
 			Flags:   flags,
 			TimeStr: timeStr,
@@ -134,7 +134,7 @@ func addGregorianAltDates(events []Event, p *download.Params) []Event {
 		return events
 	}
 	alt := func(hd hdate.HDate) Event {
-		return Event{HD: hd, Greg: hd.Gregorian(), AltDate: true}
+		return Event{HD: hd, Greg: model.GregorianOf(hd), AltDate: true}
 	}
 	var alts []Event
 	if p.AddAltDates {

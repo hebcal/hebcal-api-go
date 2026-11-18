@@ -119,6 +119,7 @@ func Parse(rpath string, query url.Values) (*download.Params, error) {
 	}
 	p.Opts.Year = calendarYear
 	p.Opts.IsHebrewYear = isHebrewYear
+	p.Opts.NoJulian = true // a Gregorian year is proleptic
 	p.Opts.IL = pathIL || query.Get("i") == "on"
 	p.Opts.AddHebrewDates = true
 	return p, nil

@@ -9,6 +9,8 @@ import (
 	lru "github.com/hashicorp/golang-lru/v2"
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
+
+	"github.com/hebcal/hebcal-api-go/internal/model"
 )
 
 // memoCacheSize is how many (Hebrew year, schedule) readings are kept: a
@@ -67,8 +69,8 @@ func (s *Service) yearMemos(ctx context.Context, hyear int, il bool) (TorahMemos
 		return m, nil
 	}
 	v, err, _ := s.flight.Do(fmt.Sprint(key), func() (any, error) {
-		start := hdate.New(hyear, hdate.Tishrei, 1).Gregorian()
-		end := hdate.New(hyear+1, hdate.Tishrei, 1).Gregorian().AddDate(0, 0, -1)
+		start := model.GregorianOf(hdate.New(hyear, hdate.Tishrei, 1))
+		end := model.GregorianOf(hdate.New(hyear+1, hdate.Tishrei, 1)).AddDate(0, 0, -1)
 		// A detached context: the answer is shared with every request waiting
 		// on it, so one caller giving up must not fail them all.
 		fetchCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 30*time.Second)

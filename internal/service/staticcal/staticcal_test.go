@@ -14,6 +14,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
 )
 
@@ -203,11 +204,11 @@ func firstDiff(want, got string) string {
 // days counted from today's local date.
 func TestWindow(t *testing.T) {
 	start, end := Window(time.Date(2026, time.November, 11, 12, 0, 0, 0, time.UTC), 2)
-	if got := start.Gregorian().Format(time.DateOnly); got != "2026-08-13" {
+	if got := model.GregorianOf(start).Format(time.DateOnly); got != "2026-08-13" {
 		t.Errorf("start %s, want 2026-08-13", got)
 	}
 	// 2 * 365.25 - 60 = 670.5 days, rounded to 671
-	if got := end.Gregorian().Format(time.DateOnly); got != "2028-09-12" {
+	if got := model.GregorianOf(end).Format(time.DateOnly); got != "2028-09-12" {
 		t.Errorf("end %s, want 2028-09-12", got)
 	}
 }

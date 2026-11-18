@@ -5,6 +5,7 @@ import (
 
 	"github.com/hebcal/hdate"
 
+	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 )
 
@@ -65,24 +66,24 @@ func NumYears(msg *downloadpb.Download, p *Params, numUnsupported int) int {
 func LearningRange(p *Params) (time.Time, time.Time) {
 	o := &p.Opts
 	if o.Start.Abs() != 0 && o.End.Abs() != 0 {
-		return o.Start.Gregorian(), o.End.Gregorian()
+		return model.GregorianOf(o.Start), model.GregorianOf(o.End)
 	}
 	year := o.Year
 	if year == 0 {
 		now := time.Now()
 		if o.IsHebrewYear {
-			year = hdate.FromTime(now).Year()
+			year = model.HDateOf(now).Year()
 		} else {
 			year = now.Year()
 		}
 	}
 	n := max(o.NumYears, 1)
 	if o.IsHebrewYear {
-		first := hdate.New(year, hdate.Tishrei, 1).Gregorian()
+		first := model.GregorianOf(hdate.New(year, hdate.Tishrei, 1))
 		if year > 1 {
 			first = first.AddDate(0, 0, -1)
 		}
-		last := hdate.New(year+n, hdate.Tishrei, 1).Gregorian().AddDate(0, 0, -1)
+		last := model.GregorianOf(hdate.New(year+n, hdate.Tishrei, 1)).AddDate(0, 0, -1)
 		return first, last
 	}
 	if o.Month >= time.January && o.Month <= time.December {

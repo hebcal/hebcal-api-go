@@ -15,7 +15,7 @@ import (
 // language with month names of its own (model.HasCalendarNames). A locale
 // without them -- the transliterated ones -- takes the English form. No year.
 func GregorianDateText(hd hdate.HDate, locale string) string {
-	g := hd.Gregorian()
+	g := model.GregorianOf(hd)
 	mon := model.NamesFor(locale).MonthsShort[int(g.Month())-1]
 	if model.HasCalendarNames(locale) && !strings.EqualFold(locale, "en") {
 		return fmt.Sprintf("%d %s", g.Day(), mon)

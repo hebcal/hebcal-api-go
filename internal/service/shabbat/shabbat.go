@@ -235,8 +235,8 @@ func title(events []event.CalEvent, loc *geodb.Location) string {
 	if len(events) == 0 {
 		return title
 	}
-	sy, sm, sd := events[0].Date().Greg()
-	ey, _, _ := events[len(events)-1].Date().Greg()
+	sy, sm, sd := events[0].Date().ProlepticGreg()
+	ey, _, _ := events[len(events)-1].Date().ProlepticGreg()
 	_ = sd
 	if sy != ey {
 		return fmt.Sprintf("%s %d-%d", title, sy, ey)

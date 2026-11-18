@@ -60,7 +60,7 @@ func renderChofetzChaim(ctx context.Context, f *Feed, cal *icalendar.Calendar, o
 		if err != nil || pair[0] == nil || pair[1] == nil {
 			continue
 		}
-		hd := hdate.FromTime(day)
+		hd := model.HDateOf(day)
 		subj := chofetzChaimTitle(pair[0]) + " / " + pair[1].Title
 		memo := chofetzChaimMemo(hd, pair, opt.Campaign)
 		date := icalendar.DateOf(day)

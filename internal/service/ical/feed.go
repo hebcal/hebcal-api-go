@@ -192,7 +192,7 @@ func (s *Service) Generate(ctx context.Context, r *Request) (*Feed, error) {
 	for i := range items {
 		if e, ok := LearningItem(&items[i], opt); ok {
 			day, _ := time.Parse(time.DateOnly, items[i].Date)
-			f.entries = append(f.entries, entry{hdate.FromTime(day).Abs(), hebcal.DayPartLearning,
+			f.entries = append(f.entries, entry{model.HDateOf(day).Abs(), hebcal.DayPartLearning,
 				download.LearningOrder(items[i].Category), e})
 		}
 	}
@@ -258,7 +258,7 @@ type Result struct {
 }
 
 // Today is the Hebrew date a subscription's look-back is counted from.
-func (s *Service) today() hdate.HDate { return hdate.FromTime(s.now().UTC()) }
+func (s *Service) today() hdate.HDate { return model.HDateOf(s.now().UTC()) }
 
 // Week names the week a cut subscription belongs to, by the day of its Sunday.
 // What a subscription keeps moves with the date, so what a client was sent last
@@ -287,7 +287,7 @@ func (s *Service) Limit(f *Feed) bool {
 		kept = kept[:MaxSubscriptionEvents]
 		last := kept[len(kept)-1].abs + 1
 		hd := hdate.FromRD(last)
-		date := icalendar.DateOf(hd.Gregorian())
+		date := icalendar.DateOf(model.GregorianOf(hd))
 		const desc = "Hebcal calendar feed truncated"
 		notice := icalendar.Event{
 			UID:      icalendar.DefaultUID(date, desc, ""),
@@ -425,8 +425,8 @@ func campaignName(p *download.Params, q *download.ICSQuery, events []event.CalEv
 		}
 	}
 	if len(events) > 0 {
-		add(events[0].Date().Gregorian())
-		add(events[len(events)-1].Date().Gregorian())
+		add(model.GregorianOf(events[0].Date()))
+		add(model.GregorianOf(events[len(events)-1].Date()))
 	}
 	for i := range items {
 		if day, err := time.Parse(time.DateOnly, items[i].Date); err == nil {

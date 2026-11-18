@@ -123,7 +123,7 @@ func Render(cal *Calendar) []byte {
 	for i := range cal.Learning {
 		it := &cal.Learning[i]
 		if day, err := time.Parse("2006-01-02", it.Date); err == nil {
-			hd := hdate.FromTime(day)
+			hd := model.HDateOf(day)
 			rows = append(rows, row{abs: hd.Abs(), rank: hebcal.DayPartLearning,
 				series: download.LearningOrder(it.Category), line: learningToCSV(it, hd, p)})
 		}
@@ -252,7 +252,7 @@ func learningToCSV(it *readings.Item, hd hdate.HDate, p *download.Params) []stri
 // columns empty.
 func formatRow(hd hdate.HDate, subj, hebrew, timeStr string, timed bool, memo string,
 	showTimeAs int, loc string, p *download.Params) []string {
-	y, m, d := hd.Greg()
+	y, m, d := hd.ProlepticGreg()
 	date := FormatDate(y, m, d, p.Euro)
 
 	startTime, endDate, endTime, allDay := "", "", "", "true"

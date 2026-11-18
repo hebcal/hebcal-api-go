@@ -17,7 +17,15 @@ import (
 // MaxRangeDays caps a date-range request on /converter and /zmanim.
 const MaxRangeDays = 179
 
-// GregDate is a proleptic Gregorian calendar date.
+// GregDate is a proleptic Gregorian calendar date: the Gregorian rules run
+// back before 1752 with no Julian period, as in time.Time.
+//
+// The hdate and greg packages also offer a historical calendar that is Julian
+// before 14 September 1752 (hdate.FromGregorian, FromTime, HDate.Greg and
+// HDate.Gregorian). This service never uses it: those dates disagree with
+// time.Time by up to eleven days, so a weekday computed from one is wrong for
+// the other, and the eleven dates the switch skipped make FromGregorian panic.
+// Convert through HDateOf, GregDate.HDate, GregDateOfHDate and GregorianOf.
 type GregDate struct {
 	Year  int
 	Month time.Month
@@ -36,7 +44,23 @@ func (g GregDate) String() string {
 
 // HDate returns the Hebrew date of the same day.
 func (g GregDate) HDate() hdate.HDate {
-	return hdate.FromGregorian(g.Year, g.Month, g.Day)
+	return hdate.FromProlepticGregorian(g.Year, g.Month, g.Day)
+}
+
+// HDateOf returns the Hebrew date of t's calendar date in t's own location.
+func HDateOf(t time.Time) hdate.HDate {
+	return GregDateOf(t).HDate()
+}
+
+// GregDateOfHDate returns the Gregorian date of a Hebrew date.
+func GregDateOfHDate(hd hdate.HDate) GregDate {
+	y, m, d := hd.ProlepticGreg()
+	return GregDate{Year: y, Month: m, Day: d}
+}
+
+// GregorianOf returns midnight UTC on the Gregorian date of a Hebrew date.
+func GregorianOf(hd hdate.HDate) time.Time {
+	return GregDateOfHDate(hd).Midnight(time.UTC)
 }
 
 // Midnight returns the start of the date in loc.

@@ -261,6 +261,32 @@ returns nothing for it, and the row draws hebcal-go's `Render()` text --
 "Latest Kiddush Levana: 9:44", time baked into the subject with no a/p suffix
 -- where every other timed row draws a bold "9:44p".
 
+### Gregorian dates are proleptic, everywhere
+
+`time.Time`, `model.GregDate` and JavaScript's `Date` all run the Gregorian
+rules back before 1752. hdate and greg also offer a *historical* calendar that
+is Julian before 14 September 1752: `hdate.FromGregorian`, `hdate.FromTime`,
+`HDate.Greg()` and `HDate.Gregorian()`, and hebcal-go's Gregorian-year range
+unless `Options.NoJulian` is set. Nothing here uses it. Mixing the two puts a
+date eleven days off and gives a `time.Time` whose `Weekday()` disagrees with
+the Hebrew date's, and `FromGregorian` panics on the eleven days the switch
+skipped (and on year 0). Convert with `model.HDateOf(t)`, `GregDate.HDate()`,
+`model.GregDateOfHDate(hd)`, `model.GregorianOf(hd)` (midnight UTC) and
+`model.IsoGreg(hd)`, or `hd.ProlepticGreg()` /
+`hdate.FromProlepticGregorian` directly; set `NoJulian: true` on any
+`hebcal.Options` built from a Gregorian `Year` (download params, holidaypdf,
+the MCP holidays tool). `TestProlepticConversions`,
+`TestGregorianYearIsProleptic` and `TestConvertProlepticGregorian` pin it.
+
+**One gap remains upstream.** hebcal-go's `newZmanim` builds its zmanim from
+`hd.Greg()`, so a timed event before 14 September 1752 is computed for the
+Julian date: candle lighting on Friday 1752-03-03 comes out as Monday
+1752-02-21 17:06. Candle-lighting is off before 1900 on the download routes,
+but `/shabbat` (which accepts 1752) and the MCP `shabbat-times` tool can reach
+it. The fix belongs in hebcal-go (`ProlepticGreg` there, and in its
+`FromGregorian`/`FromTime` calls; `greg.DaysIn` with `NoJulian` and a `Month`
+also uses the Julian leap rule before 1752).
+
 ### How this repository reads a hebcal-go event
 
 Every `event.CalEvent` has `Desc()` (the untranslated description, which the
@@ -2158,6 +2184,7 @@ of the Hebcal.com fleet's.
 | `cache.go` `yearMemo` | `@hebcal/core`'s `getHolidaysForYear_` `QuickLRU` memo (`maxSize: 120`) |
 | `gregdate.go` `MaxRangeDays` (399) | hebcal-web's `/converter` + `/zmanim` limit |
 | `gregdate.go` `String` / `ReIsoDate` | JS `Date.toISOString` / the route validation regex |
+| `gregdate.go` `HDateOf`, `GregDate.HDate`, `GregDateOfHDate`, `GregorianOf` | JS `Date` and `@hebcal/hdate`'s `greg`, both proleptic |
 | `event.go` `RenderEvent` | `converter.js` `renameChanukah()` |
 | `fasttimes.go` `SetFastTimes`, `FastTimeParams` | `getFastTimeOpts()` / `fastTimeOpts` (`src/urlArgs.js`) |
 

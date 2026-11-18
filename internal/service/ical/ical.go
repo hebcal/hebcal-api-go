@@ -97,7 +97,7 @@ func (m TorahMemos) lookup(hd hdate.HDate, desc string) string {
 	if m == nil {
 		return ""
 	}
-	return m[torahMemoKey{hd.Gregorian().Format(time.DateOnly), desc}]
+	return m[torahMemoKey{model.GregorianOf(hd).Format(time.DateOnly), desc}]
 }
 
 // categories maps an event's primary category to its CATEGORIES value. A
@@ -161,7 +161,7 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 	}
 	e := icalendar.Event{
 		Summary:     subj,
-		Date:        icalendar.DateOf(hd.Gregorian()),
+		Date:        icalendar.DateOf(model.GregorianOf(hd)),
 		Busy:        flags.Has(event.Chag),
 		Private:     flags.Has(event.User),
 		Description: Memo(ev, o),
@@ -216,7 +216,7 @@ func Event(ev event.CalEvent, o *Options) icalendar.Event {
 // reminder stays.
 func (o *Options) omerAlarm(e *icalendar.Event, oe omer.OmerEvent) {
 	eve := oe.Date().Prev()
-	y, m, d := eve.Greg()
+	y, m, d := eve.ProlepticGreg()
 	day := time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
 	// The calendar's events were generated for this location, so it is
 	// known to be usable.

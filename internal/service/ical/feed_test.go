@@ -12,8 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hebcal/hdate"
-
+	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 )
@@ -290,7 +289,7 @@ func TestSubscriptionLimit(t *testing.T) {
 func TestWeek(t *testing.T) {
 	s, _ := testService(t)
 	// 2026-11-11 is a Wednesday
-	if got, want := s.Week(), hdate.FromTime(time.Date(2026, time.November, 8, 0, 0, 0, 0, time.UTC)).Abs(); got != want {
+	if got, want := s.Week(), model.HDateOf(time.Date(2026, time.November, 8, 0, 0, 0, 0, time.UTC)).Abs(); got != want {
 		t.Errorf("Week() = %d, want the Sunday's %d", got, want)
 	}
 }

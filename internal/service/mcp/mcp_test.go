@@ -55,6 +55,32 @@ func TestConvertGregorianToHebrew(t *testing.T) {
 	}
 }
 
+// Gregorian dates are proleptic, before 1752 as after, and a date Britain's
+// calendar skipped in September 1752 converts rather than panics.
+func TestConvertProlepticGregorian(t *testing.T) {
+	tl := &tools{}
+	for date, want := range map[string]string{
+		"1700-01-01": "Day of Hebrew month: 10",
+		"1752-09-05": "Day of Hebrew month: 26",
+	} {
+		got := tt{t}.text(tl.convertGregorianToHebrew(context.Background(), nil,
+			convertGregorianToHebrewArgs{Date: date}))
+		if !strings.Contains(got, want) {
+			t.Errorf("%s: output missing %q\ngot:\n%s", date, want, got)
+		}
+	}
+	got := tt{t}.text(tl.convertHebrewToGregorian(context.Background(), nil,
+		convertHebrewToGregorianArgs{Day: 10, Month: "Tevet", Year: 5460}))
+	if got != "1700-01-01" {
+		t.Errorf("10 Tevet 5460 = %q, want 1700-01-01", got)
+	}
+	holidays := tt{t}.text(tl.jewishHolidaysYear(context.Background(), nil,
+		jewishHolidaysYearArgs{Year: 1700}))
+	if !strings.Contains(holidays, "| 1700-09-14 | 1 Tishrei 5461 |") {
+		t.Errorf("Rosh Hashana 5461 should be 1700-09-14:\n%s", holidays)
+	}
+}
+
 func TestConvertGregorianToHebrewBadDate(t *testing.T) {
 	tl := &tools{}
 	got := tt{t}.text(tl.convertGregorianToHebrew(context.Background(), nil,

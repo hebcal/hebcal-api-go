@@ -10,6 +10,7 @@ import (
 	"github.com/hebcal/hebcal-go/zmanim"
 	"google.golang.org/protobuf/proto"
 
+	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 )
@@ -276,7 +277,7 @@ func TestGregorianAltText(t *testing.T) {
 func TestAddGregorianAltDates(t *testing.T) {
 	mk := func(day int) Event {
 		hd := hdate.New(5786, hdate.Cheshvan, day)
-		return Event{HD: hd, Greg: hd.Gregorian()}
+		return Event{HD: hd, Greg: model.GregorianOf(hd)}
 	}
 	events := []Event{mk(1), mk(1), mk(4)} // two events on the 1st, one on the 4th
 

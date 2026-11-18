@@ -10,6 +10,7 @@ import (
 	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/hebcal-go/zmanim"
 
+	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/service/download"
 )
 
@@ -27,7 +28,7 @@ func generateDay(t *testing.T, year int, month time.Month, day int, learning []E
 // generateDayWith is generateDay with more of hebcal-go's learning series.
 func generateDayWith(t *testing.T, year int, month time.Month, day int, series []string, learning []Event) string {
 	t.Helper()
-	d := hdate.FromGregorian(year, month, day)
+	d := hdate.FromProlepticGregorian(year, month, day)
 	toronto := zmanim.MustNewLocation("Toronto", "CA", 43.70011, -79.4163, 0, "America/Toronto")
 	p := &download.Params{Locale: "en", MonthMode: download.GregorianArabic}
 	p.Opts = hebcal.Options{
@@ -40,7 +41,7 @@ func generateDayWith(t *testing.T, year int, month time.Month, day int, series [
 		t.Fatalf("Generate: %v", err)
 	}
 	for i := range learning {
-		learning[i].HD, learning[i].Greg = d, d.Gregorian()
+		learning[i].HD, learning[i].Greg = d, model.GregorianOf(d)
 	}
 	events = mergeLearning(events, learning)
 	pages := SplitByGregorianMonth(events)
@@ -179,7 +180,7 @@ func TestAppendHebrewBriefOmitsTimeForTimedEvents(t *testing.T) {
 func TestSplitByGregorianMonthFillsEmptyMonths(t *testing.T) {
 	mk := func(y int, m time.Month, d int) Event {
 		g := time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
-		return Event{Greg: g, HD: hdate.FromTime(g), Subject: "x"}
+		return Event{Greg: g, HD: model.HDateOf(g), Subject: "x"}
 	}
 	// August and October, with nothing in September.
 	pages := SplitByGregorianMonth([]Event{mk(2026, time.August, 1), mk(2026, time.October, 1)})
@@ -200,7 +201,7 @@ func TestSplitByGregorianMonthFillsEmptyMonths(t *testing.T) {
 func TestSplitByGregorianMonthOrdersPagesChronologically(t *testing.T) {
 	mk := func(y int, m time.Month) Event {
 		g := time.Date(y, m, 15, 0, 0, 0, 0, time.UTC)
-		return Event{Greg: g, HD: hdate.FromTime(g), Subject: "x"}
+		return Event{Greg: g, HD: model.HDateOf(g), Subject: "x"}
 	}
 	pages := SplitByGregorianMonth([]Event{
 		mk(2026, time.November), mk(2027, time.January), mk(2026, time.December),

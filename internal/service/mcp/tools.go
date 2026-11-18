@@ -111,7 +111,7 @@ func doYahrzeit(origHd hdate.HDate, afterSunset bool) []string {
 		origHd = origHd.Next()
 	}
 	origHyear := origHd.Year()
-	nowYear := hdate.FromTime(time.Now()).Year()
+	nowYear := model.HDateOf(time.Now()).Year()
 	out := []string{
 		"| Anniversary number | Gregorian date | Hebrew year | Hebrew day and month | Date in Hebrew letters |",
 		"| ---- | ---- | ---- | ---- | ---- |",
@@ -207,7 +207,7 @@ type jewishHolidaysYearArgs struct {
 }
 
 func (t *tools) jewishHolidaysYear(_ context.Context, _ *mcpsdk.CallToolRequest, in jewishHolidaysYearArgs) (*mcpsdk.CallToolResult, any, error) {
-	events, err := hebcal.HebrewCalendar(&hebcal.Options{Year: in.Year, IsHebrewYear: false})
+	events, err := hebcal.HebrewCalendar(&hebcal.Options{Year: in.Year, NoJulian: true})
 	if err != nil {
 		return errorCard("Error: " + err.Error()), nil, nil
 	}

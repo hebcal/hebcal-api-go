@@ -635,8 +635,8 @@ func hebMonthName(hd hdate.HDate, locale string) string {
 func hebMonthRange(mp MonthPage, p *download.Params) string {
 	firstG := time.Date(mp.Year, mp.Month, 1, 0, 0, 0, 0, time.UTC)
 	lastG := firstG.AddDate(0, 1, -1)
-	start := hdate.FromTime(firstG)
-	end := hdate.FromTime(lastG)
+	start := model.HDateOf(firstG)
+	end := model.HDateOf(lastG)
 
 	str := hebMonthName(start, p.Locale)
 	if end.Year() != start.Year() {
@@ -676,7 +676,7 @@ func (r *Renderer) renderHebMonth(doc *document.MultiPage, inst *Instances, p *d
 
 	first := hdate.New(hp.Year, hp.Month, 1)
 	daysInMonth := first.DaysInMonth()
-	startDow := int(first.Gregorian().Weekday())
+	startDow := int(model.GregorianOf(first).Weekday())
 	rows := rowsFor(daysInMonth, startDow)
 	rowHeight := (pdfHeight - pdfTMargin - pdfBMargin) / float64(rows)
 
@@ -713,7 +713,7 @@ func (r *Renderer) drawHebMonthTitle(page *document.Page, inst *Instances, p *do
 
 	last := hdate.New(hp.Year, hp.Month, daysInMonth)
 	r.drawCentered(page, inst, subFont, 14, colorBlack, pdfTMargin+4,
-		gregRange(first.Gregorian(), last.Gregorian(), model.NamesFor(p.Locale)))
+		gregRange(model.GregorianOf(first), model.GregorianOf(last), model.NamesFor(p.Locale)))
 }
 
 // gregRange formats the Gregorian span of a Hebrew month in three cases: same

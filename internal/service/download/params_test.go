@@ -6,7 +6,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
+	"github.com/hebcal/hebcal-go/hebcal"
 	"google.golang.org/protobuf/proto"
 
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
@@ -162,6 +164,39 @@ func TestDateRange(t *testing.T) {
 	}
 	if p2.Opts.Start.Abs() != p.Opts.Start.Abs() {
 		t.Errorf("epoch-seconds start does not match the string form")
+	}
+}
+
+// A Gregorian year is proleptic: March 1752 runs from proleptic March 1, not
+// from Julian March 1 (proleptic March 12), and so does a start date.
+func TestGregorianYearIsProleptic(t *testing.T) {
+	p, err := DecodeParams(encode(t, &pb.Download{Year: 1752, Month: 3}), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	p.Opts.AddHebrewDates = true
+	evs, err := hebcal.HebrewCalendar(&p.Opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	first, last := evs[0].Date(), evs[len(evs)-1].Date()
+	if want := hdate.FromProlepticGregorian(1752, time.March, 1); first != want {
+		t.Errorf("first day = %v, want %v (1752-03-01)", first, want)
+	}
+	if want := hdate.FromProlepticGregorian(1752, time.March, 31); last != want {
+		t.Errorf("last day = %v, want %v (1752-03-31)", last, want)
+	}
+
+	byStr := &pb.Download{
+		StartOneof: &pb.Download_StartStr{StartStr: "1752-03-01"},
+		EndOneof:   &pb.Download_EndStr{EndStr: "1752-03-31"},
+	}
+	p2, err := DecodeParams(encode(t, byStr), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p2.Opts.Start != first {
+		t.Errorf("start=1752-03-01 is %v, want %v", p2.Opts.Start, first)
 	}
 }
 

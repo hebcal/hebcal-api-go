@@ -135,8 +135,7 @@ func SimchatTorahDate(year int, il bool) hdate.HDate {
 
 // IsoGreg formats a Hebrew date's Gregorian date as YYYY-MM-DD.
 func IsoGreg(hd hdate.HDate) string {
-	y, m, d := hd.Greg()
-	return jsutil.IsoDateString(y, m, d)
+	return GregDateOfHDate(hd).String()
 }
 
 // enMonthNames are the transliterated month names this service uses. Note

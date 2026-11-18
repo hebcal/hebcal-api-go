@@ -8,6 +8,7 @@ import (
 	"github.com/hebcal/hebcal-go/hebcal"
 
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
+	"github.com/hebcal/hebcal-api-go/internal/model"
 	"github.com/hebcal/hebcal-api-go/internal/service/download"
 )
 
@@ -29,7 +30,7 @@ func fetchLearning(ctx context.Context, f *download.LearningFetcher, series []st
 			title = it.Hebrew
 		}
 		out = append(out, Event{
-			HD:       hdate.FromTime(day),
+			HD:       model.HDateOf(day),
 			Greg:     day,
 			Subject:  jsutil.SmartApostrophe(title),
 			Learning: true,
@@ -76,7 +77,7 @@ func learningRange(p *download.Params, events []Event) (time.Time, time.Time, bo
 		return wholeMonths(events[0].Greg, events[len(events)-1].Greg)
 	}
 	if p.Opts.Start.Abs() != 0 && p.Opts.End.Abs() != 0 {
-		return wholeMonths(p.Opts.Start.Gregorian(), p.Opts.End.Gregorian())
+		return wholeMonths(model.GregorianOf(p.Opts.Start), model.GregorianOf(p.Opts.End))
 	}
 	if p.Opts.Year == 0 {
 		// Without a year or any events there is nothing to anchor a span to.
@@ -90,8 +91,8 @@ func learningRange(p *download.Params, events []Event) (time.Time, time.Time, bo
 		if n < 1 {
 			n = 1
 		}
-		first := hdate.New(p.Opts.Year, hdate.Tishrei, 1).Gregorian()
-		last := hdate.New(p.Opts.Year+n, hdate.Tishrei, 1).Gregorian().AddDate(0, 0, -1)
+		first := model.GregorianOf(hdate.New(p.Opts.Year, hdate.Tishrei, 1))
+		last := model.GregorianOf(hdate.New(p.Opts.Year+n, hdate.Tishrei, 1)).AddDate(0, 0, -1)
 		return wholeMonths(first, last)
 	}
 	first := time.Date(p.Opts.Year, time.January, 1, 0, 0, 0, 0, time.UTC)

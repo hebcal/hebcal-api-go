@@ -51,7 +51,7 @@ type Files struct {
 // refreshed weekly never loses an event someone is still looking at, to
 // years ahead less 60 days.
 func Window(today time.Time, years int) (start, end hdate.HDate) {
-	now := hdate.FromTime(today).Abs()
+	now := model.HDateOf(today).Abs()
 	end64 := now + int64(math.Round(365.25*float64(years))) - 60
 	return hdate.FromRD(now - 90), hdate.FromRD(end64)
 }
@@ -94,7 +94,7 @@ func Render(ctx context.Context, f *Feed, today time.Time, rs Readings) (*Files,
 		return nil, fmt.Errorf("%s: %w", f.File, err)
 	}
 	if hasReadings(&p.Opts) {
-		rows, err := rs.TorahMemos(ctx, start.Gregorian(), end.Gregorian(), f.IL)
+		rows, err := rs.TorahMemos(ctx, model.GregorianOf(start), model.GregorianOf(end), f.IL)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", f.File, err)
 		}
@@ -155,7 +155,7 @@ func fetchLearning(ctx context.Context, rs Readings, series []string, lg string,
 		codes[i] = code
 		wanted[s] = true
 	}
-	items, err := rs.Learning(ctx, codes, lg, start.Gregorian(), end.Gregorian())
+	items, err := rs.Learning(ctx, codes, lg, model.GregorianOf(start), model.GregorianOf(end))
 	if err != nil {
 		return nil, err
 	}

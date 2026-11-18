@@ -423,6 +423,8 @@ func holidayMask(msg *downloadpb.Download, mevarchim bool) event.Flags {
 // express three different things here and only one of them may be set.
 func applyDateRange(msg *downloadpb.Download, p *Params) error {
 	o := &p.Opts
+	// A Gregorian year is proleptic, like every date in this service.
+	o.NoJulian = true
 
 	startStr, endStr := msg.GetStartStr(), msg.GetEndStr()
 	if startStr == "" && msg.GetStart() != 0 {
@@ -444,7 +446,7 @@ func applyDateRange(msg *downloadpb.Download, p *Params) error {
 			return errors.New("end date precedes start date")
 		}
 		for _, d := range []hdate.HDate{start, end} {
-			if y, _, _ := d.Greg(); !model.YearIsSupported(y, false) {
+			if y, _, _ := d.ProlepticGreg(); !model.YearIsSupported(y, false) {
 				return &OutOfRangeError{Year: y}
 			}
 		}
@@ -455,7 +457,7 @@ func applyDateRange(msg *downloadpb.Download, p *Params) error {
 	if msg.GetYearNow() {
 		now := time.Now()
 		if o.IsHebrewYear {
-			o.Year = hdate.FromTime(now).Year()
+			o.Year = model.HDateOf(now).Year()
 		} else {
 			o.Year = now.Year()
 		}
@@ -490,7 +492,7 @@ func parseISODate(s string) (hdate.HDate, error) {
 	if err != nil {
 		return hdate.HDate{}, err
 	}
-	return hdate.FromTime(t), nil
+	return model.HDateOf(t), nil
 }
 
 // OutOfRangeError marks a year there is no calendar for. The handler answers
