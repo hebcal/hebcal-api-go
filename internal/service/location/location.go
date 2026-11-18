@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/hebcal/hebcal-go/hebcal"
 	"github.com/hebcal/hebcal-go/zmanim"
 
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
@@ -294,4 +295,20 @@ func makeGeoCityName(latitude, longitude float64, tzid string) string {
 	lomin := int(math.Floor(60 * (math.Abs(longitude) - float64(lodeg))))
 	return fmt.Sprintf("%d°%d′%s %d°%d′%s %s",
 		ladeg, lamin, ladir, lodeg, lomin, lodir, tzid)
+}
+
+// DefaultCandleMins is the customary number of minutes before sunset that
+// candles are lit outside Israel, and the value hebcal.com's forms submit when
+// the reader has expressed no preference.
+const DefaultCandleMins = 18
+
+// DefaultCandleMinsFor is the customary candle-lighting offset for a location:
+// DefaultCandleMins, or in Israel the city's own custom (40 minutes in
+// Jerusalem, 30 in Haifa and Zikhron Yaakov, 20 elsewhere).
+func DefaultCandleMinsFor(loc *geodb.Location) int {
+	if !loc.IsIsrael() {
+		return DefaultCandleMins
+	}
+	zl := loc.ZmanimLocation()
+	return hebcal.IsraelCandleLightingMins(&zl)
 }

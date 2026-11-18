@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/hebcal/hebcal-go/event"
-	"github.com/hebcal/locales"
 	"golang.org/x/text/unicode/norm"
 
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
@@ -42,7 +41,7 @@ func RenderSubject(ev event.CalEvent, locale string, brief bool) string {
 	s = StripEmoji(s)
 	// Daily-learning readings keep their typewriter apostrophes ("Fourth
 	// Year's Fruit"); only the calendar's own names are typeset.
-	if IsHebrewLocale(locale) || ev.Flags().HasAny(LearningFlags) {
+	if model.IsHebrewLocale(locale) || ev.Flags().HasAny(LearningFlags) {
 		return model.FixMonthSpelling(s)
 	}
 	return model.FixMonthSpelling(jsutil.SmartApostrophe(s))
@@ -58,16 +57,16 @@ func HolidayDescription(ev event.CalEvent, flags event.Flags, locale string, fir
 		return ""
 	}
 	localeName := "en"
-	if IsHebrewLocale(locale) {
+	if model.IsHebrewLocale(locale) {
 		localeName = "he"
 	}
 	key := UntranslatedDesc(ev)
 	if flags.Has(event.ShabbatMevarchim) {
 		key = "Shabbat Mevarchim Chodesh"
 	}
-	s := lookupMemo("MEMO:"+key, localeName)
+	s := model.LookupMemo("MEMO:"+key, localeName)
 	if s == "" {
-		s = lookupMemo("MEMO:"+Basename(ev), localeName)
+		s = model.LookupMemo("MEMO:"+Basename(ev), localeName)
 	}
 	s = norm.NFC.String(s)
 	if firstSentence {
@@ -87,7 +86,7 @@ func ParshaSummary(ev event.CalEvent, locale string) string {
 		return ""
 	}
 	name := strings.TrimPrefix(ev.Desc(), "Parashat ")
-	if IsHebrewLocale(locale) {
+	if model.IsHebrewLocale(locale) {
 		if s := parshaSummary(name, "he"); s != "" {
 			return s
 		}
@@ -98,21 +97,13 @@ func ParshaSummary(ev event.CalEvent, locale string) string {
 func parshaSummary(name, localeName string) string {
 	// A hyphen does not make a pair: Lech-Lecha is one portion.
 	if p1, p2, _ := strings.Cut(name, "-"); doubledSlugs[jsutil.MakeAnchor(name)] {
-		s1, s2 := lookupMemo("MEMO:"+p1, localeName), lookupMemo("MEMO:"+p2, localeName)
+		s1, s2 := model.LookupMemo("MEMO:"+p1, localeName), model.LookupMemo("MEMO:"+p2, localeName)
 		if s1 == "" || s2 == "" {
 			return ""
 		}
 		return s1 + "\n " + s2
 	}
-	return lookupMemo("MEMO:"+name, localeName)
-}
-
-func lookupMemo(key, localeName string) string {
-	// An unknown English key comes back as itself, which means not found.
-	if s, ok := locales.LookupTranslation(key, localeName); ok && s != key {
-		return s
-	}
-	return ""
+	return model.LookupMemo("MEMO:"+name, localeName)
 }
 
 // Basename is the event's description without the qualifiers that tell the
@@ -133,15 +124,6 @@ func LinkedEvent(ev event.CalEvent) event.CalEvent {
 		return linked.LinkedEvent()
 	}
 	return nil
-}
-
-// IsHebrewLocale reports whether locale is one of the Hebrew-script locales.
-func IsHebrewLocale(locale string) bool {
-	switch strings.ToLower(locale) {
-	case "he", "he-x-nonikud", "h":
-		return true
-	}
-	return false
 }
 
 // StripEmoji removes the holiday emoji hebcal-go appends to some titles.

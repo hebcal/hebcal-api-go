@@ -115,3 +115,66 @@ var xmlEscaper = strings.NewReplacer(
 func XMLEscape(s string) string {
 	return xmlEscaper.Replace(s)
 }
+
+// Unescape is JavaScript's unescape() for %XX escapes: each escape is the
+// Latin-1 character of that code (%E9 is "é", written here as UTF-8) rather
+// than a byte of UTF-8, and everything else -- '+' included, and a malformed
+// '%' -- is left untouched. It is not url.PathUnescape, which rejects a bad
+// escape, nor url.QueryUnescape, which also turns '+' into a space. It undoes
+// the second layer of encoding on a doubly-encoded legacy query string, whose
+// first layer is then decoded as usual.
+func Unescape(s string) string {
+	if !strings.Contains(s, "%") {
+		return s
+	}
+	var b strings.Builder
+	b.Grow(len(s))
+	for i := 0; i < len(s); i++ {
+		if s[i] == '%' && i+2 < len(s) && isHex(s[i+1]) && isHex(s[i+2]) {
+			b.WriteRune(rune(unhex(s[i+1])<<4 | unhex(s[i+2])))
+			i += 2
+			continue
+		}
+		b.WriteByte(s[i])
+	}
+	return b.String()
+}
+
+// QueryUnescape decodes a query-string component the way Node's querystring
+// module does: '+' is a space and each valid %XX escape a byte of UTF-8, with
+// anything else -- a malformed '%' included -- left alone rather than refused,
+// and an invalid UTF-8 sequence replaced by U+FFFD.
+func QueryUnescape(s string) string {
+	if !strings.ContainsAny(s, "%+") {
+		return s
+	}
+	var b strings.Builder
+	b.Grow(len(s))
+	for i := 0; i < len(s); i++ {
+		switch c := s[i]; {
+		case c == '+':
+			b.WriteByte(' ')
+		case c == '%' && i+2 < len(s) && isHex(s[i+1]) && isHex(s[i+2]):
+			b.WriteByte(unhex(s[i+1])<<4 | unhex(s[i+2]))
+			i += 2
+		default:
+			b.WriteByte(c)
+		}
+	}
+	return strings.ToValidUTF8(b.String(), "\uFFFD")
+}
+
+func isHex(c byte) bool {
+	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')
+}
+
+func unhex(c byte) byte {
+	switch {
+	case c >= '0' && c <= '9':
+		return c - '0'
+	case c >= 'a' && c <= 'f':
+		return c - 'a' + 10
+	default:
+		return c - 'A' + 10
+	}
+}

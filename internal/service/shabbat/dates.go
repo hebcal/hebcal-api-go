@@ -24,7 +24,7 @@ func ExpiresAfterWeek(tzid string, start model.GregDate) time.Time {
 	if err != nil {
 		loc = time.UTC
 	}
-	base := time.Date(start.Year, start.Month, start.Day, 0, 0, 0, 0, loc)
+	base := start.Midnight(loc)
 	toSaturday := (int(time.Saturday) - int(base.Weekday()) + 7) % 7
 	return time.Date(start.Year, start.Month, start.Day+toSaturday+1, 0, 0, 0, 0, loc)
 }

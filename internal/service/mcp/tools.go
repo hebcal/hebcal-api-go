@@ -3,7 +3,6 @@ package mcp
 import (
 	"context"
 	"fmt"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -22,25 +21,14 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings"
 )
 
-// reISODate matches a leading YYYY-MM-DD.
-var reISODate = regexp.MustCompile(`^\d\d\d\d-\d\d-\d\d`)
-
 // parseISODate parses a "YYYY-MM-DD" string into an HDate. ok is false when the
 // string does not match the format.
 func parseISODate(s string) (hdate.HDate, bool) {
-	if !reISODate.MatchString(s) {
+	g, err := model.IsoDateStringToDate(s)
+	if err != nil {
 		return hdate.HDate{}, false
 	}
-	y, _ := strconv.Atoi(s[0:4])
-	m, _ := strconv.Atoi(s[5:7])
-	d, _ := strconv.Atoi(s[8:10])
-	return hdate.FromGregorian(y, time.Month(m), d), true
-}
-
-// isoGreg formats an HDate's Gregorian date as YYYY-MM-DD (dayjs'
-// format('YYYY-MM-DD')).
-func isoGreg(hd hdate.HDate) string {
-	return hd.Gregorian().Format("2006-01-02")
+	return g.HDate(), true
 }
 
 // renderEn renders an event's English description with the smart apostrophe
@@ -97,7 +85,7 @@ func (t *tools) convertHebrewToGregorian(_ context.Context, _ *mcpsdk.CallToolRe
 		return errorCard(fmt.Sprintf("Invalid Hebrew day %d for %s %d", in.Day, in.Month, in.Year)), nil, nil
 	}
 	hd := hdate.New(in.Year, mon, in.Day)
-	return textResult(isoGreg(hd)), nil, nil
+	return textResult(model.IsoGreg(hd)), nil, nil
 }
 
 // yahrzeit
@@ -134,7 +122,7 @@ func doYahrzeit(origHd hdate.HDate, afterSunset bool) []string {
 			continue
 		}
 		out = append(out, fmt.Sprintf("| %d | %s | %d | %s | %s |",
-			anniv.Year()-origHyear, isoGreg(anniv), anniv.Year(),
+			anniv.Year()-origHyear, model.IsoGreg(anniv), anniv.Year(),
 			hebDayMonthEn(anniv), model.GematriyaDate(anniv)))
 	}
 	return out
@@ -173,7 +161,7 @@ func (t *tools) torahPortion(ctx context.Context, _ *mcpsdk.CallToolRequest, in 
 	// what hebcal-go can render.
 	var reading readings.ShabbatReading
 	if t.rd != nil {
-		reading, _ = t.rd.ShabbatTorahReading(ctx, isoGreg(shabbat), il)
+		reading, _ = t.rd.ShabbatTorahReading(ctx, model.IsoGreg(shabbat), il)
 	}
 
 	var out []string
@@ -208,7 +196,7 @@ func (t *tools) torahPortion(ctx context.Context, _ *mcpsdk.CallToolRequest, in 
 			}
 		}
 	}
-	out = append(out, "Date read: "+isoGreg(shabbat))
+	out = append(out, "Date read: "+model.IsoGreg(shabbat))
 	return textResult(strings.Join(out, "\n")), nil, nil
 }
 
@@ -236,7 +224,7 @@ func (t *tools) jewishHolidaysYear(_ context.Context, _ *mcpsdk.CallToolRequest,
 			}
 		}
 		out = append(out, fmt.Sprintf("| %s | %s | %s | %s |",
-			isoGreg(hd), model.HDateString(hd), renderEn(ev), strings.Join(cats, ", ")))
+			model.IsoGreg(hd), model.HDateString(hd), renderEn(ev), strings.Join(cats, ", ")))
 	}
 	return textResult(strings.Join(out, "\n")), nil, nil
 }
@@ -313,7 +301,7 @@ func (t *tools) shabbatTimes(_ context.Context, _ *mcpsdk.CallToolRequest, in sh
 			associated = linked.LinkedEvent().Render("en")
 		}
 		out = append(out, fmt.Sprintf("| %s | %s | %s | %s |",
-			isoGreg(te.Date()), te.Time().Format("15:04"), te.Desc(), associated))
+			model.IsoGreg(te.Date()), te.Time().Format("15:04"), te.Desc(), associated))
 	}
 	return textResult(strings.Join(out, "\n")), nil, nil
 }

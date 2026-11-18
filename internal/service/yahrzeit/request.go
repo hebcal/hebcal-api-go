@@ -5,6 +5,8 @@ import (
 	"path"
 	"regexp"
 	"strings"
+
+	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 )
 
 // Request is a download request reduced to the query string that describes
@@ -61,9 +63,9 @@ func ParseRequest(requestURI string) (req *Request, ok bool) {
 		strings.HasPrefix(path, cgiPrefix),
 		strings.HasPrefix(path, hebcalPrefix):
 		if strings.HasPrefix(qs, "subscribe=1%3B") || strings.HasPrefix(qs, "dl=1%3B") {
-			qs = unescapeLatin1(qs)
+			qs = jsutil.Unescape(qs)
 		} else if loc := encodedQueryRe.FindStringIndex(path); loc != nil {
-			qs = unescapeLatin1(path[loc[0]+len(".ics%3F"):])
+			qs = jsutil.Unescape(path[loc[0]+len(".ics%3F"):])
 			req.Path = "/export/export.ics"
 		}
 		qs = strings.ReplaceAll(qs, ";", "&")

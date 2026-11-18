@@ -52,8 +52,7 @@ func NowInTimezone(tzid string, now time.Time) model.GregDate {
 	if err != nil {
 		loc = time.UTC
 	}
-	y, m, d := now.In(loc).Date()
-	return model.GregDate{Year: y, Month: m, Day: d}
+	return model.GregDateOf(now.In(loc))
 }
 
 // StartAndEnd resolves the start, end, and date query parameters to a date

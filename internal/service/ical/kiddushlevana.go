@@ -79,7 +79,7 @@ func ceilMinute(t time.Time) time.Time {
 // transliterated locales are.
 func formatDate(t time.Time, locale string) string {
 	key := strings.ToLower(locale)
-	if key == "he-x-nonikud" {
+	if model.IsHebrewLocale(key) {
 		key = "he"
 	}
 	f, ok := klDateFormats[key]

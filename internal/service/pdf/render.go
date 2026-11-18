@@ -615,7 +615,8 @@ func hebMonthName(hd hdate.HDate, locale string) string {
 	case "", "en", "s", "sephardic",
 		"a", "ashkenazi", "ashkenazi_litvish", "ashkenazi_poylish", "ashkenazi_standard":
 		return model.FixMonthSpelling(en)
-	case "he", "he-x-nonikud":
+	}
+	if model.IsHebrewLocale(locale) {
 		return hd.MonthName(locale)
 	}
 	// Translate the raw English name through the locale's catalog: de/fr have a

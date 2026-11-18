@@ -55,7 +55,7 @@ func (h HolidayEv) URL() string      { return h.Ev.URL() }
 func (h HolidayEv) ChanukahDay() int { return h.Ev.ChanukahDay }
 
 func (h HolidayEv) Render(lg string) string {
-	locale := strings.ToLower(AliasLocale(lg))
+	locale := AliasLocale(lg)
 	if h.Ev.Flags().Has(event.RoshChodesh) {
 		// look up the month translation with the "Tamuz" spelling, which is
 		// what the locale catalogues use
@@ -77,7 +77,7 @@ func (g GenericEv) URL() string      { return g.Ev.URL() }
 func (g GenericEv) ChanukahDay() int { return 0 }
 
 func (g GenericEv) Render(lg string) string {
-	return jsutil.SmartApostrophe(g.Ev.Render(strings.ToLower(AliasLocale(lg))))
+	return jsutil.SmartApostrophe(g.Ev.Render(AliasLocale(lg)))
 }
 
 // ------------------------------------------------------------------- parsha
@@ -92,7 +92,7 @@ func (p ParshaEv) URL() string      { return p.Ev.URL() }
 func (p ParshaEv) ChanukahDay() int { return 0 }
 
 func (p ParshaEv) Render(lg string) string {
-	locale := strings.ToLower(AliasLocale(lg))
+	locale := AliasLocale(lg)
 	prefix := Gettext("Parashat", locale)
 	return jsutil.SmartApostrophe(prefix + " " + p.Ev.Parsha.Render(locale))
 }
@@ -108,7 +108,7 @@ func (p PseudoParshaEv) ChanukahDay() int { return 0 }
 func (p PseudoParshaEv) URL() string      { return p.H.URL() }
 
 func (p PseudoParshaEv) Render(lg string) string {
-	locale := strings.ToLower(AliasLocale(lg))
+	locale := AliasLocale(lg)
 	return Gettext("Parashat", locale) + " " + Gettext(p.H.Ev.Basename(), locale)
 }
 
@@ -124,5 +124,5 @@ func (o OmerEv) URL() string      { return o.Ev.URL() }
 func (o OmerEv) ChanukahDay() int { return 0 }
 
 func (o OmerEv) Render(lg string) string {
-	return o.Ev.Render(strings.ToLower(AliasLocale(lg)))
+	return o.Ev.Render(AliasLocale(lg))
 }

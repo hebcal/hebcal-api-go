@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/url"
-	"time"
 
 	lru "github.com/hashicorp/golang-lru/v2"
 	"golang.org/x/sync/singleflight"
@@ -113,11 +112,9 @@ func (c *Client) fetchLeyning(ctx context.Context, from, to string, il bool) (ma
 
 // isoDateRange lists every YYYY-MM-DD date from start through end inclusive.
 func isoDateRange(start, end model.GregDate) []string {
-	first := time.Date(start.Year, start.Month, start.Day, 0, 0, 0, 0, time.UTC)
-	last := time.Date(end.Year, end.Month, end.Day, 0, 0, 0, 0, time.UTC)
 	var out []string
-	for d := first; !d.After(last); d = d.AddDate(0, 0, 1) {
-		out = append(out, d.Format("2006-01-02"))
+	for rd := start.RD(); rd <= end.RD(); rd++ {
+		out = append(out, model.GregFromRD(rd).String())
 	}
 	return out
 }

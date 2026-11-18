@@ -328,7 +328,7 @@ func ownMemo(ev event.CalEvent, flags event.Flags, p *download.Params) string {
 		if p.Opts.Location != nil {
 			cc = p.Opts.Location.CountryCode
 		}
-		return shabbat.MevarchimMoladMemo(ev.Date(), strings.ToLower(p.Locale), cc, p.Opts.IL, p.Clock())
+		return shabbat.MevarchimMoladMemo(ev.Date(), p.Locale, cc, p.Opts.IL, p.Clock())
 	case isKiddushLevana(ev):
 		return ""
 	}

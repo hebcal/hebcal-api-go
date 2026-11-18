@@ -324,7 +324,7 @@ func (s *Service) Marshal(f *Feed, zones *icalendar.ZoneInfo, rawURL string) (*R
 	cal := &icalendar.Calendar{
 		Title:        title,
 		Description:  desc,
-		Lang:         ProdidLang(p.Locale),
+		Lang:         model.LocaleLanguage(p.Locale),
 		PublishedTTL: q.PublishedTTL,
 		RelCalID:     q.Relcalid,
 		Color:        color,
@@ -468,19 +468,4 @@ func subscriptionTitle(p *download.Params, q *download.ICSQuery, caldesc string)
 		}
 	}
 	return "Hebcal " + where, caldesc
-}
-
-// ProdidLang is the language in the calendar's PRODID: the locale itself when
-// it is two letters, otherwise the language of the locale's variant.
-func ProdidLang(locale string) string {
-	if len(locale) == 2 {
-		return locale
-	}
-	switch locale {
-	case "he-x-NoNikud", "he-x-nonikud", "h":
-		return "he"
-	case "ashkenazi_romanian":
-		return "ro"
-	}
-	return "en"
 }

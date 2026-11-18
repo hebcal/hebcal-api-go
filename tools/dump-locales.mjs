@@ -56,8 +56,6 @@ const lines = [
   '// namesByLocale below is keyed by the result.',
   '',
   '',
-  'import "strings"',
-  '',
   '// CalendarNames holds the localized vocabulary for one language.',
   'type CalendarNames struct {',
   '\t// Months are the full Gregorian month names used in a page title.',
@@ -85,20 +83,6 @@ for (const lc of locales) {
 }
 lines.push('}');
 lines.push('');
-lines.push('// NamesFor returns the calendar vocabulary for a resolved locale, falling');
-lines.push('// back to English. The lookup is case-insensitive, and he-x-nonikud shares');
-lines.push("// he's month and weekday names -- hebcal-web's localeMap resolves both to the");
-lines.push('// same dayjs `he` locale, since the no-nikud variant only affects event');
-lines.push('// subjects.');
-lines.push('func NamesFor(locale string) CalendarNames {');
-lines.push('\tkey := strings.ToLower(locale)');
-lines.push('\tif key == "he-x-nonikud" {');
-lines.push('\t\tkey = "he"');
-lines.push('\t}');
-lines.push('\tif n, ok := namesByLocale[key]; ok {');
-lines.push('\t\treturn n');
-lines.push('\t}');
-lines.push('\treturn namesByLocale["en"]');
-lines.push('}');
+// NamesFor, the lookup into namesByLocale, is hand-written in locale.go.
 console.error(`generated from ${webRoot}; pipe to internal/model/calendarnames.go and run gofmt`);
 console.log(lines.join('\n'));

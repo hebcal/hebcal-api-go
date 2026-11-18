@@ -168,8 +168,7 @@ func formatISOWithTimeZone(dt time.Time) *string {
 // in range and its time zone loaded, so it cannot be refused here.
 func forDate(d model.GregDate, loc *geodb.Location, useElevation bool) zman.Zmanim {
 	zloc := loc.ZmanimLocation()
-	date := time.Date(d.Year, d.Month, d.Day, 12, 0, 0, 0, time.UTC)
-	z := zman.MustNew(&zloc, date)
+	z := zman.MustNew(&zloc, d.Noon(time.UTC))
 	z.UseElevation = useElevation
 	return z
 }
