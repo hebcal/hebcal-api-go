@@ -263,9 +263,8 @@ page, with holidays, candle-lighting and Havdalah times, Torah readings,
 daily-learning schedules, the Omer, alternate (Hebrew or Gregorian) dates,
 and tracked links over every event. Hebrew and other right-to-left text is
 laid out with real Unicode bidi and OpenType shaping, and event titles are
-available in 13 locales. Rendering needs the fonts (see
-[Fonts](#fonts)); without them these two routes answer 503 and the JSON
-APIs are unaffected.
+available in 13 locales. The fonts are compiled into the binary (see
+[Fonts](#fonts)).
 
 - `GET|HEAD /v4/<base64>/<filename>.pdf` — render a calendar. The
   `<base64>` segment is a `Download` protobuf message (defined in
@@ -286,8 +285,7 @@ APIs are unaffected.
   options add events per year — where a PDF draws one. It shares the PDF's
   status codes and headers, plus a `Content-Disposition` naming the file,
   except that a calendar with no events is a header row rather than a `400`.
-  Fonts are not needed, so this route keeps working when the PDF ones are
-  disabled. The legacy `/v2/h/<base64>/<filename>.csv` and
+  The legacy `/v2/h/<base64>/<filename>.csv` and
   `/hebcal/index.cgi/<filename>.csv?<query>` forms are served the same way.
 - `GET|HEAD /v2/h/<base64>/<filename>.pdf` (or `.csv`) — the same calendar from the
   older URL form, still linked from a decade of pages and still crawled.
@@ -350,12 +348,13 @@ header (which the access log records as `unsupported`):
 #### Fonts
 
 The calendars are drawn with the Source Sans Pro and Adobe Hebrew families,
-checked into this repository under `fonts/`. `-fonts` (or `FONT_DIR`,
-default `fonts`) names a directory holding `Source_Sans_Pro/` and
-`Adobe_Hebrew/`. The fonts are parsed once at startup and shared by every
-request; only the per-document embedded instances are rebuilt. A failure to
-load them is logged and disables the two PDF routes rather than stopping
-the server.
+checked into this repository under `fonts/` and compiled into the binary
+with `go:embed` (`fonts/embed.go`), so there is nothing to install and no
+way to run without them. They are parsed once and shared by every request;
+only the per-document embedded instances are rebuilt. Because the fonts are
+part of the build, a rendered calendar depends only on its URL and the
+release -- which is what the PDF routes' `ETag` assumes -- and changing a
+font means shipping a new release.
 
 ### iCalendar feeds
 
@@ -720,9 +719,7 @@ which this binary embeds. To change them, edit hebcal-web's files, run
 If you invoke `go` directly rather than through the `Makefile`, add the
 tag yourself, e.g. `go test -tags sqlite_fts5 ./...`.
 
-The tests that render a calendar need the fonts: they look for `$FONT_DIR`,
-then a `fonts` directory at the repository root, and skip rather than fail
-when neither is present.
+The tests that render a calendar use the embedded fonts, so they always run.
 
 ## Run
 
@@ -731,8 +728,7 @@ when neither is present.
 ./hebcal-api -port 8082 -logfile /var/log/hebcal/api.log \
     -zips-db /var/lib/hebcal/zips.sqlite3 \
     -geonames-db /var/lib/hebcal/geonames.sqlite3 \
-    -readings-socket /run/hebcal/readings-svc.sock \
-    -fonts /var/www/fonts
+    -readings-socket /run/hebcal/readings-svc.sock
 ```
 
 The port defaults to `8082` (or the `PORT` environment variable); the
@@ -740,7 +736,7 @@ access log defaults to stdout (pass `-logfile <path>`). The geonames/zips
 database paths default to the working directory (see
 [Location databases](#location-databases)). `/shabbat` needs readings-svc
 listening on `-readings-socket` (or `READINGS_SOCKET`) for Torah readings,
-the PDF calendars need `-fonts` (see [Fonts](#fonts)), and the saved Yahrzeit
+and the saved Yahrzeit
 calendars need MySQL settings in `-ini` (see [iCalendar feeds](#icalendar-feeds)).
 
 Access logs are pino-compatible JSON lines, e.g.:

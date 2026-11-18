@@ -99,9 +99,6 @@ func NewRenderer(fonts *FontSet) *Renderer {
 
 // Render writes a complete PDF calendar to w.
 func (r *Renderer) Render(w io.Writer, p *download.Params, events []Event, title string) error {
-	if r == nil || r.fonts == nil {
-		return fmt.Errorf("no fonts loaded")
-	}
 	inst, err := r.fonts.Embed()
 	if err != nil {
 		return err

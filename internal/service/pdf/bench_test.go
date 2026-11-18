@@ -2,7 +2,6 @@ package pdf
 
 import (
 	"bytes"
-	"os"
 	"testing"
 
 	"github.com/hebcal/hebcal-go/hebcal"
@@ -12,14 +11,7 @@ import (
 
 func benchFonts(b *testing.B) *FontSet {
 	b.Helper()
-	if _, err := os.Stat(fontDir); err != nil {
-		b.Skipf("no %s directory; skipping benchmark that needs real fonts", fontDir)
-	}
-	fs, err := LoadFonts(fontDir)
-	if err != nil {
-		b.Fatalf("LoadFonts: %v", err)
-	}
-	return fs
+	return DefaultRenderer().fonts
 }
 
 // benchParams mirrors the traffic in the access log: a Spanish, full-holiday,

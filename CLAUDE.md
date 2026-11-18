@@ -81,6 +81,7 @@ The service follows the repository's usual direction — `handler` → `service`
 | `internal/service/pdf/hebmonth.go` | Hebrew-month pagination (`mm=1`, `mm=2`) |
 | `internal/service/pdf/render.go` | page layout |
 | `internal/service/pdf/text.go` | bidi and shaping |
+| `fonts/embed.go` | the font files, compiled into the binary |
 | `internal/service/pdf/fonts.go` | font loading, metrics, per-document embedding |
 | `internal/service/download/links.go` | URL shortening and tracking, shared with the iCalendar feeds (`pdf/links.go` sets the PDF's utm_medium) |
 | `internal/service/pdf/fallback.go` | merging the fetched learning rows into the cells |
@@ -1653,10 +1654,13 @@ download.hebcal.com any more.
 ### Runtime requirements
 
 - **Fonts** live in this repository (`fonts/Source_Sans_Pro/`,
-  `fonts/Adobe_Hebrew/`) and `make install` copies them to `/var/www/fonts`.
-  Missing fonts are not fatal: the two PDF routes answer 503 and the JSON
-  APIs keep working. The two SQLite databases are passed with `-zips-db` and
-  `-geonames-db` (`etc/hebcal-api.service`).
+  `fonts/Adobe_Hebrew/`) and are compiled into the binary by `fonts/embed.go`
+  (`go:embed`); `pdf.DefaultRenderer` parses them once, and `handler.New`
+  sets it, so the PDF routes cannot be without them and have no 503 for it.
+  This is deliberate: the PDF `ETag` hashes the URL and `config.APIVersion`,
+  which is only sound if a font can change only with a release. There is no
+  flag to load fonts from disk; don't add one. The two SQLite databases are
+  passed with `-zips-db` and `-geonames-db` (`etc/hebcal-api.service`).
 - **readings-svc** answers on `/run/hebcal/readings-svc.sock`; without it
   `/shabbat` answers 503 and any PDF naming one of the eight daily-learning
   series answers 503. Its systemd unit's `RuntimeDirectory=hebcal` creates
@@ -1748,8 +1752,8 @@ take no locale at all (see above).
 
 `make test` (`go test -tags sqlite_fts5,sqlite_math_functions ./...`; the tags
 are for `/complete`'s full-text queries, not for anything the PDF code does).
-Tests needing the fonts look for `$FONT_DIR`, then a `fonts/` directory at the
-repository root, and skip rather than fail when neither is there. The PDF tests
+Tests use the embedded fonts (`DefaultRenderer`), so none skip for want of
+them. The PDF tests
 sit where the code does: `internal/service/pdf` for rendering, shaping, params
 and links, `internal/service/holidaypdf` for the holiday URLs, and
 `internal/handler/pdf_test.go` for the HTTP behaviour (status codes, cache

@@ -16,7 +16,6 @@ import (
 // internal/service/csv's business, not this file's.
 
 func TestCSVResponse(t *testing.T) {
-	// Needs no fonts: the CSV routes do not draw anything.
 	app, srv := testServer(t)
 	app.CSV.Geo = testGeoDB(t)
 	msg := &pb.Download{Year: 2026, IsHebrewYear: false, Major: true, Candlelighting: true,

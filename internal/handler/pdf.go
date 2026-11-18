@@ -27,7 +27,7 @@ import (
 // 400), CORS and nosniff. Without these Varnish and browsers do not cache the
 // PDF.
 func (s *Server) pdfDownload(w http.ResponseWriter, r *http.Request) {
-	if !downloadMethodAllowed(w, r) || !s.pdfAvailable(w) {
+	if !downloadMethodAllowed(w, r) {
 		return
 	}
 	cal, err := s.PDF.Prepare(r.Context(), r.URL)
@@ -69,9 +69,6 @@ func (s *Server) pdfHoliday(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
 	}
-	if !s.pdfAvailable(w) {
-		return
-	}
 	params, err := holidaypdf.Parse(r.URL.Path, r.URL.Query())
 	if err != nil {
 		writeHolidayError(w, err)
@@ -96,17 +93,6 @@ func (s *Server) pdfHoliday(w http.ResponseWriter, r *http.Request) {
 		Events: events,
 		Title:  pdf.CalendarTitle(params, events),
 	})
-}
-
-// pdfAvailable reports the PDF routes as unavailable when the fonts could not
-// be loaded at startup. The rest of the API keeps working in that case, which
-// is why a missing font directory is not fatal at startup.
-func (s *Server) pdfAvailable(w http.ResponseWriter) bool {
-	if !s.PDF.Available() {
-		httpx.WritePlainError(w, model.Unavailable("PDF rendering is not available"))
-		return false
-	}
-	return true
 }
 
 // writePDF renders the calendar and writes it. The middleware sets

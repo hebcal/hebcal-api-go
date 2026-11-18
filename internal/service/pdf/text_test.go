@@ -1,32 +1,15 @@
 package pdf
 
 import (
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 )
 
-// fontDir is where the Source Sans Pro and Adobe Hebrew families live: $FONT_DIR
-// if it is set, otherwise the repo root's fonts/. Tests that need real glyph
-// metrics skip when it is absent rather than failing on a fresh checkout.
-var fontDir = func() string {
-	if dir := os.Getenv("FONT_DIR"); dir != "" {
-		return dir
-	}
-	return filepath.Join("..", "..", "..", "fonts")
-}()
-
+// testFonts returns the fonts compiled into the binary, parsed once and
+// shared: a FontSet is read-only after parsing.
 func testFonts(t *testing.T) *FontSet {
 	t.Helper()
-	if _, err := os.Stat(fontDir); err != nil {
-		t.Skipf("no %s directory; skipping tests that need real fonts", fontDir)
-	}
-	fs, err := LoadFonts(fontDir)
-	if err != nil {
-		t.Fatalf("LoadFonts: %v", err)
-	}
-	return fs
+	return DefaultRenderer().fonts
 }
 
 func testShaper(t *testing.T) *Shaper {

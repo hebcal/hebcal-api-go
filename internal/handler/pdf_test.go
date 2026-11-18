@@ -4,11 +4,7 @@ import (
 	"bytes"
 	"compress/zlib"
 	"encoding/base64"
-	"io"
 	"net/http"
-	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"regexp"
 	"slices"
 	"strings"
@@ -17,10 +13,8 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"github.com/hebcal/hebcal-api-go/internal/httpx"
-	"github.com/hebcal/hebcal-api-go/internal/logger"
 	"github.com/hebcal/hebcal-api-go/internal/repository/readings/readingstest"
 	"github.com/hebcal/hebcal-api-go/internal/service/download"
-	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	pb "github.com/hebcal/hebcal-api-go/pkg/downloadpb"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 )
@@ -28,48 +22,6 @@ import (
 // The transport half of the PDF calendars: status codes, cache headers, the
 // conditional request, and the two daily-learning failure modes. What each
 // calendar draws is internal/service/pdf's business, not this file's.
-
-// fontDir is where the Source Sans Pro and Adobe Hebrew families live: $FONT_DIR
-// if it is set, otherwise the repo root's fonts/. Tests that render skip when it
-// is absent rather than failing on a fresh checkout.
-var fontDir = func() string {
-	if dir := os.Getenv("FONT_DIR"); dir != "" {
-		return dir
-	}
-	return filepath.Join("..", "..", "fonts")
-}()
-
-// pdfServer returns a server whose PDF routes render for real, skipping when
-// the fonts are absent.
-func pdfServer(t *testing.T) (*Server, *httptest.Server) {
-	t.Helper()
-	if _, err := os.Stat(fontDir); err != nil {
-		t.Skipf("no %s directory; skipping tests that need real fonts", fontDir)
-	}
-	fonts, err := pdf.LoadFonts(fontDir)
-	if err != nil {
-		t.Fatalf("LoadFonts: %v", err)
-	}
-	app, srv := testServer(t)
-	app.PDF.Renderer = pdf.NewRenderer(fonts)
-	return app, srv
-}
-
-// pdfServerNoFonts returns a server that can answer everything a PDF request
-// decides before rendering -- the 404s, the 410 and the parse errors -- without
-// needing the font files.
-func pdfServerNoFonts(t *testing.T) (*Server, *httptest.Server) {
-	t.Helper()
-	app := New(logger.NewWriter(io.Discard, "test"))
-	// A Renderer with no fonts is enough to pass the availability check;
-	// nothing in these tests reaches the point of drawing with it, and if
-	// something ever does, Render reports the missing fonts rather than
-	// panicking.
-	app.PDF.Renderer = &pdf.Renderer{}
-	srv := httptest.NewServer(app.Routes())
-	t.Cleanup(srv.Close)
-	return app, srv
-}
 
 // testGeoDB opens the trimmed geonames/zips databases the handler tests share.
 func testGeoDB(t *testing.T) *geodb.DB {
@@ -122,10 +74,9 @@ func inflateAll(doc []byte) []byte {
 // never comes into range); the unknown-location 404 is deliberately not (a
 // location may be added later).
 func TestPDFCacheHeaders(t *testing.T) {
-	// 410 is decided while decoding the request, before any rendering, so this
-	// needs no fonts.
+	// 410 is decided while decoding the request, before any rendering.
 	t.Run("410 out of range is cacheable", func(t *testing.T) {
-		_, srv := pdfServerNoFonts(t)
+		_, srv := testServer(t)
 		msg := &pb.Download{Year: 9999, Major: true}
 		resp, _ := get(t, srv, "/v4/"+encode(t, msg)+"/x.pdf")
 		if resp.StatusCode != http.StatusGone {
@@ -139,7 +90,7 @@ func TestPDFCacheHeaders(t *testing.T) {
 	t.Run("404 unknown location is not cacheable", func(t *testing.T) {
 		// A real geo lookup that misses is the only way to reach the 404 path;
 		// with no database an unknown id falls through to a 400 instead.
-		app, srv := pdfServerNoFonts(t)
+		app, srv := testServer(t)
 		app.PDF.Geo = testGeoDB(t)
 		msg := &pb.Download{Year: 2026, Major: true, Geonameid: 999999999}
 		resp, _ := get(t, srv, "/v4/"+encode(t, msg)+"/x.pdf")
@@ -152,7 +103,7 @@ func TestPDFCacheHeaders(t *testing.T) {
 	})
 
 	t.Run("200 sets cache headers and honors If-None-Match", func(t *testing.T) {
-		_, srv := pdfServer(t)
+		_, srv := testServer(t)
 		msg := &pb.Download{Year: 2026, Major: true}
 		path := "/v4/" + encode(t, msg) + "/x.pdf"
 
@@ -215,7 +166,7 @@ func TestFallbackStatusCodes(t *testing.T) {
 	path := "/v4/" + encode(t, msg) + "/hebcal_2026.pdf"
 
 	t.Run("no readings-svc configured is 501", func(t *testing.T) {
-		_, srv := pdfServer(t)
+		_, srv := testServer(t)
 		resp, _ := get(t, srv, path)
 		if resp.StatusCode != http.StatusNotImplemented {
 			t.Errorf("status = %d, want 501", resp.StatusCode)
@@ -229,7 +180,7 @@ func TestFallbackStatusCodes(t *testing.T) {
 		down := readingstest.Serve(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "down", http.StatusBadGateway)
 		}))
-		app, srv := pdfServer(t)
+		app, srv := testServer(t)
 		app.PDF.Learning = download.NewLearningFetcher(down)
 		resp, _ := get(t, srv, path)
 		if resp.StatusCode != http.StatusServiceUnavailable {
@@ -245,7 +196,7 @@ func TestFallbackStatusCodes(t *testing.T) {
 			w.Write([]byte(`{"items":[{"title":"Yoma 49a","date":"2026-08-01",` +
 				`"category":"dirshuAmudYomi"}]}`))
 		}))
-		app, srv := pdfServer(t)
+		app, srv := testServer(t)
 		app.PDF.Learning = download.NewLearningFetcher(up)
 		resp, body := get(t, srv, path)
 		if resp.StatusCode != http.StatusOK {
@@ -262,7 +213,7 @@ func TestFallbackStatusCodes(t *testing.T) {
 // cfg= API responses), and answer a conditional request before rendering. The
 // refusals are not cached: Cache-Control is set only after the URL is accepted.
 func TestHolidayPDFResponse(t *testing.T) {
-	_, srv := pdfServer(t)
+	_, srv := testServer(t)
 	const path = "/holidays/hebcal-2026.pdf"
 
 	resp, body := get(t, srv, path)
@@ -315,7 +266,7 @@ func TestHolidayPDFErrors(t *testing.T) {
 		{"/holidays/2026", http.StatusNotFound}, // an HTML page, not ours
 		{"/holidays/", http.StatusNotFound},
 	}
-	_, srv := pdfServerNoFonts(t)
+	_, srv := testServer(t)
 	for _, tt := range tests {
 		t.Run(tt.path, func(t *testing.T) {
 			resp, _ := get(t, srv, tt.path)
@@ -333,7 +284,7 @@ func TestHolidayPDFErrors(t *testing.T) {
 // because these calendars set no document-level campaign. A Gregorian year
 // spans two Hebrew years, so both appear.
 func TestHolidayPDFPerEventCampaign(t *testing.T) {
-	_, srv := pdfServer(t)
+	_, srv := testServer(t)
 	_, body := get(t, srv, "/holidays/hebcal-2026.pdf")
 	all := string(inflateAll([]byte(body)))
 	for _, want := range []string{"uc=pdf-5786", "uc=pdf-5787"} {
@@ -343,23 +294,6 @@ func TestHolidayPDFPerEventCampaign(t *testing.T) {
 	}
 	if strings.Contains(all, "uc=pdf-diaspora") {
 		t.Error("links should not be tagged with the document title's campaign")
-	}
-}
-
-// Without the fonts the PDF routes report 503 and the rest of the API is
-// unaffected, which is why a missing font directory is not fatal at startup.
-func TestPDFUnavailableWithoutFonts(t *testing.T) {
-	_, srv := testServer(t)
-	for _, path := range []string{"/v4/abc/x.pdf", "/holidays/hebcal-2026.pdf"} {
-		resp, _ := get(t, srv, path)
-		if resp.StatusCode != http.StatusServiceUnavailable {
-			t.Errorf("%s: status = %d, want 503", path, resp.StatusCode)
-		}
-	}
-	// ... while a JSON route still answers
-	resp, _ := get(t, srv, "/converter?cfg=json&gy=2026&gm=7&gd=5&g2h=1")
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("/converter status = %d, want 200 with the PDF routes disabled", resp.StatusCode)
 	}
 }
 
@@ -373,7 +307,7 @@ func TestPDFUnavailableWithoutFonts(t *testing.T) {
 func TestPDFV4Lowercased(t *testing.T) {
 	// A real /v4/ payload, lowercased the way those crawls do.
 	const path = "/v4/caeqargbiaeoatabqafqavj--iqbyoopebkiaqe/hebcal_2026_albury.pdf"
-	_, srv := pdfServerNoFonts(t)
+	_, srv := testServer(t)
 
 	for _, ua := range []string{
 		"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; " +
@@ -405,7 +339,7 @@ func TestPDFLegacyV2(t *testing.T) {
 			"bWFqPTEmbWluPTEmbW9kPTEmbWY9MSZzcz0xJm54PTE/hebcal_2021_boston.pdf"
 		modern = "/v4/CAEQARgBIAEoATABUAFYjPusAmDlD3AyiAEB/hebcal_2021_boston.pdf"
 	)
-	app, srv := pdfServer(t)
+	app, srv := testServer(t)
 	app.PDF.Geo = testGeoDB(t)
 
 	resp, body := get(t, srv, legacy)
@@ -472,7 +406,7 @@ func TestPDFLegacyV2Errors(t *testing.T) {
 		{"a yahrzeit v=", "/v2/h/" + enc("v=yahrzeit&y1=1990") + "/x.pdf", http.StatusNotFound},
 		{"an out-of-range year", "/v2/h/" + enc("v=1&year=9999&maj=on") + "/x.pdf", http.StatusGone},
 	}
-	_, srv := pdfServerNoFonts(t)
+	_, srv := testServer(t)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			resp, _ := get(t, srv, tt.path)
@@ -492,7 +426,7 @@ func TestPDFLegacyV2LocationForms(t *testing.T) {
 		return "/v2/h/" + strings.TrimRight(base64.StdEncoding.EncodeToString([]byte(qs)), "=") +
 			"/x.pdf"
 	}
-	app, srv := pdfServer(t)
+	app, srv := testServer(t)
 	app.PDF.Geo = testGeoDB(t)
 
 	t.Run("a legacy city identifier", func(t *testing.T) {
@@ -545,7 +479,7 @@ func TestPDFLegacyV2LocationForms(t *testing.T) {
 // query encodings (plain, and the doubly-encoded form fixup2 unescapes) reach
 // the same result. The protobuf-level agreement is cgi_test.go's business.
 func TestPDFLegacyCGI(t *testing.T) {
-	app, srv := pdfServer(t)
+	app, srv := testServer(t)
 	app.PDF.Geo = testGeoDB(t)
 
 	// The same request as TestPDFLegacyV2 (Boston 2021), carried in the CGI
@@ -601,7 +535,7 @@ func TestPDFLegacyCGI(t *testing.T) {
 // refused: 404 for a request that is not a download at all (v=undefined, or a
 // non-.pdf), 400 for a v= naming another kind of calendar.
 func TestPDFLegacyCGIErrors(t *testing.T) {
-	_, srv := pdfServerNoFonts(t)
+	_, srv := testServer(t)
 	tests := []struct {
 		name, path string
 		want       int
@@ -651,7 +585,7 @@ func TestDownloadUnknownExtension(t *testing.T) {
 		{"/hebcal/index.cgi/hebcal.html?v=1&year=2026&maj=on", "unknown download extension .html\n"},
 		{"/v4/CAEQAQ/hebcal", "unknown download extension (none)\n"},
 	}
-	_, srv := pdfServerNoFonts(t)
+	_, srv := testServer(t)
 	for _, tt := range tests {
 		resp, body := get(t, srv, tt.path)
 		if resp.StatusCode != http.StatusNotFound || body != tt.body {

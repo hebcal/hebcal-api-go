@@ -29,7 +29,6 @@ import (
 	"github.com/hebcal/hebcal-api-go/internal/repository/yahrzeitdb"
 	"github.com/hebcal/hebcal-api-go/internal/service/download"
 	mcpsvc "github.com/hebcal/hebcal-api-go/internal/service/mcp"
-	"github.com/hebcal/hebcal-api-go/internal/service/pdf"
 	"github.com/hebcal/hebcal-api-go/pkg/geodb"
 	"github.com/hebcal/hebcal-api-go/pkg/geoip"
 	"github.com/hebcal/hebcal-api-go/pkg/icalendar"
@@ -120,16 +119,6 @@ func main() {
 		}()
 	}
 
-	// Load the calendar fonts once, at startup: sfnt.Font is read-only after
-	// parsing, so every request shares them and only the per-document embedded
-	// instances are rebuilt. A failure is not fatal either -- the PDF routes
-	// report 503 and the JSON APIs are unaffected.
-	if fonts, err := pdf.LoadFonts(cfg.FontDir); err != nil {
-		lg.Warn("cannot load fonts; the PDF calendars are disabled: " + err.Error())
-		fmt.Fprintln(os.Stderr, "warning: PDF calendars disabled:", err)
-	} else {
-		app.PDF.Renderer = pdf.NewRenderer(fonts)
-	}
 	// The VTIMEZONE definitions the iCalendar feeds embed are read on demand,
 	// so a missing directory only costs the feeds their definitions.
 	app.Zones = icalendar.NewZoneInfo(cfg.ZoneInfoDir)

@@ -1,8 +1,11 @@
 package pdf
 
 import (
-	"path/filepath"
+	"io/fs"
 	"testing"
+	"testing/fstest"
+
+	"github.com/hebcal/hebcal-api-go/fonts"
 )
 
 // Ascent must come from the hhea table, which is what the layout code uses to
@@ -38,17 +41,41 @@ func TestAscentComesFromHhea(t *testing.T) {
 }
 
 func TestReadHheaAscent(t *testing.T) {
-	fs := testFonts(t)
-	_ = fs
-	got, err := readHheaAscent(filepath.Join(fontDir, fontFiles[FontSemi]))
+	data, err := fs.ReadFile(fonts.FS, fontFiles[FontSemi])
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := readHheaAscent(data)
 	if err != nil {
 		t.Fatalf("readHheaAscent: %v", err)
 	}
 	if got != 984 {
 		t.Errorf("readHheaAscent(SemiBold) = %v, want 984", got)
 	}
-	if _, err := readHheaAscent(filepath.Join(fontDir, "does-not-exist.ttf")); err == nil {
-		t.Error("expected an error for a missing file")
+	if _, err := readHheaAscent(data[:8]); err == nil {
+		t.Error("expected an error for a truncated file")
+	}
+}
+
+// Every face the renderer names is compiled in, so the server cannot start
+// without one; a directory missing a face is an error, not a partial set.
+func TestLoadFonts(t *testing.T) {
+	if _, err := LoadFonts(fonts.FS); err != nil {
+		t.Fatalf("LoadFonts(embedded): %v", err)
+	}
+	partial := fstest.MapFS{}
+	for name, rel := range fontFiles {
+		if name == FontHebrewBold {
+			continue
+		}
+		data, err := fs.ReadFile(fonts.FS, rel)
+		if err != nil {
+			t.Fatal(err)
+		}
+		partial[rel] = &fstest.MapFile{Data: data}
+	}
+	if _, err := LoadFonts(partial); err == nil {
+		t.Error("LoadFonts with a face missing: want an error")
 	}
 }
 
