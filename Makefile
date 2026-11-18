@@ -41,8 +41,7 @@ run: build
 	./$(BIN) \
 		-port 8082 \
 		-zips-db $(GEO_DIR)/zips.sqlite3 \
-		-geonames-db $(GEO_DIR)/geonames.sqlite3 \
-		-fonts fonts
+		-geonames-db $(GEO_DIR)/geonames.sqlite3
 
 # Copies hebcal-web's calendar configuration into internal/webconfig.
 sync-webconfig:
@@ -86,8 +85,6 @@ install: build
 	install -d -m 0775 -o $(SVCUSER) -g $(SVCGROUP) /var/log/hebcal
 	install -m 0644 etc/$(BIN).service /etc/systemd/system/$(BIN).service
 	install -m 0644 etc/$(BIN).logrotate /etc/logrotate.d/$(BIN)
-	find fonts -type d -exec install -d -m 0775 /var/www/{} \;
-	find fonts -type f -exec install -m 0644 {} /var/www/{} \;
 	install -d -m 0755 /var/www/html
 	install -m 0644 static/favicon.ico /var/www/html/favicon.ico
 	systemctl daemon-reload

@@ -51,9 +51,8 @@ type Server struct {
 	// Torah readings for /shabbat and the daily-learning series the PDF
 	// calendars cannot generate in-process.
 	Readings *readings.Client
-	// PDF renders the calendar PDFs. Its Renderer is nil when the fonts could
-	// not be loaded, in which case the PDF routes answer 503 and the rest of
-	// the API keeps working.
+	// PDF renders the calendar PDFs, with the fonts compiled into the
+	// binary.
 	PDF *pdf.Service
 	// CSV renders the Outlook CSV calendars served from the same /v4/ URLs.
 	CSV *csvsvc.Service
@@ -87,7 +86,7 @@ func New(lg *logger.AccessLogger) *Server {
 		PingFile: config.DefaultPingFile,
 		Hostname: hostname,
 		Readings: readings.New(readings.DefaultSocket),
-		PDF:      &pdf.Service{},
+		PDF:      &pdf.Service{Renderer: pdf.DefaultRenderer()},
 		CSV:      &csvsvc.Service{},
 		ICS:      &ical.Service{},
 	}

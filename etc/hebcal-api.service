@@ -12,7 +12,6 @@ ExecStart=/usr/local/bin/hebcal-api \
   -logfile /var/log/hebcal/api.log \
   -zips-db /var/www/zips.sqlite3 \
   -geonames-db /var/www/geonames.sqlite3 \
-  -fonts /var/www/fonts \
   -zoneinfo /var/www/zoneinfo \
   -document-root /var/www/html \
   -ini /etc/hebcal-dot-com.ini \

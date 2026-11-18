@@ -1,10 +1,11 @@
 package pdf
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
-	"os"
-	"path/filepath"
+	"io/fs"
+	"sync"
 
 	gotextfont "github.com/go-text/typesetting/font"
 	// Aliased because this package is itself named pdf; pdflib is seehuhn's
@@ -14,6 +15,9 @@ import (
 	"seehuhn.de/go/pdf/font/cff"
 	"seehuhn.de/go/pdf/font/truetype"
 	"seehuhn.de/go/sfnt"
+	"seehuhn.de/go/sfnt/parser"
+
+	"github.com/hebcal/hebcal-api-go/fonts"
 )
 
 // Font names used throughout the rendering code.
@@ -54,39 +58,53 @@ type FontSet struct {
 	hheaAscent map[string]float64
 }
 
-// LoadFonts parses every font once. dir is the directory holding the
-// Source_Sans_Pro and Adobe_Hebrew subdirectories.
-func LoadFonts(dir string) (*FontSet, error) {
-	fs := &FontSet{
+// LoadFonts parses every font in fsys once. fsys holds the Source_Sans_Pro
+// and Adobe_Hebrew subdirectories; the server passes the faces compiled into
+// the binary (see DefaultRenderer).
+func LoadFonts(fsys fs.FS) (*FontSet, error) {
+	set := &FontSet{
 		parsed:     make(map[string]*sfnt.Font, len(fontFiles)),
 		faces:      make(map[string]*gotextfont.Face, len(fontFiles)),
 		hheaAscent: make(map[string]float64, len(fontFiles)),
 	}
 	for name, rel := range fontFiles {
-		path := filepath.Join(dir, rel)
-		f, err := sfnt.ReadFile(path)
+		data, err := fs.ReadFile(fsys, rel)
 		if err != nil {
-			return nil, fmt.Errorf("loading font %s (%s): %w", name, rel, err)
+			return nil, fmt.Errorf("loading font %s: %w", name, err)
 		}
-		fs.parsed[name] = f
+		f, err := sfnt.Read(bytes.NewReader(data), parser.NewBudget(int64(len(data))))
+		if err != nil {
+			return nil, fmt.Errorf("parsing font %s (%s): %w", name, rel, err)
+		}
+		set.parsed[name] = f
 
-		fh, err := os.Open(path)
-		if err != nil {
-			return nil, fmt.Errorf("opening font %s: %w", name, err)
-		}
-		face, err := gotextfont.ParseTTF(fh)
-		fh.Close()
+		face, err := gotextfont.ParseTTF(bytes.NewReader(data))
 		if err != nil {
 			return nil, fmt.Errorf("shaping face %s (%s): %w", name, rel, err)
 		}
-		fs.faces[name] = face
+		set.faces[name] = face
 
-		if asc, err := readHheaAscent(path); err == nil {
-			fs.hheaAscent[name] = asc
+		asc, err := readHheaAscent(data)
+		if err != nil {
+			return nil, fmt.Errorf("font %s (%s): %w", name, rel, err)
 		}
+		set.hheaAscent[name] = asc
 	}
-	return fs, nil
+	return set, nil
 }
+
+// DefaultRenderer returns the Renderer for the fonts compiled into the
+// binary, parsing them on first use. Those files are part of the build, so a
+// failure to parse them is a broken build and panics.
+func DefaultRenderer() *Renderer { return defaultRenderer() }
+
+var defaultRenderer = sync.OnceValue(func() *Renderer {
+	set, err := LoadFonts(fonts.FS)
+	if err != nil {
+		panic("pdf: the embedded fonts: " + err.Error())
+	}
+	return NewRenderer(set)
+})
 
 // Instances holds the embedded-font instances for a single PDF document.
 //
@@ -172,13 +190,9 @@ func (fs *FontSet) Ascent(name string, size float64) float64 {
 
 // readHheaAscent returns the ascender from a font file's hhea table, the value
 // the layout code uses as the font ascender (see Ascent).
-func readHheaAscent(path string) (float64, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return 0, err
-	}
+func readHheaAscent(data []byte) (float64, error) {
 	if len(data) < 12 {
-		return 0, fmt.Errorf("%s: too short for an sfnt header", path)
+		return 0, fmt.Errorf("too short for an sfnt header")
 	}
 	numTables := int(binary.BigEndian.Uint16(data[4:6]))
 	for i := 0; i < numTables; i++ {
@@ -196,7 +210,7 @@ func readHheaAscent(path string) (float64, error) {
 		}
 		return float64(int16(binary.BigEndian.Uint16(data[off+4 : off+6]))), nil
 	}
-	return 0, fmt.Errorf("%s: no hhea table", path)
+	return 0, fmt.Errorf("no hhea table")
 }
 
 // pdfVersion is the declared PDF feature level viewers see.

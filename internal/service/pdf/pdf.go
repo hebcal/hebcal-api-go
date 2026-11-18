@@ -27,9 +27,7 @@ import (
 
 // Service holds everything a PDF request needs beyond the request itself.
 type Service struct {
-	// Renderer draws the calendar. It is nil when the fonts could not be
-	// loaded, in which case the PDF routes report 503 and the rest of the API
-	// keeps working.
+	// Renderer draws the calendar; the server uses DefaultRenderer.
 	Renderer *Renderer
 	// Geo resolves geonameid/ZIP/legacy-city locations. It may be nil, as it
 	// may be for the other location-dependent routes.
@@ -39,10 +37,6 @@ type Service struct {
 	// refused rather than rendered incomplete.
 	Learning *download.LearningFetcher
 }
-
-// Available reports whether calendars can be rendered at all, i.e. whether the
-// fonts were loaded at startup.
-func (s *Service) Available() bool { return s != nil && s.Renderer != nil }
 
 // Calendar is a decoded request together with the events it generated and the
 // document title derived from both.
@@ -105,9 +99,6 @@ func (s *Service) Prepare(ctx context.Context, u *url.URL) (*Calendar, error) {
 // PDF written straight to the socket would reach the client as a corrupt file
 // under a 200.
 func (s *Service) Render(cal *Calendar) ([]byte, error) {
-	if !s.Available() {
-		return nil, model.Unavailable("PDF rendering is not available")
-	}
 	var buf bytes.Buffer
 	if err := s.Renderer.Render(&buf, cal.Params, cal.Events, cal.Title); err != nil {
 		return nil, model.Internal("render: %s", err.Error())
