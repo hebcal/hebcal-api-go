@@ -40,7 +40,7 @@ func (s *Server) pdfDownload(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 
-	// The ETag is a pure function of the request and the library versions, so a
+	// The ETag is a pure function of the request, so a
 	// conditional request can be answered 304 before the (expensive) render. A
 	// client only holds this ETag if it received a 200 for the same URL, and the
 	// calendar is a deterministic function of that URL, so its cached copy is
@@ -77,7 +77,7 @@ func (s *Server) pdfHoliday(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Cache-Control", httpx.CacheControl60Days)
 
-	// As on the /v4/ path, the ETag depends only on the request and the build,
+	// As on the /v4/ path, the ETag depends only on the request,
 	// so a conditional request is answered before the calendar is generated.
 	if s.writeETag(w, r) {
 		return

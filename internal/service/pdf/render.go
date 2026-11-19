@@ -114,7 +114,7 @@ func (r *Renderer) Render(w io.Writer, p *download.Params, events []Event, title
 		Subject:  pdflib.TextString(title),
 		Keywords: pdflib.TextString(documentKeywords(p)),
 		Author:   pdflib.TextString("Hebcal Jewish Calendar (hebcal.com)"),
-		Producer: pdflib.TextString(config.PDFProducer),
+		Producer: pdflib.TextString("hebcal-api-go " + config.APIVersion),
 	}
 
 	if p.MonthMode != download.GregorianArabic {

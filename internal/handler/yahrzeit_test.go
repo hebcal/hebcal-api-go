@@ -161,9 +161,6 @@ func TestYahrzeitHeaders(t *testing.T) {
 	if resp3.Header.Get("Content-Encoding") != "br" {
 		t.Error("feed should be compressed")
 	}
-	if resp3.Header.Get("ETag") == h.Get("ETag") {
-		t.Error("ETag should vary with the encoding")
-	}
 }
 
 // A subscription's body changes when the week does, so its validator must.

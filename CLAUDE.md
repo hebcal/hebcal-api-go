@@ -508,13 +508,14 @@ download.hebcal.com. The `.csv` 200 sends none, and nothing needs a page to
 does not set ACAO on either format's error paths.)
 
 The `ETag` (`httpx.MakeETag`) is a weak FNV-1a hash of the
-request path, query, encoding class and the API version — not a hash of the
-rendered bytes. Because it depends only on the
-request and the build, the conditional check can answer `304` *before* the
-render runs: a client only holds the tag if it received a 200 for the same URL,
-and the calendar is a deterministic function of that URL. A new release of this
-service changes every tag, since `config.APIVersion` is folded into the hash.
-(A library upgrade alone does not, unless it ships in a new release.)
+request path + query — not a hash of the
+rendered bytes, and not of the build or the `Accept-Encoding`. Because it
+depends only on the request, the conditional check can answer `304` *before*
+the render runs: a client only holds the tag if it received a 200 for the same
+URL, and the calendar is a deterministic function of that URL. A new release
+does **not** change any tag, so a rendering fix reaches a client that holds a
+cached copy only when its `Cache-Control` expires (14 days, or 60 for
+`/holidays/`). A weak validator may be shared by every encoding of a body.
 
 ### Fast start and end times
 
@@ -2148,8 +2149,9 @@ Node's `querystring.unescape()`. `pkg/geodb/parseint.go` is a copy of
 
 ### `internal/httpx/`
 
-`etag.go` `MakeETag` ← hebcal-web's murmurhash3 weak ETag + encoding-class vary
-(FNV-1a here; weak ETags need not match). `httpx.go` Cache-Control consts ←
+`etag.go` `MakeETag` ← hebcal-web's murmurhash3 weak ETag, minus its
+encoding-class vary and library versions (FNV-1a here; weak ETags need not
+match). `httpx.go` Cache-Control consts ←
 `cacheControl(days)`: 14 (`app-download.js`) and 60 (`holidayPdf.js`). `SetCORS`
 ← hebcal-web's cfg-param-present rule. `middleware.go` `brotliQuality` 6 ←
 `app-www.js`. The Vary rule (only on a compressible body over `CompressThreshold`, the only

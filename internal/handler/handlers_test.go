@@ -748,12 +748,6 @@ func TestETag304(t *testing.T) {
 	if resp2.Header.Get("Cache-Control") != httpx.CacheControl1Year {
 		t.Errorf("304 Cache-Control = %q", resp2.Header.Get("Cache-Control"))
 	}
-	// a different Accept-Encoding class yields a different validator
-	resp3, _ := get(t, srv, "/converter?cfg=json&gy=2026&gm=7&gd=5&g2h=1",
-		"Accept-Encoding", "gzip")
-	if resp3.Header.Get("ETag") == etag {
-		t.Error("ETag should vary with Accept-Encoding")
-	}
 }
 
 func TestCompression(t *testing.T) {
@@ -829,10 +823,6 @@ func TestBrotli(t *testing.T) {
 	if resp2.Header.Get("Content-Encoding") != "gzip" {
 		t.Errorf("Content-Encoding = %q, want gzip", resp2.Header.Get("Content-Encoding"))
 	}
-	// brotli requests carry a different ETag class than gzip requests
-	if resp.Header.Get("ETag") == resp2.Header.Get("ETag") {
-		t.Error("ETag should differ between br and gzip clients")
-	}
 }
 
 func TestZstd(t *testing.T) {
@@ -862,9 +852,6 @@ func TestZstd(t *testing.T) {
 	resp2, _ := get(t, srv, u, "Accept-Encoding", "gzip, br")
 	if resp2.Header.Get("Content-Encoding") != "br" {
 		t.Errorf("Content-Encoding = %q, want br", resp2.Header.Get("Content-Encoding"))
-	}
-	if resp.Header.Get("ETag") == resp2.Header.Get("ETag") {
-		t.Error("ETag should differ between zstd and br clients")
 	}
 }
 

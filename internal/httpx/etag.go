@@ -6,18 +6,14 @@ import (
 	"net/http"
 	"sort"
 	"strings"
-
-	"github.com/hebcal/hebcal-api-go/internal/config"
 )
 
 // MakeETag computes a weak ETag from the request path, the query string
-// (minus utm_* params), the Accept-Encoding class, and the library versions,
-// using a 128-bit FNV-1a hash. extra mixes in any per-request input that is
+// (minus utm_* params) using a 128-bit FNV-1a hash.
+// extra mixes in any per-request input that is
 // not in the URL (e.g. the caller's IP for /complete).
 func MakeETag(r *http.Request, extra string) string {
 	h := fnv.New128a()
-	h.Write([]byte(config.APIVersion))
-	h.Write([]byte{0})
 	h.Write([]byte(r.URL.Path))
 	h.Write([]byte{0})
 	q := r.URL.Query()
@@ -39,8 +35,6 @@ func MakeETag(r *http.Request, extra string) string {
 		h.Write([]byte(extra))
 		h.Write([]byte{0})
 	}
-	// vary the tag by encoding class
-	h.Write([]byte(negotiateEncoding(r)))
 	sum := h.Sum(nil)
 	return `W/"` + base64.RawURLEncoding.EncodeToString(sum) + `"`
 }
