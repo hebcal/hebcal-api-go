@@ -169,9 +169,15 @@ func (s *Server) converterCSV(w http.ResponseWriter, r *http.Request) {
 			model.BadRequest("Date range conversion is not supported for CSV download"))
 		return
 	}
-	if !p.NoCache && r.URL.RawQuery != "" {
-		w.Header().Set("Cache-Control", httpx.CacheControl7Days)
+	// The CSV lists the anniversaries of one named date. A request that
+	// names none (no hd/hm/hy, gd/gm/gy or date) would otherwise resolve
+	// against today, which no link ever asks for, so it is a 400.
+	if p.NoCache {
+		httpx.WritePlainError(w,
+			model.BadRequest("CSV download requires a date (hd, hm, hy or gd, gm, gy)"))
+		return
 	}
+	w.Header().Set("Cache-Control", httpx.CacheControl7Days)
 	etag := httpx.MakeETag(r, "")
 	w.Header().Set("ETag", etag)
 	if httpx.CheckFresh(r, etag) {

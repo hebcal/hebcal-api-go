@@ -74,6 +74,8 @@ solar calculations are backed by [hebcal/noaa-go](https://github.com/hebcal/noaa
     (and the response is marked non-cacheable).
 - `GET|HEAD /converter/csv?…` — CSV download listing the Gregorian dates
   of the given Hebrew calendar date from 5 years before to 75 years after.
+  A request that names no date (no `hd`/`hm`/`hy`, `gd`/`gm`/`gy` or
+  `date`) is a 400.
 
 ### Zmanim
 

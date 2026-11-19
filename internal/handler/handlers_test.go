@@ -927,6 +927,22 @@ func TestCSVEdgeCases(t *testing.T) {
 	if resp3.StatusCode != 400 {
 		t.Errorf("ndays status = %d, want 400", resp3.StatusCode)
 	}
+	// a request naming no date is a 400, not today's anniversaries
+	for _, u := range []string{
+		"/converter/csv",
+		"/converter/csv?h2g=1",
+		"/converter/csv?g2h=1",
+		"/converter/csv?g2h=1&gs=on",
+		"/converter/csv?cfg=csv",
+	} {
+		r, _ := get(t, srv, u)
+		if r.StatusCode != 400 {
+			t.Errorf("%s status = %d, want 400", u, r.StatusCode)
+		}
+		if cc := r.Header.Get("Cache-Control"); cc != "" {
+			t.Errorf("%s Cache-Control = %q, want none", u, cc)
+		}
+	}
 	// ETag/304 support
 	resp4, _ := get(t, srv, "/converter/csv?hd=20&hm=Tamuz&hy=5786&h2g=1")
 	etag := resp4.Header.Get("ETag")
