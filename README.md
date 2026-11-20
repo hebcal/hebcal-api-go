@@ -1,10 +1,11 @@
 # hebcal-api
 
-A Go microservice implementing the Hebcal.com web APIs and calendar
-downloads, ported from the Node.js implementation in
-[hebcal-web](https://github.com/hebcal/hebcal-web). It started as the JSON
-and XML APIs and now also serves calendar files in several formats, a
-printable web page, short-link redirects and an MCP server.
+A single Go binary that serves the Hebcal.com web APIs, calendar downloads
+and more. It replaces what used to be several Node.js services from
+[hebcal-web](https://github.com/hebcal/hebcal-web), for higher throughput and
+lower latency. It began as the JSON and XML APIs and has grown into a
+monolith: JSON and XML APIs, iCalendar, CSV and PDF calendars, a printable
+web page, short-link redirects and an MCP server, all in one process.
 
 ## What it does
 
