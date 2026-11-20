@@ -1,9 +1,8 @@
 # hebcal-api
 
 A single Go binary that serves a large subset of the Hebcal.com web APIs
-and calendar downloads, ported from the Node.js implementation in
-[hebcal-web](https://github.com/hebcal/hebcal-web) for higher throughput and
-lower latency. It covers JSON and XML APIs, iCalendar, CSV and PDF
+and calendar downloads, replacing the Node.js implementation in
+[hebcal-web](https://github.com/hebcal/hebcal-web). It covers JSON and XML APIs, iCalendar, CSV and PDF
 calendars, a printable web page, short-link redirects and an MCP server, all
 in one process. Much of hebcal-web is not here.
 
@@ -12,11 +11,11 @@ in one process. Much of hebcal-web is not here.
 ### JSON APIs
 
 - [**Hebrew Date Converter**](#hebrew-date-converter) — Gregorian ⇄ Hebrew
-  dates (also available as XML and CSV); ported from `src/converter.js`
-- [**Zmanim**](#zmanim) — halachic times; ported from `src/zmanim.js`. The
+  dates (also available as XML and CSV)
+- [**Zmanim**](#zmanim) — halachic times. The
   `im=1` mode is the **Assur Melacha** check ("is work prohibited right now")
-- [**Shabbat**](#shabbat) — candle-lighting times and Torah portion; ported
-  from `src/shabbat.js`. Torah readings come from the
+- [**Shabbat**](#shabbat) — candle-lighting times and Torah portion.
+  Torah readings come from the
   [readings-svc](https://github.com/hebcal/readings-svc) sidecar (see
   [Torah readings](#torah-readings))
 - [**Geolocation**](#geolocation) (`/geo`) — resolve query parameters to a
@@ -33,26 +32,21 @@ in one process. Much of hebcal-web is not here.
 - [**Holiday feeds**](#holiday-feeds) — the `download.hebcal.com/v4/…ics`
   calendars (and the legacy `/v2/h/`, `/hebcal/index.cgi/` and `/export/`
   spellings): holidays, Torah readings, Omer, candle lighting and the rest,
-  subscribable or saved. Ported from `src/hebcal-download.js` and
-  `src/icalCommon.js`
+  subscribable or saved
 - [**Yahrzeit + Anniversary feeds**](#icalendar-feeds) — personal calendars
   from legacy URLs that carry the calendar in the URL (`/v2/y/`,
   `/yahrzeit/yahrzeit.cgi/`, `/export/`) and the saved `/v3/<id>/` calendars
-  read from MySQL. Ported from `@hebcal/icalendar` (as `pkg/icalendar`) and
-  `src/yahrzeitDownload.js`
+  read from MySQL
 - [**Zmanim feeds**](#zmanim-feeds) — the `/zmanim`, `/zmanim2` and `/sunrs`
-  subscriptions (ported from `src/zmanimDownload.js`)
+  subscriptions
 - [**Static calendars**](#static-calendars) (`/ical/`) — multi-year holiday,
   Torah reading, Hebrew date, Omer, Yizkor and daily-learning feeds, written
-  weekly by `cmd/hebcal-static-ical` (ported from `src/makeStaticCalendars.js`
-  and `src/staticCalendars.js`) and served precompressed
+  weekly by `cmd/hebcal-static-ical` and served precompressed
 
 ### CSV calendars
 
 - [**Holiday CSV**](#pdf-calendars) — the `download.hebcal.com/v4/…csv`
-  Outlook-compatible exports of the same calendars as the PDFs (ported from
-  `@hebcal/rest-api`'s `eventToCsv()` and hebcal-web's
-  `eventsWithParshaToCsv()`)
+  Outlook-compatible exports of the same calendars as the PDFs
 - **Yahrzeit CSV** — one-time exports of the [personal
   calendars](#icalendar-feeds); the [converter](#hebrew-date-converter) and
   [fridge page](#candle-lighting-times-for-a-year) also have CSV forms
@@ -60,9 +54,8 @@ in one process. Much of hebcal-web is not here.
 ### PDF calendars
 
 - [**PDF calendars**](#pdf-calendars) — the `download.hebcal.com/v4/…pdf`
-  downloads (ported from `src/pdf.js`) and
-  `www.hebcal.com/holidays/hebcal-<year>.pdf` (ported from
-  `src/holidayPdf.js`)
+  downloads and
+  `www.hebcal.com/holidays/hebcal-<year>.pdf`
 
 ### Web pages, redirects and tools
 
@@ -71,10 +64,8 @@ in one process. Much of hebcal-web is not here.
   HTML page
 - [**Short URL redirects**](#short-url-redirects) (`/h/`, `/s/`, `/o/`) —
   www.hebcal.com's short links to holiday, Torah portion and Omer pages
-  (ported from `src/shortUrlRedir.js`)
 - [**MCP server**](#mcp-server) (`/mcp`) — a Model Context Protocol server
-  with seven Hebrew-calendar tools, ported from
-  [hebcal-mcp](https://github.com/hebcal/hebcal-mcp)
+  with seven Hebrew-calendar tools
 
 Date conversions use [hebcal/hdate](https://github.com/hebcal/hdate)
 (`FromProlepticGregorian`, matching JavaScript `Date` behavior); holidays,
@@ -140,7 +131,7 @@ solar calculations are backed by [hebcal/noaa-go](https://github.com/hebcal/noaa
 
 - `GET|HEAD /shabbat?cfg=json&…` — candle-lighting, the weekly Torah
   portion, havdalah and the other events of one Shabbat week for a
-  location, ported from `src/shabbat.js`. `cfg=json` is required (501
+  location. `cfg=json` is required (501
   otherwise). `OPTIONS` returns a CORS preflight; other methods return
   `405`. Requires the geonames/zips databases (503 otherwise).
   - **Date** — the week containing the given day, in this order of
@@ -226,8 +217,7 @@ altogether.
 #### Candle-lighting times for a year
 
 - `GET|HEAD /shabbat/fridge.cgi?geonameid=…&year=…` — www.hebcal.com's
-  printable page of a year's candle-lighting times ("for the fridge"), ported
-  from `src/fridge.js` and `views/fridge.ejs`. One row for every Shabbat and
+  printable page of a year's candle-lighting times ("for the fridge"). One row for every Shabbat and
   Yom Tov, named for the Torah portion or the holiday, with Havdalah times in
   a column a checkbox reveals.
 - `year` is a Hebrew year unless `yt=G`; with no `year` it is the Hebrew year
@@ -244,8 +234,7 @@ altogether.
 ### Geolocation
 
 - `GET|HEAD /geo?…` — resolve a location from query parameters and
-  return the location as JSON (ported from the `/geo` route in
-  hebcal-web's `src/router.js`). `OPTIONS` returns a CORS preflight; other
+  return the location as JSON. `OPTIONS` returns a CORS preflight; other
   methods return `405`. Accepts the same location parameters as
   `/zmanim` (see [Location resolution](#location-resolution)), and returns
   the raw `@hebcal/core` Location shape:
@@ -264,7 +253,7 @@ altogether.
 ### Geo autocomplete
 
 - `GET /complete?q=<prefix>` (also `/complete.php`) — city and US-ZIP
-  typeahead, ported from hebcal-web's `src/complete.js`. Returns a JSON
+  typeahead. Returns a JSON
   array of up to 12 matches, each with a country-flag emoji. A leading
   digit is treated as a ZIP code (exact 5-digit or numeric prefix);
   otherwise both the geonames and US-ZIP full-text indexes are searched,
@@ -533,8 +522,7 @@ cacheable for a day; only `GET` and `HEAD` are accepted (`405` otherwise).
 ### MCP server
 
 - `POST /mcp` — a stateless [Model Context Protocol](https://modelcontextprotocol.io)
-  server (streamable-HTTP transport), served at `www.hebcal.com/mcp` and ported
-  from [hebcal-mcp](https://github.com/hebcal/hebcal-mcp) using the official
+  server (streamable-HTTP transport), served at `www.hebcal.com/mcp`, using the official
   [`modelcontextprotocol/go-sdk`](https://github.com/modelcontextprotocol/go-sdk).
   It exposes seven tools: `convert-gregorian-to-hebrew`,
   `convert-hebrew-to-gregorian`, `yahrzeit`, `torah-portion`,
@@ -699,13 +687,12 @@ internal/
                          staticCalendars.json, embedded verbatim: the source
                          of every daily-learning series and static feed
 pkg/
-  geodb/                 SQLite geonames/zips reader and geographic typeahead;
-                         a Go port of @hebcal/geo-sqlite
+  geodb/                 SQLite geonames/zips reader and geographic typeahead
   geoip/                 client for the geoip2 unix-socket lookup service
   downloadpb/            the Download protobuf a /v4/ URL carries, shared
                          with hebcal-web
   icalendar/             RFC 5545 writer: VEVENT/VALARM/VTIMEZONE, line
-                         folding; a Go port of @hebcal/icalendar
+                         folding
 tools/                   porting tools: PDF comparison, width measurement,
                          locale and URL dumps (not part of the build)
 ```
