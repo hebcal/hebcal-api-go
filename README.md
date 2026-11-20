@@ -85,7 +85,7 @@ solar calculations are backed by [hebcal/noaa-go](https://github.com/hebcal/noaa
   suggestions near the caller. Optional: if it is unreachable the service
   logs a warning and carries on.
 - **SQLite databases** — `geonames.sqlite3` and `zips.sqlite3`, for location
-  resolution (see [Location databases](#location-databases)).
+  resolution (see [Location resolution](#location-resolution)).
 - **MySQL** — read-only apart from bookkeeping writes, for the saved Yahrzeit
   calendars at `/v3/<id>/…ics`. Without it only `/v3/` answers 503.
 
