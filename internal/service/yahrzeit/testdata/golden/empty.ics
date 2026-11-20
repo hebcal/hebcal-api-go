@@ -3,7 +3,6 @@ VERSION:2.0
 PRODID:-//hebcal.com/NONSGML Hebcal Calendar v17.0.6//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-LOTUS-CHARSET:UTF-8
 X-WR-CALNAME:Yahrzeit
 X-WR-CALDESC:Personal anniversaries from Hebcal.com
 BEGIN:VEVENT

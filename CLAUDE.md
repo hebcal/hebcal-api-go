@@ -769,6 +769,11 @@ optimizing.
 
 ### Deliberate divergences
 
+- **No `X-LOTUS-CHARSET:UTF-8`.** `@hebcal/icalendar` writes it in every
+  preamble; `pkg/icalendar` does not, so no feed here (holiday, Yahrzeit,
+  zmanim, static) carries it. The goldens were edited to drop the line; a
+  golden regenerated from hebcal-web (`tools/*-goldens.*`) still has it and
+  needs it removed.
 - **Line breaks in a value are escaped.** hebcal-web writes a name or `title=`
   containing `%0A` raw, which lets a URL inject properties or whole components
   into the feed. `icalendar.line` writes any CR/LF in content as `\n`.
@@ -1070,8 +1075,7 @@ Deliberate divergences:
   calendar (hence `brotli` in web-api.yaml), and its `curl` has `--fail`, so
   an error page is never published as a calendar.
 - **Kindness a Day** is the same events and UIDs, but written by
-  `pkg/icalendar`: its preamble gains `X-LOTUS-CHARSET` and
-  `REFRESH-INTERVAL`, and `CLASS:PUBLIC` precedes `DESCRIPTION` rather than
+  `pkg/icalendar`: its preamble gains `REFRESH-INTERVAL`, and `CLASS:PUBLIC` precedes `DESCRIPTION` rather than
   following it.
 
 ## The holiday feeds (`/v4/…ics`)

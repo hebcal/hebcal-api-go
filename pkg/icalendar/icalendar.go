@@ -232,7 +232,6 @@ func (c *Calendar) writePreamble(buf *bytes.Buffer) {
 	line(buf, "PRODID:", prodid)
 	line(buf, "CALSCALE:GREGORIAN")
 	line(buf, "METHOD:PUBLISH")
-	line(buf, "X-LOTUS-CHARSET:UTF-8")
 	if !c.NoPublishedTTL {
 		ttl := c.PublishedTTL
 		if ttl == "" {

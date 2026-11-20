@@ -59,7 +59,6 @@ func TestAllDayEvent(t *testing.T) {
 		"PRODID:-//hebcal.com/NONSGML Hebcal Calendar v2//EN",
 		"CALSCALE:GREGORIAN",
 		"METHOD:PUBLISH",
-		"X-LOTUS-CHARSET:UTF-8",
 		"REFRESH-INTERVAL;VALUE=DURATION:P7D",
 		"X-PUBLISHED-TTL:P7D",
 		"X-WR-CALNAME:Yahrzeit: Golda Meir",
@@ -203,7 +202,7 @@ func TestCalendarOptions(t *testing.T) {
 	}
 	equal(t, preamble(&Calendar{}), []string{
 		"PRODID:-//hebcal.com/NONSGML Hebcal Calendar v2//EN",
-		"CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-LOTUS-CHARSET:UTF-8",
+		"CALSCALE:GREGORIAN", "METHOD:PUBLISH",
 		"REFRESH-INTERVAL;VALUE=DURATION:P7D", "X-PUBLISHED-TTL:P7D",
 		"X-WR-CALNAME:Untitled",
 	})
@@ -212,7 +211,7 @@ func TestCalendarOptions(t *testing.T) {
 		PublishedTTL: "P1D", RelCalID: "hebcal-01ABC", Color: "#FF0000",
 	}), []string{
 		"PRODID:-//hebcal.com/NONSGML Hebcal Calendar v2//HE",
-		"CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-LOTUS-CHARSET:UTF-8",
+		"CALSCALE:GREGORIAN", "METHOD:PUBLISH",
 		"REFRESH-INTERVAL;VALUE=DURATION:P1D", "X-PUBLISHED-TTL:P1D",
 		`X-WR-CALNAME:Family\, friends\; others`,
 		`X-WR-CALDESC:Hebcal Yahrzeit: A\, B`,
@@ -221,7 +220,7 @@ func TestCalendarOptions(t *testing.T) {
 	})
 	equal(t, preamble(&Calendar{Title: "T", Prodid: "-//example//EN", NoPublishedTTL: true, Lang: "he-x-NoNikud"}), []string{
 		"PRODID:-//example//EN",
-		"CALSCALE:GREGORIAN", "METHOD:PUBLISH", "X-LOTUS-CHARSET:UTF-8",
+		"CALSCALE:GREGORIAN", "METHOD:PUBLISH",
 		"X-WR-CALNAME:T",
 	})
 }
