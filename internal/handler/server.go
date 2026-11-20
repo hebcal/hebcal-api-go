@@ -206,9 +206,15 @@ func forbidDotSegments(next http.Handler, forbidden http.HandlerFunc) http.Handl
 }
 
 // hasDotSegment reports whether any segment of p, split on "/" or "\",
-// starts with a dot.
+// starts with a dot. The one exception is ".well-known" (RFC 8615): clients
+// probe /.well-known/ and /mcp/.well-known/ for OAuth and OpenID Connect
+// discovery documents, and nothing here serves them, so they get the mux's
+// ordinary 404. A 403 would suggest the resource exists behind authorization.
 func hasDotSegment(p string) bool {
 	for _, seg := range strings.FieldsFunc(p, func(c rune) bool { return c == '/' || c == '\\' }) {
+		if seg == ".well-known" {
+			continue
+		}
 		if strings.HasPrefix(seg, ".") {
 			return true
 		}

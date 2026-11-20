@@ -171,7 +171,7 @@ func TestDotSegmentsForbidden(t *testing.T) {
 	app.DocumentRoot = staticDir(t, time.Now())
 	for _, p := range []string{
 		"/../../etc/passwd", "/..", "/%2e%2e/%2e%2e/etc/passwd", "/..%2f..%2fetc/passwd",
-		"/..\\..\\etc\\passwd", "/.env", "/.git/config", "/.well-known/security.txt",
+		"/..\\..\\etc\\passwd", "/.env", "/.git/config", "/.well-known/../.env",
 		"/ical/.hidden.ics", "/ical/..%2fomer.ics", "/ical/%2e%2e/etc/passwd",
 		"/ical/..%2fping", "/ical/%2e%2e%2fping", "/ical/../ping", "/v4/x/../../.env",
 		"/static/./favicon.ico",
@@ -182,6 +182,16 @@ func TestDotSegmentsForbidden(t *testing.T) {
 		}
 		if cc := resp.Header.Get("Cache-Control"); cc != "" {
 			t.Errorf("%s: 403 carries Cache-Control %q", p, cc)
+		}
+	}
+	// ".well-known" discovery probes are an ordinary 404, not a 403 that
+	// implies the resource exists behind authorization.
+	for _, p := range []string{
+		"/.well-known/security.txt", "/mcp/.well-known/oauth-protected-resource",
+		"/mcp/.well-known/openid-configuration", "/.well-known/oauth-authorization-server",
+	} {
+		if resp, _ := get(t, srv, p); resp.StatusCode != http.StatusNotFound {
+			t.Errorf("%s: status %d, want 404", p, resp.StatusCode)
 		}
 	}
 	// A dot inside a segment is fine.

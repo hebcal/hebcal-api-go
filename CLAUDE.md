@@ -1043,7 +1043,9 @@ Things that are not obvious:
   `serveStatic` itself opens files through an `os.Root` on the document
   root, so neither a path that slips past a caller nor a symlink pointing
   outside the tree is served (a file deployed as such a symlink would
-  404). It also covers `/.well-known/`, which nothing here serves. A `//`
+  404). `.well-known` is the one exempt segment: nothing here serves it, and OAuth /
+  OpenID discovery probes (`/mcp/.well-known/oauth-protected-resource`) get a
+  404 rather than a 403 that would suggest the MCP server wants authorization. A `//`
   needs no rule: `ServeMux` redirects it to the cleaned path before any
   handler runs.
 - **Precompressed copies win over on-the-fly encoding**, as with koa-send: a
