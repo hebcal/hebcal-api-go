@@ -5,10 +5,14 @@
 package httpx
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
 	"strings"
+	"syscall"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/hebcal/hebcal-api-go/internal/jsutil"
 	"github.com/hebcal/hebcal-api-go/internal/model"
@@ -63,8 +67,10 @@ func CORSPreflight(w http.ResponseWriter, methods string) {
 // "msg". It reaches the collector through the middleware's own response writer;
 // when w is some other writer (a bare httptest recorder in a unit test, say) it
 // is a no-op, so callers never have to check. The shared error helpers below
-// call it for free; a route that writes an error with http.Error directly
-// (the PDF handler does, to control caching per status) calls it itself.
+// call it for free. A route that writes an error with http.Error directly
+// need not: the middleware falls back on the body's first line (see
+// bodyMessage), so it calls RecordError only when the body is vaguer than
+// the cause -- "Gone" for a year out of range, "Not Found" for a missing file.
 func RecordError(w http.ResponseWriter, err error) {
 	if bw, ok := w.(*bufWriter); ok {
 		bw.calls.SetError(err)
@@ -124,8 +130,9 @@ func WriteJSONError(w http.ResponseWriter, err error) {
 }
 
 // WriteNotFoundText emits the plain-text 404 used by /ping and the catch-all
-// route.
-func WriteNotFoundText(w http.ResponseWriter) {
+// route. The body says only "Not Found"; why, err, goes to the access log.
+func WriteNotFoundText(w http.ResponseWriter, why error) {
+	RecordError(w, why)
 	w.Header().Set("Content-Type", ContentTypeText)
 	w.WriteHeader(http.StatusNotFound)
 	w.Write([]byte("Not Found\n"))
@@ -133,8 +140,9 @@ func WriteNotFoundText(w http.ResponseWriter) {
 
 // WriteForbiddenText emits the plain-text 403 for a path that tries to
 // climb out of the document root or names a dot file. Like the 404, it
-// carries no Cache-Control.
-func WriteForbiddenText(w http.ResponseWriter) {
+// carries no Cache-Control. why goes to the access log, not the body.
+func WriteForbiddenText(w http.ResponseWriter, why error) {
+	RecordError(w, why)
 	w.Header().Set("Content-Type", ContentTypeText)
 	w.WriteHeader(http.StatusForbidden)
 	w.Write([]byte("Forbidden\n"))
@@ -157,4 +165,22 @@ func ClientIP(r *http.Request) string {
 		return r.RemoteAddr
 	}
 	return host
+}
+
+// PosixError reduces a file-system error to the human-readable text of the
+// POSIX error number underneath it, capitalized as strerror(3) writes it:
+// "No such file or directory" for ENOENT, "Permission denied" for EACCES. The
+// path an *fs.PathError carries is dropped, since the access log already has
+// the URL. An error with no errno inside is returned unchanged.
+func PosixError(err error) error {
+	var errno syscall.Errno
+	if !errors.As(err, &errno) {
+		return err
+	}
+	msg := errno.Error()
+	if msg == "" {
+		return err
+	}
+	r, size := utf8.DecodeRuneInString(msg)
+	return errors.New(string(unicode.ToUpper(r)) + msg[size:])
 }

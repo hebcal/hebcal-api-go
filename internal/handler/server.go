@@ -5,6 +5,8 @@
 package handler
 
 import (
+	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -225,7 +227,7 @@ func hasDotSegment(p string) bool {
 // forbidden is the plain-text 403 for a path that tries to leave the
 // document root or names a dot file.
 func (s *Server) forbidden(w http.ResponseWriter, r *http.Request) {
-	httpx.WriteForbiddenText(w)
+	httpx.WriteForbiddenText(w, errors.New("Path has a dot segment"))
 }
 
 // ping serves the contents of the ping file. The file is read on every request
@@ -234,7 +236,7 @@ func (s *Server) forbidden(w http.ResponseWriter, r *http.Request) {
 func (s *Server) ping(w http.ResponseWriter, r *http.Request) {
 	body, err := os.ReadFile(s.PingFile)
 	if err != nil {
-		httpx.WriteNotFoundText(w)
+		httpx.WriteNotFoundText(w, fmt.Errorf("Ping file: %w", httpx.PosixError(err)))
 		return
 	}
 	w.Header().Set("Content-Type", httpx.ContentTypeText)
@@ -257,7 +259,7 @@ func (s *Server) robots(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) notFound(w http.ResponseWriter, r *http.Request) {
-	httpx.WriteNotFoundText(w)
+	httpx.WriteNotFoundText(w, errors.New("No route for path"))
 }
 
 // dbUnavailable is the error the location-dependent routes report when the

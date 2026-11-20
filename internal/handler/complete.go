@@ -7,6 +7,8 @@ package handler
 // elevation when it is positive, for both ZIP and geoname results.
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -27,7 +29,7 @@ func (s *Server) complete(w http.ResponseWriter, r *http.Request) {
 	qraw := strings.TrimSpace(q.Get("q"))
 	if qraw == "" {
 		// An empty query gets no Cache-Control header at all.
-		writeNotFoundJSON(w)
+		writeNotFoundJSON(w, errors.New("Empty query"))
 		return
 	}
 	if s.DB == nil {
@@ -69,7 +71,7 @@ func (s *Server) complete(w http.ResponseWriter, r *http.Request) {
 		// No matches: drop the ETag and return 404, but keep the
 		// Cache-Control header set above.
 		w.Header().Del("ETag")
-		writeNotFoundJSON(w)
+		writeNotFoundJSON(w, fmt.Errorf("No matches for %q", qraw))
 		return
 	}
 	arr := make([]jsutil.OrderedObj, len(items))
@@ -80,8 +82,10 @@ func (s *Server) complete(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsutil.Marshal(arr))
 }
 
-// writeNotFoundJSON emits the 404 {"error":"Not Found"} body used by /complete.
-func writeNotFoundJSON(w http.ResponseWriter) {
+// writeNotFoundJSON emits the 404 {"error":"Not Found"} body used by
+// /complete; why goes to the access log.
+func writeNotFoundJSON(w http.ResponseWriter, why error) {
+	httpx.RecordError(w, why)
 	w.Header().Set("Content-Type", httpx.ContentTypeJSON)
 	w.WriteHeader(http.StatusNotFound)
 	w.Write(httpx.JSONErrorBody("Not Found"))

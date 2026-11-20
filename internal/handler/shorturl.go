@@ -43,7 +43,7 @@ func (s *Server) shortURL(w http.ResponseWriter, r *http.Request) {
 	rpath := r.URL.EscapedPath()
 	dest, ok := shortToLong[rpath[1]]
 	if !ok || len(rpath) < 3 {
-		httpx.WriteNotFoundText(w)
+		httpx.WriteNotFoundText(w, fmt.Errorf("short redirect not found: %s", rpath))
 		return
 	}
 	base := rpath[3:]

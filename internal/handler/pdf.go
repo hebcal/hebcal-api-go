@@ -66,6 +66,7 @@ func (s *Server) pdfHoliday(w http.ResponseWriter, r *http.Request) {
 	// elsewhere, so anything else is a 404 rather than a half-rendered
 	// calendar.
 	if !strings.HasSuffix(r.URL.Path, ".pdf") {
+		httpx.RecordError(w, errors.New("Not a .pdf path"))
 		http.Error(w, "not found", http.StatusNotFound)
 		return
 	}

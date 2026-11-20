@@ -3,6 +3,7 @@ package httpx
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"unicode/utf8"
 
 	"github.com/prometheus/client_golang/prometheus"
 	dto "github.com/prometheus/client_model/go"
@@ -395,5 +397,55 @@ func TestRequestDurationSkipsPing(t *testing.T) {
 	mux.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/ping", nil))
 	if got := histogramCount(t, "other") - before; got != 0 {
 		t.Errorf("observations for route other = %d, want 0", got)
+	}
+}
+
+// An error response whose handler recorded no error still logs a "msg",
+// taken from its own body: the first line of plain text, or the "error"
+// member of JSON (a JSON-RPC error object's "message"). A body that only
+// restates the status adds nothing, so it logs none.
+func TestAccessLogMessageFromBody(t *testing.T) {
+	for _, tc := range []struct {
+		name, ctype, body string
+		status            int
+		want              any // nil: no msg field
+	}{
+		{"plain", "text/plain; charset=utf-8", "unknown download extension .txt\n", 404, "unknown download extension .txt"},
+		{"plain first line", "text/plain; charset=utf-8", "first\nsecond\n", 400, "first"},
+		{"json string", ContentTypeJSON, `{"error":"/shabbat is not served from download.hebcal.com"}`, 421, "/shabbat is not served from download.hebcal.com"},
+		{"json-rpc", "application/json", `{"jsonrpc":"2.0","id":null,"error":{"code":-32000,"message":"Method GET not allowed"}}`, 405, "Method GET not allowed"},
+		{"status text", "text/plain; charset=utf-8", "Not Found\n", 404, nil},
+		{"status text, other case", "text/plain; charset=utf-8", "not found\n", 404, nil},
+		{"json status text", ContentTypeJSON, `{"error":"Not Found"}`, 404, nil},
+		{"not text", "application/pdf", "%PDF-", 500, nil},
+		{"empty", "text/plain", "", 500, nil},
+	} {
+		m := serveAndReadLog(t, func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", tc.ctype)
+			w.WriteHeader(tc.status)
+			io.WriteString(w, tc.body)
+		}, httptest.NewRequest(http.MethodGet, "/x", nil))
+		if got, ok := m["msg"]; tc.want == nil && ok {
+			t.Errorf("%s: msg = %v, want none", tc.name, got)
+		} else if tc.want != nil && got != tc.want {
+			t.Errorf("%s: msg = %v, want %q", tc.name, got, tc.want)
+		}
+	}
+
+	// A recorded error wins over the body.
+	m := serveAndReadLog(t, func(w http.ResponseWriter, r *http.Request) {
+		RecordError(w, errors.New("the real reason"))
+		http.Error(w, "Gone", http.StatusGone)
+	}, httptest.NewRequest(http.MethodGet, "/x", nil))
+	if m["msg"] != "the real reason" {
+		t.Errorf("msg = %v, want the recorded error", m["msg"])
+	}
+
+	// A long body is cut without splitting a UTF-8 sequence.
+	m = serveAndReadLog(t, func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "x"+strings.Repeat("א", 300), http.StatusBadRequest)
+	}, httptest.NewRequest(http.MethodGet, "/x", nil))
+	if s, _ := m["msg"].(string); len(s) == 0 || len(s) > maxBodyMessage || !utf8.ValidString(s) {
+		t.Errorf("long msg: %d bytes, valid %v", len(s), utf8.ValidString(s))
 	}
 }

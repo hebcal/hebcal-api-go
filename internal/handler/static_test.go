@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -326,4 +328,49 @@ func faviconApp(root string) *Server {
 	app := New(logger.NewWriter(io.Discard, "test"))
 	app.DocumentRoot = root
 	return app
+}
+
+// Every 4xx the static and catch-all routes answer logs why under "msg",
+// though the body says only "Not Found" or "Forbidden". A missing file is
+// the POSIX error text, not the *fs.PathError with its path.
+func TestStaticErrorsLogMessage(t *testing.T) {
+	var buf bytes.Buffer
+	app := New(logger.NewWriter(&buf, "test"))
+	app.DocumentRoot = staticDir(t, time.Now())
+	app.PingFile = filepath.Join(t.TempDir(), "no-ping")
+	routes := app.Routes()
+	for _, tc := range []struct {
+		path, msg string
+		status    int
+	}{
+		{"/ical/missing.ics", "No such file or directory", 404},
+		{"/ical/sub", "Not a regular file", 404},
+		{"/ical/", `Not a plain file name: ""`, 404},
+		{"/.env", "Path has a dot segment", 403},
+		{"/../../etc/passwd", "Path has a dot segment", 403},
+		{"/no/such/route", "No route for path", 404},
+		{"/ping", "Ping file: No such file or directory", 404},
+	} {
+		buf.Reset()
+		req := httptest.NewRequest(http.MethodGet, tc.path, nil)
+		rec := httptest.NewRecorder()
+		routes.ServeHTTP(rec, req)
+		if rec.Code != tc.status {
+			t.Errorf("%s: status %d, want %d", tc.path, rec.Code, tc.status)
+		}
+		var m map[string]any
+		if err := json.Unmarshal(bytes.TrimSpace(buf.Bytes()), &m); err != nil {
+			t.Fatalf("%s: log line is not JSON: %v\n%s", tc.path, err, buf.Bytes())
+		}
+		if m["msg"] != tc.msg {
+			t.Errorf("%s: msg = %v, want %q", tc.path, m["msg"], tc.msg)
+		}
+	}
+
+	buf.Reset()
+	app.DocumentRoot = ""
+	routes.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/ical/omer.ics", nil))
+	if !strings.Contains(buf.String(), `"msg":"No document root configured"`) {
+		t.Errorf("no document root: log %s", buf.Bytes())
+	}
 }

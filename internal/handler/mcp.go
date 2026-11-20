@@ -2,10 +2,12 @@ package handler
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 
+	"github.com/hebcal/hebcal-api-go/internal/httpx"
 	"github.com/hebcal/hebcal-api-go/internal/reqlog"
 )
 
@@ -30,6 +32,7 @@ import (
 // than panicking.
 func (s *Server) mcp(w http.ResponseWriter, r *http.Request) {
 	if s.MCP == nil {
+		httpx.RecordError(w, errors.New("MCP server not configured"))
 		http.NotFound(w, r)
 		return
 	}

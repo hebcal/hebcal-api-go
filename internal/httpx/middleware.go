@@ -305,9 +305,14 @@ func (m *Middleware) logAccess(r *http.Request, bw *bufWriter, length int, start
 	// On a 4xx/5xx, log the error the response is rendering (e.g. the
 	// OutOfRangeError's "No calendar for year 38") under "msg". The error
 	// helpers record the value into the request's collector (see RecordError);
-	// we render it here and place it right after status.
+	// we render it here and place it right after status. A response written
+	// without recording one falls back on its own body (see bodyMessage).
 	if err := calls.Err(); err != nil {
 		fields = append(fields, logger.KV{K: "msg", V: logger.String(err.Error())})
+	} else if bw.status >= 400 {
+		if msg := bodyMessage(bw); msg != "" {
+			fields = append(fields, logger.KV{K: "msg", V: logger.String(msg)})
+		}
 	}
 	if length > 0 {
 		fields = append(fields, logger.KV{K: "length", V: logger.Int(length)})
@@ -416,4 +421,45 @@ func encodeSubrequests(calls []reqlog.Call) []byte {
 		b.WriteByte(']')
 	}
 	return b.Bytes()
+}
+
+// maxBodyMessage caps the length of a "msg" taken from a response body.
+const maxBodyMessage = 200
+
+// bodyMessage derives an access-log "msg" from an error response whose
+// handler recorded no error: the first line of a text/plain body, or the
+// "error" member of a JSON body -- a string, or the "message" of a JSON-RPC
+// error object. A message that only restates the status ("Not Found" on a
+// 404) says nothing the status field does not, so it yields "", as does any
+// other body.
+func bodyMessage(bw *bufWriter) string {
+	body := bw.buf.Bytes()
+	var msg string
+	ctype := bw.header.Get("Content-Type")
+	switch {
+	case strings.HasPrefix(ctype, "text/plain"):
+		line, _, _ := bytes.Cut(body, []byte("\n"))
+		msg = string(line)
+	case strings.HasPrefix(ctype, "application/json"):
+		var v struct {
+			Error json.RawMessage `json:"error"`
+		}
+		if json.Unmarshal(body, &v) != nil || len(v.Error) == 0 {
+			return ""
+		}
+		var obj struct {
+			Message string `json:"message"`
+		}
+		if json.Unmarshal(v.Error, &msg) != nil && json.Unmarshal(v.Error, &obj) == nil {
+			msg = obj.Message
+		}
+	}
+	msg = strings.TrimSpace(msg)
+	if strings.EqualFold(msg, http.StatusText(bw.status)) {
+		return ""
+	}
+	if len(msg) > maxBodyMessage {
+		msg = strings.ToValidUTF8(msg[:maxBodyMessage], "")
+	}
+	return msg
 }

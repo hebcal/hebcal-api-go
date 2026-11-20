@@ -1,8 +1,12 @@
 package httpx
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
+	"syscall"
 	"testing"
 
 	"github.com/hebcal/hebcal-api-go/internal/model"
@@ -43,5 +47,19 @@ func TestErrorHelpersClearCaching(t *testing.T) {
 				t.Errorf("%s(%v): dropped a non-caching header", name, err)
 			}
 		}
+	}
+}
+
+func TestPosixError(t *testing.T) {
+	_, err := os.Stat(filepath.Join(t.TempDir(), "missing"))
+	if got := PosixError(err).Error(); got != "No such file or directory" {
+		t.Errorf("ENOENT: %q", got)
+	}
+	if got := PosixError(syscall.EACCES).Error(); got != "Permission denied" {
+		t.Errorf("EACCES: %q", got)
+	}
+	plain := errors.New("not an errno")
+	if PosixError(plain) != plain {
+		t.Errorf("an error without an errno must pass through")
 	}
 }

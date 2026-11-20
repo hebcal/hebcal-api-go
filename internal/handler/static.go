@@ -2,7 +2,7 @@ package handler
 
 import (
 	"errors"
-	"io/fs"
+	"fmt"
 	"mime"
 	"net/http"
 	"os"
@@ -32,7 +32,7 @@ func (s *Server) staticICal(w http.ResponseWriter, r *http.Request) {
 	}
 	name := strings.TrimPrefix(r.URL.Path, "/ical/")
 	if !plainFileName(name) {
-		httpx.WriteNotFoundText(w)
+		httpx.WriteNotFoundText(w, fmt.Errorf("Not a plain file name: %q", name))
 		return
 	}
 	s.serveStatic(w, r, "ical/"+name, httpx.CacheControl7Days)
@@ -70,13 +70,12 @@ func plainFileName(name string) bool {
 // a 404 is never cached.
 func (s *Server) serveStatic(w http.ResponseWriter, r *http.Request, rel, cacheControl string) {
 	if s.DocumentRoot == "" {
-		httpx.WriteNotFoundText(w)
+		httpx.WriteNotFoundText(w, errors.New("No document root configured"))
 		return
 	}
 	root, err := os.OpenRoot(s.DocumentRoot)
 	if err != nil {
-		httpx.RecordError(w, err)
-		httpx.WriteNotFoundText(w)
+		httpx.WriteNotFoundText(w, err)
 		return
 	}
 	defer root.Close()
@@ -90,11 +89,12 @@ func (s *Server) serveStatic(w http.ResponseWriter, r *http.Request, rel, cacheC
 		}
 	}
 	info, err := root.Stat(file)
-	if err != nil || !info.Mode().IsRegular() {
-		if err != nil && !errors.Is(err, fs.ErrNotExist) {
-			httpx.RecordError(w, err)
-		}
-		httpx.WriteNotFoundText(w)
+	if err != nil {
+		httpx.WriteNotFoundText(w, httpx.PosixError(err))
+		return
+	}
+	if !info.Mode().IsRegular() {
+		httpx.WriteNotFoundText(w, errors.New("Not a regular file"))
 		return
 	}
 	h := w.Header()

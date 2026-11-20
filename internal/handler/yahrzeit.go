@@ -145,7 +145,7 @@ func (s *Server) yahrzeitSaved(w http.ResponseWriter, r *http.Request) {
 	}
 	if !req.IsYahrzeit() {
 		// The URL overrode v= with something that is not a personal calendar.
-		httpx.WriteNotFoundText(w)
+		httpx.WriteNotFoundText(w, errors.New("Query overrides v= with a non-Yahrzeit calendar"))
 		return
 	}
 	s.yahrzeitDownload(w, r, req)
