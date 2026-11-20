@@ -3,10 +3,9 @@
 A single Go binary that serves a large subset of the Hebcal.com web APIs
 and calendar downloads, ported from the Node.js implementation in
 [hebcal-web](https://github.com/hebcal/hebcal-web) for higher throughput and
-lower latency. It began as the JSON and XML APIs and has grown into a
-monolith: JSON and XML APIs, iCalendar, CSV and PDF calendars, a printable
-web page, short-link redirects and an MCP server, all in one process.
-Much of hebcal-web is not here.
+lower latency. It covers JSON and XML APIs, iCalendar, CSV and PDF
+calendars, a printable web page, short-link redirects and an MCP server, all
+in one process. Much of hebcal-web is not here.
 
 ## What it does
 
