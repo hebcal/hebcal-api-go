@@ -1659,6 +1659,63 @@ Also derived: the Shabbat Mevarchim implication, `hebrewMonths` /
 The far-future `dropDailyLearningOutsideRange` is moot for PDF: the 410 range
 check rejects the whole request first.
 
+## Known differences from the Node.js implementation (JSON and PDF routes)
+
+Moved from the README; the other routes list theirs in their own sections.
+
+- `/shabbat/fridge.cgi` names every Erev Pesach and Erev Sukkot row for the
+  holiday; hebcal-web names some of them "Latest Kiddush Levana". Its errors
+  are plain text rather than an HTML error page, the page has no analytics
+  script, and its markup differs byte for byte (it is a new template), though
+  not in what it draws.
+- Same-day events may appear in a slightly different order within the
+  `events` array.
+- Molad announcements are rendered in hebcal-go's format rather than
+  @hebcal/core's.
+- `strict=1` validation errors return a clean `{"error": "..."}` object
+  without the stack trace that koa-error appends in development mode.
+- Zmanim times agree with @hebcal/core to within ~2 seconds (the inherent
+  difference between the noaa-go and @hebcal/core NOAA implementations);
+  minute-rounded output matches except where a value falls within 2s of a
+  rounding boundary.
+- `/shabbat` honors `date=` and `start=` as ways of pinning the week;
+  hebcal-web reads only `dt=` and `gy`/`gm`/`gd` there and quietly falls
+  back to today for the others.
+- `/shabbat` with `yto=on` and no Yom Tov in the week returns `200` and an
+  empty `items` array; hebcal-web applies the filter before its own
+  "no events" check and answers `400`.
+
+For the PDF calendars, where the bar is that a rendered calendar is
+indistinguishable from the one production serves for the same URL:
+
+- **Chanukah candle-lighting order on Saturday night.** On a motzei-Shabbat
+  Chanukah day the same rows and times appear, but the "Chanukah: N
+  Candles" candle-lighting row is grouped with the day's other timed rows
+  at the foot of the cell here, where production places it at the top. Same
+  content, an accepted ordering difference — not a missing, extra, or
+  merged row.
+- **Zmanim differ by up to about a minute**, for the same reason as the
+  JSON routes above.
+- **Day numbers sit ~3.3pt lower** than www.hebcal.com (and the month title
+  ~6pt), a small, uniform vertical offset in the Latin faces; horizontal
+  alignment is unaffected. The currently deployed download.hebcal.com
+  places them exactly where this service does, so the offset shows up only
+  against the newer of the two production builds.
+- **A localized `/v4/` alternate date reads `12 Tewet`, not `12. Tewet`.**
+  The day line comes from hebcal-go's `hebrewDateEvent.Render()`, which is
+  behind `@hebcal/hdate` on the ordinal it writes for locales other than
+  English and Spanish. The fix belongs in hebcal-go.
+- **Two holidays on one day can be ordered differently.** hebcal-go sorts a
+  date's holidays alphabetically; @hebcal/core keeps the order it created
+  them in. So a cell holding both Rosh Chodesh Elul and Rosh Hashana
+  LaBehemot, or both Erev Purim and Shabbat Zachor, can list them the other
+  way round — one or two cells a year, with no row missing, added or
+  retimed.
+- **An unknown-location `404` is not cached.** hebcal-web lets its 14-day
+  `Cache-Control` survive onto the 404; this service omits it there, since
+  a location missing today may be added later. The out-of-range `410` and
+  the rendered PDF are cached as in production.
+
 ## Testing strategy: do not trust a hand-written probe
 
 Bugs in this service have mostly been found by rendering calendars for a varied
@@ -1691,8 +1748,9 @@ download.hebcal.com any more.
   `fonts/Adobe_Hebrew/`) and are compiled into the binary by `fonts/embed.go`
   (`go:embed`); `pdf.DefaultRenderer` parses them once, and `handler.New`
   sets it, so the PDF routes cannot be without them and have no 503 for it.
-  This is deliberate: the PDF `ETag` hashes the URL and `config.APIVersion`,
-  which is only sound if a font can change only with a release. There is no
+  This is deliberate: the PDF `ETag` hashes only the request path and query
+  (`httpx.MakeETag`), which is only sound if a font can change only with a
+  release. There is no
   flag to load fonts from disk; don't add one. The two SQLite databases are
   passed with `-zips-db` and `-geonames-db` (`etc/hebcal-api.service`).
 - **readings-svc** answers on `/run/hebcal/readings-svc.sock`; without it
