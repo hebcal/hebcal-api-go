@@ -70,8 +70,24 @@ in one process. Much of hebcal-web is not here.
 Date conversions use [hebcal/hdate](https://github.com/hebcal/hdate)
 (`FromProlepticGregorian`, matching JavaScript `Date` behavior); holidays,
 parshiyot and zmanim come from
-[hebcal/hebcal-go](https://github.com/hebcal/hebcal-go) (v0.16.2+), whose
+[hebcal/hebcal-go](https://github.com/hebcal/hebcal-go) (v0.50.0+), whose
 solar calculations are backed by [hebcal/noaa-go](https://github.com/hebcal/noaa-go).
+
+## What it depends on
+
+- **[readings-svc](https://github.com/hebcal/readings-svc)** — a small Node.js
+  sidecar, reached over a unix socket, that supplies what hebcal-go cannot:
+  Torah readings for `/shabbat`, the daily-learning series with no Go
+  schedule, and Torah text for the iCalendar feeds and the MCP server. Without
+  it those features answer 501/503; everything else works.
+- **[hebcal-geoip2](https://github.com/hebcal/hebcal-geoip2)** — a GeoIP
+  lookup service, also on a unix socket, used by `/complete` to rank
+  suggestions near the caller. Optional: if it is unreachable the service
+  logs a warning and carries on.
+- **SQLite databases** — `geonames.sqlite3` and `zips.sqlite3`, for location
+  resolution (see [Location resolution](#location-resolution)).
+- **MySQL** — read-only apart from bookkeeping writes, for the saved Yahrzeit
+  calendars at `/v3/<id>/…ics`. Without it only `/v3/` answers 503.
 
 ## Endpoints
 
@@ -466,8 +482,7 @@ location's time zone; the response is cacheable for a week, and its ETag covers
 that date. No location is `400`, an unknown one `404`, and a location where the
 sun neither rises nor sets in the whole range `400`. Output matches hebcal-web's
 for the same URL on the same day, UIDs included, but for the occasional
-one-minute zmanim difference noted under
-[Known differences](#known-differences-from-the-nodejs-implementation).
+one-minute zmanim difference (see CLAUDE.md, "Known differences").
 
 #### Static calendars
 
@@ -581,61 +596,6 @@ JSON below it saves almost nothing (see `TestThresholdExperiment`).
 Zmanim caching mirrors hebcal-web: a single live date expires at the next
 local midnight; an explicit date or range is cached for 30 days with an
 `ETag`; the live Assur Melacha check is cached for 60 seconds.
-
-## Known differences from the Node.js implementation
-
-- `/shabbat/fridge.cgi` names every Erev Pesach and Erev Sukkot row for the
-  holiday; hebcal-web names some of them "Latest Kiddush Levana". Its errors
-  are plain text rather than an HTML error page, the page has no analytics
-  script, and its markup differs byte for byte (it is a new template), though
-  not in what it draws.
-- Same-day events may appear in a slightly different order within the
-  `events` array.
-- Molad announcements are rendered in hebcal-go's format rather than
-  @hebcal/core's.
-- `strict=1` validation errors return a clean `{"error": "..."}` object
-  without the stack trace that koa-error appends in development mode.
-- Zmanim times agree with @hebcal/core to within ~2 seconds (the inherent
-  difference between the noaa-go and @hebcal/core NOAA implementations);
-  minute-rounded output matches except where a value falls within 2s of a
-  rounding boundary.
-- `/shabbat` honors `date=` and `start=` as ways of pinning the week;
-  hebcal-web reads only `dt=` and `gy`/`gm`/`gd` there and quietly falls
-  back to today for the others.
-- `/shabbat` with `yto=on` and no Yom Tov in the week returns `200` and an
-  empty `items` array; hebcal-web applies the filter before its own
-  "no events" check and answers `400`.
-
-For the PDF calendars, where the bar is that a rendered calendar is
-indistinguishable from the one production serves for the same URL:
-
-- **Chanukah candle-lighting order on Saturday night.** On a motzei-Shabbat
-  Chanukah day the same rows and times appear, but the "Chanukah: N
-  Candles" candle-lighting row is grouped with the day's other timed rows
-  at the foot of the cell here, where production places it at the top. Same
-  content, an accepted ordering difference — not a missing, extra, or
-  merged row.
-- **Zmanim differ by up to about a minute**, for the same reason as the
-  JSON routes above.
-- **Day numbers sit ~3.3pt lower** than www.hebcal.com (and the month title
-  ~6pt), a small, uniform vertical offset in the Latin faces; horizontal
-  alignment is unaffected. The currently deployed download.hebcal.com
-  places them exactly where this service does, so the offset shows up only
-  against the newer of the two production builds.
-- **A localized `/v4/` alternate date reads `12 Tewet`, not `12. Tewet`.**
-  The day line comes from hebcal-go's `hebrewDateEvent.Render()`, which is
-  behind `@hebcal/hdate` on the ordinal it writes for locales other than
-  English and Spanish. The fix belongs in hebcal-go.
-- **Two holidays on one day can be ordered differently.** hebcal-go sorts a
-  date's holidays alphabetically; @hebcal/core keeps the order it created
-  them in. So a cell holding both Rosh Chodesh Elul and Rosh Hashana
-  LaBehemot, or both Erev Purim and Shabbat Zachor, can list them the other
-  way round — one or two cells a year, with no row missing, added or
-  retimed.
-- **An unknown-location `404` is not cached.** hebcal-web lets its 14-day
-  `Cache-Control` survive onto the 404; this service omits it there, since
-  a location missing today may be added later. The out-of-range `410` and
-  the rendered PDF are cached as in production.
 
 ## Package layout
 
