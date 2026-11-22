@@ -339,7 +339,7 @@ func (db *DB) LookupZip(zip string) *Location {
 	return loc
 }
 
-// LookupLegacyCity resolves one of the ~480 legacy Hebcal city identifiers (e.g.
+// LookupLegacyCity resolves one of the ~1440 legacy Hebcal city identifiers (e.g.
 // "GB-London") to a location, falling back to the built-in classic city table.
 func (db *DB) LookupLegacyCity(cityName string) *Location {
 	if id, ok := db.legacyCities[munge(cityName)]; ok {
