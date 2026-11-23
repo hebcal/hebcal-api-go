@@ -45,6 +45,18 @@ func TestLegacyCityAliases(t *testing.T) {
 		"IL-Rosh HaAyin":  293690,
 		"IL-Binyamina":    295410,
 		"IL-Beit_Shemesh": 295432,
+		// bare names and CC-prefixed aliases once resolved only through
+		// @hebcal/cities' Location.lookup() registrations
+		"Athens":            264371,
+		"San Diego":         5391811,
+		"Tokyo":             1850147,
+		"Ramat Gan":         293788,
+		"Teaneck":           5105262,
+		"Marseilles":        2995469,
+		"US-Boston":         4930956,
+		"US-Hawaii":         5856195,
+		"US-New Jersey":     5101798,
+		"GB-United Kingdom": 2643743,
 	} {
 		if got := db.legacyCities[munge(name)]; got != want || got == 0 {
 			t.Errorf("legacy city %q = %d, want %d", name, got, want)
