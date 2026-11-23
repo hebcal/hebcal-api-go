@@ -12,8 +12,6 @@ package geodb
 
 import (
 	"database/sql"
-	_ "embed"
-	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -31,10 +29,9 @@ import (
 	"github.com/hebcal/hebcal-go/zmanim"
 )
 
-//go:embed city2geonameid.json
-var city2geonameidJSON []byte
-
 const (
+	legacyCitySQL = `SELECT geonameid FROM legacy_city WHERE key = ?`
+
 	geonameSQL = `SELECT g.name, g.asciiname, g.country, c.Country, a.asciiname,
   g.latitude, g.longitude, g.population, g.gtopo30, g.timezone
 FROM geoname g
@@ -64,7 +61,6 @@ type DB struct {
 	zipCompStmt     *sql.Stmt // ZIP prefix autocomplete
 	zipFulltextStmt *sql.Stmt // ZIP city full-text autocomplete (FTS5)
 	zipCache        *lru.Cache[string, *Location]
-	legacyCities    map[string]int
 }
 
 // geonames is one opened generation of geonames.sqlite3.
@@ -72,6 +68,7 @@ type geonames struct {
 	db           *sql.DB
 	stmt         *sql.Stmt
 	compStmt     *sql.Stmt // geoname full-text autocomplete (FTS5)
+	legacyStmt   *sql.Stmt // legacy city key -> geonameid
 	cache        *lru.Cache[int, *Location]
 	countryNames map[string]string // ISO country code -> full country name
 	info         os.FileInfo       // the file as it was when opened
@@ -109,16 +106,6 @@ func New(zipsPath, geonamesPath string) (*DB, error) {
 		return nil, fmt.Errorf("preparing zip full-text autocomplete query: %w", err)
 	}
 	db.zipCache, _ = lru.New[string, *Location](150)
-
-	var raw map[string]int
-	if err := json.Unmarshal(city2geonameidJSON, &raw); err != nil {
-		db.Close()
-		return nil, fmt.Errorf("parsing city2geonameid.json: %w", err)
-	}
-	db.legacyCities = make(map[string]int, len(raw))
-	for name, id := range raw {
-		db.legacyCities[munge(name)] = id
-	}
 	return db, nil
 }
 
@@ -142,6 +129,10 @@ func openGeonames(path string) (*geonames, error) {
 	if g.compStmt, err = sdb.Prepare(geonameCompleteSQL); err != nil {
 		g.close()
 		return nil, fmt.Errorf("preparing geoname autocomplete query: %w", err)
+	}
+	if g.legacyStmt, err = sdb.Prepare(legacyCitySQL); err != nil {
+		g.close()
+		return nil, fmt.Errorf("preparing legacy_city query (a geonames.sqlite3 built before the table existed?): %w", err)
 	}
 	g.cache, _ = lru.New[int, *Location](750)
 	if err := g.loadCountryNames(); err != nil {
@@ -185,6 +176,9 @@ func (g *geonames) close() error {
 	}
 	if g.compStmt != nil {
 		g.compStmt.Close()
+	}
+	if g.legacyStmt != nil {
+		g.legacyStmt.Close()
 	}
 	return g.db.Close()
 }
@@ -339,11 +333,14 @@ func (db *DB) LookupZip(zip string) *Location {
 	return loc
 }
 
-// LookupLegacyCity resolves one of the ~1440 legacy Hebcal city identifiers (e.g.
-// "GB-London") to a location, falling back to the built-in classic city table.
+// LookupLegacyCity resolves a legacy Hebcal city identifier (e.g. "GB-London")
+// to a location through the geonames database's legacy_city table, whose keys
+// are names normalized by munge, falling back to the built-in classic city
+// table.
 func (db *DB) LookupLegacyCity(cityName string) *Location {
-	if id, ok := db.legacyCities[munge(cityName)]; ok {
-		return db.LookupGeoname(id)
+	g := db.geo.Load()
+	if id := g.legacyCityID(cityName); id != 0 {
+		return g.lookup(id)
 	}
 	if classic := zmanim.LookupCity(cityName); classic != nil {
 		return &Location{
@@ -359,6 +356,15 @@ func (db *DB) LookupLegacyCity(cityName string) *Location {
 		}
 	}
 	return nil
+}
+
+// legacyCityID returns the geonameid legacy_city maps cityName to, or 0.
+func (g *geonames) legacyCityID(cityName string) int {
+	var id int
+	if err := g.legacyStmt.QueryRow(munge(cityName)).Scan(&id); err != nil {
+		return 0
+	}
+	return id
 }
 
 // CountryName returns the full country name for an ISO country code, or the

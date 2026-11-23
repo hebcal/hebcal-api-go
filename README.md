@@ -584,6 +584,16 @@ default to the working directory and can be set with the `-zips-db` /
 `-geonames-db` flags or the `ZIPS_DB` / `GEONAMES_DB` environment
 variables. Small sample databases used by the tests live in `testdata/`.
 
+`geonames.sqlite3` must have the `legacy_city` table (the `city=` names of
+old Hebcal URLs, keyed by the lowercased name without spaces, apostrophes or
+`+`), which geo-sqlite builds from its `src/city2geonameid.json` -- the one
+copy of that list. A database without it is refused at startup, and a
+replacement without it is not reloaded. To change a legacy name, edit that
+JSON in geo-sqlite and rebuild the database; no release here is needed. The
+test database's copy of the table was taken from a full `download-and-make-dbs`
+build: after a change, copy the table from a new build into
+`internal/handler/testdata/geonames.sqlite3` again.
+
 ## Caching and compression
 
 Responses include weak `ETag` validators (FNV-1a),
@@ -660,9 +670,10 @@ tools/                   porting tools: PDF comparison, width measurement,
 `pkg/geodb`, `pkg/geoip` and `pkg/downloadpb` depend only on their own
 third-party libraries,
 never on `internal`, so either can be reused by another program or split out
-into its own module without untangling anything first. `geodb` embeds
-`city2geonameid.json` and carries the US state-name table, so it needs no
-data files beyond the two SQLite databases.
+into its own module without untangling anything first. `geodb` carries the
+US state-name table and reads the legacy `city=` names from the geonames
+database's `legacy_city` table, so it needs no data files beyond the two
+SQLite databases.
 
 The dependency direction is one-way: `handler` → `service` → `repository`,
 `model`, `pkg`. Nothing in `service` writes to an `http.ResponseWriter` —

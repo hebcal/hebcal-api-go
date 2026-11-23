@@ -1,7 +1,10 @@
 package geodb
 
 import (
-	"encoding/json"
+	"database/sql"
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -22,9 +25,9 @@ func TestLegacyCityAliases(t *testing.T) {
 		"Nahariyya":       294117,
 		"IL-Beersheba":    295530,
 		"Tel-Aviv":        293397,
-		"Bat-Yam":         db.legacyCities[munge("IL-Bat Yam")],
+		"Bat-Yam":         db.geo.Load().legacyCityID("IL-Bat Yam"),
 		"Petach-Tikva":    293918,
-		"Rishon-LeZion":   db.legacyCities[munge("IL-Rishon LeZion")],
+		"Rishon-LeZion":   db.geo.Load().legacyCityID("IL-Rishon LeZion"),
 		"England":         2643743,
 		"dc":              4140963,
 		"Zurich":          2657896,
@@ -58,25 +61,47 @@ func TestLegacyCityAliases(t *testing.T) {
 		"US-New Jersey":     5101798,
 		"GB-United Kingdom": 2643743,
 	} {
-		if got := db.legacyCities[munge(name)]; got != want || got == 0 {
+		if got := db.geo.Load().legacyCityID(name); got != want || got == 0 {
 			t.Errorf("legacy city %q = %d, want %d", name, got, want)
 		}
 	}
 }
 
-// Two keys that munge alike but name different places would make the lookup
-// depend on map order.
-func TestLegacyCityKeysUnique(t *testing.T) {
-	var raw map[string]int
-	if err := json.Unmarshal(city2geonameidJSON, &raw); err != nil {
+// A geonames.sqlite3 built before legacy_city existed is refused at startup,
+// and on a reload the working generation keeps serving.
+func TestLegacyCityTableRequired(t *testing.T) {
+	dir := t.TempDir()
+	old := filepath.Join(dir, "old.sqlite3")
+	copyFile(t, testGeonames, old)
+	w, err := sql.Open("sqlite3", old)
+	if err != nil {
 		t.Fatal(err)
 	}
-	seen := make(map[string]string, len(raw))
-	for k, id := range raw {
-		m := munge(k)
-		if prev, ok := seen[m]; ok && raw[prev] != id {
-			t.Errorf("%q (%d) and %q (%d) both munge to %q", prev, raw[prev], k, id, m)
-		}
-		seen[m] = k
+	if _, err := w.Exec("DROP TABLE legacy_city"); err != nil {
+		t.Fatal(err)
+	}
+	w.Close()
+	if db, err := New(testZips, old); err == nil {
+		db.Close()
+		t.Fatal("New accepted a geonames database without legacy_city")
+	} else if !strings.Contains(err.Error(), "legacy_city") {
+		t.Errorf("New error %q does not name legacy_city", err)
+	}
+
+	path := filepath.Join(dir, "geonames.sqlite3")
+	copyFile(t, testGeonames, path)
+	db, err := New(testZips, path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	if err := os.Rename(old, path); err != nil {
+		t.Fatal(err)
+	}
+	if ok, err := db.ReloadGeonames(); ok || err == nil {
+		t.Fatalf("ReloadGeonames() = %v, %v; want false and an error", ok, err)
+	}
+	if loc := db.LookupLegacyCity("Tel Aviv"); loc == nil || loc.GeonameID != 293397 {
+		t.Errorf("after refused reload: LookupLegacyCity(Tel Aviv) = %+v", loc)
 	}
 }
